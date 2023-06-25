@@ -1,8 +1,11 @@
 // You may need to adjust the paths based on your directory structure
 import * as pdfjs from 'pdfjs-dist';
 import { EventBus, PDFLinkService, PDFViewer, PDFFindController, PDFScriptingManager } from "pdfjs-dist/web/pdf_viewer";
+import 'pdfjs-dist/web/pdf_viewer.css';
 
 const SANDBOX_BUNDLE_SRC = "pdfjs-dist/build/pdf.sandbox.js";
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`
 
 // Function to load PDF 
 function loadPdf(file) {
@@ -42,6 +45,7 @@ window.addEventListener('message', function(event) {
   if (typeof event.data === 'object' && event.data.file) {
       const file = event.data.file;
       console.log(file ,'file! doggg')
+      loadPdf(file);
       // Initialize your PDF viewer here with file
   }
 }, false);
