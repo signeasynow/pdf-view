@@ -4,7 +4,7 @@ import { EventBus, PDFLinkService, PDFViewer, PDFFindController, PDFScriptingMan
 import 'pdfjs-dist/web/pdf_viewer.css';
 
 import { h, render } from 'preact';
-import App from './App';
+import App from './src/App';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`
 
 render(<App />, document.getElementById('app'));
