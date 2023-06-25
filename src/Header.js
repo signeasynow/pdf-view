@@ -1,12 +1,23 @@
+/** @jsxImportSource @emotion/react */
+import { css } from '@emotion/react'
+
 import { h, Component } from 'preact';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import Hand from '../assets/hand.svg';
 // import Pan from "./assets/pan.svg";
 
+
+const Button = ({ children }) => (
+  <button css={css({ color: 'hotpink' })}>
+    {children}
+  </button>
+)
+
 const Header = () => {
 
   return (
     <div id="controls">
+      <Button>Test</Button>
       <button>Menu</button>
       |
       <button>Panel</button>

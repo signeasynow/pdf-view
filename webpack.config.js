@@ -16,7 +16,7 @@ module.exports = {
       {
         test: /\.(js)$/,
         exclude: /node_modules/,
-        use: ['babel-loader']
+        use: 'babel-loader',
       },
       {
         test: /\.svg$/,
@@ -25,6 +25,11 @@ module.exports = {
     ]
   },
   resolve: {
+    alias: {
+      react: "preact/compat",
+      'react-dom/test-utils': 'preact/test-utils',
+      'react-dom': 'preact/compat',
+    },
     extensions: ['.js']
   },
   plugins: [

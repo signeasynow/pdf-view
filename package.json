@@ -16,6 +16,7 @@
     "@babel/preset-env": "^7.22.5",
     "@babel/preset-react": "^7.22.5",
     "babel-loader": "^9.1.2",
+    "babel-plugin-jsx-pragmatic": "^1.0.2",
     "css-loader": "^6.8.1",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.5.3",
@@ -26,7 +27,10 @@
     "webpack-dev-server": "^4.15.1"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
     "pdfjs-dist": "^3.7.107",
-    "preact": "^10.15.1"
+    "preact": "^10.15.1",
+    "preact-compat": "^3.19.0"
   }
 }
