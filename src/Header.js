@@ -6,6 +6,11 @@ import 'pdfjs-dist/web/pdf_viewer.css';
 import Hand from '../assets/hand-svgrepo-com.svg';
 import ZoomOut from '../assets/zoom-out-svgrepo-com.svg';
 import ZoomIn from '../assets/zoom-in-svgrepo-com.svg';
+import Search from '../assets/search-svgrepo-com.svg';
+import Hamburger from '../assets/hamburger-md-svgrepo-com.svg';
+import Gear from '../assets/gear-svgrepo-com.svg';
+import Comment from '../assets/comment-svgrepo-com.svg';
+import Panel from '../assets/panel-left-svgrepo-com.svg';
 // import Pan from "./assets/pan.svg";
 
 
@@ -39,18 +44,39 @@ const HeaderIcon = ({ src, alt }) => (
   <img css={css({ width: 28, height: 28, cursor: "pointer"})} src={src} alt="" />
 )
 
+const VerticalDivider = () => (
+  <div css={css`
+    height: 24px;
+    width: 1px;
+    background-color: #ccc;
+    margin: 0 12px;
+  `} />
+);
+
+const Wrapper = ({ children }) => (
+  <div css={css({
+    display: "flex"
+  })}>
+    {children}
+  </div>
+)
+
 const Header = () => {
 
   return (
-    <div id="controls">
-      <Tooltip title="Hello there">
-        <button>Menu</button>
+    <Wrapper>
+      <Tooltip title="Menu">
+        <HeaderIcon src={Hamburger} alt="Menu" />
       </Tooltip>
       
-      |
-      <button>Panel</button>
-      <button>View controls</button>
-      |
+      <VerticalDivider />
+      <Tooltip title="Panel">
+        <HeaderIcon src={Panel} alt="Panel" />
+      </Tooltip>
+      <Tooltip title="View controls">
+        <HeaderIcon src={Gear} alt="View controls" />
+      </Tooltip>
+      <VerticalDivider />
       <Tooltip title="Zoom in">
         <HeaderIcon src={ZoomIn} alt="Zoom in" />
       </Tooltip>
@@ -66,9 +92,13 @@ const Header = () => {
         <option>View</option>
         <option>Annotate</option>
       </select>
-      <button>Search</button>
-      <button>Comments</button>
-    </div>
+      <Tooltip title="Search">
+        <HeaderIcon src={Search} alt="Search" />
+      </Tooltip>
+      <Tooltip title="Comments">
+        <HeaderIcon src={Comment} alt="Comments" />
+      </Tooltip>
+    </Wrapper>
   );
 };
 
