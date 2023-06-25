@@ -2,6 +2,7 @@
 import { css } from '@emotion/react'
 
 import { h, Component } from 'preact';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import Hand from '../assets/hand-svgrepo-com.svg';
 import ZoomOut from '../assets/zoom-out-svgrepo-com.svg';
@@ -40,8 +41,8 @@ const Tooltip = ({ children, title }) => (
   </div>
 );
 
-const HeaderIcon = ({ src, alt }) => (
-  <img css={css({ width: 28, height: 28, cursor: "pointer"})} src={src} alt="" />
+const HeaderIcon = ({ src, alt, onClick }) => (
+  <img onClick={onClick} css={css({ width: 28, height: 28, cursor: "pointer"})} src={src} alt="" />
 )
 
 const VerticalDivider = () => (
@@ -61,7 +62,40 @@ const Wrapper = ({ children }) => (
   </div>
 )
 
-const Header = () => {
+const ZOOM_FACTOR = 0.1;
+
+const Header = ({
+  pdfViewerRef,
+  onZoomIn,
+  onZoomOut,
+  viewerContainerRef
+}) => {
+
+  /*
+  useEffect(() => {
+      const viewerContainer = viewerContainerRef.current;
+
+      // Other setup code...
+
+      const debouncedHandleWheel = useDebounce((event) => {
+          // prevent the default zooming behavior in the browser
+          event.preventDefault();
+          if (event.deltaY < 0) {
+              // Wheel scrolled up, zoom in
+              onZoomIn();
+          } else if (event.deltaY > 0) {
+              // Wheel scrolled down, zoom out
+              onZoomOut();
+          }
+      }, 50);
+
+      viewerContainer.addEventListener('wheel', debouncedHandleWheel, { passive: false });
+      return () => {
+          // Cleanup - remove the event listener when the component unmounts
+          viewerContainer.removeEventListener('wheel', debouncedHandleWheel);
+      };
+  }, []);
+  */
 
   return (
     <Wrapper>
@@ -78,10 +112,10 @@ const Header = () => {
       </Tooltip>
       <VerticalDivider />
       <Tooltip title="Zoom in">
-        <HeaderIcon src={ZoomIn} alt="Zoom in" />
+        <HeaderIcon onClick={onZoomIn} src={ZoomOut} alt="Zoom in" />
       </Tooltip>
       <Tooltip title="Zoom out">
-        <HeaderIcon src={ZoomOut} alt="Zoom out" />
+        <HeaderIcon onClick={onZoomOut} src={ZoomIn} alt="Zoom out" />
       </Tooltip>
       <Tooltip title="Pan">
         <HeaderIcon src={Hand} alt="Pan" />

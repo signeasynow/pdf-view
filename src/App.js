@@ -4,11 +4,13 @@ import * as pdfjs from 'pdfjs-dist';
 import { EventBus, PDFLinkService, PDFViewer, PDFFindController, PDFScriptingManager } from "pdfjs-dist/web/pdf_viewer";
 import 'pdfjs-dist/web/pdf_viewer.css';
 import Header from './Header';
+import { useDebounce } from "./utils/useDebounce";
 
 const SANDBOX_BUNDLE_SRC = "pdfjs-dist/build/pdf.sandbox.js";
 
-const PdfViewer = ({ file }) => {
-  const viewerContainerRef = useRef(null);
+const PdfViewer = ({ file, pdfViewerRef, viewerContainerRef }) => {
+  
+
 
   useEffect(() => {
     if (!file || !viewerContainerRef.current) return;
@@ -20,7 +22,8 @@ const PdfViewer = ({ file }) => {
     const pdfFindController = new PDFFindController({ eventBus, linkService: pdfLinkService });
     const pdfScriptingManager = new PDFScriptingManager({ eventBus, sandboxBundleSrc: SANDBOX_BUNDLE_SRC });
     const pdfViewer = new PDFViewer({ container: viewerContainer, eventBus, linkService: pdfLinkService, findController: pdfFindController, scriptingManager: pdfScriptingManager });
-
+    pdfViewerRef.current = pdfViewer;
+    
     pdfLinkService.setViewer(pdfViewer);
     pdfScriptingManager.setViewer(pdfViewer);
 
@@ -48,8 +51,67 @@ const PdfViewer = ({ file }) => {
   )
 };
 
+const ZOOM_FACTOR = 0.1;
+
 const App = () => {
+
+  const pdfViewerRef = useRef(null);
+  const viewerContainerRef = useRef(null);
+
   const [file, setFile] = useState(null);
+
+  const _onZoomOut = () => {
+    console.log(pdfViewerRef.current, 'pdfViewerRef.current')
+    if (pdfViewerRef.current && pdfViewerRef.current.currentScale > ZOOM_FACTOR) { // minimum scale 0.1
+        pdfViewerRef.current.currentScale -= ZOOM_FACTOR;
+    }
+  };
+
+  const _onZoomIn = () => {
+    if (pdfViewerRef.current && pdfViewerRef.current.currentScale < (10 - ZOOM_FACTOR)) { // maximum scale 10
+        pdfViewerRef.current.currentScale += ZOOM_FACTOR;
+    }
+  };
+
+  const onZoomIn = useDebounce(_onZoomIn, 5);
+    const onZoomOut = useDebounce(_onZoomOut, 5);
+
+
+  /*
+  useEffect(() => {
+      const viewerContainer = viewerContainerRef.current;
+
+      // Other setup code...
+
+      /*
+      document.body.addEventListener("wheel", e=>{
+          if(e.ctrlKey)
+            e.preventDefault();//prevent zoom
+        }, {passive: false});
+        const debouncedHandleWheel = (event) => {
+          // prevent the default zooming behavior in the browser
+          if (event.ctrlKey) {
+            event.preventDefault();
+          }
+          if (event.deltaX !== 0) {
+              if (event.deltaY < 0) {
+                // Wheel scrolled up, zoom in
+                onZoomIn();
+            } else if (event.deltaY > 0) {
+                // Wheel scrolled down, zoom out
+                onZoomOut();
+            }
+          }
+      };
+      console.log(viewerContainer, 'viewerContainer')
+      viewerContainer.addEventListener('wheel', debouncedHandleWheel, { passive: false });
+      return () => {
+          // Cleanup - remove the event listener when the component unmounts
+          viewerContainer.removeEventListener('wheel', debouncedHandleWheel);
+      };
+  }, []);
+  */
+
 
   useEffect(() => {
     window.addEventListener('message', function(event) {
@@ -61,8 +123,8 @@ const App = () => {
 
   return (
     <div>
-      <Header />
-      <PdfViewer file={file} />
+      <Header onZoomIn={onZoomIn} onZoomOut={onZoomOut} viewerContainerRef={viewerContainerRef} pdfViewerRef={pdfViewerRef} />
+      <PdfViewer viewerContainerRef={viewerContainerRef} pdfViewerRef={pdfViewerRef} file={file} />
     </div>
   );
 };
