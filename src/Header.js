@@ -6,18 +6,14 @@ import 'pdfjs-dist/web/pdf_viewer.css';
 import Hand from '../assets/hand.svg';
 // import Pan from "./assets/pan.svg";
 
-
-const Button = ({ children }) => (
-  <button css={css({ color: 'hotpink' })}>
-    {children}
-  </button>
+const HeaderIcon = ({ src, alt }) => (
+  <img css={css({ width: 24, height: 24, cursor: "pointer"})} src={src} alt={alt} />
 )
 
 const Header = () => {
 
   return (
     <div id="controls">
-      <Button>Test</Button>
       <button>Menu</button>
       |
       <button>Panel</button>
@@ -26,8 +22,8 @@ const Header = () => {
       <button id="zoomIn">Zoom In</button>
       <button id="zoomOut">Zoom Out</button>
       <button>Pan</button>
-      <img src={Hand} alt="Hand" />
-      
+      <HeaderIcon src={Hand} alt="Hand" />
+
       <select>
         <option>View</option>
         <option>Annotate</option>
