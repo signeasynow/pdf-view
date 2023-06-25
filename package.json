@@ -31,6 +31,7 @@
     "@emotion/styled": "^11.11.0",
     "pdfjs-dist": "^3.7.107",
     "preact": "^10.15.1",
-    "preact-compat": "^3.19.0"
+    "preact-compat": "^3.19.0",
+    "tippy.js": "^6.3.7"
   }
 }
