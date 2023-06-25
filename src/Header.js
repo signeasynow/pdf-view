@@ -3,7 +3,9 @@ import { css } from '@emotion/react'
 
 import { h, Component } from 'preact';
 import 'pdfjs-dist/web/pdf_viewer.css';
-import Hand from '../assets/hand.svg';
+import Hand from '../assets/hand-svgrepo-com.svg';
+import ZoomOut from '../assets/zoom-out-svgrepo-com.svg';
+import ZoomIn from '../assets/zoom-in-svgrepo-com.svg';
 // import Pan from "./assets/pan.svg";
 
 
@@ -34,7 +36,7 @@ const Tooltip = ({ children, title }) => (
 );
 
 const HeaderIcon = ({ src, alt }) => (
-  <img css={css({ width: 24, height: 24, cursor: "pointer"})} src={src} alt="" />
+  <img css={css({ width: 28, height: 28, cursor: "pointer"})} src={src} alt="" />
 )
 
 const Header = () => {
@@ -49,8 +51,12 @@ const Header = () => {
       <button>Panel</button>
       <button>View controls</button>
       |
-      <button id="zoomIn">Zoom In</button>
-      <button id="zoomOut">Zoom Out</button>
+      <Tooltip title="Zoom in">
+        <HeaderIcon src={ZoomIn} alt="Zoom in" />
+      </Tooltip>
+      <Tooltip title="Zoom out">
+        <HeaderIcon src={ZoomOut} alt="Zoom out" />
+      </Tooltip>
       <Tooltip title="Pan">
         <HeaderIcon src={Hand} alt="Pan" />
       </Tooltip>
