@@ -22,6 +22,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "pdfjs-dist": "^3.7.107"
+    "pdfjs-dist": "^3.7.107",
+    "preact": "^10.15.1"
   }
 }
