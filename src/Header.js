@@ -22,7 +22,7 @@ const Header = () => {
       <button id="zoomIn">Zoom In</button>
       <button id="zoomOut">Zoom Out</button>
       <button>Pan</button>
-      <HeaderIcon src={Hand} alt="Hand" />
+      <HeaderIcon src={Hand} alt="Pan" />
 
       <select>
         <option>View</option>
