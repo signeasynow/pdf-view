@@ -40,7 +40,11 @@ const PdfViewer = ({ file }) => {
     );
   }, [file]);
 
-  return <div ref={viewerContainerRef} id="viewer" class="pdfViewer"></div>;
+  return (
+    <div ref={viewerContainerRef} id="viewerContainer">
+      <div id="viewer" class="pdfViewer"></div>
+    </div>
+  )
 };
 
 const App = () => {
