@@ -56,7 +56,9 @@ const VerticalDivider = () => (
 
 const Wrapper = ({ children }) => (
   <div css={css({
-    display: "flex"
+    display: "flex",
+    background: "grey",
+    height: 30
   })}>
     {children}
   </div>

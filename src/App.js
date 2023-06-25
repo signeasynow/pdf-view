@@ -1,3 +1,5 @@
+/** @jsxImportSource @emotion/react */
+import { css } from '@emotion/react'
 import { h, Component } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import * as pdfjs from 'pdfjs-dist';
@@ -7,6 +9,26 @@ import Header from './Header';
 import { useDebounce } from "./utils/useDebounce";
 
 const SANDBOX_BUNDLE_SRC = "pdfjs-dist/build/pdf.sandbox.js";
+
+function webViewerFindFromUrlHash(evt) {
+  PDFViewerApplication.eventBus.dispatch("find", {
+    source: evt.source,
+    type: "",
+    query: evt.query,
+    caseSensitive: false,
+    entireWord: false,
+    highlightAll: true,
+    findPrevious: false,
+    matchDiacritics: true,
+  });
+}
+
+const containerStyle = css`
+  overflow: auto;
+  position: absolute;
+  width: 100%;
+  height: calc(100% - 50px);
+`;
 
 const PdfViewer = ({ file, pdfViewerRef, viewerContainerRef }) => {
   
@@ -31,6 +53,21 @@ const PdfViewer = ({ file, pdfViewerRef, viewerContainerRef }) => {
       pdfViewer.currentScaleValue = "page-width";
     });
 
+    eventBus.dispatch("find", {
+      // source: evt.source,
+      type: "",
+      query: "are",
+      caseSensitive: false,
+      entireWord: false,
+      highlightAll: true,
+      findPrevious: false,
+      matchDiacritics: true,
+    });
+
+    eventBus.on("updatefindmatchescount", ({ matchesCount }) => {
+      console.log(matchesCount, 'matchescount');
+    })
+
     const loadingTask = pdfjs.getDocument(file);
 
     loadingTask.promise.then(
@@ -45,7 +82,7 @@ const PdfViewer = ({ file, pdfViewerRef, viewerContainerRef }) => {
   }, [file]);
 
   return (
-    <div ref={viewerContainerRef} id="viewerContainer">
+    <div ref={viewerContainerRef} id="viewerContainer" css={containerStyle}>
       <div id="viewer" class="pdfViewer"></div>
     </div>
   )
