@@ -66,10 +66,8 @@ const invisibleSearchWrapper = css`
   display: none;
 `
 
-const PdfViewer = ({ file, pdfViewerRef, viewerContainerRef, eventBusRef }) => {
+const PdfViewer = ({ file, pdfViewerRef, viewerContainerRef, eventBusRef, setMatchesCount }) => {
   
-
-
   useEffect(() => {
     if (!file || !viewerContainerRef.current) return;
 
@@ -103,8 +101,11 @@ const PdfViewer = ({ file, pdfViewerRef, viewerContainerRef, eventBusRef }) => {
     });
     */
 
+
+
     eventBus.on("updatefindmatchescount", ({ matchesCount }) => {
       console.log(matchesCount, 'matchescount');
+      setMatchesCount(matchesCount?.total);
     })
 
     const loadingTask = pdfjs.getDocument(file);
@@ -130,6 +131,9 @@ const PdfViewer = ({ file, pdfViewerRef, viewerContainerRef, eventBusRef }) => {
 const ZOOM_FACTOR = 0.1;
 
 const App = () => {
+
+  const [matchesCount, setMatchesCount] = useState(0);
+
 
   const eventBusRef = useRef(null);
 
@@ -231,9 +235,9 @@ const App = () => {
       />
       <div css={Flex}>
         <div css={showSearch ? shortPdfViewerWrapper : pdfViewerWrapper}>
-          <PdfViewer eventBusRef={eventBusRef} viewerContainerRef={viewerContainerRef} pdfViewerRef={pdfViewerRef} file={file} />
+          <PdfViewer setMatchesCount={setMatchesCount} eventBusRef={eventBusRef} viewerContainerRef={viewerContainerRef} pdfViewerRef={pdfViewerRef} file={file} />
         </div>
-        <SearchBar onChange={onSearchText} showSearch={showSearch} />
+        <SearchBar matchesCount={matchesCount} onChange={onSearchText} showSearch={showSearch} />
       </div>
     </div>
   );

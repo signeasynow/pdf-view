@@ -78,12 +78,16 @@ const invisibleSearchWrapper = css`
 
 const SearchBar = ({
   showSearch,
-  onChange
+  onChange,
+  matchesCount
 }) => {
 
   return (
     <div css={showSearch ? visibleSearchWrapper : invisibleSearchWrapper}>
       <input onChange={onChange} placeholder="Search document" />
+      <div>
+        {matchesCount} total matches
+      </div>
     </div>
   );
 };
