@@ -7,6 +7,7 @@ import { EventBus, PDFLinkService, PDFViewer, PDFFindController, PDFScriptingMan
 import 'pdfjs-dist/web/pdf_viewer.css';
 import Header from './Header';
 import { useDebounce } from "./utils/useDebounce";
+import SearchBar from './SearchBar';
 
 const SANDBOX_BUNDLE_SRC = "pdfjs-dist/build/pdf.sandbox.js";
 
@@ -65,7 +66,7 @@ const invisibleSearchWrapper = css`
   display: none;
 `
 
-const PdfViewer = ({ file, pdfViewerRef, viewerContainerRef }) => {
+const PdfViewer = ({ file, pdfViewerRef, viewerContainerRef, eventBusRef }) => {
   
 
 
@@ -75,6 +76,7 @@ const PdfViewer = ({ file, pdfViewerRef, viewerContainerRef }) => {
     const viewerContainer = viewerContainerRef.current;
 
     const eventBus = new EventBus();
+    eventBusRef.current = eventBus;
     const pdfLinkService = new PDFLinkService({ eventBus, externalLinkTarget: 2 });
     const pdfFindController = new PDFFindController({ eventBus, linkService: pdfLinkService });
     const pdfScriptingManager = new PDFScriptingManager({ eventBus, sandboxBundleSrc: SANDBOX_BUNDLE_SRC });
@@ -88,6 +90,7 @@ const PdfViewer = ({ file, pdfViewerRef, viewerContainerRef }) => {
       pdfViewer.currentScaleValue = "page-width";
     });
 
+    /*
     eventBus.dispatch("find", {
       // source: evt.source,
       type: "",
@@ -98,6 +101,7 @@ const PdfViewer = ({ file, pdfViewerRef, viewerContainerRef }) => {
       findPrevious: false,
       matchDiacritics: true,
     });
+    */
 
     eventBus.on("updatefindmatchescount", ({ matchesCount }) => {
       console.log(matchesCount, 'matchescount');
@@ -126,6 +130,8 @@ const PdfViewer = ({ file, pdfViewerRef, viewerContainerRef }) => {
 const ZOOM_FACTOR = 0.1;
 
 const App = () => {
+
+  const eventBusRef = useRef(null);
 
   const pdfViewerRef = useRef(null);
   const viewerContainerRef = useRef(null);
@@ -198,6 +204,22 @@ const App = () => {
     }, false);
   }, []);
 
+  const _onSearchText = (e) => {
+    console.log(e.target.value, 'e value')
+    eventBusRef.current?.dispatch("find", {
+      // source: evt.source,
+      type: "",
+      query: e.target.value,
+      caseSensitive: false,
+      entireWord: false,
+      highlightAll: true,
+      findPrevious: false,
+      matchDiacritics: true,
+    });
+  }
+
+  const onSearchText = useDebounce(_onSearchText, 100);
+
   return (
     <div css={WrapperStyle}>
       <Header
@@ -209,11 +231,9 @@ const App = () => {
       />
       <div css={Flex}>
         <div css={showSearch ? shortPdfViewerWrapper : pdfViewerWrapper}>
-          <PdfViewer viewerContainerRef={viewerContainerRef} pdfViewerRef={pdfViewerRef} file={file} />
+          <PdfViewer eventBusRef={eventBusRef} viewerContainerRef={viewerContainerRef} pdfViewerRef={pdfViewerRef} file={file} />
         </div>
-        <div css={showSearch ? visibleSearchWrapper : invisibleSearchWrapper}>
-          Search
-        </div>
+        <SearchBar onChange={onSearchText} showSearch={showSearch} />
       </div>
     </div>
   );
