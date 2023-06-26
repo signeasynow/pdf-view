@@ -70,6 +70,7 @@ const Header = ({
   pdfViewerRef,
   onZoomIn,
   onZoomOut,
+  onSearch,
   viewerContainerRef
 }) => {
 
@@ -129,7 +130,7 @@ const Header = ({
         <option>Annotate</option>
       </select>
       <Tooltip title="Search">
-        <HeaderIcon src={Search} alt="Search" />
+        <HeaderIcon onClick={onSearch} src={Search} alt="Search" />
       </Tooltip>
       <Tooltip title="Comments">
         <HeaderIcon src={Comment} alt="Comments" />

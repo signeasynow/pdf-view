@@ -23,12 +23,47 @@ function webViewerFindFromUrlHash(evt) {
   });
 }
 
+const Flex = css`
+display: flex;
+width: 100%;
+height: 100%;
+`
+
+
 const containerStyle = css`
   overflow: auto;
   position: absolute;
   width: 100%;
   height: calc(100% - 50px);
 `;
+
+const pdfViewerWrapper = css`
+  height: 100%;
+  width: 100%;
+`
+
+const shortPdfViewerWrapper = css`
+  height: 100%;
+  width: calc(100% - 400px);
+  background: red;
+  position: relative;
+`
+// relative 
+
+const WrapperStyle = css`
+  height: calc(100vh - 40px);
+  width: 100vw;
+`
+
+const visibleSearchWrapper = css`
+  background: green;
+  width: 400px;
+`
+
+const invisibleSearchWrapper = css`
+  background: orange;
+  display: none;
+`
 
 const PdfViewer = ({ file, pdfViewerRef, viewerContainerRef }) => {
   
@@ -149,6 +184,11 @@ const App = () => {
   }, []);
   */
 
+  const [showSearch, setShowSearch] = useState(true);
+
+  const onSearchBtnClick = () => {
+    setShowSearch(() => !showSearch);
+  }
 
   useEffect(() => {
     window.addEventListener('message', function(event) {
@@ -159,9 +199,22 @@ const App = () => {
   }, []);
 
   return (
-    <div>
-      <Header onZoomIn={onZoomIn} onZoomOut={onZoomOut} viewerContainerRef={viewerContainerRef} pdfViewerRef={pdfViewerRef} />
-      <PdfViewer viewerContainerRef={viewerContainerRef} pdfViewerRef={pdfViewerRef} file={file} />
+    <div css={WrapperStyle}>
+      <Header
+        onZoomIn={onZoomIn}
+        onZoomOut={onZoomOut}
+        viewerContainerRef={viewerContainerRef}
+        pdfViewerRef={pdfViewerRef}
+        onSearch={onSearchBtnClick}
+      />
+      <div css={Flex}>
+        <div css={showSearch ? shortPdfViewerWrapper : pdfViewerWrapper}>
+          <PdfViewer viewerContainerRef={viewerContainerRef} pdfViewerRef={pdfViewerRef} file={file} />
+        </div>
+        <div css={showSearch ? visibleSearchWrapper : invisibleSearchWrapper}>
+          Search
+        </div>
+      </div>
     </div>
   );
 };
