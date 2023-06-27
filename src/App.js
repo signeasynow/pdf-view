@@ -2,7 +2,7 @@
 import { css } from '@emotion/react'
 import { useEffect, useRef, useState } from 'preact/hooks';
 import 'pdfjs-dist/web/pdf_viewer.css';
-import Header from './Header';
+import Header from './Header/Header';
 import { useDebounce } from "./utils/useDebounce";
 import SearchBar from './SearchBar';
 import { PdfViewer } from './PdfViewer';

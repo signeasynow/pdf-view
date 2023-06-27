@@ -2,14 +2,14 @@
 import { css } from '@emotion/react'
 
 import 'pdfjs-dist/web/pdf_viewer.css';
-import Hand from '../assets/hand-svgrepo-com.svg';
-import ZoomOut from '../assets/zoom-out-svgrepo-com.svg';
-import ZoomIn from '../assets/zoom-in-svgrepo-com.svg';
-import Search from '../assets/search-svgrepo-com.svg';
-import Hamburger from '../assets/hamburger-md-svgrepo-com.svg';
-import Gear from '../assets/gear-svgrepo-com.svg';
-import Comment from '../assets/comment-svgrepo-com.svg';
-import Panel from '../assets/panel-left-svgrepo-com.svg';
+import Hand from '../../assets/hand-svgrepo-com.svg';
+import ZoomOut from '../../assets/zoom-out-svgrepo-com.svg';
+import ZoomIn from '../../assets/zoom-in-svgrepo-com.svg';
+import Search from '../../assets/search-svgrepo-com.svg';
+import Hamburger from '../../assets/hamburger-md-svgrepo-com.svg';
+import Gear from '../../assets/gear-svgrepo-com.svg';
+import Comment from '../../assets/comment-svgrepo-com.svg';
+import Panel from '../../assets/panel-left-svgrepo-com.svg';
 // import Pan from "./assets/pan.svg";
 
 
