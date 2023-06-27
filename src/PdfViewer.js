@@ -1,13 +1,9 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react'
-import { h, Component } from 'preact';
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { css } from '@emotion/react';
+import { useEffect } from 'preact/hooks';
 import * as pdfjs from 'pdfjs-dist';
 import { EventBus, PDFLinkService, PDFViewer, PDFFindController, PDFScriptingManager } from "pdfjs-dist/web/pdf_viewer";
 import 'pdfjs-dist/web/pdf_viewer.css';
-import Header from './Header';
-import { useDebounce } from "./utils/useDebounce";
-import SearchBar from './SearchBar';
 
 const SANDBOX_BUNDLE_SRC = "pdfjs-dist/build/pdf.sandbox.js";
 

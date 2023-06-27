@@ -1,8 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 
-import { h, Component } from 'preact';
-import { useEffect, useRef, useState } from 'preact/hooks';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import Hand from '../assets/hand-svgrepo-com.svg';
 import ZoomOut from '../assets/zoom-out-svgrepo-com.svg';

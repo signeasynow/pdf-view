@@ -78,18 +78,37 @@ const invisibleSearchWrapper = css`
 
 const SearchBar = ({
   showSearch,
+  searchText,
   onChange,
   matchesCount,
-  onNext
+  onNext,
+  onPrev,
+  onToggleWholeWord,
+  matchWholeWord,
+  onToggleCaseSensitive,
+  caseSensitive,
+  onClear
 }) => {
+
+  const searchTextRef = useRef("");
+
+  const onClickClear = () => {
+    searchTextRef.current.value = "";
+    onClear();
+  }
 
   return (
     <div css={showSearch ? visibleSearchWrapper : invisibleSearchWrapper}>
-      <input onChange={onChange} placeholder="Search document" />
+      <input ref={searchTextRef} onChange={onChange} placeholder="Search document" />
+      <button onClick={onClickClear}>X</button>
+      <input value={caseSensitive} onClick={onToggleCaseSensitive} type="checkbox" id="caseSensitive"/>
+      <label htmlFor="caseSensitive">Case sensitive</label>
+      <input value={matchWholeWord} onClick={onToggleWholeWord} type="checkbox" id="wholeWord"/>
+      <label htmlFor="wholeWord">Whole word</label>
       <div>
         {matchesCount} total matches
       </div>
-      <button>Prev</button>
+      <button onClick={onPrev}>Prev</button>
       <button onClick={onNext}>Next</button>
     </div>
   );
