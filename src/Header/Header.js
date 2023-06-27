@@ -3,41 +3,13 @@ import { css } from '@emotion/react'
 
 import 'pdfjs-dist/web/pdf_viewer.css';
 import Hand from '../../assets/hand-svgrepo-com.svg';
-import ZoomOut from '../../assets/zoom-out-svgrepo-com.svg';
-import ZoomIn from '../../assets/zoom-in-svgrepo-com.svg';
 import Search from '../../assets/search-svgrepo-com.svg';
 import Hamburger from '../../assets/hamburger-md-svgrepo-com.svg';
 import Gear from '../../assets/gear-svgrepo-com.svg';
 import Comment from '../../assets/comment-svgrepo-com.svg';
 import Panel from '../../assets/panel-left-svgrepo-com.svg';
-// import Pan from "./assets/pan.svg";
-
-
-const tooltip = css`
-  position: relative;
-  display: inline-block;
-  border-bottom: 1px dotted black;
-
-  &:hover::after {
-    content: attr(title);
-    position: absolute;
-    z-index: 1;
-    top: 120%;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 5px;
-    color: #fff;
-    background-color: #333;
-    border-radius: 3px;
-    white-space: nowrap;
-  }
-`;
-
-const Tooltip = ({ children, title }) => (
-  <div css={tooltip} title={title}>
-    {children}
-  </div>
-);
+import ZoomSection from './ZoomSection';
+import { Tooltip } from '../SharedComponents/Tooltip';
 
 const HeaderIcon = ({ src, alt, onClick }) => (
   <img onClick={onClick} css={css({ width: 28, height: 28, cursor: "pointer"})} src={src} alt="" />
@@ -112,12 +84,7 @@ const Header = ({
         <HeaderIcon src={Gear} alt="View controls" />
       </Tooltip>
       <VerticalDivider />
-      <Tooltip title="Zoom in">
-        <HeaderIcon onClick={onZoomIn} src={ZoomOut} alt="Zoom in" />
-      </Tooltip>
-      <Tooltip title="Zoom out">
-        <HeaderIcon onClick={onZoomOut} src={ZoomIn} alt="Zoom out" />
-      </Tooltip>
+      <ZoomSection onZoomIn={onZoomIn} onZoomOut={onZoomOut} />
       <Tooltip title="Pan">
         <HeaderIcon src={Hand} alt="Pan" />
       </Tooltip>
