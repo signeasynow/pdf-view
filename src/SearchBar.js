@@ -97,6 +97,8 @@ const SearchBar = ({
     onClear();
   }
 
+  console.log(searchText, 'searchTextRef.current')
+
   return (
     <div css={showSearch ? visibleSearchWrapper : invisibleSearchWrapper}>
       <input ref={searchTextRef} onChange={onChange} placeholder="Search document" />
@@ -105,11 +107,17 @@ const SearchBar = ({
       <label htmlFor="caseSensitive">Case sensitive</label>
       <input value={matchWholeWord} onClick={onToggleWholeWord} type="checkbox" id="wholeWord"/>
       <label htmlFor="wholeWord">Whole word</label>
-      <div>
-        {matchesCount} total matches
-      </div>
-      <button onClick={onPrev}>Prev</button>
-      <button onClick={onNext}>Next</button>
+      {
+        !!searchText && (
+          <>
+            <div>
+              {matchesCount} total matches
+            </div>
+            <button onClick={onPrev}>Prev</button>
+            <button onClick={onNext}>Next</button>
+          </>
+        )
+      }
     </div>
   );
 };
