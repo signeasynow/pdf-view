@@ -8,21 +8,9 @@ import 'pdfjs-dist/web/pdf_viewer.css';
 import Header from './Header';
 import { useDebounce } from "./utils/useDebounce";
 import SearchBar from './SearchBar';
+import { PdfViewer } from './PdfViewer';
 
 const SANDBOX_BUNDLE_SRC = "pdfjs-dist/build/pdf.sandbox.js";
-
-function webViewerFindFromUrlHash(evt) {
-  PDFViewerApplication.eventBus.dispatch("find", {
-    source: evt.source,
-    type: "",
-    query: evt.query,
-    caseSensitive: false,
-    entireWord: false,
-    highlightAll: true,
-    findPrevious: false,
-    matchDiacritics: true,
-  });
-}
 
 const Flex = css`
 display: flex;
@@ -56,84 +44,14 @@ const WrapperStyle = css`
   width: 100vw;
 `
 
-const visibleSearchWrapper = css`
-  background: green;
-  width: 400px;
-`
-
-const invisibleSearchWrapper = css`
-  background: orange;
-  display: none;
-`
-
-const PdfViewer = ({ file, pdfViewerRef, viewerContainerRef, eventBusRef, setMatchesCount }) => {
-  
-  useEffect(() => {
-    if (!file || !viewerContainerRef.current) return;
-
-    const viewerContainer = viewerContainerRef.current;
-
-    const eventBus = new EventBus();
-    eventBusRef.current = eventBus;
-    const pdfLinkService = new PDFLinkService({ eventBus, externalLinkTarget: 2 });
-    const pdfFindController = new PDFFindController({ eventBus, linkService: pdfLinkService });
-    const pdfScriptingManager = new PDFScriptingManager({ eventBus, sandboxBundleSrc: SANDBOX_BUNDLE_SRC });
-    const pdfViewer = new PDFViewer({ container: viewerContainer, eventBus, linkService: pdfLinkService, findController: pdfFindController, scriptingManager: pdfScriptingManager });
-    pdfViewerRef.current = pdfViewer;
-    
-    pdfLinkService.setViewer(pdfViewer);
-    pdfScriptingManager.setViewer(pdfViewer);
-
-    eventBus.on("pagesinit", function () {
-      pdfViewer.currentScaleValue = "page-width";
-    });
-
-    /*
-    eventBus.dispatch("find", {
-      // source: evt.source,
-      type: "",
-      query: "are",
-      caseSensitive: false,
-      entireWord: false,
-      highlightAll: true,
-      findPrevious: false,
-      matchDiacritics: true,
-    });
-    */
-
-
-
-    eventBus.on("updatefindmatchescount", ({ matchesCount }) => {
-      console.log(matchesCount, 'matchescount');
-      setMatchesCount(matchesCount?.total);
-    })
-
-    const loadingTask = pdfjs.getDocument(file);
-
-    loadingTask.promise.then(
-      loadedPdfDocument => {
-        pdfViewer.setDocument(loadedPdfDocument);
-        pdfLinkService.setDocument(loadedPdfDocument, null);
-      },
-      reason => {
-        console.error(reason);
-      }
-    );
-  }, [file]);
-
-  return (
-    <div ref={viewerContainerRef} id="viewerContainer" css={containerStyle}>
-      <div id="viewer" class="pdfViewer"></div>
-    </div>
-  )
-};
-
 const ZOOM_FACTOR = 0.1;
 
 const App = () => {
 
   const [matchesCount, setMatchesCount] = useState(0);
 
+
+  const [searchText, setSearchText] = useState("");
 
   const eventBusRef = useRef(null);
 
@@ -220,9 +138,23 @@ const App = () => {
       findPrevious: false,
       matchDiacritics: true,
     });
+    setSearchText(e.target.value);
   }
 
   const onSearchText = useDebounce(_onSearchText, 100);
+
+  const onNext = () => {
+    eventBusRef.current?.dispatch("find", {
+      // source: evt.source,
+      type: "again",
+      query: searchText,
+      caseSensitive: false,
+      entireWord: false,
+      highlightAll: true,
+      findPrevious: false,
+      matchDiacritics: true,
+    });
+  }
 
   return (
     <div css={WrapperStyle}>
@@ -237,7 +169,7 @@ const App = () => {
         <div css={showSearch ? shortPdfViewerWrapper : pdfViewerWrapper}>
           <PdfViewer setMatchesCount={setMatchesCount} eventBusRef={eventBusRef} viewerContainerRef={viewerContainerRef} pdfViewerRef={pdfViewerRef} file={file} />
         </div>
-        <SearchBar matchesCount={matchesCount} onChange={onSearchText} showSearch={showSearch} />
+        <SearchBar searchText={searchText} onNext={onNext} matchesCount={matchesCount} onChange={onSearchText} showSearch={showSearch} />
       </div>
     </div>
   );

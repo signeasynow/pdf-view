@@ -79,7 +79,8 @@ const invisibleSearchWrapper = css`
 const SearchBar = ({
   showSearch,
   onChange,
-  matchesCount
+  matchesCount,
+  onNext
 }) => {
 
   return (
@@ -88,6 +89,8 @@ const SearchBar = ({
       <div>
         {matchesCount} total matches
       </div>
+      <button>Prev</button>
+      <button onClick={onNext}>Next</button>
     </div>
   );
 };

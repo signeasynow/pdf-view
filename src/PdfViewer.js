@@ -1,9 +1,13 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
-import { useEffect, useRef } from 'preact/hooks';
+import { css } from '@emotion/react'
+import { h, Component } from 'preact';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import * as pdfjs from 'pdfjs-dist';
 import { EventBus, PDFLinkService, PDFViewer, PDFFindController, PDFScriptingManager } from "pdfjs-dist/web/pdf_viewer";
 import 'pdfjs-dist/web/pdf_viewer.css';
+import Header from './Header';
+import { useDebounce } from "./utils/useDebounce";
+import SearchBar from './SearchBar';
 
 const SANDBOX_BUNDLE_SRC = "pdfjs-dist/build/pdf.sandbox.js";
 
@@ -14,19 +18,7 @@ const containerStyle = css`
   height: calc(100% - 50px);
 `;
 
-const pdfViewerWrapper = css`
-  height: 100%;
-  width: 100%;
-`
-
-const shortPdfViewerWrapper = css`
-  height: 100%;
-  width: calc(100% - 400px);
-  background: red;
-  position: relative;
-`
-
-const InnerPdfViewer = ({ file, pdfViewerRef, viewerContainerRef }) => {
+export const PdfViewer = ({ file, pdfViewerRef, viewerContainerRef, eventBusRef, setMatchesCount }) => {
   
   useEffect(() => {
     if (!file || !viewerContainerRef.current) return;
@@ -34,6 +26,7 @@ const InnerPdfViewer = ({ file, pdfViewerRef, viewerContainerRef }) => {
     const viewerContainer = viewerContainerRef.current;
 
     const eventBus = new EventBus();
+    eventBusRef.current = eventBus;
     const pdfLinkService = new PDFLinkService({ eventBus, externalLinkTarget: 2 });
     const pdfFindController = new PDFFindController({ eventBus, linkService: pdfLinkService });
     const pdfScriptingManager = new PDFScriptingManager({ eventBus, sandboxBundleSrc: SANDBOX_BUNDLE_SRC });
@@ -47,19 +40,9 @@ const InnerPdfViewer = ({ file, pdfViewerRef, viewerContainerRef }) => {
       pdfViewer.currentScaleValue = "page-width";
     });
 
-    eventBus.dispatch("find", {
-      // source: evt.source,
-      type: "",
-      query: "are",
-      caseSensitive: false,
-      entireWord: false,
-      highlightAll: true,
-      findPrevious: false,
-      matchDiacritics: true,
-    });
-
     eventBus.on("updatefindmatchescount", ({ matchesCount }) => {
       console.log(matchesCount, 'matchescount');
+      setMatchesCount(matchesCount?.total);
     })
 
     const loadingTask = pdfjs.getDocument(file);
@@ -81,20 +64,3 @@ const InnerPdfViewer = ({ file, pdfViewerRef, viewerContainerRef }) => {
     </div>
   )
 };
-
-const PdfViewer = ({
-  file,
-  showSearch,
-  viewerContainerRef
-}) => {
-
-  const pdfViewerRef = useRef(null);
-
-  return (
-    <div css={showSearch ? shortPdfViewerWrapper : pdfViewerWrapper}>
-      <InnerPdfViewer viewerContainerRef={viewerContainerRef} pdfViewerRef={pdfViewerRef} file={file} />
-    </div>
-  );
-};
-
-export default PdfViewer;
