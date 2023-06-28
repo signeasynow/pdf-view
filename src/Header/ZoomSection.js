@@ -37,7 +37,20 @@ const ZoomSection = ({
   return (
     <>
       <input type="text" />
-      <Dropdown title=">" />
+      <Dropdown title=">"
+        child={<div>
+        <div>10%</div>
+        <div>25%</div>
+        <div>50%</div>
+        <div>100%</div>
+        <div>125%</div>
+        <div>150%</div>
+        <div>200%</div>
+        <div>400%</div>
+        <div>800%</div>
+        <div>1600%</div>
+        <div>6400%</div>
+      </div>} />
       <Tooltip title="Zoom in">
         <HeaderIcon onClick={onZoomIn} src={ZoomOut} alt="Zoom in" />
       </Tooltip>

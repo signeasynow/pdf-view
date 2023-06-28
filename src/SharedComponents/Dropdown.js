@@ -45,7 +45,7 @@ function listenForOutsideClicks(listening, setListening, menuRef, setIsOpen) {
   }
 }
 
-const Dropdown = ({ title }) => {
+const Dropdown = ({ title, child }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const childClick = (e) => {
@@ -67,9 +67,9 @@ const Dropdown = ({ title }) => {
   return (
     <div style="z-index:9999" ref={dropdownRef}>
       <div onClick={() => setIsOpen(!isOpen)}>
-        Title
-        <div css={isOpen ? dropdownVisible : dropdownContent}>
-          <a onClick={childClick}>Child</a>
+        {title}
+        <div onClick={childClick} css={isOpen ? dropdownVisible : dropdownContent}>
+          {child}
         </div>
       </div>
     </div>
