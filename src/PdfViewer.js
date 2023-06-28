@@ -33,7 +33,7 @@ export const PdfViewer = ({ file, pdfViewerRef, viewerContainerRef, eventBusRef,
     pdfScriptingManager.setViewer(pdfViewer);
 
     eventBus.on("pagesinit", function () {
-      pdfViewer.currentScaleValue = "page-width";
+      pdfViewer.currentScaleValue = 1 || "page-width";
     });
 
     eventBus.on("updatefindmatchescount", ({ matchesCount }) => {

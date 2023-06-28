@@ -25,7 +25,7 @@ const ZoomSection = ({
   pdfViewerRef
 }) => {
 
-  const zoomTextRef = useRef("");
+  const zoomTextRef = useRef("100");
 
   const [zoomValue, setZoomValue] = useState(100);
 
@@ -65,9 +65,17 @@ const ZoomSection = ({
     zoomTextRef.current.value = (value * 100).toFixed(0);
   }
 
+  useEffect(() => {
+    if (zoomTextRef) {
+      // console.log(pdfViewerRef.current.currentScaleValue, 'pdfViewerRef.current.currentScaleValue')
+      zoomTextRef.current.value = 100;
+    }
+  }, [zoomTextRef])
+
   return (
     <>
       <input ref={zoomTextRef} onChange={onChangeZoomByText} type="text" />
+      %
       <Dropdown title=">"
         child={<div>
         <div onClick={() => setZoom(0.1)}>10%</div>
