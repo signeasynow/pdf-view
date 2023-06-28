@@ -47,21 +47,6 @@ const App = () => {
 
   const [file, setFile] = useState(null);
 
-  const _onZoomOut = () => {
-    if (pdfViewerRef.current && pdfViewerRef.current.currentScale > ZOOM_FACTOR) { // minimum scale 0.1
-        pdfViewerRef.current.currentScale -= ZOOM_FACTOR;
-    }
-  };
-
-  const _onZoomIn = () => {
-    if (pdfViewerRef.current && pdfViewerRef.current.currentScale < (10 - ZOOM_FACTOR)) { // maximum scale 10
-        pdfViewerRef.current.currentScale += ZOOM_FACTOR;
-    }
-  };
-
-  const onZoomIn = useDebounce(_onZoomIn, 5);
-    const onZoomOut = useDebounce(_onZoomOut, 5);
-
   const [showSearch, setShowSearch] = useState(true);
 
   const onSearchBtnClick = () => {
@@ -165,8 +150,6 @@ const App = () => {
   return (
     <div css={WrapperStyle}>
       <Header
-        onZoomIn={onZoomIn}
-        onZoomOut={onZoomOut}
         viewerContainerRef={viewerContainerRef}
         pdfViewerRef={pdfViewerRef}
         onSearch={onSearchBtnClick}

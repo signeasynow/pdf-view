@@ -38,8 +38,6 @@ const ZOOM_FACTOR = 0.1;
 
 const Header = ({
   pdfViewerRef,
-  onZoomIn,
-  onZoomOut,
   onSearch,
   viewerContainerRef
 }) => {
@@ -84,7 +82,9 @@ const Header = ({
         <HeaderIcon src={Gear} alt="View controls" />
       </Tooltip>
       <VerticalDivider />
-      <ZoomSection onZoomIn={onZoomIn} onZoomOut={onZoomOut} />
+      <ZoomSection
+        pdfViewerRef={pdfViewerRef}
+      />
       <Tooltip title="Pan">
         <HeaderIcon src={Hand} alt="Pan" />
       </Tooltip>

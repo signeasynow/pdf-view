@@ -50,6 +50,7 @@ const Dropdown = ({ title, child }) => {
 
   const childClick = (e) => {
     e.stopPropagation();
+    setIsOpen(false);
     // perform the action for child click
   };
 
