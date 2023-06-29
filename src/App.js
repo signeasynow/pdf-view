@@ -150,6 +150,7 @@ const App = () => {
   return (
     <div css={WrapperStyle}>
       <Header
+        eventBusRef={eventBusRef}
         viewerContainerRef={viewerContainerRef}
         pdfViewerRef={pdfViewerRef}
         onSearch={onSearchBtnClick}

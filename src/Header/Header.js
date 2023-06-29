@@ -36,6 +36,7 @@ const ZOOM_FACTOR = 0.1;
 const Header = ({
   pdfViewerRef,
   onSearch,
+  eventBusRef,
   viewerContainerRef
 }) => {
 
@@ -75,7 +76,10 @@ const Header = ({
       <Tooltip title="Panel">
         <HeaderIcon src={Panel} alt="Panel" />
       </Tooltip>
-      <ControlsSection />
+      <ControlsSection
+        eventBusRef={eventBusRef}
+        pdfViewerRef={pdfViewerRef}
+      />
       <VerticalDivider />
       <ZoomSection
         pdfViewerRef={pdfViewerRef}
