@@ -5,15 +5,12 @@ import 'pdfjs-dist/web/pdf_viewer.css';
 import Hand from '../../assets/hand-svgrepo-com.svg';
 import Search from '../../assets/search-svgrepo-com.svg';
 import Hamburger from '../../assets/hamburger-md-svgrepo-com.svg';
-import Gear from '../../assets/gear-svgrepo-com.svg';
 import Comment from '../../assets/comment-svgrepo-com.svg';
 import Panel from '../../assets/panel-left-svgrepo-com.svg';
 import ZoomSection from './ZoomSection';
 import { Tooltip } from '../SharedComponents/Tooltip';
-
-const HeaderIcon = ({ src, alt, onClick }) => (
-  <img onClick={onClick} css={css({ width: 28, height: 28, cursor: "pointer"})} src={src} alt="" />
-)
+import ControlsSection from './ControlsSection';
+import { HeaderIcon } from "./SharedComponents/HeaderIcon";
 
 const VerticalDivider = () => (
   <div css={css`
@@ -78,9 +75,7 @@ const Header = ({
       <Tooltip title="Panel">
         <HeaderIcon src={Panel} alt="Panel" />
       </Tooltip>
-      <Tooltip title="View controls">
-        <HeaderIcon src={Gear} alt="View controls" />
-      </Tooltip>
+      <ControlsSection />
       <VerticalDivider />
       <ZoomSection
         pdfViewerRef={pdfViewerRef}

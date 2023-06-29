@@ -8,14 +8,24 @@ import { Tooltip } from '../SharedComponents/Tooltip';
 import Dropdown from '../SharedComponents/Dropdown';
 import { useDebounce } from '../utils/useDebounce';
 import { useEffect, useRef, useState } from 'preact/hooks';
-
+import { HeaderIcon } from './SharedComponents/HeaderIcon';
 // import Pan from "./assets/pan.svg";
 
-const ZOOM_FACTOR = 0.1;
+const WHEEL_ZOOM_DISABLED_TIMEOUT = 1000; // ms
 
-const HeaderIcon = ({ src, alt, onClick }) => (
-  <img onClick={onClick} css={css({ width: 28, height: 28, cursor: "pointer"})} src={src} alt="" />
-)
+let zoomDisabledTimeout = null;
+function setZoomDisabledTimeout() {
+  if (zoomDisabledTimeout) {
+    clearTimeout(zoomDisabledTimeout);
+  }
+  zoomDisabledTimeout = setTimeout(function () {
+    zoomDisabledTimeout = null;
+  }, WHEEL_ZOOM_DISABLED_TIMEOUT);
+}
+
+
+
+const ZOOM_FACTOR = 0.1;
 
 const RoundZoomValue = (v) => {
   return Math.floor(v * 100)
@@ -70,7 +80,72 @@ const ZoomSection = ({
       // console.log(pdfViewerRef.current.currentScaleValue, 'pdfViewerRef.current.currentScaleValue')
       zoomTextRef.current.value = 100;
     }
-  }, [zoomTextRef])
+  }, [zoomTextRef]);
+
+  /*
+  const [initialTouchDistance, setInitialTouchDistance] = useState(null);
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const viewer = pdfViewerRef.current;
+    
+    if (!viewer) {
+      return;
+    }
+    
+    const handleTouchStart = (event) => {
+      if (event.touches.length === 2) {
+        const touch1 = event.touches[0];
+        const touch2 = event.touches[1];
+  
+        const dx = touch1.clientX - touch2.clientX;
+        const dy = touch1.clientY - touch2.clientY;
+  
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        setInitialTouchDistance(distance);
+      }
+    };
+  
+    const handleTouchMove = (event) => {
+      if (event.touches.length === 2 && initialTouchDistance !== null) {
+        const touch1 = event.touches[0];
+        const touch2 = event.touches[1];
+  
+        const dx = touch1.clientX - touch2.clientX;
+        const dy = touch1.clientY - touch2.clientY;
+  
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const scaleChange = distance / initialTouchDistance;
+        
+        // Adjust this to change how much pinch affects zoom:
+        const sensitivity = 0.1;
+        const newScale = scale * (1 + (scaleChange - 1) * sensitivity);
+        
+        // Update the scale of your PDF viewer here:
+        viewer.currentScale = newScale;
+        setScale(newScale);
+        setInitialTouchDistance(distance);
+      }
+    };
+  
+    const handleTouchEnd = (event) => {
+      if (event.touches.length < 2) {
+        setInitialTouchDistance(null);
+      }
+    };
+    
+    viewer.addEventListener('touchstart', handleTouchStart, { passive: false });
+    viewer.addEventListener('touchmove', handleTouchMove, { passive: false });
+    viewer.addEventListener('touchend', handleTouchEnd, { passive: false });
+    
+    return () => {
+      viewer.removeEventListener('touchstart', handleTouchStart);
+      viewer.removeEventListener('touchmove', handleTouchMove);
+      viewer.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [pdfViewerRef, initialTouchDistance, scale]);
+*/
 
   return (
     <>
