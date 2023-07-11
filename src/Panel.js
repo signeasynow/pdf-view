@@ -17,12 +17,18 @@ const invisibleSearchWrapper = css`
 
 const Panel = ({
   showPanel,
-  pdf
+  pdf,
+  pdfProxyObj
 }) => {
 
   return (
     <div css={showPanel ? visibleSearchWrapper : invisibleSearchWrapper}>
-      <ThumbnailsContainer pdf={pdf} scale={1} onThumbnailClick={() => {}} />
+      <ThumbnailsContainer
+        pdfProxyObj={pdfProxyObj}
+        pdf={pdf}
+        scale={1}
+        onThumbnailClick={() => {}}
+      />
     </div>
   );
 };

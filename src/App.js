@@ -43,7 +43,7 @@ const App = () => {
 
   const eventBusRef = useRef(null);
 
-  const pdfProxyRef = useRef(null);
+  const [pdfProxyObj, setPdfProxyObj] = useState(null);
   const [pdfViewerObj, setPdfViewerObj] = useState(null);
   const viewerContainerRef = useRef(null);
 
@@ -164,9 +164,9 @@ const App = () => {
         onPanel={onPanelBtnClick}
       />
       <div css={Flex}>
-        <Panel pdf={pdfViewerObj} showPanel={showPanel} />
+        <Panel pdfProxyObj={pdfProxyObj} pdf={pdfViewerObj} showPanel={showPanel} />
         <div css={showSearch ? shortPdfViewerWrapper : pdfViewerWrapper}>
-          <PdfViewer pdfProxyRef={pdfProxyRef} setMatchesCount={setMatchesCount} eventBusRef={eventBusRef} viewerContainerRef={viewerContainerRef} setPdfViewerObj={setPdfViewerObj} file={file} />
+          <PdfViewer setPdfProxyObj={setPdfProxyObj} setMatchesCount={setMatchesCount} eventBusRef={eventBusRef} viewerContainerRef={viewerContainerRef} setPdfViewerObj={setPdfViewerObj} file={file} />
         </div>
         <SearchBar
           onClear={onClearSearch}
