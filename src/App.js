@@ -44,7 +44,7 @@ const App = () => {
   const eventBusRef = useRef(null);
 
   const pdfProxyRef = useRef(null);
-  const pdfViewerRef = useRef(null);
+  const [pdfViewerObj, setPdfViewerObj] = useState(null);
   const viewerContainerRef = useRef(null);
 
   const [file, setFile] = useState(null);
@@ -154,24 +154,19 @@ const App = () => {
     });
   }
 
-  console.log(pdfViewerRef, 'pdfViewerRef', pdfViewerRef.current?.pagesCount, 'count', pdfViewerRef.current?.numPages, 'pages', pdfViewerRef.current?.pdfDocument, file)
-
-  useEffect(() => {
-    console.log(pdfViewerRef.current, 'pdfViewerRef.current2')
-  }, [pdfViewerRef.current]);
   return (
     <div css={WrapperStyle}>
       <Header
         eventBusRef={eventBusRef}
         viewerContainerRef={viewerContainerRef}
-        pdfViewerRef={pdfViewerRef}
+        pdfViewerObj={pdfViewerObj}
         onSearch={onSearchBtnClick}
         onPanel={onPanelBtnClick}
       />
       <div css={Flex}>
-        <Panel pdf={pdfViewerRef} showPanel={showPanel} />
+        <Panel pdf={pdfViewerObj} showPanel={showPanel} />
         <div css={showSearch ? shortPdfViewerWrapper : pdfViewerWrapper}>
-          <PdfViewer pdfProxyRef={pdfProxyRef} setMatchesCount={setMatchesCount} eventBusRef={eventBusRef} viewerContainerRef={viewerContainerRef} pdfViewerRef={pdfViewerRef} file={file} />
+          <PdfViewer pdfProxyRef={pdfProxyRef} setMatchesCount={setMatchesCount} eventBusRef={eventBusRef} viewerContainerRef={viewerContainerRef} setPdfViewerObj={setPdfViewerObj} file={file} />
         </div>
         <SearchBar
           onClear={onClearSearch}

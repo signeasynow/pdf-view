@@ -34,7 +34,7 @@ const Wrapper = ({ children }) => (
 const ZOOM_FACTOR = 0.1;
 
 const Header = ({
-  pdfViewerRef,
+  pdfViewerObj,
   onSearch,
   onPanel,
   eventBusRef,
@@ -79,11 +79,11 @@ const Header = ({
       </Tooltip>
       <ControlsSection
         eventBusRef={eventBusRef}
-        pdfViewerRef={pdfViewerRef}
+        pdfViewerObj={pdfViewerObj}
       />
       <VerticalDivider />
       <ZoomSection
-        pdfViewerRef={pdfViewerRef}
+        pdfViewerObj={pdfViewerObj}
       />
       <Tooltip title="Pan">
         <HeaderIcon src={Hand} alt="Pan" />

@@ -14,7 +14,7 @@ const containerStyle = css`
   height: calc(100% - 50px);
 `;
 
-export const PdfViewer = ({ pdfProxyRef, file, pdfViewerRef, viewerContainerRef, eventBusRef, setMatchesCount }) => {
+export const PdfViewer = ({ pdfProxyRef, setPdfViewerObj, file, viewerContainerRef, eventBusRef, setMatchesCount }) => {
   
   useEffect(() => {
     if (!file || !viewerContainerRef.current) return;
@@ -27,7 +27,7 @@ export const PdfViewer = ({ pdfProxyRef, file, pdfViewerRef, viewerContainerRef,
     const pdfFindController = new PDFFindController({ eventBus, linkService: pdfLinkService });
     const pdfScriptingManager = new PDFScriptingManager({ eventBus, sandboxBundleSrc: SANDBOX_BUNDLE_SRC });
     const pdfViewer = new PDFViewer({ container: viewerContainer, eventBus, linkService: pdfLinkService, findController: pdfFindController, scriptingManager: pdfScriptingManager });
-    pdfViewerRef.current = pdfViewer;
+    setPdfViewerObj(pdfViewer)
     
     pdfLinkService.setViewer(pdfViewer);
     pdfScriptingManager.setViewer(pdfViewer);

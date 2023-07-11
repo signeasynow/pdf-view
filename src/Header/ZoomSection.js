@@ -32,7 +32,7 @@ const RoundZoomValue = (v) => {
 }
 
 const ZoomSection = ({
-  pdfViewerRef
+  pdfViewerObj
 }) => {
 
   const zoomTextRef = useRef("100");
@@ -40,17 +40,17 @@ const ZoomSection = ({
   const [zoomValue, setZoomValue] = useState(100);
 
   const _onZoomOut = () => {
-    if (pdfViewerRef.current && pdfViewerRef.current.currentScale > ZOOM_FACTOR) { // minimum scale 0.1
-        const newValue = pdfViewerRef.current.currentScale - ZOOM_FACTOR;
-        pdfViewerRef.current.currentScale = newValue;
+    if (pdfViewerObj && pdfViewerObj.currentScale > ZOOM_FACTOR) { // minimum scale 0.1
+        const newValue = pdfViewerObj.currentScale - ZOOM_FACTOR;
+        pdfViewerObj.currentScale = newValue;
         setZoomValue(RoundZoomValue(newValue));
     }
   };
 
   const _onZoomIn = () => {
-    if (pdfViewerRef.current && pdfViewerRef.current.currentScale < (10 - ZOOM_FACTOR)) {
-        const newValue = pdfViewerRef.current.currentScale + ZOOM_FACTOR;
-        pdfViewerRef.current.currentScale = newValue;
+    if (pdfViewerObj && pdfViewerObj.currentScale < (10 - ZOOM_FACTOR)) {
+        const newValue = pdfViewerObj.currentScale + ZOOM_FACTOR;
+        pdfViewerObj.currentScale = newValue;
         setZoomValue(RoundZoomValue(newValue));
     }
   };
@@ -64,20 +64,19 @@ const ZoomSection = ({
     if (isNaN(num) || !num) {
       return;
     }
-    pdfViewerRef.current.currentScale = num / 100;
+    pdfViewerObj.currentScale = num / 100;
     setZoomValue(num); 
   }
 
   const onChangeZoomByText = useDebounce(_onChangeZoomByText, 5);
 
   const setZoom = (value) => {
-    pdfViewerRef.current.currentScale = value;
+    pdfViewerObj.currentScale = value;
     zoomTextRef.current.value = (value * 100).toFixed(0);
   }
 
   useEffect(() => {
     if (zoomTextRef) {
-      // console.log(pdfViewerRef.current.currentScaleValue, 'pdfViewerRef.current.currentScaleValue')
       zoomTextRef.current.value = 100;
     }
   }, [zoomTextRef]);
@@ -87,8 +86,7 @@ const ZoomSection = ({
   const [scale, setScale] = useState(1);
 
   useEffect(() => {
-    const viewer = pdfViewerRef.current;
-    
+
     if (!viewer) {
       return;
     }
@@ -144,7 +142,7 @@ const ZoomSection = ({
       viewer.removeEventListener('touchmove', handleTouchMove);
       viewer.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [pdfViewerRef, initialTouchDistance, scale]);
+  }, [initialTouchDistance, scale]);
 */
 
   return (

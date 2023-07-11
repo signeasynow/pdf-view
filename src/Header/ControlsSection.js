@@ -11,17 +11,15 @@ const HeaderIcon = ({ src, alt, onClick }) => (
 )
 
 const ControlsSection = ({
-  pdfViewerRef,
+  pdfViewerObj,
   eventBusRef
 }) => {
 
-  console.log(pdfViewerRef, 'pdfViewerRef control')
-
   const onRotate = (clockwise) => {
     if (clockwise) {
-      pdfViewerRef.current.pagesRotation += 90;
+      pdfViewerObj.pagesRotation += 90;
     } else {
-      pdfViewerRef.current.pagesRotation -= 90;
+      pdfViewerObj.pagesRotation -= 90;
     }
   }
   
