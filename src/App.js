@@ -6,6 +6,7 @@ import Header from './Header/Header';
 import { useDebounce } from "./utils/useDebounce";
 import SearchBar from './SearchBar';
 import { PdfViewer } from './PdfViewer';
+import Panel from './Panel';
 
 const Flex = css`
 display: flex;
@@ -42,15 +43,21 @@ const App = () => {
 
   const eventBusRef = useRef(null);
 
+  const pdfProxyRef = useRef(null);
   const pdfViewerRef = useRef(null);
   const viewerContainerRef = useRef(null);
 
   const [file, setFile] = useState(null);
 
-  const [showSearch, setShowSearch] = useState(true);
+  const [showSearch, setShowSearch] = useState(false);
+  const [showPanel, setShowPanel] = useState(true);
 
   const onSearchBtnClick = () => {
     setShowSearch(() => !showSearch);
+  }
+
+  const onPanelBtnClick = () => {
+    setShowPanel(() => !showPanel);
   }
 
   useEffect(() => {
@@ -147,6 +154,11 @@ const App = () => {
     });
   }
 
+  console.log(pdfViewerRef, 'pdfViewerRef', pdfViewerRef.current?.pagesCount, 'count', pdfViewerRef.current?.numPages, 'pages', pdfViewerRef.current?.pdfDocument, file)
+
+  useEffect(() => {
+    console.log(pdfViewerRef.current, 'pdfViewerRef.current2')
+  }, [pdfViewerRef.current]);
   return (
     <div css={WrapperStyle}>
       <Header
@@ -154,10 +166,12 @@ const App = () => {
         viewerContainerRef={viewerContainerRef}
         pdfViewerRef={pdfViewerRef}
         onSearch={onSearchBtnClick}
+        onPanel={onPanelBtnClick}
       />
       <div css={Flex}>
+        <Panel pdf={pdfViewerRef} showPanel={showPanel} />
         <div css={showSearch ? shortPdfViewerWrapper : pdfViewerWrapper}>
-          <PdfViewer setMatchesCount={setMatchesCount} eventBusRef={eventBusRef} viewerContainerRef={viewerContainerRef} pdfViewerRef={pdfViewerRef} file={file} />
+          <PdfViewer pdfProxyRef={pdfProxyRef} setMatchesCount={setMatchesCount} eventBusRef={eventBusRef} viewerContainerRef={viewerContainerRef} pdfViewerRef={pdfViewerRef} file={file} />
         </div>
         <SearchBar
           onClear={onClearSearch}

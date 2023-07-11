@@ -14,7 +14,7 @@ const containerStyle = css`
   height: calc(100% - 50px);
 `;
 
-export const PdfViewer = ({ file, pdfViewerRef, viewerContainerRef, eventBusRef, setMatchesCount }) => {
+export const PdfViewer = ({ pdfProxyRef, file, pdfViewerRef, viewerContainerRef, eventBusRef, setMatchesCount }) => {
   
   useEffect(() => {
     if (!file || !viewerContainerRef.current) return;
@@ -45,6 +45,8 @@ export const PdfViewer = ({ file, pdfViewerRef, viewerContainerRef, eventBusRef,
 
     loadingTask.promise.then(
       loadedPdfDocument => {
+        console.log(loadedPdfDocument, 'loadedPdfDocument', loadedPdfDocument.numPages)
+        pdfProxyRef.current = loadedPdfDocument;
         pdfViewer.setDocument(loadedPdfDocument);
         pdfLinkService.setDocument(loadedPdfDocument, null);
       },

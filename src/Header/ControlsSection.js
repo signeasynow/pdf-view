@@ -15,6 +15,8 @@ const ControlsSection = ({
   eventBusRef
 }) => {
 
+  console.log(pdfViewerRef, 'pdfViewerRef control')
+
   const onRotate = (clockwise) => {
     if (clockwise) {
       pdfViewerRef.current.pagesRotation += 90;
