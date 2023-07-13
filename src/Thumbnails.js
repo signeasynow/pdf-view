@@ -1,5 +1,16 @@
+/** @jsxImportSource @emotion/react */
+import { css } from '@emotion/react';
+
 import { h } from 'preact';
 import { useState, useEffect, useRef } from 'preact/hooks';
+
+const thumbnailWrapper = css`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  cursor: pointer;
+`
 
 const Thumbnail = ({ pdfProxyObj, pdf, pageNum, scale, onThumbnailClick }) => {
   const canvasRef = useRef(null);
@@ -24,7 +35,7 @@ const Thumbnail = ({ pdfProxyObj, pdf, pageNum, scale, onThumbnailClick }) => {
   }, [pageNum, scale, pdfProxyObj]);
 
   return (
-    <div class="thumbnail-wrapper" onClick={() => onThumbnailClick(pageNum)}>
+    <div css={thumbnailWrapper} onClick={() => onThumbnailClick(pageNum)}>
       <canvas class="canvas-page" ref={canvasRef}></canvas>
       <div style={{ fontSize: '0.8rem', marginTop: '0.5rem' }}>{pageNum}</div>
     </div>

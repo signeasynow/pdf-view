@@ -31,7 +31,11 @@ const Panel = ({
         pdfProxyObj={pdfProxyObj}
         pdf={pdf}
         scale={1}
-        onThumbnailClick={() => {}}
+        onThumbnailClick={(num) => {
+          pdf.scrollPageIntoView({
+            pageNumber: num,
+          });
+        }}
       />
     </div>
   );
