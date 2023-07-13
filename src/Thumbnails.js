@@ -12,7 +12,16 @@ const thumbnailWrapper = css`
   cursor: pointer;
 `
 
-const Thumbnail = ({ pdfProxyObj, pdf, pageNum, scale, onThumbnailClick }) => {
+const activeThumbnailWrapper = css`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  cursor: pointer;
+  background: red;
+`
+
+const Thumbnail = ({ pdfProxyObj, activeThumbnail, pageNum, scale, onThumbnailClick }) => {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -35,7 +44,7 @@ const Thumbnail = ({ pdfProxyObj, pdf, pageNum, scale, onThumbnailClick }) => {
   }, [pageNum, scale, pdfProxyObj]);
 
   return (
-    <div css={thumbnailWrapper} onClick={() => onThumbnailClick(pageNum)}>
+    <div css={activeThumbnail === pageNum ? activeThumbnailWrapper : thumbnailWrapper} onClick={() => onThumbnailClick(pageNum)}>
       <canvas class="canvas-page" ref={canvasRef}></canvas>
       <div style={{ fontSize: '0.8rem', marginTop: '0.5rem' }}>{pageNum}</div>
     </div>
@@ -44,6 +53,8 @@ const Thumbnail = ({ pdfProxyObj, pdf, pageNum, scale, onThumbnailClick }) => {
 
 const ThumbnailsContainer = ({ pdf, scale, onThumbnailClick, pdfProxyObj }) => {
   const numPages = pdfProxyObj?.numPages;
+
+  const [activeThumbnail, setActiveThumbnail] = useState(1);
   
   console.log(pdf?.pdfDocument?.numPages, 'numpages thumb1', pdf, 'wassuup', pdf?.pdfDocument, 'doog', pdfProxyObj)
 
@@ -56,12 +67,16 @@ const ThumbnailsContainer = ({ pdf, scale, onThumbnailClick, pdfProxyObj }) => {
   )
   const thumbnails = Array.from({ length: numPages }, (_, i) => (
     <Thumbnail
+      activeThumbnail={activeThumbnail}
       key={i}
       pdf={pdf}
       pdfProxyObj={pdfProxyObj}
       pageNum={i + 1}
       scale={scale}
-      onThumbnailClick={onThumbnailClick}
+      onThumbnailClick={(e) => {
+        setActiveThumbnail(e);
+        onThumbnailClick(e);
+      }}
     />
   ));
 
