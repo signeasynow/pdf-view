@@ -8,6 +8,10 @@ import ThumbnailsContainer from './Thumbnails';
 const visibleSearchWrapper = css`
   background: green;
   width: 400px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `
 
 const invisibleSearchWrapper = css`

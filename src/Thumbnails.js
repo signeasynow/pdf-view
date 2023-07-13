@@ -8,7 +8,7 @@ const Thumbnail = ({ pdfProxyObj, pdf, pageNum, scale, onThumbnailClick }) => {
     const renderThumbnail = async () => {
       const page = await pdfProxyObj.getPage(pageNum);
       console.log(page, 'page bro')
-      const viewport = page.getViewport({ scale });
+      const viewport = page.getViewport({ scale: 0.2 });
 
       canvasRef.current.width = viewport.width;
       canvasRef.current.height = viewport.height;
@@ -25,7 +25,6 @@ const Thumbnail = ({ pdfProxyObj, pdf, pageNum, scale, onThumbnailClick }) => {
 
   return (
     <div class="thumbnail-wrapper" onClick={() => onThumbnailClick(pageNum)}>
-      hello
       <canvas class="canvas-page" ref={canvasRef}></canvas>
       <div style={{ fontSize: '0.8rem', marginTop: '0.5rem' }}>{pageNum}</div>
     </div>
@@ -55,7 +54,7 @@ const ThumbnailsContainer = ({ pdf, scale, onThumbnailClick, pdfProxyObj }) => {
     />
   ));
 
-  return <div>HELLO{thumbnails}</div>;
+  return thumbnails;
 };
 
 export default ThumbnailsContainer;
