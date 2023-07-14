@@ -27,8 +27,7 @@ const Thumbnail = ({ pdfProxyObj, activePage, pageNum, scale, onThumbnailClick }
   useEffect(() => {
     const renderThumbnail = async () => {
       const page = await pdfProxyObj.getPage(pageNum);
-      console.log(page, 'page bro')
-      const viewport = page.getViewport({ scale: 0.2 });
+      const viewport = page.getViewport({ scale });
 
       canvasRef.current.width = viewport.width;
       canvasRef.current.height = viewport.height;
