@@ -14,7 +14,15 @@ const containerStyle = css`
   height: calc(100% - 50px);
 `;
 
-export const PdfViewer = ({ setPdfProxyObj, setPdfViewerObj, file, viewerContainerRef, eventBusRef, setMatchesCount }) => {
+export const PdfViewer = ({
+  setPdfProxyObj,
+  setPdfViewerObj,
+  file,
+  viewerContainerRef,
+  eventBusRef,
+  setMatchesCount,
+  setActivePage
+}) => {
   
   useEffect(() => {
     if (!file || !viewerContainerRef.current) return;
@@ -41,6 +49,13 @@ export const PdfViewer = ({ setPdfProxyObj, setPdfViewerObj, file, viewerContain
       setMatchesCount(matchesCount?.total);
     })
 
+    eventBus.on("pagechanging", function ({
+      pageNumber
+    }) {
+      // console.log(pageNumber, 'page 111f')
+      setActivePage(pageNumber);
+    });
+    
     const loadingTask = pdfjs.getDocument(file);
 
     loadingTask.promise.then(

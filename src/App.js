@@ -52,6 +52,8 @@ const App = () => {
   const [showSearch, setShowSearch] = useState(false);
   const [showPanel, setShowPanel] = useState(true);
 
+  const [activePage, setActivePage] = useState(1);
+
   const onSearchBtnClick = () => {
     setShowSearch(() => !showSearch);
   }
@@ -164,9 +166,23 @@ const App = () => {
         onPanel={onPanelBtnClick}
       />
       <div css={Flex}>
-        <Panel pdfProxyObj={pdfProxyObj} pdf={pdfViewerObj} showPanel={showPanel} />
+        <Panel
+          setActivePage={setActivePage}
+          activePage={activePage}
+          pdfProxyObj={pdfProxyObj}
+          pdf={pdfViewerObj}
+          showPanel={showPanel}
+        />
         <div css={showSearch ? shortPdfViewerWrapper : pdfViewerWrapper}>
-          <PdfViewer setPdfProxyObj={setPdfProxyObj} setMatchesCount={setMatchesCount} eventBusRef={eventBusRef} viewerContainerRef={viewerContainerRef} setPdfViewerObj={setPdfViewerObj} file={file} />
+          <PdfViewer
+            setActivePage={setActivePage}
+            setPdfProxyObj={setPdfProxyObj}
+            setMatchesCount={setMatchesCount}
+            eventBusRef={eventBusRef}
+            viewerContainerRef={viewerContainerRef}
+            setPdfViewerObj={setPdfViewerObj}
+            file={file}
+          />
         </div>
         <SearchBar
           onClear={onClearSearch}

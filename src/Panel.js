@@ -21,6 +21,8 @@ const invisibleSearchWrapper = css`
 
 const Panel = ({
   showPanel,
+  setActivePage,
+  activePage,
   pdf,
   pdfProxyObj
 }) => {
@@ -28,10 +30,12 @@ const Panel = ({
   return (
     <div css={showPanel ? visibleSearchWrapper : invisibleSearchWrapper}>
       <ThumbnailsContainer
+        activePage={activePage}
         pdfProxyObj={pdfProxyObj}
         pdf={pdf}
         scale={1}
         onThumbnailClick={(num) => {
+          setActivePage(num);
           pdf.scrollPageIntoView({
             pageNumber: num,
           });
