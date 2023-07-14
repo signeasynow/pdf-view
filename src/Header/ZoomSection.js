@@ -8,7 +8,7 @@ import { Tooltip } from '../SharedComponents/Tooltip';
 import Dropdown from '../SharedComponents/Dropdown';
 import { useDebounce } from '../utils/useDebounce';
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { HeaderIcon } from './SharedComponents/HeaderIcon';
+import { Icon } from '../SharedComponents/Icon';
 // import Pan from "./assets/pan.svg";
 
 const WHEEL_ZOOM_DISABLED_TIMEOUT = 1000; // ms
@@ -164,10 +164,10 @@ const ZoomSection = ({
         <div onClick={() => setZoom(64)}>6400%</div>
       </div>} />
       <Tooltip title="Zoom in">
-        <HeaderIcon onClick={onZoomIn} src={ZoomOut} alt="Zoom in" />
+        <Icon onClick={onZoomIn} src={ZoomOut} alt="Zoom in" />
       </Tooltip>
       <Tooltip title="Zoom out">
-        <HeaderIcon onClick={onZoomOut} src={ZoomIn} alt="Zoom out" />
+        <Icon onClick={onZoomOut} src={ZoomIn} alt="Zoom out" />
       </Tooltip>
     </>
   );

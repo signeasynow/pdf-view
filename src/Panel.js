@@ -5,6 +5,9 @@ import 'pdfjs-dist/web/pdf_viewer.css';
 import ThumbnailsContainer from './Thumbnails';
 // import Pan from "./assets/pan.svg";
 import { useState } from 'preact/hooks';
+import { Tooltip } from './SharedComponents/Tooltip';
+import { Icon } from './SharedComponents/Icon';
+import Hamburger from '../assets/hamburger-md-svgrepo-com.svg';
 
 const visibleSearchWrapper = css`
   background: green;
@@ -32,6 +35,12 @@ const Panel = ({
 
   return (
     <div css={showPanel ? visibleSearchWrapper : invisibleSearchWrapper}>
+      <Tooltip title="Thumbnails">
+        <Icon src={Hamburger} alt="Menu" />
+      </Tooltip>
+      <Tooltip title="Bookmarks">
+        <div>book</div>
+      </Tooltip>
       <input value={thumbnailScale} onChange={(e) => {
         const num = parseInt(e.target.value);
         setThumbnailScale(num);

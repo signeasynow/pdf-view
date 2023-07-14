@@ -10,7 +10,7 @@ import Panel from '../../assets/panel-left-svgrepo-com.svg';
 import ZoomSection from './ZoomSection';
 import { Tooltip } from '../SharedComponents/Tooltip';
 import ControlsSection from './ControlsSection';
-import { HeaderIcon } from "./SharedComponents/HeaderIcon";
+import { Icon } from '../SharedComponents/Icon';
 
 const VerticalDivider = () => (
   <div css={css`
@@ -70,12 +70,12 @@ const Header = ({
   return (
     <Wrapper>
       <Tooltip title="Menu">
-        <HeaderIcon src={Hamburger} alt="Menu" />
+        <Icon src={Hamburger} alt="Menu" />
       </Tooltip>
       
       <VerticalDivider />
       <Tooltip title="Panel">
-        <HeaderIcon onClick={onPanel} src={Panel} alt="Panel" />
+        <Icon onClick={onPanel} src={Panel} alt="Panel" />
       </Tooltip>
       <ControlsSection
         eventBusRef={eventBusRef}
@@ -86,7 +86,7 @@ const Header = ({
         pdfViewerObj={pdfViewerObj}
       />
       <Tooltip title="Pan">
-        <HeaderIcon src={Hand} alt="Pan" />
+        <Icon src={Hand} alt="Pan" />
       </Tooltip>
       
 
@@ -95,10 +95,10 @@ const Header = ({
         <option>Annotate</option>
       </select>
       <Tooltip title="Search">
-        <HeaderIcon onClick={onSearch} src={Search} alt="Search" />
+        <Icon onClick={onSearch} src={Search} alt="Search" />
       </Tooltip>
       <Tooltip title="Comments">
-        <HeaderIcon src={Comment} alt="Comments" />
+        <Icon src={Comment} alt="Comments" />
       </Tooltip>
     </Wrapper>
   );

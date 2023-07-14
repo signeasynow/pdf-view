@@ -5,10 +5,7 @@ import 'pdfjs-dist/web/pdf_viewer.css';
 import { Tooltip } from '../SharedComponents/Tooltip';
 import Gear from '../../assets/gear-svgrepo-com.svg';
 import Dropdown from '../SharedComponents/Dropdown';
-
-const HeaderIcon = ({ src, alt, onClick }) => (
-  <img onClick={onClick} css={css({ width: 28, height: 28, cursor: "pointer"})} src={src} alt="" />
-)
+import { Icon } from '../SharedComponents/Icon';
 
 const ControlsSection = ({
   pdfViewerObj,
@@ -27,7 +24,7 @@ const ControlsSection = ({
     <>
       <Dropdown title={
         <Tooltip title="View controls">
-          <HeaderIcon src={Gear} alt="View controls" />
+          <Icon src={Gear} alt="View controls" />
         </Tooltip>
       }
         child={<div>
