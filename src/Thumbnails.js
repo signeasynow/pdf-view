@@ -44,7 +44,7 @@ const Thumbnail = ({ pdfProxyObj, activePage, pageNum, scale, onThumbnailClick }
   }, [pageNum, scale, pdfProxyObj]);
 
   return (
-    <div css={activePage === pageNum ? activeThumbnailWrapper : thumbnailWrapper} onClick={() => onThumbnailClick(pageNum)}>
+    <div id={`thumbnail-${pageNum}`} css={activePage === pageNum ? activeThumbnailWrapper : thumbnailWrapper} onClick={() => onThumbnailClick(pageNum)}>
       <canvas class="canvas-page" ref={canvasRef}></canvas>
       <div style={{ fontSize: '0.8rem', marginTop: '0.5rem' }}>{pageNum}</div>
     </div>

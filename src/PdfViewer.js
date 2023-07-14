@@ -54,6 +54,11 @@ export const PdfViewer = ({
     }) {
       // console.log(pageNumber, 'page 111f')
       setActivePage(pageNumber);
+      const target = document.getElementById(`thumbnail-${pageNumber}`);
+      if (!target) {
+        return;
+      }
+      target.scrollIntoView();
     });
     
     const loadingTask = pdfjs.getDocument(file);
