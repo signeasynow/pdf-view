@@ -61,7 +61,10 @@ const Panel = ({
       }
       {
         activeTab === 1 && (
-          <BookmarksSection />
+          <BookmarksSection
+            setActivePage={setActivePage}
+            pdf={pdf}
+          />
         )
       }
     </div>

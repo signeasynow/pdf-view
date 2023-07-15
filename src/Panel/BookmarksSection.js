@@ -19,7 +19,8 @@ const bookmarkContainerStyle = css`
 `;
 
 const BookmarksSection = ({
-
+  pdf,
+  setActivePage
 }) => {
 
   const [bookmarkedPages, setBookmarkedPages] = useState([]);
@@ -101,7 +102,13 @@ const BookmarksSection = ({
               css={bookmarkContainerStyle}
               key={page.pageNumber}
             >
-              <div>
+              <div
+                onClick={() => {
+                setActivePage(page.pageNumber);
+                pdf.scrollPageIntoView({
+                  pageNumber: page.pageNumber
+                })
+              }}>
                 <h3>Page {page.pageNumber}</h3>
                 {
                   isRenaming ? (
