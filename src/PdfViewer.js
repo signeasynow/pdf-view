@@ -78,7 +78,7 @@ export const PdfViewer = ({
 
   return (
     <div ref={viewerContainerRef} id="viewerContainer" css={containerStyle}>
-      <div id="viewer" class="pdfViewer"></div>
+      <div style="background: gray;" id="viewer" class="pdfViewer"></div>
     </div>
   )
 };

@@ -6,7 +6,7 @@ import Header from './Header/Header';
 import { useDebounce } from "./utils/useDebounce";
 import SearchBar from './SearchBar';
 import { PdfViewer } from './PdfViewer';
-import Panel from './Panel';
+import Panel from './Panel/Panel';
 
 const Flex = css`
 display: flex;
