@@ -11,6 +11,7 @@ import ZoomSection from './ZoomSection';
 import { Tooltip } from '../SharedComponents/Tooltip';
 import ControlsSection from './ControlsSection';
 import { Icon } from '../SharedComponents/Icon';
+import HeaderBtn from "./HeaderBtn";
 
 const VerticalDivider = () => (
   <div css={css`
@@ -24,8 +25,9 @@ const VerticalDivider = () => (
 const Wrapper = ({ children }) => (
   <div css={css({
     display: "flex",
-    background: "grey",
-    height: 30
+    background: "white",
+    height: 50,
+    margin: "8px 12px"
   })}>
     {children}
   </div>
@@ -69,10 +71,7 @@ const Header = ({
 
   return (
     <Wrapper>
-      <Tooltip title="Menu">
-        <Icon src={Hamburger} alt="Menu" />
-      </Tooltip>
-      
+      <HeaderBtn title="Menu" iconAlt="Menu" icon={Hamburger} />
       <VerticalDivider />
       <Tooltip title="Panel">
         <Icon onClick={onPanel} src={Panel} alt="Panel" />

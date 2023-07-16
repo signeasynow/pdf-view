@@ -25,7 +25,7 @@ const ThumbnailsSection = ({
         activePage={activePage}
         pdfProxyObj={pdfProxyObj}
         pdf={pdf}
-        scale={thumbnailScale / 10}
+        s cale={thumbnailScale / 10}
         onThumbnailClick={(num) => {
           setActivePage(num);
           pdf.scrollPageIntoView({

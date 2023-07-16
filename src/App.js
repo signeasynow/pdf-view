@@ -28,7 +28,7 @@ const shortPdfViewerWrapper = css`
 // relative 
 
 const WrapperStyle = css`
-  height: calc(100vh - 30px);
+  height: calc(100vh - 66px);
   width: 100vw;
 `
 

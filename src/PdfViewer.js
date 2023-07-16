@@ -11,7 +11,7 @@ const containerStyle = css`
   overflow: auto;
   position: absolute;
   width: 100%;
-  height: calc(100% - 30px);
+  height: calc(100% - 66px);
 `;
 
 export const PdfViewer = ({
