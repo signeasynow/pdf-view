@@ -9,6 +9,10 @@ import { Icon } from '../SharedComponents/Icon';
 
 const wrapper = css`
   padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
   &:hover {
     background-color: #e7e7e7;
   }
@@ -17,11 +21,12 @@ const wrapper = css`
 const HeaderBtn = ({
   icon,
   title,
-  iconAlt
+  iconAlt,
+  onClick
 }) => {
 
   return (
-    <div css={wrapper}>
+    <div onClick={onClick} css={wrapper}>
       <Tooltip title={title}>
         <Icon src={icon} alt={iconAlt} />
       </Tooltip>

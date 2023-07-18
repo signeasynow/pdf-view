@@ -26,6 +26,14 @@ const dropdownContent = css`
   z-index: 1;
 `;
 
+const styleRefresh = css`
+  padding: 0;
+  margin: 0;
+  border: none;
+  box-sizing: border-box;
+  display: flex;
+`
+
 const dropdownVisible = css`
   ${dropdownContent};
   display: block;
@@ -66,8 +74,8 @@ const Dropdown = ({ title, child }) => {
   ));
 
   return (
-    <div style="z-index:9999" ref={dropdownRef}>
-      <div onClick={() => setIsOpen(!isOpen)}>
+    <div style="z-index:9999" css={styleRefresh} ref={dropdownRef}>
+      <div css={styleRefresh} onClick={() => setIsOpen(!isOpen)}>
         {title}
         <div onClick={childClick} css={isOpen ? dropdownVisible : dropdownContent}>
           {child}

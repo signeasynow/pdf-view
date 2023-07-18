@@ -15,10 +15,9 @@ import HeaderBtn from "./HeaderBtn";
 
 const VerticalDivider = () => (
   <div css={css`
-    height: 24px;
     width: 1px;
     background-color: #ccc;
-    margin: 0 12px;
+    margin: 12px 12px;
   `} />
 );
 
@@ -73,9 +72,7 @@ const Header = ({
     <Wrapper>
       <HeaderBtn title="Menu" iconAlt="Menu" icon={Hamburger} />
       <VerticalDivider />
-      <Tooltip title="Panel">
-        <Icon onClick={onPanel} src={Panel} alt="Panel" />
-      </Tooltip>
+      <HeaderBtn onClick={onPanel} title="Panel" iconAlt="Panel" icon={Panel} />
       <ControlsSection
         eventBusRef={eventBusRef}
         pdfViewerObj={pdfViewerObj}
@@ -93,12 +90,8 @@ const Header = ({
         <option>View</option>
         <option>Annotate</option>
       </select>
-      <Tooltip title="Search">
-        <Icon onClick={onSearch} src={Search} alt="Search" />
-      </Tooltip>
-      <Tooltip title="Comments">
-        <Icon src={Comment} alt="Comments" />
-      </Tooltip>
+      <HeaderBtn onClick={onSearch} title="Search" iconAlt="Search" icon={Search} />
+      <HeaderBtn title="Comments" iconAlt="Comments" icon={Comment} />
     </Wrapper>
   );
 };

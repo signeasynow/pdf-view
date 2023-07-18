@@ -2,14 +2,53 @@
 import { css } from '@emotion/react';
 
 import 'pdfjs-dist/web/pdf_viewer.css';
-import ZoomOut from '../../assets/zoom-out-svgrepo-com.svg';
-import ZoomIn from '../../assets/zoom-in-svgrepo-com.svg';
+import ZoomIn from '../../assets/minus-circle-svgrepo-com.svg';
+import ZoomOut from '../../assets/add-circle-svgrepo-com.svg';
 import { Tooltip } from '../SharedComponents/Tooltip';
 import Dropdown from '../SharedComponents/Dropdown';
 import { useDebounce } from '../utils/useDebounce';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { Icon } from '../SharedComponents/Icon';
 // import Pan from "./assets/pan.svg";
+
+const inputStyles = css`
+  font-size: 16px;
+  height: 12px;
+  border: none;
+  font-weight: 600;
+  background: transparent;
+  width: 26px;
+  &:focus {
+    outline: none;
+  }
+`;
+
+const wrapper = css`
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+`;
+
+const innerWrapper = css`
+  background: #f3f3f3;
+  display: flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+`
+
+const dropdownTitle = css`
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-right: 12px;
+`
+
+const dropdownArrowDown = css`
+  margin-bottom: 6px;
+  margin-left: 4px;
+  font-size: 18px;
+`
 
 const WHEEL_ZOOM_DISABLED_TIMEOUT = 1000; // ms
 
@@ -146,30 +185,36 @@ const ZoomSection = ({
 */
 
   return (
-    <>
-      <input ref={zoomTextRef} onChange={onChangeZoomByText} type="text" />
-      %
-      <Dropdown title=">"
-        child={<div>
-        <div onClick={() => setZoom(0.1)}>10%</div>
-        <div onClick={() => setZoom(0.25)}>25%</div>
-        <div onClick={() => setZoom(0.5)}>50%</div>
-        <div onClick={() => setZoom(1)}>100%</div>
-        <div onClick={() => setZoom(1.25)}>125%</div>
-        <div onClick={() => setZoom(1.5)}>150%</div>
-        <div onClick={() => setZoom(2)}>200%</div>
-        <div onClick={() => setZoom(4)}>400%</div>
-        <div onClick={() => setZoom(8)}>800%</div>
-        <div onClick={() => setZoom(16)}>1600%</div>
-        <div onClick={() => setZoom(64)}>6400%</div>
-      </div>} />
-      <Tooltip title="Zoom in">
-        <Icon onClick={onZoomIn} src={ZoomOut} alt="Zoom in" />
-      </Tooltip>
-      <Tooltip title="Zoom out">
-        <Icon onClick={onZoomOut} src={ZoomIn} alt="Zoom out" />
-      </Tooltip>
-    </>
+    <div css={wrapper}>
+      <div css={innerWrapper}>
+        <input css={inputStyles} ref={zoomTextRef} onChange={onChangeZoomByText} type="text" />
+        <Dropdown title={
+          <div css={dropdownTitle}>
+            <div>%</div>
+            <div css={dropdownArrowDown}>⌄</div>
+          </div>
+        }
+          child={<div>
+          <div onClick={() => setZoom(0.1)}>10%</div>
+          <div onClick={() => setZoom(0.25)}>25%</div>
+          <div onClick={() => setZoom(0.5)}>50%</div>
+          <div onClick={() => setZoom(1)}>100%</div>
+          <div onClick={() => setZoom(1.25)}>125%</div>
+          <div onClick={() => setZoom(1.5)}>150%</div>
+          <div onClick={() => setZoom(2)}>200%</div>
+          <div onClick={() => setZoom(4)}>400%</div>
+          <div onClick={() => setZoom(8)}>800%</div>
+          <div onClick={() => setZoom(16)}>1600%</div>
+          <div onClick={() => setZoom(64)}>6400%</div>
+        </div>} />
+        <Tooltip title="Zoom in">
+          <Icon onClick={onZoomIn} src={ZoomOut} alt="Zoom in" />
+        </Tooltip>
+        <Tooltip title="Zoom out">
+          <Icon onClick={onZoomOut} src={ZoomIn} alt="Zoom out" />
+        </Tooltip>
+      </div>
+    </div>
   );
 };
 
