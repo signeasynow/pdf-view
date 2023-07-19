@@ -4,9 +4,8 @@ import { css } from '@emotion/react'
 const tooltip = css`
   position: relative;
   display: inline-block;
-  border-bottom: 1px dotted black;
   &:hover::after {
-    content: attr(title);
+    content: attr(data-tooltip); // use data-tooltip instead of title
     position: absolute;
     z-index: 1;
     top: 100%;
@@ -21,7 +20,7 @@ const tooltip = css`
 `;
 
 export const Tooltip = ({ children, title }) => (
-  <div css={tooltip} title={title}>
+  <div css={tooltip} data-tooltip={title}>
     {children}
   </div>
 );
