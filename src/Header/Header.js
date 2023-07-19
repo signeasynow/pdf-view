@@ -81,15 +81,16 @@ const Header = ({
       <ZoomSection
         pdfViewerObj={pdfViewerObj}
       />
-      <Tooltip title="Pan">
-        <Icon src={Hand} alt="Pan" />
-      </Tooltip>
-      
+      <HeaderBtn onClick={onPanel} title="Pan" iconAlt="Pan" icon={Hand} />
 
-      <select>
+      {
+        /*
+        <select>
         <option>View</option>
         <option>Annotate</option>
       </select>
+      */
+      }
       <HeaderBtn onClick={onSearch} title="Search" iconAlt="Search" icon={Search} />
       <HeaderBtn title="Comments" iconAlt="Comments" icon={Comment} />
     </Wrapper>

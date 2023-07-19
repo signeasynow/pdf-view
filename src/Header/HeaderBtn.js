@@ -26,11 +26,11 @@ const HeaderBtn = ({
 }) => {
 
   return (
-    <div onClick={onClick} css={wrapper}>
-      <Tooltip title={title}>
-        <Icon src={icon} alt={iconAlt} />
-      </Tooltip>
-    </div>
+    <Tooltip title={title}>
+      <div onClick={onClick} css={wrapper}>
+          <Icon src={icon} alt={iconAlt} />
+      </div>
+    </Tooltip>
   );
 };
 

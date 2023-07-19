@@ -4,11 +4,12 @@ import { css } from '@emotion/react'
 const tooltip = css`
   position: relative;
   display: inline-block;
+  border-bottom: 1px dotted black;
   &:hover::after {
     content: attr(title);
     position: absolute;
     z-index: 1;
-    top: 120%;
+    top: 100%;
     left: 50%;
     transform: translateX(-50%);
     padding: 5px;
