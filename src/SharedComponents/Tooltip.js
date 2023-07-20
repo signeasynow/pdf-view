@@ -4,10 +4,12 @@ import { css } from '@emotion/react'
 const tooltip = css`
   position: relative;
   display: inline-block;
+  font-family: Lato;
+  font-size: 14px;
   &:hover::after {
     content: attr(data-tooltip); // use data-tooltip instead of title
     position: absolute;
-    z-index: 1;
+    z-index: 999999;
     top: 100%;
     left: 50%;
     transform: translateX(-50%);

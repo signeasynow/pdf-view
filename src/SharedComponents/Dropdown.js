@@ -22,7 +22,6 @@ const dropdownContent = css`
   background-color: #f9f9f9;
   min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  padding: 12px 16px;
   z-index: 1;
 `;
 
@@ -32,11 +31,13 @@ const styleRefresh = css`
   border: none;
   box-sizing: border-box;
   display: flex;
+  font-family: Lato;
 `
 
 const dropdownVisible = css`
   ${dropdownContent};
   display: block;
+  margin-top: 48px;
 `;
 
 function listenForOutsideClicks(listening, setListening, menuRef, setIsOpen) {
