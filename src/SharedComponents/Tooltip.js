@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react'
+import { css } from '@emotion/react';
 
 const tooltip = css`
   position: relative;
@@ -22,7 +22,7 @@ const tooltip = css`
 `;
 
 export const Tooltip = ({ children, title }) => (
-  <div css={tooltip} data-tooltip={title}>
-    {children}
-  </div>
+	<div css={tooltip} data-tooltip={title}>
+		{children}
+	</div>
 );

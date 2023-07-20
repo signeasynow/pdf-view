@@ -6,9 +6,9 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import Select from 'react-select';
 
 const options = [
-  { value: 'option1', label: 'Option 1' },
-  { value: 'option2', label: 'Option 2' },
-  // Add more options as needed
+	{ value: 'option1', label: 'Option 1' },
+	{ value: 'option2', label: 'Option 2' }
+	// Add more options as needed
 ];
 
 const dropdown = css`
@@ -32,7 +32,7 @@ const styleRefresh = css`
   box-sizing: border-box;
   display: flex;
   font-family: Lato;
-`
+`;
 
 const dropdownVisible = css`
   ${dropdownContent};
@@ -41,49 +41,49 @@ const dropdownVisible = css`
 `;
 
 function listenForOutsideClicks(listening, setListening, menuRef, setIsOpen) {
-  return () => {
-    if (listening) return;
-    if (!menuRef.current) return;
-    setListening(true);
-    [`click`, `touchstart`].forEach((type) => {
-      document.addEventListener(`click`, (evt) => {
-        if (menuRef.current.contains(evt.target)) return;
-        setIsOpen(false);
-      });
-    });
-  }
+	return () => {
+		if (listening) return;
+		if (!menuRef.current) return;
+		setListening(true);
+		[`click`, `touchstart`].forEach((type) => {
+			document.addEventListener(`click`, (evt) => {
+				if (menuRef.current.contains(evt.target)) return;
+				setIsOpen(false);
+			});
+		});
+	};
 }
 
 const Dropdown = ({ title, child }) => {
-  const [isOpen, setIsOpen] = useState(false);
+	const [isOpen, setIsOpen] = useState(false);
 
-  const childClick = (e) => {
-    e.stopPropagation();
-    setIsOpen(false);
-    // perform the action for child click
-  };
+	const childClick = (e) => {
+		e.stopPropagation();
+		setIsOpen(false);
+		// perform the action for child click
+	};
 
-  const [listening, setListening] = useState(false);
+	const [listening, setListening] = useState(false);
 
-  const dropdownRef = useRef(null);
+	const dropdownRef = useRef(null);
 
-  useEffect(listenForOutsideClicks(
-    listening,
-    setListening,
-    dropdownRef,
-    setIsOpen,
-  ));
+	useEffect(listenForOutsideClicks(
+		listening,
+		setListening,
+		dropdownRef,
+		setIsOpen
+	));
 
-  return (
-    <div style="z-index:9999" css={styleRefresh} ref={dropdownRef}>
-      <div css={styleRefresh} onClick={() => setIsOpen(!isOpen)}>
-        {title}
-        <div onClick={childClick} css={isOpen ? dropdownVisible : dropdownContent}>
-          {child}
-        </div>
-      </div>
-    </div>
-  );
+	return (
+		<div style="z-index:9999" css={styleRefresh} ref={dropdownRef}>
+			<div css={styleRefresh} onClick={() => setIsOpen(!isOpen)}>
+				{title}
+				<div onClick={childClick} css={isOpen ? dropdownVisible : dropdownContent}>
+					{child}
+				</div>
+			</div>
+		</div>
+	);
 };
 
 export default Dropdown;

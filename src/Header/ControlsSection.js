@@ -2,7 +2,6 @@
 import { css } from '@emotion/react';
 
 import 'pdfjs-dist/web/pdf_viewer.css';
-import { Tooltip } from '../SharedComponents/Tooltip';
 import Gear from '../../assets/gear-svgrepo-com.svg';
 import RotateRight from '../../assets/rotate-right-svgrepo-com.svg';
 import RotateLeft from '../../assets/rotate-left-svgrepo-com.svg';
@@ -33,36 +32,38 @@ const titleStyle = css`
 `;
 
 const ControlsSection = ({
-  pdfViewerObj,
-  eventBusRef
+	pdfViewerObj,
+	eventBusRef
 }) => {
 
-  const onRotate = (clockwise) => {
-    if (clockwise) {
-      pdfViewerObj.pagesRotation += 90;
-    } else {
-      pdfViewerObj.pagesRotation -= 90;
-    }
-  }
+	const onRotate = (clockwise) => {
+		if (clockwise) {
+			pdfViewerObj.pagesRotation += 90;
+		}
+		else {
+			pdfViewerObj.pagesRotation -= 90;
+		}
+	};
 
-  return (
-    <>
-      <Dropdown title={
-        <HeaderBtn title="View controls" iconAlt="View controls" icon={Gear} />
-      }
-        child={<div css={childStyle}>
-          <h4 css={titleStyle}>Page orientation</h4>
-          <div css={optionStyle} onClick={() => onRotate(true)}>
-            <Icon src={RotateRight} alt="Rotate clockwise" />
-            <p css={optionTextStyle}>Rotate clockwise</p>
-          </div>
-          <div css={optionStyle} onClick={() => onRotate(false)}>
-            <Icon src={RotateLeft} alt="Rotate counterclockwise" />
-            <p css={optionTextStyle}>Rotate counterclockwise</p>
-          </div>
-      </div>} />
-    </>
-  );
+	return (
+		<>
+			<Dropdown title={
+				<HeaderBtn title="View controls" iconAlt="View controls" icon={Gear} />
+			}
+				child={<div css={childStyle}>
+				<h4 css={titleStyle}>Page orientation</h4>
+				<div css={optionStyle} onClick={() => onRotate(true)}>
+					<Icon src={RotateRight} alt="Rotate clockwise" />
+					<p css={optionTextStyle}>Rotate clockwise</p>
+				</div>
+				<div css={optionStyle} onClick={() => onRotate(false)}>
+					<Icon src={RotateLeft} alt="Rotate counterclockwise" />
+					<p css={optionTextStyle}>Rotate counterclockwise</p>
+				</div>
+			</div>}
+			/>
+		</>
+	);
 };
 
 export default ControlsSection;
