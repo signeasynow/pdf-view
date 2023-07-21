@@ -25,7 +25,7 @@ const Wrapper = ({ children }) => (
 		display: 'flex',
 		background: 'white',
 		height: 50,
-		margin: '8px 12px'
+		margin: '0 12px'
 	})}
 	>
 		{children}

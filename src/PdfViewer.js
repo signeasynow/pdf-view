@@ -10,7 +10,7 @@ const SANDBOX_BUNDLE_SRC = 'pdfjs-dist/build/pdf.sandbox.js';
 const containerStyle = css`
   overflow: auto;
   position: absolute;
-  height: calc(100% - 66px);
+  height: calc(100% - 50px);
 `;
 
 export const PdfViewer = ({
