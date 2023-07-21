@@ -154,14 +154,19 @@ const App = () => {
 		});
 	};
 
+	const appRef = useRef(null);
+
 	return (
-		<div css={WrapperStyle}>
+		<div ref={appRef} css={WrapperStyle}>
 			<Header
+				pdfProxyObj={pdfProxyObj}
+				appRef={appRef}
 				eventBusRef={eventBusRef}
 				viewerContainerRef={viewerContainerRef}
 				pdfViewerObj={pdfViewerObj}
 				onSearch={onSearchBtnClick}
 				onPanel={onPanelBtnClick}
+				leftPanelEnabled={showPanel}
 			/>
 			<div css={Flex}>
 				<Panel
@@ -173,6 +178,7 @@ const App = () => {
 				/>
 				<div css={showSearch ? shortPdfViewerWrapper : pdfViewerWrapper}>
 					<PdfViewer
+						leftPanelEnabled={showPanel}
 						setActivePage={setActivePage}
 						setPdfProxyObj={setPdfProxyObj}
 						setMatchesCount={setMatchesCount}

@@ -33,9 +33,12 @@ const Wrapper = ({ children }) => (
 );
 
 const Header = ({
+	appRef,
+	pdfProxyObj,
 	pdfViewerObj,
 	onSearch,
 	onPanel,
+	leftPanelEnabled,
 	eventBusRef,
 	viewerContainerRef
 }) =>
@@ -77,6 +80,9 @@ const Header = ({
 			/>
 			<VerticalDivider />
 			<ZoomSection
+				leftPanelEnabled={leftPanelEnabled}
+				pdfProxyObj={pdfProxyObj}
+				appRef={appRef}
 				viewerContainerRef={viewerContainerRef}
 				pdfViewerObj={pdfViewerObj}
 			/>

@@ -14,61 +14,63 @@ import BookmarksSection from './BookmarksSection';
 
 const optionsWrapper = css`
   display: flex;
-`
+`;
 const visibleSearchWrapper = css`
   background: green;
-  width: 400px;
+  width: 300px;
   overflow: auto;
+  flex-grow: 0;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-`
+`;
 
 const invisibleSearchWrapper = css`
   background: orange;
   display: none;
-`
+`;
 
 const Panel = ({
-  showPanel,
-  setActivePage,
-  activePage,
-  pdf,
-  pdfProxyObj
+	showPanel,
+	setActivePage,
+	activePage,
+	pdf,
+	pdfProxyObj
 }) => {
 
-  const [activeTab, setActiveTab] = useState(0);
+	const [activeTab, setActiveTab] = useState(0);
 
-  return (
-    <div css={showPanel ? visibleSearchWrapper : invisibleSearchWrapper}>
-      <div css={optionsWrapper}>
-        <Tooltip title="Thumbnails">
-          <Icon onClick={() => setActiveTab(0)} src={ThumbnailsIcon} alt="Menu" />
-        </Tooltip>
-        <Tooltip title="Bookmarks">
-          <Icon onClick={() => setActiveTab(1)} src={Bookmark} alt="Menu" />
-        </Tooltip>
-      </div>
-      {
-        activeTab === 0 && (
-          <ThumbnailsSection
-            setActivePage={setActivePage}
-            activePage={activePage}
-            pdf={pdf}
-            pdfProxyObj={pdfProxyObj}
-          />
-        )
-      }
-      {
-        activeTab === 1 && (
-          <BookmarksSection
-            setActivePage={setActivePage}
-            pdf={pdf}
-          />
-        )
-      }
-    </div>
-  );
+	return (
+		<div css={showPanel ? visibleSearchWrapper : invisibleSearchWrapper}>
+			<div css={optionsWrapper}>
+				<Tooltip title="Thumbnails">
+					<Icon onClick={() => setActiveTab(0)} src={ThumbnailsIcon} alt="Menu" />
+				</Tooltip>
+				<Tooltip title="Bookmarks">
+					<Icon onClick={() => setActiveTab(1)} src={Bookmark} alt="Menu" />
+				</Tooltip>
+			</div>
+			{
+				activeTab === 0 && (
+					<ThumbnailsSection
+						setActivePage={setActivePage}
+						activePage={activePage}
+						pdf={pdf}
+						pdfProxyObj={pdfProxyObj}
+					/>
+				)
+			}
+			{
+				activeTab === 1 && (
+					<BookmarksSection
+						setActivePage={setActivePage}
+						pdf={pdf}
+					/>
+				)
+			}
+		</div>
+	);
 };
 
 export default Panel;

@@ -12,6 +12,8 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import { Icon } from '../SharedComponents/Icon';
 // import Pan from "./assets/pan.svg";
 
+const SCROLLBAR_PADDING = 40;
+
 const inputStyles = css`
   font-size: 16px;
   height: 12px;
@@ -56,9 +58,13 @@ const zoomLeft = css`
   margin-right: 12px;
 `;
 
+const childStyle = css`
+  margin: 12px 16px;
+`;
+
 const MAX_ZOOM = 9999;
 
-const MIN_ZOOM = 10;
+const MIN_ZOOM = 0.1;
 
 const ZOOM_FACTOR = 0.1;
 
@@ -67,8 +73,11 @@ const SLOW_ZOOM_FACTOR = 0.05;
 const RoundZoomValue = (v) => Math.floor(v * 100);
 
 const ZoomSection = ({
+	appRef,
+	pdfProxyObj,
 	pdfViewerObj,
-	viewerContainerRef
+	viewerContainerRef,
+	leftPanelEnabled
 }) => {
 
 	const zoomTextRef = useRef('100');
@@ -204,6 +213,24 @@ const ZoomSection = ({
 		};
 	}, [pdfViewerObj, setZoomValue]);
 
+	const onFitToWidth = async () => {
+		const app = appRef.current;
+		console.log(app.innerWidth, 'width', app, app.offsetWidth, 'off', app.clientWidth);
+		const samplePage = await pdfProxyObj.getPage(1);
+		const viewport = samplePage.getViewport({ scale: 1 });
+		const screenWidth = app.offsetWidth - SCROLLBAR_PADDING;
+		const newScale = screenWidth / viewport.width;
+		const hPadding = SCROLLBAR_PADDING + leftPanelEnabled ? 300 : 0;
+		console.log(zoomValue, 'zoomValue');
+		const zoomLevel = zoomValue / 100;
+		const pageWidthScale =
+        (((app.offsetWidth - hPadding) / viewport.width) *
+        zoomLevel / 1.4);
+
+		console.log(newScale, 'newscale', pageWidthScale, 'zoomLevel', zoomLevel, 'samplePage.width', samplePage.width, 'app.offsetWidth', app.offsetWidth, 'hPadding', hPadding, 'viewport.width', viewport.width);
+		setZoom(pageWidthScale);
+	};
+
 
 	return (
 		<div css={wrapper}>
@@ -215,7 +242,9 @@ const ZoomSection = ({
 						<Icon size="sm" src={ChevronDown} alt="arrow down" />
 					</div>
 				}
-					child={<div>
+				child={<div css={childStyle}>
+					<div onClick={onFitToWidth}>Fit to width</div>
+					<div onClick={() => setZoom(0.1)}>Fit to page</div>
 					<div onClick={() => setZoom(0.1)}>10%</div>
 					<div onClick={() => setZoom(0.25)}>25%</div>
 					<div onClick={() => setZoom(0.5)}>50%</div>
