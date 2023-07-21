@@ -19,7 +19,7 @@ const inputStyles = css`
   font-weight: 600;
   color: #5b5b5b;
   background: transparent;
-  width: 26px;
+  width: 36px;
   text-align: right; // This line was added
   &:focus {
     outline: none;
@@ -56,6 +56,10 @@ const zoomLeft = css`
   margin-right: 12px;
 `;
 
+const MAX_ZOOM = 9999;
+
+const MIN_ZOOM = 10;
+
 const ZOOM_FACTOR = 0.1;
 
 const SLOW_ZOOM_FACTOR = 0.05;
@@ -73,7 +77,7 @@ const ZoomSection = ({
 
 	const _onZoomOut = () => {
 		if (pdfViewerObj && pdfViewerObj.currentScale > ZOOM_FACTOR) { // minimum scale 0.1
-			const newValue = pdfViewerObj.currentScale - ZOOM_FACTOR;
+			const newValue = Math.max(pdfViewerObj.currentScale - ZOOM_FACTOR, MIN_ZOOM);
 			pdfViewerObj.currentScale = newValue;
 			setZoomValue(RoundZoomValue(newValue));
 		}
@@ -81,7 +85,7 @@ const ZoomSection = ({
 
 	const _onZoomIn = () => {
 		if (pdfViewerObj && pdfViewerObj.currentScale < (10 - ZOOM_FACTOR)) {
-			const newValue = pdfViewerObj.currentScale + ZOOM_FACTOR;
+			const newValue = Math.min(pdfViewerObj.currentScale + ZOOM_FACTOR, MAX_ZOOM);
 			pdfViewerObj.currentScale = newValue;
 			setZoomValue(RoundZoomValue(newValue));
 		}
@@ -186,7 +190,7 @@ const ZoomSection = ({
 			if (event.ctrlKey) {
 				event.preventDefault();  // prevent the default zoom behavior
 				const zoomChange = event.deltaY < 0 ? SLOW_ZOOM_FACTOR : -SLOW_ZOOM_FACTOR;
-				const newScale = Math.min(Math.max(pdfViewerObj.currentScale + zoomChange, 0.1), 10);
+				const newScale = Math.min(Math.max(pdfViewerObj.currentScale + zoomChange, 0.1), 99.999);
 				pdfViewerObj.currentScale = newScale;
 				setZoomValue(RoundZoomValue(newScale));
 			}
@@ -204,14 +208,14 @@ const ZoomSection = ({
 	return (
 		<div css={wrapper}>
 			<div css={innerWrapper}>
-				<input css={inputStyles} ref={zoomTextRef} onChange={onChangeZoomByText} type="text" />
+				<input value={zoomValue} css={inputStyles} ref={zoomTextRef} onChange={onChangeZoomByText} type="text" />
 				<Dropdown title={
 					<div css={dropdownTitle}>
 						<div css={percentStyle}>%</div>
 						<Icon size="sm" src={ChevronDown} alt="arrow down" />
 					</div>
 				}
-				child={<div>
+					child={<div>
 					<div onClick={() => setZoom(0.1)}>10%</div>
 					<div onClick={() => setZoom(0.25)}>25%</div>
 					<div onClick={() => setZoom(0.5)}>50%</div>
