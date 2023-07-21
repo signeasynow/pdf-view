@@ -77,6 +77,7 @@ const Header = ({
 			/>
 			<VerticalDivider />
 			<ZoomSection
+				viewerContainerRef={viewerContainerRef}
 				pdfViewerObj={pdfViewerObj}
 			/>
 			<HeaderBtn onClick={onPanel} title="Pan" iconAlt="Pan" icon={Hand} />

@@ -17,8 +17,10 @@ const inputStyles = css`
   height: 12px;
   border: none;
   font-weight: 600;
+  color: #5b5b5b;
   background: transparent;
   width: 26px;
+  text-align: right; // This line was added
   &:focus {
     outline: none;
   }
@@ -42,38 +44,27 @@ const dropdownTitle = css`
   display: flex;
   align-items: center;
   cursor: pointer;
-  margin-right: 12px;
-`;
-
-const dropdownArrowDown = css`
-  margin-bottom: 6px;
-  margin-left: 4px;
-  font-size: 18px;
+  margin-right: 20px;
 `;
 
 const percentStyle = css`
   margin-right: 8px;
+  color: #5b5b5b;
 `;
 
-const WHEEL_ZOOM_DISABLED_TIMEOUT = 1000; // ms
-
-let zoomDisabledTimeout = null;
-function setZoomDisabledTimeout() {
-	if (zoomDisabledTimeout) {
-		clearTimeout(zoomDisabledTimeout);
-	}
-	zoomDisabledTimeout = setTimeout(() => {
-		zoomDisabledTimeout = null;
-	}, WHEEL_ZOOM_DISABLED_TIMEOUT);
-}
-
+const zoomLeft = css`
+  margin-right: 12px;
+`;
 
 const ZOOM_FACTOR = 0.1;
+
+const SLOW_ZOOM_FACTOR = 0.05;
 
 const RoundZoomValue = (v) => Math.floor(v * 100);
 
 const ZoomSection = ({
-	pdfViewerObj
+	pdfViewerObj,
+	viewerContainerRef
 }) => {
 
 	const zoomTextRef = useRef('100');
@@ -186,6 +177,30 @@ const ZoomSection = ({
   }, [initialTouchDistance, scale]);
 */
 
+	useEffect(() => {
+		if (!pdfViewerObj) {
+			return;
+		}
+    
+		const handleWheel = (event) => {
+			if (event.ctrlKey) {
+				event.preventDefault();  // prevent the default zoom behavior
+				const zoomChange = event.deltaY < 0 ? SLOW_ZOOM_FACTOR : -SLOW_ZOOM_FACTOR;
+				const newScale = Math.min(Math.max(pdfViewerObj.currentScale + zoomChange, 0.1), 10);
+				pdfViewerObj.currentScale = newScale;
+				setZoomValue(RoundZoomValue(newScale));
+			}
+		};
+
+		const container = viewerContainerRef.current;
+		container.addEventListener('wheel', handleWheel, { passive: false });
+    
+		return () => {
+			container.removeEventListener('wheel', handleWheel);
+		};
+	}, [pdfViewerObj, setZoomValue]);
+
+
 	return (
 		<div css={wrapper}>
 			<div css={innerWrapper}>
@@ -210,9 +225,11 @@ const ZoomSection = ({
 					<div onClick={() => setZoom(64)}>6400%</div>
 				</div>}
 				/>
-				<Tooltip title="Zoom in">
-					<Icon onClick={onZoomIn} src={ZoomOut} alt="Zoom in" />
-				</Tooltip>
+				<div css={zoomLeft}>
+					<Tooltip title="Zoom in">
+						<Icon onClick={onZoomIn} src={ZoomOut} alt="Zoom in" />
+					</Tooltip>
+				</div>
 				<Tooltip title="Zoom out">
 					<Icon onClick={onZoomOut} src={ZoomIn} alt="Zoom out" />
 				</Tooltip>
