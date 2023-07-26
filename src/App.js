@@ -61,6 +61,23 @@ const App = () => {
 		setShowPanel(() => !showPanel);
 	};
 
+	const onDownload = () => {
+		console.log(pdfProxyObj, 'pdfProxyObj');
+		if (!pdfProxyObj) {
+			console.log('No PDF loaded to download');
+			return;
+		}
+	
+		pdfProxyObj.getData().then(buffer => {
+			const blob = new Blob([new Uint8Array(buffer)], { type: 'application/pdf' });
+			const url = URL.createObjectURL(blob);
+			const link = document.createElement('a');
+			link.href = url;
+			link.download = fileName || 'file.pdf'; // You might want to provide a more meaningful filename
+			link.click();
+		});
+	};
+
 	useEffect(() => {
 		window.addEventListener('message', (event) => {
 			if (typeof event.data === 'object' && event.data.file) {
@@ -83,6 +100,18 @@ const App = () => {
 			window.parent.document.dispatchEvent(newEvent);
 		});
 	}, []);
+
+	useEffect(() => {
+		const messageFunc =  (event) => {
+			if (event.data && event.data.type === 'download') {
+				onDownload();
+    	}
+		};
+		window.addEventListener('message', messageFunc, false);
+		return () => {
+			window.removeEventListener('message', messageFunc);
+		};
+	}, [onDownload]);
 
 	const [matchWholeWord, setMatchWholeWord] = useState(false);
 
@@ -155,22 +184,6 @@ const App = () => {
 			target: {
 				value: ''
 			}
-		});
-	};
-
-	const onDownload = () => {
-		if (!pdfProxyObj) {
-			console.log('No PDF loaded to download');
-			return;
-		}
-	
-		pdfProxyObj.getData().then(buffer => {
-			const blob = new Blob([new Uint8Array(buffer)], { type: 'application/pdf' });
-			const url = URL.createObjectURL(blob);
-			const link = document.createElement('a');
-			link.href = url;
-			link.download = fileName || 'file.pdf'; // You might want to provide a more meaningful filename
-			link.click();
 		});
 	};
 
