@@ -11,6 +11,8 @@ const containerStyle = css`
   overflow: auto;
   position: absolute;
   height: calc(100% - 50px);
+	border-right: 1px solid #c6c6c6;
+	border-left: 1px solid #c6c6c6;
 `;
 
 export const PdfViewer = ({
@@ -21,8 +23,20 @@ export const PdfViewer = ({
 	eventBusRef,
 	setMatchesCount,
 	setActivePage,
-	leftPanelEnabled
+	leftPanelEnabled,
+	rightPanelEnabled
 }) => {
+
+	const panelSpaceUsed = () => {
+		let result = 0;
+		if (leftPanelEnabled) {
+			result += 300;
+		}
+		if (rightPanelEnabled) {
+			result += 300;
+		}
+		return result;
+	};
   
 	useEffect(() => {
 		if (!file || !viewerContainerRef.current) return;
@@ -77,8 +91,8 @@ export const PdfViewer = ({
 	}, [file]);
 
 	return (
-		<div ref={viewerContainerRef} id="viewerContainer" css={containerStyle} style={{ width: leftPanelEnabled ? 'calc(100% - 300px)' : '100%' }}>
-			<div style="background: #f1f3f5;" id="viewer" class="pdfViewer" />
+		<div ref={viewerContainerRef} id="viewerContainer" css={containerStyle} style={{ width: `calc(100% - ${panelSpaceUsed()}px)` }}>
+			<div style="background: #eaecee;" id="viewer" class="pdfViewer" />
 		</div>
 	);
 };

@@ -59,7 +59,15 @@ const zoomLeft = css`
 `;
 
 const childStyle = css`
-  margin: 12px 16px;
+  margin: 8px 0;
+`; // padding: 12px 16px;
+
+const zoomOptionStyle = css`
+  padding: 8px 16px;
+  cursor: pointer;
+  &:hover {
+    background-color: #e7e7e7;
+  }
 `;
 
 const MAX_ZOOM = 9999;
@@ -236,27 +244,34 @@ const ZoomSection = ({
 		<div css={wrapper}>
 			<div css={innerWrapper}>
 				<input value={zoomValue} css={inputStyles} ref={zoomTextRef} onChange={onChangeZoomByText} type="text" />
-				<Dropdown title={
-					<div css={dropdownTitle}>
-						<div css={percentStyle}>%</div>
-						<Icon size="sm" src={ChevronDown} alt="arrow down" />
-					</div>
-				}
-				child={<div css={childStyle}>
-					<div onClick={onFitToWidth}>Fit to width</div>
+				<Dropdown
+					marginTop={28}
+					title={
+						<div css={dropdownTitle}>
+							<div css={percentStyle}>%</div>
+							<Icon size="sm" src={ChevronDown} alt="arrow down" />
+						</div>
+					}
+					child={<div css={childStyle}>
+						{
+
+						/*
+            <div onClick={onFitToWidth}>Fit to width</div>
 					<div onClick={() => setZoom(0.1)}>Fit to page</div>
-					<div onClick={() => setZoom(0.1)}>10%</div>
-					<div onClick={() => setZoom(0.25)}>25%</div>
-					<div onClick={() => setZoom(0.5)}>50%</div>
-					<div onClick={() => setZoom(1)}>100%</div>
-					<div onClick={() => setZoom(1.25)}>125%</div>
-					<div onClick={() => setZoom(1.5)}>150%</div>
-					<div onClick={() => setZoom(2)}>200%</div>
-					<div onClick={() => setZoom(4)}>400%</div>
-					<div onClick={() => setZoom(8)}>800%</div>
-					<div onClick={() => setZoom(16)}>1600%</div>
-					<div onClick={() => setZoom(64)}>6400%</div>
-				</div>}
+          */
+						}
+						<div css={zoomOptionStyle} onClick={() => setZoom(0.1)}>10%</div>
+						<div css={zoomOptionStyle} onClick={() => setZoom(0.25)}>25%</div>
+						<div css={zoomOptionStyle} onClick={() => setZoom(0.5)}>50%</div>
+						<div css={zoomOptionStyle} onClick={() => setZoom(1)}>100%</div>
+						<div css={zoomOptionStyle} onClick={() => setZoom(1.25)}>125%</div>
+						<div css={zoomOptionStyle} onClick={() => setZoom(1.5)}>150%</div>
+						<div css={zoomOptionStyle} onClick={() => setZoom(2)}>200%</div>
+						<div css={zoomOptionStyle} onClick={() => setZoom(4)}>400%</div>
+						<div css={zoomOptionStyle} onClick={() => setZoom(8)}>800%</div>
+						<div css={zoomOptionStyle} onClick={() => setZoom(16)}>1600%</div>
+						<div css={zoomOptionStyle} onClick={() => setZoom(64)}>6400%</div>
+					</div>}
 				/>
 				<div css={zoomLeft}>
 					<Tooltip title="Zoom in">

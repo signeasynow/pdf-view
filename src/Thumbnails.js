@@ -10,7 +10,9 @@ const thumbnailWrapper = css`
   align-items: center;
   margin-top: 20px;
   cursor: pointer;
-`
+	font-family: Lato;
+	color: #8b8b8b;
+`;
 
 const activeThumbnailWrapper = css`
   display: flex;
@@ -18,56 +20,72 @@ const activeThumbnailWrapper = css`
   align-items: center;
   margin-top: 20px;
   cursor: pointer;
-  background: red;
-`
+	font-family: Lato;
+	color: #3183c8;
+`;
+
+const canvasStyle = css`
+  padding-bottom: 4px;
+`;
+
+const activeCanvasStyle = css`
+  padding-bottom: 4px;
+	border-bottom: 2px solid #3183c8;
+`;
+
+const wrapperStyle = css`
+  position: relative;
+`;
 
 const Thumbnail = ({ pdfProxyObj, activePage, pageNum, scale, onThumbnailClick }) => {
-  const canvasRef = useRef(null);
+	const canvasRef = useRef(null);
 
-  useEffect(() => {
-    const renderThumbnail = async () => {
-      const page = await pdfProxyObj.getPage(pageNum);
-      const viewport = page.getViewport({ scale });
-      canvasRef.current.width = viewport.width;
-      canvasRef.current.height = viewport.height;
+	useEffect(() => {
+		const renderThumbnail = async () => {
+			const page = await pdfProxyObj.getPage(pageNum);
+			const viewport = page.getViewport({ scale });
+			canvasRef.current.width = viewport.width;
+			canvasRef.current.height = viewport.height;
 
-      const canvasContext = canvasRef.current.getContext('2d');
-      if (!canvasContext) {
-        throw new Error('Failed to get canvas context');
-      }
-      await page.render({ canvasContext, viewport }).promise;
-    };
+			const canvasContext = canvasRef.current.getContext('2d');
+			if (!canvasContext) {
+				throw new Error('Failed to get canvas context');
+			}
+			await page.render({ canvasContext, viewport }).promise;
+		};
 
-    renderThumbnail();
-  }, [pageNum, scale, pdfProxyObj]);
+		renderThumbnail();
+	}, [pageNum, scale, pdfProxyObj]);
 
-  return (
-    <div id={`thumbnail-${pageNum}`} css={activePage === pageNum ? activeThumbnailWrapper : thumbnailWrapper} onClick={() => onThumbnailClick(pageNum)}>
-      <canvas class="canvas-page" ref={canvasRef}></canvas>
-      <div style={{ fontSize: '0.8rem', marginTop: '0.5rem' }}>{pageNum}</div>
-    </div>
-  );
+	return (
+		<div id={`thumbnail-${pageNum}`} css={activePage === pageNum ? activeThumbnailWrapper : thumbnailWrapper} onClick={() => onThumbnailClick(pageNum)}>
+			<canvas css={activePage === pageNum ? activeCanvasStyle : canvasStyle} class="canvas-page" ref={canvasRef} />
+			<div style={{ fontSize: '0.8rem', marginTop: '0.5rem' }}>{pageNum}</div>
+		</div>
+	);
 };
 
 const ThumbnailsContainer = ({ activePage, pdf, scale, onThumbnailClick, pdfProxyObj }) => {
-  const numPages = pdfProxyObj?.numPages;
+	const numPages = pdfProxyObj?.numPages;
 
-  if (!numPages) return (
-    <div>Loading...</div>
-  )
-  const thumbnails = Array.from({ length: numPages }, (_, i) => (
-    <Thumbnail
-      activePage={activePage}
-      key={i}
-      pdf={pdf}
-      pdfProxyObj={pdfProxyObj}
-      pageNum={i + 1}
-      scale={scale}
-      onThumbnailClick={onThumbnailClick}
-    />
-  ));
+	if (!numPages) return (
+		<div>Loading...</div>
+	);
+	const thumbnails = Array.from({ length: numPages }, (_, i) => (
+		<Thumbnail
+			activePage={activePage}
+			key={i}
+			pdf={pdf}
+			pdfProxyObj={pdfProxyObj}
+			pageNum={i + 1}
+			scale={scale}
+			onThumbnailClick={onThumbnailClick}
+		/>
+	));
 
-  return thumbnails;
+	return (<div css={wrapperStyle}>
+		{thumbnails}
+	</div>);
 };
 
 export default ThumbnailsContainer;

@@ -37,7 +37,6 @@ const styleRefresh = css`
 const dropdownVisible = css`
   ${dropdownContent};
   display: block;
-  margin-top: 48px;
 `;
 
 function listenForOutsideClicks(listening, setListening, menuRef, setIsOpen) {
@@ -54,7 +53,7 @@ function listenForOutsideClicks(listening, setListening, menuRef, setIsOpen) {
 	};
 }
 
-const Dropdown = ({ title, child }) => {
+const Dropdown = ({ title, child, marginTop }) => {
 	const [isOpen, setIsOpen] = useState(false);
 
 	const childClick = (e) => {
@@ -78,7 +77,10 @@ const Dropdown = ({ title, child }) => {
 		<div style="z-index:9999" css={styleRefresh} ref={dropdownRef}>
 			<div css={styleRefresh} onClick={() => setIsOpen(!isOpen)}>
 				{title}
-				<div onClick={childClick} css={isOpen ? dropdownVisible : dropdownContent}>
+				<div onClick={childClick} css={isOpen ? dropdownVisible : dropdownContent} style={{
+					marginTop: marginTop || 48
+				}}
+				>
 					{child}
 				</div>
 			</div>

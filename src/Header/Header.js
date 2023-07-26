@@ -7,6 +7,7 @@ import Search from '../../assets/search-svgrepo-com.svg';
 import Hamburger from '../../assets/hamburger-md-svgrepo-com.svg';
 import Comment from '../../assets/comment-svgrepo-com.svg';
 import Panel from '../../assets/panel-left-svgrepo-com.svg';
+import Download from '../../assets/download-svgrepo-com.svg';
 import ZoomSection from './ZoomSection';
 import ControlsSection from './ControlsSection';
 import HeaderBtn from './HeaderBtn';
@@ -25,12 +26,17 @@ const Wrapper = ({ children }) => (
 		display: 'flex',
 		background: 'white',
 		height: 50,
-		margin: '0 12px'
+		margin: '0 12px',
+		justifyContent: 'space-between'
 	})}
 	>
 		{children}
 	</div>
 );
+
+const contentLeftStyle = css`
+	display: flex;
+`;
 
 const Header = ({
 	appRef,
@@ -38,6 +44,7 @@ const Header = ({
 	pdfViewerObj,
 	onSearch,
 	onPanel,
+	onDownload,
 	leftPanelEnabled,
 	eventBusRef,
 	viewerContainerRef
@@ -71,26 +78,36 @@ const Header = ({
 
 	(
 		<Wrapper>
-			<HeaderBtn title="Menu" iconAlt="Menu" icon={Hamburger} />
-			<VerticalDivider />
-			<HeaderBtn onClick={onPanel} title="Panel" iconAlt="Panel" icon={Panel} />
-			<ControlsSection
-				eventBusRef={eventBusRef}
-				pdfViewerObj={pdfViewerObj}
-			/>
-			<VerticalDivider />
-			<ZoomSection
-				leftPanelEnabled={leftPanelEnabled}
-				pdfProxyObj={pdfProxyObj}
-				appRef={appRef}
-				viewerContainerRef={viewerContainerRef}
-				pdfViewerObj={pdfViewerObj}
-			/>
-			<HeaderBtn onClick={onPanel} title="Pan" iconAlt="Pan" icon={Hand} />
+			<div css={contentLeftStyle}>
+				{
+
+					/*
+					<HeaderBtn title="Menu" iconAlt="Menu" icon={Hamburger} />
+				
+				*/
+				}
+				<HeaderBtn onClick={onDownload} title="Download" iconAlt="Download" icon={Download} />
+				<VerticalDivider />
+				<HeaderBtn onClick={onPanel} title="Panel" iconAlt="Panel" icon={Panel} />
+				<ControlsSection
+					eventBusRef={eventBusRef}
+					pdfViewerObj={pdfViewerObj}
+				/>
+				<VerticalDivider />
+				<ZoomSection
+					leftPanelEnabled={leftPanelEnabled}
+					pdfProxyObj={pdfProxyObj}
+					appRef={appRef}
+					viewerContainerRef={viewerContainerRef}
+					pdfViewerObj={pdfViewerObj}
+				/>
+			</div>
+			
 
 			{
 
 				/*
+				<HeaderBtn onClick={onPanel} title="Pan" iconAlt="Pan" icon={Hand} />
         <select>
         <option>View</option>
         <option>Annotate</option>
@@ -98,7 +115,12 @@ const Header = ({
       */
 			}
 			<HeaderBtn onClick={onSearch} title="Search" iconAlt="Search" icon={Search} />
-			<HeaderBtn title="Comments" iconAlt="Comments" icon={Comment} />
+			{
+
+				/*
+				<HeaderBtn title="Comments" iconAlt="Comments" icon={Comment} />
+				*/
+			}
 		</Wrapper>
 	)
 ;

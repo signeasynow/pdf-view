@@ -16,7 +16,7 @@ const optionsWrapper = css`
   display: flex;
 `;
 const visibleSearchWrapper = css`
-  background: green;
+  background: #f1f3f5;
   width: 300px;
   overflow: auto;
   flex-grow: 0;
@@ -43,7 +43,10 @@ const Panel = ({
 
 	return (
 		<div css={showPanel ? visibleSearchWrapper : invisibleSearchWrapper}>
-			<div css={optionsWrapper}>
+			{
+
+				/*
+				<div css={optionsWrapper}>
 				<Tooltip title="Thumbnails">
 					<Icon onClick={() => setActiveTab(0)} src={ThumbnailsIcon} alt="Menu" />
 				</Tooltip>
@@ -51,6 +54,8 @@ const Panel = ({
 					<Icon onClick={() => setActiveTab(1)} src={Bookmark} alt="Menu" />
 				</Tooltip>
 			</div>
+			*/
+			}
 			{
 				activeTab === 0 && (
 					<ThumbnailsSection

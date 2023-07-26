@@ -46,6 +46,7 @@ const App = () => {
 	const viewerContainerRef = useRef(null);
 
 	const [file, setFile] = useState(null);
+	const [fileName, setFileName] = useState('');
 
 	const [showSearch, setShowSearch] = useState(false);
 	const [showPanel, setShowPanel] = useState(true);
@@ -64,6 +65,9 @@ const App = () => {
 		window.addEventListener('message', (event) => {
 			if (typeof event.data === 'object' && event.data.file) {
 				setFile(event.data.file);
+			}
+			if (typeof event.data === 'object' && event.data.fileName) {
+				setFileName(event.data.fileName);
 			}
 		}, false);
 
@@ -154,11 +158,28 @@ const App = () => {
 		});
 	};
 
+	const onDownload = () => {
+		if (!pdfProxyObj) {
+			console.log('No PDF loaded to download');
+			return;
+		}
+	
+		pdfProxyObj.getData().then(buffer => {
+			const blob = new Blob([new Uint8Array(buffer)], { type: 'application/pdf' });
+			const url = URL.createObjectURL(blob);
+			const link = document.createElement('a');
+			link.href = url;
+			link.download = fileName || 'file.pdf'; // You might want to provide a more meaningful filename
+			link.click();
+		});
+	};
+
 	const appRef = useRef(null);
 
 	return (
 		<div ref={appRef} css={WrapperStyle}>
 			<Header
+				onDownload={onDownload}
 				pdfProxyObj={pdfProxyObj}
 				appRef={appRef}
 				eventBusRef={eventBusRef}
@@ -176,8 +197,9 @@ const App = () => {
 					pdf={pdfViewerObj}
 					showPanel={showPanel}
 				/>
-				<div css={showSearch ? shortPdfViewerWrapper : pdfViewerWrapper}>
+				<div css={pdfViewerWrapper}>
 					<PdfViewer
+						rightPanelEnabled={showSearch}
 						leftPanelEnabled={showPanel}
 						setActivePage={setActivePage}
 						setPdfProxyObj={setPdfProxyObj}
