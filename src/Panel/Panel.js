@@ -33,6 +33,7 @@ const invisibleSearchWrapper = css`
 
 const Panel = ({
 	showPanel,
+	tools,
 	setActivePage,
 	activePage,
 	pdf,
@@ -57,8 +58,9 @@ const Panel = ({
 			*/
 			}
 			{
-				activeTab === 0 && (
+				activeTab === 0 && tools.includes('thumbnails') && (
 					<ThumbnailsSection
+						tools={tools}
 						setActivePage={setActivePage}
 						activePage={activePage}
 						pdf={pdf}

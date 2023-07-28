@@ -69,6 +69,7 @@ const ThumbnailsSection = ({
 	setActivePage,
 	activePage,
 	pdf,
+	tools,
 	pdfProxyObj
 }) => {
 	const [thumbnailScale, setThumbnailScale] = useState(2);
@@ -87,22 +88,26 @@ const ThumbnailsSection = ({
 
 	return (
 		<>
-			<div css={topSectionStyle}>
-				<div css={rangeWrapperStyle}>
-					<label css={minusStyle}>—</label>
-					<input
-						css={rangeStyle}
-						value={thumbnailScale}
-						onChange={handleInputChange}
-						type="range"
-						id="scale"
-						name="scale"
-						min="0"
-						max="10"
-					/>
-					<label css={plusStyle}>+</label>
-				</div>
-			</div>
+			{
+				tools?.includes('thumbnail-zoom') && (
+					<div css={topSectionStyle}>
+						<div css={rangeWrapperStyle}>
+							<label css={minusStyle}>—</label>
+							<input
+								css={rangeStyle}
+								value={thumbnailScale}
+								onChange={handleInputChange}
+								type="range"
+								id="scale"
+								name="scale"
+								min="0"
+								max="10"
+							/>
+							<label css={plusStyle}>+</label>
+						</div>
+					</div>
+				)
+			}
 			<ThumbnailsContainer
 				activePage={activePage}
 				pdfProxyObj={pdfProxyObj}

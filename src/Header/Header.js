@@ -40,6 +40,7 @@ const contentLeftStyle = css`
 
 const Header = ({
 	appRef,
+	tools,
 	pdfProxyObj,
 	pdfViewerObj,
 	onSearch,
@@ -80,27 +81,40 @@ const Header = ({
 		<Wrapper>
 			<div css={contentLeftStyle}>
 				{
-
-					/*
-					<HeaderBtn title="Menu" iconAlt="Menu" icon={Hamburger} />
-				
-				*/
+					tools?.includes('download') && (
+						<>
+							<HeaderBtn onClick={onDownload} title="Download" iconAlt="Download" icon={Download} />
+							<VerticalDivider />
+						</>
+					)
 				}
-				<HeaderBtn onClick={onDownload} title="Download" iconAlt="Download" icon={Download} />
-				<VerticalDivider />
-				<HeaderBtn onClick={onPanel} title="Panel" iconAlt="Panel" icon={Panel} />
-				<ControlsSection
-					eventBusRef={eventBusRef}
-					pdfViewerObj={pdfViewerObj}
-				/>
-				<VerticalDivider />
-				<ZoomSection
-					leftPanelEnabled={leftPanelEnabled}
-					pdfProxyObj={pdfProxyObj}
-					appRef={appRef}
-					viewerContainerRef={viewerContainerRef}
-					pdfViewerObj={pdfViewerObj}
-				/>
+				{
+					tools.includes('thumbnails') && (
+						<HeaderBtn onClick={onPanel} title="Panel" iconAlt="Panel" icon={Panel} />
+					)
+				}
+				{
+					tools.includes('rotation') && (
+						<ControlsSection
+							eventBusRef={eventBusRef}
+							pdfViewerObj={pdfViewerObj}
+						/>
+					)
+				}
+				{
+					tools.includes('zoom') && (
+						<>
+							<VerticalDivider />
+							<ZoomSection
+								leftPanelEnabled={leftPanelEnabled}
+								pdfProxyObj={pdfProxyObj}
+								appRef={appRef}
+								viewerContainerRef={viewerContainerRef}
+								pdfViewerObj={pdfViewerObj}
+							/>
+						</>
+					)
+				}
 			</div>
 			
 
@@ -114,7 +128,11 @@ const Header = ({
       </select>
       */
 			}
-			<HeaderBtn onClick={onSearch} title="Search" iconAlt="Search" icon={Search} />
+			{
+				tools.includes('search') && (
+					<HeaderBtn onClick={onSearch} title="Search" iconAlt="Search" icon={Search} />
+				)
+			}
 			{
 
 				/*

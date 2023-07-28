@@ -53,6 +53,8 @@ const App = () => {
 
 	const [activePage, setActivePage] = useState(1);
 
+	const [tools, setTools] = useState([]);
+
 	const onSearchBtnClick = () => {
 		setShowSearch(() => !showSearch);
 	};
@@ -78,6 +80,8 @@ const App = () => {
 		});
 	};
 
+	console.log(tools, 'tools');
+
 	useEffect(() => {
 		window.addEventListener('message', (event) => {
 			if (typeof event.data === 'object' && event.data.file) {
@@ -85,6 +89,9 @@ const App = () => {
 			}
 			if (typeof event.data === 'object' && event.data.fileName) {
 				setFileName(event.data.fileName);
+			}
+			if (typeof event.data === 'object' && event.data.tools) {
+				setTools(event.data.tools);
 			}
 		}, false);
 
@@ -192,6 +199,7 @@ const App = () => {
 	return (
 		<div ref={appRef} css={WrapperStyle}>
 			<Header
+				tools={tools}
 				onDownload={onDownload}
 				pdfProxyObj={pdfProxyObj}
 				appRef={appRef}
@@ -203,13 +211,18 @@ const App = () => {
 				leftPanelEnabled={showPanel}
 			/>
 			<div css={Flex}>
-				<Panel
-					setActivePage={setActivePage}
-					activePage={activePage}
-					pdfProxyObj={pdfProxyObj}
-					pdf={pdfViewerObj}
-					showPanel={showPanel}
-				/>
+				{
+					tools.includes('thumbnails') && (
+						<Panel
+							tools={tools}
+							setActivePage={setActivePage}
+							activePage={activePage}
+							pdfProxyObj={pdfProxyObj}
+							pdf={pdfViewerObj}
+							showPanel={showPanel}
+						/>
+					)
+				}
 				<div css={pdfViewerWrapper}>
 					<PdfViewer
 						rightPanelEnabled={showSearch}
