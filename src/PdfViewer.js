@@ -55,7 +55,8 @@ export const PdfViewer = ({
 		pdfScriptingManager.setViewer(pdfViewer);
 
 		eventBus.on('pagesinit', () => {
-			pdfViewer.currentScaleValue = 1 || 'page-width';
+			pdfViewer.currentScaleValue = 'page-width';
+			// document
 		});
 
 		eventBus.on('updatefindmatchescount', ({ matchesCount }) => {
@@ -80,6 +81,7 @@ export const PdfViewer = ({
 		loadingTask.promise.then(
 			loadedPdfDocument => {
 				console.log(loadedPdfDocument, 'loadedPdfDocument', loadedPdfDocument.numPages);
+				
 				setPdfProxyObj(loadedPdfDocument);
 				pdfViewer.setDocument(loadedPdfDocument);
 				pdfLinkService.setDocument(loadedPdfDocument, null);
@@ -92,7 +94,7 @@ export const PdfViewer = ({
 
 	return (
 		<div ref={viewerContainerRef} id="viewerContainer" css={containerStyle} style={{ width: `calc(100% - ${panelSpaceUsed()}px)` }}>
-			<div style="background: #eaecee;" id="viewer" class="pdfViewer" />
+			<div style="background: #eaecee;position:absolute" id="viewer" class="pdfViewer" />
 		</div>
 	);
 };
