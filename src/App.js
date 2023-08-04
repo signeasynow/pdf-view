@@ -63,7 +63,7 @@ const App = () => {
 		setShowPanel(() => !showPanel);
 	};
 
-	const onDownload = () => {
+	const onDownload = (name) => {
 		console.log(pdfProxyObj, 'pdfProxyObj');
 		if (!pdfProxyObj) {
 			console.log('No PDF loaded to download');
@@ -75,7 +75,7 @@ const App = () => {
 			const url = URL.createObjectURL(blob);
 			const link = document.createElement('a');
 			link.href = url;
-			link.download = fileName || 'file.pdf'; // You might want to provide a more meaningful filename
+			link.download = name || fileName || 'file.pdf'; // You might want to provide a more meaningful filename
 			link.click();
 		});
 	};
@@ -111,7 +111,7 @@ const App = () => {
 	useEffect(() => {
 		const messageFunc =  (event) => {
 			if (event.data && event.data.type === 'download') {
-				onDownload();
+				onDownload(event.data.name);
     	}
 		};
 		window.addEventListener('message', messageFunc, false);
