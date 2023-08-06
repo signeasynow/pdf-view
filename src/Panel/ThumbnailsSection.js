@@ -81,6 +81,7 @@ const ThumbnailsSection = ({
 
 	const handleThumbnailClick = (num) => {
 		setActivePage(num);
+		console.log(num, 'num here 12', pdf);
 		pdf.scrollPageIntoView({
 			pageNumber: num
 		});

@@ -155,8 +155,7 @@ export const PdfViewer = ({
 			}
 			else {
 				// Page is now visible
-				console.log('Page is visible');
-				return;
+
 				// You can put your logic here to re-render the PDF or perform some other actions
 				// For example, you might call a function to reload the PDF:
 				reloadPdf();
@@ -169,7 +168,7 @@ export const PdfViewer = ({
 
 	return (
 		<div ref={viewerContainerRef} id="viewerContainer" css={containerStyle} style={{ width: `calc(100% - ${panelSpaceUsed()}px)` }}>
-			<div style="background: #eaecee;position:absolute" id="viewer" class="pdfViewer" />
+			<div style="background: #eaecee" id="viewer" class="pdfViewer" />
 		</div>
 	);
 };
