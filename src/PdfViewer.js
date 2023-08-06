@@ -92,6 +92,81 @@ export const PdfViewer = ({
 		);
 	}, [file]);
 
+	const reloadPdf = () => {
+		if (!file || !viewerContainerRef.current) return;
+	
+		const viewerContainer = viewerContainerRef.current;
+
+		const eventBus = new EventBus();
+		eventBusRef.current = eventBus;
+		const pdfLinkService = new PDFLinkService({ eventBus, externalLinkTarget: 2 });
+		const pdfFindController = new PDFFindController({ eventBus, linkService: pdfLinkService });
+		const pdfScriptingManager = new PDFScriptingManager({ eventBus, sandboxBundleSrc: SANDBOX_BUNDLE_SRC });
+		const pdfViewer = new PDFViewer({ container: viewerContainer, eventBus, linkService: pdfLinkService, findController: pdfFindController, scriptingManager: pdfScriptingManager });
+		setPdfViewerObj(pdfViewer);
+    
+		pdfLinkService.setViewer(pdfViewer);
+		pdfScriptingManager.setViewer(pdfViewer);
+
+		eventBus.on('pagesinit', () => {
+			pdfViewer.currentScaleValue = 'page-width';
+			// document
+		});
+
+		eventBus.on('updatefindmatchescount', ({ matchesCount }) => {
+			console.log(matchesCount, 'matchescount');
+			setMatchesCount(matchesCount?.total);
+		});
+
+		eventBus.on('pagechanging', ({
+			pageNumber
+		}) => {
+			// console.log(pageNumber, 'page 111f')
+			setActivePage(pageNumber);
+			const target = document.getElementById(`thumbnail-${pageNumber}`);
+			if (!target) {
+				return;
+			}
+			target.scrollIntoView();
+		});
+    
+		const loadingTask = pdfjs.getDocument(file);
+
+		loadingTask.promise.then(
+			loadedPdfDocument => {
+				console.log(loadedPdfDocument, 'loadedPdfDocument', loadedPdfDocument.numPages);
+				
+				setPdfProxyObj(loadedPdfDocument);
+				pdfViewer.setDocument(loadedPdfDocument);
+				pdfLinkService.setDocument(loadedPdfDocument, null);
+			},
+			reason => {
+				console.error(reason);
+			}
+		);
+	};
+
+	useEffect(() => {
+		console.log('start change');
+		function handleVisibilityChange() {
+			if (document.hidden) {
+				// Page is now hidden
+				console.log('Page is hidden');
+			}
+			else {
+				// Page is now visible
+				console.log('Page is visible');
+				return;
+				// You can put your logic here to re-render the PDF or perform some other actions
+				// For example, you might call a function to reload the PDF:
+				reloadPdf();
+			}
+		}
+	
+		document.addEventListener('visibilitychange', handleVisibilityChange);
+		return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+	}, []);
+
 	return (
 		<div ref={viewerContainerRef} id="viewerContainer" css={containerStyle} style={{ width: `calc(100% - ${panelSpaceUsed()}px)` }}>
 			<div style="background: #eaecee;position:absolute" id="viewer" class="pdfViewer" />
