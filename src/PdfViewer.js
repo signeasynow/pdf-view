@@ -25,7 +25,8 @@ export const PdfViewer = ({
 	setMatchesCount,
 	setActivePage,
 	leftPanelEnabled,
-	rightPanelEnabled
+	rightPanelEnabled,
+	setFileLoadFailError
 }) => {
 
 	const panelSpaceUsed = () => {
@@ -88,7 +89,8 @@ export const PdfViewer = ({
 				pdfLinkService.setDocument(loadedPdfDocument, null);
 			},
 			reason => {
-				console.error(reason);
+				setFileLoadFailError(reason?.message);
+				console.error(reason, 'error man');
 			}
 		);
 	}, [file]);
@@ -142,7 +144,8 @@ export const PdfViewer = ({
 				pdfLinkService.setDocument(loadedPdfDocument, null);
 			},
 			reason => {
-				console.error(reason);
+				setFileLoadFailError(reason?.message);
+				console.error(reason, 'reason', reason?.message);
 			}
 		);
 	};

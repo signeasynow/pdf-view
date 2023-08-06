@@ -32,10 +32,17 @@ const WrapperStyle = css`
   width: 100vw;
 `;
 
+const failWrap = css`
+	font-family: Lato;
+	margin: 0 8px;
+	text-align: center;
+`;
+
 const App = () => {
 
 	const [matchesCount, setMatchesCount] = useState(0);
 
+	const [fileLoadFailError, setFileLoadFailError] = useState('');
 
 	const [searchText, setSearchText] = useState('');
 
@@ -195,6 +202,15 @@ const App = () => {
 	};
 
 	const appRef = useRef(null);
+	console.log(fileLoadFailError, 'fileLoadFailError');
+	if (fileLoadFailError) {
+		return (
+			<div css={failWrap}>
+				<h1>Failed to load the PDF.</h1>
+				<p>{fileLoadFailError}</p>
+			</div>
+		);
+	}
 
 	return (
 		<div ref={appRef} css={WrapperStyle}>
@@ -225,6 +241,8 @@ const App = () => {
 				}
 				<div css={pdfViewerWrapper}>
 					<PdfViewer
+						fileLoadFailError={fileLoadFailError}
+						setFileLoadFailError={setFileLoadFailError}
 						rightPanelEnabled={showSearch}
 						leftPanelEnabled={showPanel}
 						setActivePage={setActivePage}
