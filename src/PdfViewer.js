@@ -155,6 +155,7 @@ export const PdfViewer = ({
 				console.log('Page is hidden');
 			}
 			else {
+				console.log('page is showing');
 				// Page is now visible
 
 				// You can put your logic here to re-render the PDF or perform some other actions
