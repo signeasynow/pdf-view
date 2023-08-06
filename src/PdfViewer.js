@@ -13,6 +13,7 @@ const containerStyle = css`
   height: calc(100% - 50px);
 	border-right: 1px solid #c6c6c6;
 	border-left: 1px solid #c6c6c6;
+	background: #eaecee;
 `;
 
 export const PdfViewer = ({
@@ -167,8 +168,10 @@ export const PdfViewer = ({
 	}, []);
 
 	return (
-		<div ref={viewerContainerRef} id="viewerContainer" css={containerStyle} style={{ width: `calc(100% - ${panelSpaceUsed()}px)` }}>
-			<div style="background: #eaecee" id="viewer" class="pdfViewer" />
+		<div>
+			<div ref={viewerContainerRef} id="viewerContainer" css={containerStyle} style={{ width: `calc(100% - ${panelSpaceUsed()}px)` }}>
+				<div id="viewer" class="pdfViewer" />
+			</div>
 		</div>
 	);
 };
