@@ -116,6 +116,13 @@ const App = () => {
 	}, []);
 
 	useEffect(() => {
+		window.onload = function() {
+			console.log('sending iframe-loaded');
+			window.parent.postMessage({ type: 'iframe-loaded', success: true }, '*');
+		};
+	}, []);
+
+	useEffect(() => {
 		const messageFunc =  (event) => {
 			if (event.data && event.data.type === 'download') {
 				onDownload(event.data.name);

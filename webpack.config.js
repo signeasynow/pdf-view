@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: './loader.js',
@@ -35,6 +36,11 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: 'index.html'
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: 'lib/pdf.worker.js', to: 'lib/pdf.worker.js' }
+      ]
     })
   ],
   devServer: {
