@@ -208,6 +208,12 @@ const App = () => {
 		});
 	};
 
+	const showHeader = () => {
+		return tools.includes("download") || tools.includes("thumbnails")
+		|| tools.includes("zoom") || tools.includes("search")
+		|| tools.includes("rotation")
+	}
+
 	const appRef = useRef(null);
 	console.log(fileLoadFailError, 'fileLoadFailError');
 	if (fileLoadFailError) {
@@ -221,18 +227,22 @@ const App = () => {
 
 	return (
 		<div ref={appRef} css={WrapperStyle}>
-			<Header
-				tools={tools}
-				onDownload={onDownload}
-				pdfProxyObj={pdfProxyObj}
-				appRef={appRef}
-				eventBusRef={eventBusRef}
-				viewerContainerRef={viewerContainerRef}
-				pdfViewerObj={pdfViewerObj}
-				onSearch={onSearchBtnClick}
-				onPanel={onPanelBtnClick}
-				leftPanelEnabled={showPanel}
-			/>
+			{
+				showHeader() && (
+					<Header
+						tools={tools}
+						onDownload={onDownload}
+						pdfProxyObj={pdfProxyObj}
+						appRef={appRef}
+						eventBusRef={eventBusRef}
+						viewerContainerRef={viewerContainerRef}
+						pdfViewerObj={pdfViewerObj}
+						onSearch={onSearchBtnClick}
+						onPanel={onPanelBtnClick}
+						leftPanelEnabled={showPanel}
+					/>
+				)
+			}
 			<div css={Flex}>
 				{
 					tools.includes('thumbnails') && (
@@ -248,6 +258,7 @@ const App = () => {
 				}
 				<div css={pdfViewerWrapper}>
 					<PdfViewer
+						tools={tools}
 						fileLoadFailError={fileLoadFailError}
 						setFileLoadFailError={setFileLoadFailError}
 						rightPanelEnabled={showSearch}

@@ -18,6 +18,7 @@ const containerStyle = css`
 
 export const PdfViewer = ({
 	setPdfProxyObj,
+	tools,
 	setPdfViewerObj,
 	file,
 	viewerContainerRef,
@@ -90,7 +91,7 @@ export const PdfViewer = ({
 			},
 			reason => {
 				setFileLoadFailError(reason?.message);
-				console.error(reason, 'error man');
+				console.error(JSON.stringify(reason), 'error man.');
 			}
 		);
 	}, [file]);
@@ -171,9 +172,16 @@ export const PdfViewer = ({
 		return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
 	}, []);
 
+	const width = () => {
+		if (!tools.includes("thumbnails")) {
+			return "100%"
+		}
+		return `calc(100% - ${panelSpaceUsed()}px)`;
+	}
+
 	return (
 		<div>
-			<div ref={viewerContainerRef} id="viewerContainer" css={containerStyle} style={{ width: `calc(100% - ${panelSpaceUsed()}px)` }}>
+			<div ref={viewerContainerRef} id="viewerContainer" css={containerStyle} style={{ width: width() }}>
 				<div id="viewer" class="pdfViewer" />
 			</div>
 		</div>
