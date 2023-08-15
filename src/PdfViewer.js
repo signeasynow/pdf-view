@@ -92,6 +92,7 @@ export const PdfViewer = ({
 			reason => {
 				setFileLoadFailError(reason?.message);
 				console.error(JSON.stringify(reason), 'error man.');
+				window.parent.postMessage({ type: 'file-failed', message: reason?.message }, '*');
 			}
 		);
 	}, [file]);

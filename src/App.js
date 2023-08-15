@@ -93,6 +93,7 @@ const App = () => {
 		window.addEventListener('message', (event) => {
 			if (typeof event.data === 'object' && event.data.file) {
 				setFile(event.data.file);
+				event.source.postMessage({ type: 'file-received', success: true }, event.origin);
 			}
 			if (typeof event.data === 'object' && event.data.fileName) {
 				setFileName(event.data.fileName);
