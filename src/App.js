@@ -19,12 +19,6 @@ const pdfViewerWrapper = css`
   width: 100%;
 `;
 
-const shortPdfViewerWrapper = css`
-  height: 100%;
-  width: calc(100% - 400px);
-  background: red;
-  position: relative;
-`;
 // relative
 
 const WrapperStyle = css`

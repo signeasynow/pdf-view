@@ -13,7 +13,7 @@ const containerStyle = css`
   height: calc(100% - 50px);
 	border-right: 1px solid #c6c6c6;
 	border-left: 1px solid #c6c6c6;
-	background: #eaecee;
+	background: #282828;
 `;
 
 export const PdfViewer = ({
