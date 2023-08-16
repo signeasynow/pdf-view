@@ -6,9 +6,8 @@ import usePdfBookmarks from '../hooks/usePdfBookmarks';
 import BookmarkIconFilledUrl from '../../assets/bookmark-svgrepo-com.svg';  // Update path if needed
 import BookmarkIconUrl from '../../assets/bookmark-fill-svgrepo-com.svg';  // Update path if needed
 import Dropdown from '../SharedComponents/Dropdown';
-import { Tooltip } from '../SharedComponents/Tooltip';
-import { Icon } from '../SharedComponents/Icon';
 import Gear from '../../assets/gear-svgrepo-com.svg';
+import { Icon } from "aleon_35_pdf_ui_lib";
 
 const optionsWrapper = css`
   display: flex;
