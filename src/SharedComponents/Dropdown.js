@@ -1,21 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 
-import onClickOutside from 'react-onclickoutside';
 import { useEffect, useRef, useState } from 'preact/hooks';
-import Select from 'react-select';
-
-const options = [
-	{ value: 'option1', label: 'Option 1' },
-	{ value: 'option2', label: 'Option 2' }
-	// Add more options as needed
-];
-
-const dropdown = css`
-  position: relative;
-  display: inline-block;
-`;
-
 const dropdownContent = css`
   display: none;
   position: absolute;

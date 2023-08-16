@@ -43,6 +43,7 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "aleon_35_pdf_ui_lib": "^1.1.13",
     "pdfjs-dist": "^3.7.107",
     "preact": "^10.15.1",
     "preact-compat": "^3.19.0",

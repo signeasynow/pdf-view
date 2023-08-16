@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 
 import { useRef } from 'preact/hooks';
 import 'pdfjs-dist/web/pdf_viewer.css';
-import { Icon } from './SharedComponents/Icon';
+import { Icon } from 'aleon_35_pdf_ui_lib';
 import ChevronLeft from '../assets/chevron-left-svgrepo-com.svg';
 import ChevronRight from '../assets/chevron-right-svgrepo-com.svg';
 

@@ -2,10 +2,7 @@
 import { css } from '@emotion/react';
 
 import 'pdfjs-dist/web/pdf_viewer.css';
-import { Tooltip } from '../SharedComponents/Tooltip';
-import Gear from '../../assets/gear-svgrepo-com.svg';
-import Dropdown from '../SharedComponents/Dropdown';
-import { Icon } from '../SharedComponents/Icon';
+import { Icon, Tooltip } from 'aleon_35_pdf_ui_lib';
 
 const wrapper = css`
   padding: 8px;

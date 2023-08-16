@@ -2,19 +2,11 @@
 import { css } from '@emotion/react';
 
 import 'pdfjs-dist/web/pdf_viewer.css';
-import ThumbnailsContainer from '../Thumbnails';
 // import Pan from "./assets/pan.svg";
 import { useState } from 'preact/hooks';
-import { Tooltip } from '../SharedComponents/Tooltip';
-import { Icon } from '../SharedComponents/Icon';
-import Bookmark from '../../assets/bookmark-svgrepo-com.svg';
-import ThumbnailsIcon from '../../assets/pages-svgrepo-com.svg';
 import ThumbnailsSection from './ThumbnailsSection';
 import BookmarksSection from './BookmarksSection';
 
-const optionsWrapper = css`
-  display: flex;
-`;
 const visibleSearchWrapper = css`
   background: #f1f3f5;
   width: 300px;
