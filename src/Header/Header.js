@@ -76,7 +76,6 @@ const Header = ({
       };
   }, []);
   */
-
 	(
 		<Wrapper>
 			<div css={contentLeftStyle}>

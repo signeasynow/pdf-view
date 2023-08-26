@@ -29,7 +29,8 @@ const Panel = ({
 	setActivePage,
 	activePage,
 	pdf,
-	pdfProxyObj
+	pdfProxyObj,
+	hiddenPages
 }) => {
 
 	const [activeTab, setActiveTab] = useState(0);
@@ -52,6 +53,7 @@ const Panel = ({
 			{
 				activeTab === 0 && tools.includes('thumbnails') && (
 					<ThumbnailsSection
+						hiddenPages={hiddenPages}
 						tools={tools}
 						setActivePage={setActivePage}
 						activePage={activePage}

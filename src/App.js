@@ -3,6 +3,7 @@ import { css } from '@emotion/react';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import Header from './Header/Header';
+import Subheader from './Subheader/Subheader';
 import { useDebounce } from './utils/useDebounce';
 import SearchBar from './SearchBar';
 import { PdfViewer } from './PdfViewer';
@@ -55,6 +56,8 @@ const App = () => {
 	const [activePage, setActivePage] = useState(1);
 
 	const [tools, setTools] = useState([]);
+
+	const [hiddenPages, setHiddenPages] = useState([]);
 
 	const onSearchBtnClick = () => {
 		setShowSearch(() => !showSearch);
@@ -209,8 +212,27 @@ const App = () => {
 		|| tools.includes("rotation")
 	}
 
+	const showSubheader = () => {
+		return tools.includes("download") || tools.includes("thumbnails")
+		|| tools.includes("zoom") || tools.includes("search")
+		|| tools.includes("rotation")
+	}
+
+	useEffect(() => {
+		for (let hiddenPage of hiddenPages) {
+			const pageElement = document.querySelector(`.page[data-page-number="${hiddenPage}"]`);
+			if (pageElement) {
+				pageElement.style.display = 'none';
+			}
+		}
+	}, [hiddenPages]);
+
+	const onDelete = () => {
+		setHiddenPages([...hiddenPages, activePage]);
+	};
+
 	const appRef = useRef(null);
-	console.log(fileLoadFailError, 'fileLoadFailError');
+	
 	if (fileLoadFailError) {
 		return (
 			<div css={failWrap}>
@@ -238,10 +260,19 @@ const App = () => {
 					/>
 				)
 			}
+			{
+				showSubheader() && (
+					<Subheader
+						onDownload={onDownload}
+						onDelete={onDelete}
+					/>
+				)
+			}
 			<div css={Flex}>
 				{
 					tools.includes('thumbnails') && (
 						<Panel
+						  hiddenPages={hiddenPages}
 							tools={tools}
 							setActivePage={setActivePage}
 							activePage={activePage}

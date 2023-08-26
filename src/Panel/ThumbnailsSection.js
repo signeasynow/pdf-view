@@ -70,7 +70,8 @@ const ThumbnailsSection = ({
 	activePage,
 	pdf,
 	tools,
-	pdfProxyObj
+	pdfProxyObj,
+	hiddenPages
 }) => {
 	const [thumbnailScale, setThumbnailScale] = useState(2);
 
@@ -110,6 +111,7 @@ const ThumbnailsSection = ({
 				)
 			}
 			<ThumbnailsContainer
+				hiddenPages={hiddenPages}
 				activePage={activePage}
 				pdfProxyObj={pdfProxyObj}
 				pdf={pdf}
