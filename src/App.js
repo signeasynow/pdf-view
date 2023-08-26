@@ -8,7 +8,7 @@ import { useDebounce } from './utils/useDebounce';
 import SearchBar from './SearchBar';
 import { PdfViewer } from './PdfViewer';
 import Panel from './Panel/Panel';
-
+import { heightOffset0, heightOffset1, heightOffset2 } from "./constants";
 const Flex = css`
 display: flex;
 width: 100%;
@@ -23,7 +23,6 @@ const pdfViewerWrapper = css`
 // relative
 
 const WrapperStyle = css`
-  height: calc(100vh - 50px);
   width: 100vw;
 `;
 
@@ -219,9 +218,7 @@ const App = () => {
 	}
 
 	const showSubheader = () => {
-		return tools.includes("download") || tools.includes("thumbnails")
-		|| tools.includes("zoom") || tools.includes("search")
-		|| tools.includes("rotation")
+		return tools.includes("remove")
 	}
 
 	const onDelete = () => {
@@ -257,6 +254,9 @@ const App = () => {
 		setHiddenPages(newHiddenPages);
 		setRedoStack([]);
 		const newUndoStack = [...undoStack, newCommand];
+		if (newUndoStack.length >= MAX_STACK_SIZE) {
+			newUndoStack.shift(); // remove the oldest command
+		}
 		setUndoStack(newUndoStack);
 	};
 
@@ -280,6 +280,18 @@ const App = () => {
 	};
 
 	const appRef = useRef(null);
+
+	const mainHeight = () => {
+		let myHeight;
+		if (!showHeader() && !showSubheader()) {
+			myHeight = heightOffset0;
+		} else if (!showSubheader()) {
+			myHeight = heightOffset1;
+		} else {
+			myHeight = heightOffset2;
+		}
+		return `calc(100vh - ${myHeight}px)`;
+	}
 	
 	if (fileLoadFailError) {
 		return (
@@ -291,7 +303,7 @@ const App = () => {
 	}
 
 	return (
-		<div ref={appRef} css={WrapperStyle}>
+		<div ref={appRef} css={WrapperStyle} style={{height: mainHeight()}}>
 			{
 				showHeader() && (
 					<Header
@@ -334,6 +346,8 @@ const App = () => {
 				}
 				<div css={pdfViewerWrapper}>
 					<PdfViewer
+						showHeader={showHeader()}
+						showSubheader={showSubheader()}
 						tools={tools}
 						fileLoadFailError={fileLoadFailError}
 						setFileLoadFailError={setFileLoadFailError}
