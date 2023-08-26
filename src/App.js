@@ -33,6 +33,8 @@ const failWrap = css`
 	text-align: center;
 `;
 
+const MAX_STACK_SIZE = 50;
+
 const App = () => {
 
 	const [matchesCount, setMatchesCount] = useState(0);
@@ -83,6 +85,10 @@ const App = () => {
 			link.click();
 		});
 	};
+
+	const [undoStack, setUndoStack] = useState([]);
+	const [redoStack, setRedoStack] = useState([]);
+
 
 	console.log(tools, 'tools');
 
@@ -218,17 +224,59 @@ const App = () => {
 		|| tools.includes("rotation")
 	}
 
-	useEffect(() => {
-		for (let hiddenPage of hiddenPages) {
-			const pageElement = document.querySelector(`.page[data-page-number="${hiddenPage}"]`);
-			if (pageElement) {
-				pageElement.style.display = 'none';
-			}
-		}
-	}, [hiddenPages]);
-
 	const onDelete = () => {
-		setHiddenPages([...hiddenPages, activePage]);
+		const newHiddenPages = [...hiddenPages, activePage];
+	
+		const newCommand = {
+			action: 'delete',
+			data: {
+				page: activePage,
+			},
+			undo: () => {
+				const pageElement = document.querySelector(`.page[data-page-number="${activePage}"]`);
+				if (pageElement) {
+					pageElement.style.display = 'block';
+				}
+				setHiddenPages(hiddenPages.filter(page => page !== activePage));
+			},
+			redo: () => {
+				const pageElement = document.querySelector(`.page[data-page-number="${activePage}"]`);
+				if (pageElement) {
+					pageElement.style.display = 'none';
+				}
+				setHiddenPages(newHiddenPages);
+			},
+		};
+	
+		// The initial hiding when you first "delete"
+		const pageElement = document.querySelector(`.page[data-page-number="${activePage}"]`);
+		if (pageElement) {
+			pageElement.style.display = 'none';
+		}
+	
+		setHiddenPages(newHiddenPages);
+		setRedoStack([]);
+		const newUndoStack = [...undoStack, newCommand];
+		setUndoStack(newUndoStack);
+	};
+
+	const undoLastAction = () => {
+		const lastCommand = undoStack.pop();
+		if (lastCommand) {
+			lastCommand.undo();
+			setRedoStack([...redoStack, lastCommand]);
+			setUndoStack(undoStack);
+		}
+	};
+	
+	// To redo an action
+	const redoLastAction = () => {
+		const lastCommand = redoStack.pop();
+		if (lastCommand) {
+			lastCommand.redo();
+			setUndoStack([...undoStack, lastCommand]);
+			setRedoStack(redoStack);
+		}
 	};
 
 	const appRef = useRef(null);
@@ -263,6 +311,8 @@ const App = () => {
 			{
 				showSubheader() && (
 					<Subheader
+						undoLastAction={undoLastAction}
+						redoLastAction={redoLastAction}
 						onDownload={onDownload}
 						onDelete={onDelete}
 					/>

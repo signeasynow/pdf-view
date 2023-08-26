@@ -37,15 +37,17 @@ const contentLeftStyle = css`
 
 const Subheader = ({
 	onDownload,
-	onDelete
+	onDelete,
+	undoLastAction,
+	redoLastAction
 }) =>
 
 	(
 		<Wrapper>
 			<div css={contentLeftStyle}>
 			<>
-				<HeaderBtn onClick={onDownload} title="Undo" iconAlt="undo" icon={Undo} />
-				<HeaderBtn onClick={onDownload} title="Redo" iconAlt="redo" icon={Redo} />
+				<HeaderBtn onClick={undoLastAction} title="Undo" iconAlt="undo" icon={Undo} />
+				<HeaderBtn onClick={redoLastAction} title="Redo" iconAlt="redo" icon={Redo} />
 				<HeaderBtn onClick={onDelete} title="Remove" iconAlt="redo" icon={Trash} />
 			</>
 			</div>
