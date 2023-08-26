@@ -4,8 +4,8 @@ import { css } from '@emotion/react';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import Download from '../../assets/download-svgrepo-com.svg';
 import HeaderBtn from './HeaderBtn';
-import Redo from '../../assets/redo-icon-svgrepo-com.svg';
-import Undo from '../../assets/undo-icon-svgrepo-com.svg';
+import Redo from '../../assets/arrow-undo-down-right-svgrepo-com.svg';
+import Undo from '../../assets/arrow-undo-up-left-svgrepo-com.svg';
 import Trash from '../../assets/trash-svgrepo-com.svg';
 
 const VerticalDivider = () => (
