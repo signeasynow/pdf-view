@@ -9,7 +9,7 @@ import SearchBar from './SearchBar';
 import { PdfViewer } from './PdfViewer';
 import Panel from './Panel/Panel';
 import { heightOffset0, heightOffset1, heightOffset2 } from "./constants";
-import __wbg_init, { greet } from '../lib/pdf_wasm_project.js';
+import __wbg_init, { greet, remove_pages } from '../lib/pdf_wasm_project.js';
 
 const Flex = css`
 display: flex;
@@ -103,7 +103,7 @@ const App = () => {
 
 
 	const onDownload = async (name) => {
-		/*
+		
 		async function initWasmAsync() {
 			const response = await fetch('lib/pdf_wasm_project_bg.wasm');
 			const bufferSource = await response.arrayBuffer();
@@ -116,8 +116,8 @@ const App = () => {
 			}
 		
 			const buffer = await pdfProxyObj.getData();
-			const pagesToDelete = hiddenPages.map(page => page - 1); // Convert 1-indexed to 0-indexed
-			
+			const pagesToDelete = hiddenPages.map(page => page); // Convert 1-indexed to 0-indexed
+			console.log(pagesToDelete, 'pagesToDelete')
 			try {
 				// Call the remove_pages function from the WASM module
 				const modifiedPdfArray = await remove_pages(new Uint8Array(buffer), pagesToDelete);
@@ -134,7 +134,7 @@ const App = () => {
 			}
 		}
 		initWasmAsync();
-		*/
+		
 	};
 		
 	const onDownload2 = async (name) => {
