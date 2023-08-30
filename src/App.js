@@ -95,45 +95,35 @@ const App = () => {
 			const bufferSource = await response.arrayBuffer();
 			
 			// Use async init function
-			const initResult = await __wbg_init(bufferSource);
-			console.log(initResult, 'initResultdd', greet())
+			await __wbg_init(bufferSource);
 		}
 		initWasmAsync();
 }, []);
 
 
 	const onDownload = async (name) => {
-		
-		async function initWasmAsync() {
-			const response = await fetch('lib/pdf_wasm_project_bg.wasm');
-			const bufferSource = await response.arrayBuffer();
-			
-			// Use async init function
-			await __wbg_init(bufferSource);
-			if (!pdfProxyObj) {
-				console.log('No PDF loaded to download');
-				return;
-			}
-		
-			const buffer = await pdfProxyObj.getData();
-			const pagesToDelete = hiddenPages.map(page => page); // Convert 1-indexed to 0-indexed
-			console.log(pagesToDelete, 'pagesToDelete')
-			try {
-				// Call the remove_pages function from the WASM module
-				const modifiedPdfArray = await remove_pages(new Uint8Array(buffer), pagesToDelete);
-			
-				// Convert result to Blob and download
-				const blob = new Blob([modifiedPdfArray.buffer], { type: 'application/pdf' });
-				const url = URL.createObjectURL(blob);
-				const link = document.createElement('a');
-				link.href = url;
-				link.download = name || fileName || 'file.pdf';
-				link.click();
-			} catch (error) {
-				console.error('Error modifying PDF:', error);
-			}
+		if (!pdfProxyObj) {
+			console.log('No PDF loaded to download');
+			return;
 		}
-		initWasmAsync();
+	
+		const buffer = await pdfProxyObj.getData();
+		const pagesToDelete = hiddenPages.map(page => page); // Convert 1-indexed to 0-indexed
+		console.log(pagesToDelete, 'pagesToDelete')
+		try {
+			// Call the remove_pages function from the WASM module
+			const modifiedPdfArray = await remove_pages(new Uint8Array(buffer), pagesToDelete);
+		
+			// Convert result to Blob and download
+			const blob = new Blob([modifiedPdfArray.buffer], { type: 'application/pdf' });
+			const url = URL.createObjectURL(blob);
+			const link = document.createElement('a');
+			link.href = url;
+			link.download = name || fileName || 'file.pdf';
+			link.click();
+		} catch (error) {
+			console.error('Error modifying PDF:', error);
+		}
 		
 	};
 		
