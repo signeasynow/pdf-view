@@ -9,7 +9,7 @@ import SearchBar from './SearchBar';
 import { PdfViewer } from './PdfViewer';
 import Panel from './Panel/Panel';
 import { heightOffset0, heightOffset1, heightOffset2 } from "./constants";
-import __wbg_init, { initSync, greet } from '../lib/pdf_wasm_project.js';
+import __wbg_init, { greet } from '../lib/pdf_wasm_project.js';
 
 const Flex = css`
 display: flex;
@@ -88,7 +88,7 @@ const App = () => {
 		});
 	};
 	*/
-	
+
 	useEffect(() => {
 		async function initWasmAsync() {
 			const response = await fetch('lib/pdf_wasm_project_bg.wasm');
@@ -102,8 +102,42 @@ const App = () => {
 }, []);
 
 
-	
 	const onDownload = async (name) => {
+		/*
+		async function initWasmAsync() {
+			const response = await fetch('lib/pdf_wasm_project_bg.wasm');
+			const bufferSource = await response.arrayBuffer();
+			
+			// Use async init function
+			await __wbg_init(bufferSource);
+			if (!pdfProxyObj) {
+				console.log('No PDF loaded to download');
+				return;
+			}
+		
+			const buffer = await pdfProxyObj.getData();
+			const pagesToDelete = hiddenPages.map(page => page - 1); // Convert 1-indexed to 0-indexed
+			
+			try {
+				// Call the remove_pages function from the WASM module
+				const modifiedPdfArray = await remove_pages(new Uint8Array(buffer), pagesToDelete);
+			
+				// Convert result to Blob and download
+				const blob = new Blob([modifiedPdfArray.buffer], { type: 'application/pdf' });
+				const url = URL.createObjectURL(blob);
+				const link = document.createElement('a');
+				link.href = url;
+				link.download = name || fileName || 'file.pdf';
+				link.click();
+			} catch (error) {
+				console.error('Error modifying PDF:', error);
+			}
+		}
+		initWasmAsync();
+		*/
+	};
+		
+	const onDownload2 = async (name) => {
 		if (!pdfProxyObj) {
 			console.log('No PDF loaded to download');
 			return;
