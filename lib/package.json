@@ -1,0 +1,17 @@
+{
+  "name": "pdf-wasm-project",
+  "collaborators": [
+    "Alexander Leon"
+  ],
+  "version": "0.1.0",
+  "files": [
+    "pdf_wasm_project_bg.wasm",
+    "pdf_wasm_project.js",
+    "pdf_wasm_project.d.ts"
+  ],
+  "module": "pdf_wasm_project.js",
+  "types": "pdf_wasm_project.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

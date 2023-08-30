@@ -9,6 +9,8 @@ import SearchBar from './SearchBar';
 import { PdfViewer } from './PdfViewer';
 import Panel from './Panel/Panel';
 import { heightOffset0, heightOffset1, heightOffset2 } from "./constants";
+import __wbg_init, { initSync, greet } from '../lib/pdf_wasm_project.js';
+
 const Flex = css`
 display: flex;
 width: 100%;
@@ -68,6 +70,7 @@ const App = () => {
 		setShowPanel(() => !showPanel);
 	};
 
+	/*
 	const onDownload = (name) => {
 		console.log(pdfProxyObj, 'pdfProxyObj');
 		if (!pdfProxyObj) {
@@ -83,6 +86,52 @@ const App = () => {
 			link.download = name || fileName || 'file.pdf'; // You might want to provide a more meaningful filename
 			link.click();
 		});
+	};
+	*/
+	
+	useEffect(() => {
+		async function initWasmAsync() {
+			const response = await fetch('lib/pdf_wasm_project_bg.wasm');
+			const bufferSource = await response.arrayBuffer();
+			
+			// Use async init function
+			const initResult = await __wbg_init(bufferSource);
+			console.log(initResult, 'initResultdd', greet())
+		}
+		initWasmAsync();
+}, []);
+
+
+	
+	const onDownload = async (name) => {
+		if (!pdfProxyObj) {
+			console.log('No PDF loaded to download');
+			return;
+		}
+	
+		const buffer = await pdfProxyObj.getData();
+    const pagesToDelete = hiddenPages.map(page => page - 1); // Convert 1-indexed to 0-indexed
+	
+		// Create a FormData object to hold the binary and other data
+		const formData = new FormData();
+		formData.append("pdfData", new Blob([buffer], { type: 'application/pdf' }));
+		formData.append("pagesToDelete", JSON.stringify(pagesToDelete));
+		formData.append("fileName", name || fileName || 'file.pdf');
+	
+		// Send FormData to server
+		fetch("http://localhost:8080/api/download", {
+			method: "POST",
+			body: formData,
+		})
+		.then(response => response.blob())
+		.then(blob => {
+			const url = URL.createObjectURL(blob);
+			const link = document.createElement('a');
+			link.href = url;
+			link.download = name || fileName || 'file.pdf';
+			link.click();
+		})
+		.catch(error => console.error('Error:', error));
 	};
 
 	const [undoStack, setUndoStack] = useState([]);

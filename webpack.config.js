@@ -8,6 +8,10 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js'
   },
+  experiments: {
+    asyncWebAssembly: true,  // Enable async WebAssembly
+    syncWebAssembly: true     // Enable sync WebAssembly
+  },
   module: {
     rules: [
       {
@@ -22,7 +26,11 @@ module.exports = {
       {
         test: /\.svg$/,
         use: ['file-loader']
-      }
+      },
+      {
+        test: /\.wasm$/,
+        type: 'webassembly/async'
+      },
     ]
   },
   resolve: {
@@ -39,7 +47,9 @@ module.exports = {
     }),
     new CopyWebpackPlugin({
       patterns: [
-        { from: 'lib/pdf.worker.js', to: 'lib/pdf.worker.js' }
+        { from: 'lib/pdf.worker.js', to: 'lib/pdf.worker.js' },
+        // { from: 'lib/pdf_wasm_project.js', to: 'lib/pdf_wasm_project.js' },
+        { from: 'lib/pdf_wasm_project_bg.wasm', to: 'lib/pdf_wasm_project_bg.wasm' }
       ]
     })
   ],
