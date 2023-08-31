@@ -9,7 +9,7 @@ import SearchBar from './SearchBar';
 import { PdfViewer } from './PdfViewer';
 import Panel from './Panel/Panel';
 import { heightOffset0, heightOffset1, heightOffset2 } from "./constants";
-import __wbg_init, { greet, remove_pages } from '../lib/pdf_wasm_project.js';
+import __wbg_init, { greet, remove_pages, move_page } from '../lib/pdf_wasm_project.js';
 
 const Flex = css`
 display: flex;
@@ -100,7 +100,34 @@ const App = () => {
 		initWasmAsync();
 }, []);
 
+  const [modifiedFile, setModifiedFile] = useState(null);
+/*
+	const onDownload = async (name) => {
+		if (!pdfProxyObj) {
+			console.log('No PDF loaded to download');
+			return;
+		}
 
+		const buffer = await pdfProxyObj.getData();
+		const pagesToDelete = hiddenPages.map(page => page); // Convert 1-indexed to 0-indexed
+		console.log(pagesToDelete, 'pagesToDelete')
+		try {
+			// Call the remove_pages function from the WASM module
+			const modifiedPdfArray = await move_page(new Uint8Array(buffer), 0, 3);
+			setModifiedFile(modifiedPdfArray.buffer);
+			// Convert result to Blob and download
+			const blob = new Blob([modifiedPdfArray.buffer], { type: 'application/pdf' });
+			const url = URL.createObjectURL(blob);
+			const link = document.createElement('a');
+			link.href = url;
+			link.download = name || fileName || 'file.pdf';
+			link.click();
+		} catch (error) {
+			console.error('Error modifying PDF:', error);
+		}
+		
+	};
+*/
 	const onDownload = async (name) => {
 		if (!pdfProxyObj) {
 			console.log('No PDF loaded to download');
@@ -113,7 +140,7 @@ const App = () => {
 		try {
 			// Call the remove_pages function from the WASM module
 			const modifiedPdfArray = await remove_pages(new Uint8Array(buffer), pagesToDelete);
-		
+			setModifiedFile(modifiedPdfArray.buffer);
 			// Convert result to Blob and download
 			const blob = new Blob([modifiedPdfArray.buffer], { type: 'application/pdf' });
 			const url = URL.createObjectURL(blob);
@@ -127,37 +154,6 @@ const App = () => {
 		
 	};
 		
-	const onDownload2 = async (name) => {
-		if (!pdfProxyObj) {
-			console.log('No PDF loaded to download');
-			return;
-		}
-	
-		const buffer = await pdfProxyObj.getData();
-    const pagesToDelete = hiddenPages.map(page => page - 1); // Convert 1-indexed to 0-indexed
-	
-		// Create a FormData object to hold the binary and other data
-		const formData = new FormData();
-		formData.append("pdfData", new Blob([buffer], { type: 'application/pdf' }));
-		formData.append("pagesToDelete", JSON.stringify(pagesToDelete));
-		formData.append("fileName", name || fileName || 'file.pdf');
-	
-		// Send FormData to server
-		fetch("http://localhost:8080/api/download", {
-			method: "POST",
-			body: formData,
-		})
-		.then(response => response.blob())
-		.then(blob => {
-			const url = URL.createObjectURL(blob);
-			const link = document.createElement('a');
-			link.href = url;
-			link.download = name || fileName || 'file.pdf';
-			link.click();
-		})
-		.catch(error => console.error('Error:', error));
-	};
-
 	const [undoStack, setUndoStack] = useState([]);
 	const [redoStack, setRedoStack] = useState([]);
 
@@ -321,7 +317,7 @@ const App = () => {
 		// The initial hiding when you first "delete"
 		const pageElement = document.querySelector(`.page[data-page-number="${activePage}"]`);
 		if (pageElement) {
-			pageElement.style.display = 'none';
+			// TODO: Make it actually delete. pageElement.style.display = 'none';
 		}
 	
 		setHiddenPages(newHiddenPages);
@@ -419,6 +415,7 @@ const App = () => {
 				}
 				<div css={pdfViewerWrapper}>
 					<PdfViewer
+						modifiedFile={modifiedFile}
 						showHeader={showHeader()}
 						showSubheader={showSubheader()}
 						tools={tools}

@@ -36,7 +36,7 @@ const activeCanvasStyle = css`
 	border: 2px solid #3183c8;
 `;
 
-export const Thumbnail = ({ displayPageNum, hidden, pdfProxyObj, activePage, pageNum, scale, onThumbnailClick }) => {
+export const Thumbnail = ({ onDragStart, onDragOver, onDragEnd, displayPageNum, hidden, pdfProxyObj, activePage, pageNum, scale, onThumbnailClick }) => {
 	const canvasRef = useRef(null);
 
 	useEffect(() => {
@@ -60,6 +60,10 @@ export const Thumbnail = ({ displayPageNum, hidden, pdfProxyObj, activePage, pag
 
 	return (
 		<div
+			draggable
+			onDragStart={(e) => onDragStart(e, pageNum)}
+			onDragOver={(e) => onDragOver(e, pageNum)}
+			onDragEnd={onDragEnd}
       css={hidden ? hiddenThumbnailWrapper : (activePage === pageNum ? activeThumbnailWrapper : thumbnailWrapper)}
       id={`thumbnail-${pageNum}`}
       onClick={() => onThumbnailClick(pageNum)}>

@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { useEffect } from 'preact/hooks';
+import { useEffect, useRef } from 'preact/hooks';
 import * as pdfjs from 'pdfjs-dist';
 import { EventBus, PDFLinkService, PDFViewer, PDFFindController, PDFScriptingManager } from 'pdfjs-dist/web/pdf_viewer';
 import 'pdfjs-dist/web/pdf_viewer.css';
@@ -16,6 +16,7 @@ const containerStyle = css`
 `;
 
 export const PdfViewer = ({
+	modifiedFile,
 	showHeader,
 	showSubheader,
 	setPdfProxyObj,
@@ -41,7 +42,13 @@ export const PdfViewer = ({
 		}
 		return result;
 	};
-  
+
+
+	const pdfLinkServiceRef = useRef(null);
+	const pdfViewerRef = useRef(null);
+	const pdfFindControllerRef = useRef(null);
+	const pdfScriptingManagerRef = useRef(null);
+
 	useEffect(() => {
 		if (!file || !viewerContainerRef.current) return;
 
@@ -49,17 +56,17 @@ export const PdfViewer = ({
 
 		const eventBus = new EventBus();
 		eventBusRef.current = eventBus;
-		const pdfLinkService = new PDFLinkService({ eventBus, externalLinkTarget: 2 });
-		const pdfFindController = new PDFFindController({ eventBus, linkService: pdfLinkService });
-		const pdfScriptingManager = new PDFScriptingManager({ eventBus, sandboxBundleSrc: SANDBOX_BUNDLE_SRC });
-		const pdfViewer = new PDFViewer({ container: viewerContainer, eventBus, linkService: pdfLinkService, findController: pdfFindController, scriptingManager: pdfScriptingManager });
-		setPdfViewerObj(pdfViewer);
+		pdfLinkServiceRef.current = new PDFLinkService({ eventBus, externalLinkTarget: 2 });
+		pdfFindControllerRef.current = new PDFFindController({ eventBus, linkService: pdfLinkServiceRef.current });
+		pdfScriptingManagerRef.current = new PDFScriptingManager({ eventBus, sandboxBundleSrc: SANDBOX_BUNDLE_SRC });
+		pdfViewerRef.current = new PDFViewer({ container: viewerContainer, eventBus, linkService: pdfLinkServiceRef.current, findController: pdfFindControllerRef.current, scriptingManager: pdfScriptingManagerRef.current });
+		setPdfViewerObj(pdfViewerRef.current);
     
-		pdfLinkService.setViewer(pdfViewer);
-		pdfScriptingManager.setViewer(pdfViewer);
+		pdfLinkServiceRef.current.setViewer(pdfViewerRef.current);
+		pdfScriptingManagerRef.current.setViewer(pdfViewerRef.current);
 
 		eventBus.on('pagesinit', () => {
-			pdfViewer.currentScaleValue = 'page-width';
+			pdfViewerRef.current.currentScaleValue = 'page-width';
 			// document
 		});
 
@@ -79,16 +86,28 @@ export const PdfViewer = ({
 			}
 			target.scrollIntoView();
 		});
-    
-		const loadingTask = pdfjs.getDocument(file);
+    console.log(modifiedFile, 'modifiedFile')
+		const loadingTask = pdfjs.getDocument(modifiedFile || file);
 
 		loadingTask.promise.then(
-			loadedPdfDocument => {
-				console.log(loadedPdfDocument, 'loadedPdfDocument', loadedPdfDocument.numPages);
+			async (loadedPdfDocument) => {
+				console.log(loadedPdfDocument, 'loadedPdfDocumentmod', loadedPdfDocument.numPages);
 				
+				if (pdfViewerRef.current && modifiedFile) {
+					pdfViewerRef.current.setDocument(null);
+					pdfLinkServiceRef.current.setDocument(null);
+					// await pdfScriptingManager.destroyPromise();
+					pdfViewerRef.current.cleanup();
+					const viewerElement = document.getElementById('viewer');
+					if (viewerElement) {
+						// viewerElement.innerHTML = '';
+					}
+				}
+		
+				// If no modifiedFile, continue to set the loaded PDF document.
 				setPdfProxyObj(loadedPdfDocument);
-				pdfViewer.setDocument(loadedPdfDocument);
-				pdfLinkService.setDocument(loadedPdfDocument, null);
+				pdfViewerRef.current.setDocument(loadedPdfDocument);
+				pdfLinkServiceRef.current.setDocument(loadedPdfDocument, null);
 			},
 			reason => {
 				setFileLoadFailError(reason?.message);
@@ -96,7 +115,7 @@ export const PdfViewer = ({
 				window.parent.postMessage({ type: 'file-failed', message: reason?.message }, '*');
 			}
 		);
-	}, [file]);
+	}, [file, modifiedFile]);
 
 	const reloadPdf = () => {
 		if (!file || !viewerContainerRef.current) return;
@@ -105,14 +124,14 @@ export const PdfViewer = ({
 
 		const eventBus = new EventBus();
 		eventBusRef.current = eventBus;
-		const pdfLinkService = new PDFLinkService({ eventBus, externalLinkTarget: 2 });
-		const pdfFindController = new PDFFindController({ eventBus, linkService: pdfLinkService });
-		const pdfScriptingManager = new PDFScriptingManager({ eventBus, sandboxBundleSrc: SANDBOX_BUNDLE_SRC });
-		const pdfViewer = new PDFViewer({ container: viewerContainer, eventBus, linkService: pdfLinkService, findController: pdfFindController, scriptingManager: pdfScriptingManager });
+		pdfLinkServiceRef.current = new PDFLinkService({ eventBus, externalLinkTarget: 2 });
+		pdfFindControllerRef.current = new PDFFindController({ eventBus, linkService: pdfLinkServiceRef.current });
+		pdfScriptingManagerRef.current = new PDFScriptingManager({ eventBus, sandboxBundleSrc: SANDBOX_BUNDLE_SRC });
+		const pdfViewer = new PDFViewer({ container: viewerContainer, eventBus, linkService: pdfLinkServiceRef.current, findController: pdfFindControllerRef.current, scriptingManager: pdfScriptingManagerRef.current });
 		setPdfViewerObj(pdfViewer);
     
-		pdfLinkService.setViewer(pdfViewer);
-		pdfScriptingManager.setViewer(pdfViewer);
+		pdfLinkServiceRef.current.setViewer(pdfViewer);
+		pdfScriptingManagerRef.current.setViewer(pdfViewer);
 
 		eventBus.on('pagesinit', () => {
 			pdfViewer.currentScaleValue = 'page-width';
@@ -136,15 +155,26 @@ export const PdfViewer = ({
 			target.scrollIntoView();
 		});
     
-		const loadingTask = pdfjs.getDocument(file);
+		const loadingTask = pdfjs.getDocument(modifiedFile || file);
 
 		loadingTask.promise.then(
-			loadedPdfDocument => {
+			async loadedPdfDocument => {
 				console.log(loadedPdfDocument, 'loadedPdfDocument', loadedPdfDocument.numPages);
 				
+				if (pdfViewer && modifiedFile) {
+					pdfViewer.setDocument(null);
+					pdfLinkServiceRef.current.setDocument(null);
+					// await pdfScriptingManager.destroyPromise();
+					pdfViewer.cleanup();
+					const viewerElement = document.getElementById('viewer');
+					if (viewerElement) {
+						// viewerElement.innerHTML = '';
+					}
+				}
+
 				setPdfProxyObj(loadedPdfDocument);
 				pdfViewer.setDocument(loadedPdfDocument);
-				pdfLinkService.setDocument(loadedPdfDocument, null);
+				pdfLinkServiceRef.current.setDocument(loadedPdfDocument, null);
 			},
 			reason => {
 				setFileLoadFailError(reason?.message);
