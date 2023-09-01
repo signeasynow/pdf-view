@@ -100,19 +100,19 @@ export const PdfViewer = ({
 		if (modifiedFile) {
 			modFile = await retrievePDF("pdfId1");
 		}
-		if (!modifiedFile && !!file) {
-			savePDF(file, "original");
-		}
 		const loadingTask = pdfjs.getDocument(modFile || file);
 
 		loadingTask.promise.then(
 			async (loadedPdfDocument) => {
 				// console.log(loadedPdfDocument, 'loadedPdfDocumentmod', loadedPdfDocument.numPages);
-
 				// If no modifiedFile, continue to set the loaded PDF document.
 				setPdfProxyObj(loadedPdfDocument);
 				pdfViewerRef.current.setDocument(loadedPdfDocument);
 				pdfLinkServiceRef.current.setDocument(loadedPdfDocument, null);
+				if (!modifiedFile) {
+					savePDF(await loadedPdfDocument.getData(), "original");
+					// console.log("updating original", loadedPdfDocument.getData())
+				}
 			},
 			reason => {
 				setFileLoadFailError(reason?.message);

@@ -10,7 +10,7 @@ import { PdfViewer } from './PdfViewer';
 import Panel from './Panel/Panel';
 import { heightOffset0, heightOffset1, heightOffset2 } from "./constants";
 import __wbg_init, { greet, remove_pages, move_page } from '../lib/pdf_wasm_project.js';
-import { savePDF } from './utils/indexDbUtils';
+import { retrievePDF, savePDF } from './utils/indexDbUtils';
 
 const Flex = css`
 display: flex;
@@ -158,9 +158,8 @@ const App = () => {
 		
 	};
 		
-	const [undoStack, setUndoStack] = useState([]);
+	const [operations, setOperations] = useState([]);
 	const [redoStack, setRedoStack] = useState([]);
-
 
 	console.log(tools, 'tools');
 
@@ -293,114 +292,93 @@ const App = () => {
 	const showSubheader = () => {
 		return tools.includes("remove")
 	}
+
+	const undoLastAction = async () => {
+		if (operations.length === 0) return;
 	
-	const doDelete = async (pages) => {
+		const lastOperation = operations[operations.length - 1];
+		// Start with the original PDF
+		let buffer = await retrievePDF("original");
+		// console.log(buffer, 'undo buffer')
+	
+		// Replay all operations except for the last one
+		for (let i = 0; i < operations.length - 1; i++) {
+			const operation = operations[i];
+			buffer = await applyOperation(operation, buffer); // Assuming applyOperation returns the updated buffer
+		}
+	
+		// Save the buffer after undo as the current state
+		await savePDF(buffer, 'pdfId1');
+		setModifiedFile(new Date().toISOString());
+	
+		// Update undo and redo stacks
+		const newUndoStack = operations.slice(0, -1);
+		setRedoStack(prevRedoStack => [...prevRedoStack, lastOperation]);
+		setOperations(newUndoStack);
+	};
+	
+	const redoLastAction = async () => {
+		console.log(redoStack, 'redoStack')
+		if (redoStack.length === 0) return;
+	
+		const lastRedoOperation = redoStack[redoStack.length - 1];
+		
+		// Start with the original PDF
+		let buffer = await retrievePDF("original");
+		// console.log(buffer, 'buffer')
+		// Replay all operations including the redo operation
+		const allOperationsUpToRedo = [...operations, lastRedoOperation];
+		// console.log(allOperationsUpToRedo, 'allOperationsUpToRedo')
+		for (const operation of allOperationsUpToRedo) {
+			buffer = await applyOperation(operation, buffer); // Assuming applyOperation returns the updated buffer
+		}
+	
+		// Save the buffer after redo as the current state
+		await savePDF(buffer, 'pdfId1');
+		setModifiedFile(new Date().toISOString());
+	
+		// Update undo and redo stacks
+		setOperations(prevOperations => [...prevOperations, lastRedoOperation]);
+		setRedoStack(redoStack.slice(0, -1));
+	};
+
+	const doDelete = async (pages, buffer) => {
 		if (!pdfProxyObj) {
 			console.log('No PDF loaded to download');
 			return;
 		}
-		const buffer = await pdfProxyObj.getData();
 		try {
 			const modifiedPdfArray = await remove_pages(new Uint8Array(buffer), pages);
-			await savePDF(modifiedPdfArray.buffer, 'pdfId1');
-
-			setModifiedFile(new Date().toISOString());
+			return modifiedPdfArray.buffer;
 		} catch (error) {
 			console.error('Error modifying PDF:', error);
 		}
 		return;
 	}
 
-	const applyOperation = async (operation) => {
+	const applyOperation = async (operation, buffer) => {
 		switch (operation.action) {
 			case "delete": {
-				doDelete(operation.pages);
-				return;
+				return await doDelete(operation.pages, buffer);
 			}
 		}
 	}
 
-	const onDelete = () => {
+	const onDelete = async () => {
 		if (!pdfProxyObj) {
 			console.log('No PDF loaded to download');
 			return;
 		}
-		const operation = { action: "delete", pages: [activePage]};
-		applyOperation(operation);
-	}
 
-	const onDelete2 = async () => {
-		if (!pdfProxyObj) {
-			console.log('No PDF loaded to download');
-			return;
-		}
-		const pagesToDelete = [activePage];
 		const buffer = await pdfProxyObj.getData();
-		try {
-			const modifiedPdfArray = await remove_pages(new Uint8Array(buffer), pagesToDelete);
-			await savePDF(modifiedPdfArray.buffer, 'pdfId1');
-
-			setModifiedFile(new Date().toISOString());
-		} catch (error) {
-			console.error('Error modifying PDF:', error);
-		}
-		return;
-		const newHiddenPages = [...hiddenPages, activePage];
+		const operation = { action: "delete", pages: [activePage]};
+		const bufferResult = await applyOperation(operation, buffer);
+		await savePDF(bufferResult, 'pdfId1');
+		setModifiedFile(new Date().toISOString());
 	
-		const newCommand = {
-			action: 'delete',
-			data: {
-				page: activePage,
-			},
-			undo: () => {
-				const pageElement = document.querySelector(`.page[data-page-number="${activePage}"]`);
-				if (pageElement) {
-					pageElement.style.display = 'block';
-				}
-				setHiddenPages(hiddenPages.filter(page => page !== activePage));
-			},
-			redo: () => {
-				const pageElement = document.querySelector(`.page[data-page-number="${activePage}"]`);
-				if (pageElement) {
-					pageElement.style.display = 'none';
-				}
-				setHiddenPages(newHiddenPages);
-			},
-		};
-	
-		// The initial hiding when you first "delete"
-		const pageElement = document.querySelector(`.page[data-page-number="${activePage}"]`);
-		if (pageElement) {
-			// TODO: Make it actually delete. pageElement.style.display = 'none';
-		}
-	
-		setHiddenPages(newHiddenPages);
+		setOperations([...operations, operation]);
 		setRedoStack([]);
-		const newUndoStack = [...undoStack, newCommand];
-		if (newUndoStack.length >= MAX_STACK_SIZE) {
-			newUndoStack.shift(); // remove the oldest command
-		}
-		setUndoStack(newUndoStack);
-	};
-
-	const undoLastAction = () => {
-		const lastCommand = undoStack.pop();
-		if (lastCommand) {
-			lastCommand.undo();
-			setRedoStack([...redoStack, lastCommand]);
-			setUndoStack(undoStack);
-		}
-	};
-	
-	// To redo an action
-	const redoLastAction = () => {
-		const lastCommand = redoStack.pop();
-		if (lastCommand) {
-			lastCommand.redo();
-			setUndoStack([...undoStack, lastCommand]);
-			setRedoStack(redoStack);
-		}
-	};
+	}
 
 	const appRef = useRef(null);
 
