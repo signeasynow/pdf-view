@@ -342,11 +342,17 @@ const App = () => {
 		setRedoStack(redoStack.slice(0, -1));
 	};
 
-	const doDelete = async (pages, buffer) => {
-		if (!pdfProxyObj) {
-			console.log('No PDF loaded to download');
-			return;
+	const doDrag = async (start, end, buffer) => {
+		try {
+			const modifiedPdfArray = await move_page(new Uint8Array(buffer), start, end);
+			return modifiedPdfArray.buffer;
+		} catch (error) {
+			console.error('Error modifying PDF:', error);
+			return buffer;
 		}
+	}
+
+	const doDelete = async (pages, buffer) => {
 		try {
 			const modifiedPdfArray = await remove_pages(new Uint8Array(buffer), pages);
 			return modifiedPdfArray.buffer;
@@ -360,6 +366,9 @@ const App = () => {
 		switch (operation.action) {
 			case "delete": {
 				return await doDelete(operation.pages, buffer);
+			}
+			case "drag": {
+				return await doDrag(operation.start, operation.end, buffer);
 			}
 		}
 	}
@@ -399,24 +408,25 @@ const App = () => {
 			console.log('No PDF loaded to download');
 			return;
 		}
-
-		console.log(start, end, 'start end')
-
+	
 		if (start === end) {
 			return;
 		}
+	
 		const buffer = await pdfProxyObj.getData();
-		// const pagesToDelete = hiddenPages.map(page => page); // Convert 1-indexed to 0-indexed
-		// console.log(pagesToDelete, 'pagesToDelete')
-		try {
-			// Call the remove_pages function from the WASM module
-			const modifiedPdfArray = await move_page(new Uint8Array(buffer), start, end);
-			await savePDF(modifiedPdfArray.buffer, 'pdfId1');
-			setModifiedFile(new Date().toISOString());
-		} catch (error) {
-			console.error('Error modifying PDF:', error);
-		}
-	}
+		const operation = { action: "drag", start, end };
+	
+		// Apply the drag and drop operation
+		const newBuffer = await applyOperation(operation, buffer);
+	
+		// Save and update state
+		await savePDF(newBuffer, 'pdfId1');
+		setModifiedFile(new Date().toISOString());
+		
+		// Update undo and redo stacks
+		setOperations([...operations, operation]);
+		setRedoStack([]);
+	}	
 	
 	if (fileLoadFailError) {
 		return (
