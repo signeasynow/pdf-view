@@ -5,6 +5,7 @@ import * as pdfjs from 'pdfjs-dist';
 import { EventBus, PDFLinkService, PDFViewer, PDFFindController, PDFScriptingManager } from 'pdfjs-dist/web/pdf_viewer';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import { heightOffset0, heightOffset1, heightOffset2 } from "./constants";
+import { retrievePDF } from './utils/indexDbUtils';
 const SANDBOX_BUNDLE_SRC = 'pdfjs-dist/build/pdf.sandbox.js';
 
 const containerStyle = css`
@@ -49,17 +50,26 @@ export const PdfViewer = ({
 	const pdfFindControllerRef = useRef(null);
 	const pdfScriptingManagerRef = useRef(null);
 
-	useEffect(() => {
-		if (!file || !viewerContainerRef.current) return;
+	const cleanupDocument = async () => {
+		pdfViewerRef.current?.setDocument(null);
+		pdfLinkServiceRef.current?.setDocument(null);
+		try {
+			await pdfScriptingManagerRef.current?.destroyPromise();
+		} catch (err) {}
+		pdfViewerRef.current?.cleanup();
+
+	}
+	const applyDocument = async () => {
+		await cleanupDocument();
 
 		const viewerContainer = viewerContainerRef.current;
 
 		const eventBus = new EventBus();
 		eventBusRef.current = eventBus;
-		pdfLinkServiceRef.current = new PDFLinkService({ eventBus, externalLinkTarget: 2 });
-		pdfFindControllerRef.current = new PDFFindController({ eventBus, linkService: pdfLinkServiceRef.current });
-		pdfScriptingManagerRef.current = new PDFScriptingManager({ eventBus, sandboxBundleSrc: SANDBOX_BUNDLE_SRC });
-		pdfViewerRef.current = new PDFViewer({ container: viewerContainer, eventBus, linkService: pdfLinkServiceRef.current, findController: pdfFindControllerRef.current, scriptingManager: pdfScriptingManagerRef.current });
+		pdfLinkServiceRef.current = new PDFLinkService({ eventBus: eventBusRef.current, externalLinkTarget: 2 });
+		pdfFindControllerRef.current = new PDFFindController({ eventBus: eventBusRef.current, linkService: pdfLinkServiceRef.current });
+		pdfScriptingManagerRef.current = new PDFScriptingManager({ eventBus: eventBusRef.current, sandboxBundleSrc: SANDBOX_BUNDLE_SRC });
+		pdfViewerRef.current = new PDFViewer({ container: viewerContainer, eventBus: eventBusRef.current, linkService: pdfLinkServiceRef.current, findController: pdfFindControllerRef.current, scriptingManager: pdfScriptingManagerRef.current });
 		setPdfViewerObj(pdfViewerRef.current);
     
 		pdfLinkServiceRef.current.setViewer(pdfViewerRef.current);
@@ -86,24 +96,18 @@ export const PdfViewer = ({
 			}
 			target.scrollIntoView();
 		});
-    console.log(modifiedFile, 'modifiedFile')
-		const loadingTask = pdfjs.getDocument(modifiedFile || file);
+    console.log(modifiedFile, 'modifiedFile', file)
+		let modFile;
+		if (modifiedFile) {
+			modFile = await retrievePDF("pdfId1");
+		}
+		console.log(modFile, 'modFile')
+		const loadingTask = pdfjs.getDocument(modFile || file);
 
 		loadingTask.promise.then(
 			async (loadedPdfDocument) => {
 				console.log(loadedPdfDocument, 'loadedPdfDocumentmod', loadedPdfDocument.numPages);
-				
-				if (pdfViewerRef.current && modifiedFile) {
-					pdfViewerRef.current.setDocument(null);
-					pdfLinkServiceRef.current.setDocument(null);
-					// await pdfScriptingManager.destroyPromise();
-					pdfViewerRef.current.cleanup();
-					const viewerElement = document.getElementById('viewer');
-					if (viewerElement) {
-						// viewerElement.innerHTML = '';
-					}
-				}
-		
+
 				// If no modifiedFile, continue to set the loaded PDF document.
 				setPdfProxyObj(loadedPdfDocument);
 				pdfViewerRef.current.setDocument(loadedPdfDocument);
@@ -115,74 +119,14 @@ export const PdfViewer = ({
 				window.parent.postMessage({ type: 'file-failed', message: reason?.message }, '*');
 			}
 		);
+	}
+
+	useEffect(() => {
+		if (!file || !viewerContainerRef.current) return;
+		applyDocument();
 	}, [file, modifiedFile]);
 
-	const reloadPdf = () => {
-		if (!file || !viewerContainerRef.current) return;
 	
-		const viewerContainer = viewerContainerRef.current;
-
-		const eventBus = new EventBus();
-		eventBusRef.current = eventBus;
-		pdfLinkServiceRef.current = new PDFLinkService({ eventBus, externalLinkTarget: 2 });
-		pdfFindControllerRef.current = new PDFFindController({ eventBus, linkService: pdfLinkServiceRef.current });
-		pdfScriptingManagerRef.current = new PDFScriptingManager({ eventBus, sandboxBundleSrc: SANDBOX_BUNDLE_SRC });
-		const pdfViewer = new PDFViewer({ container: viewerContainer, eventBus, linkService: pdfLinkServiceRef.current, findController: pdfFindControllerRef.current, scriptingManager: pdfScriptingManagerRef.current });
-		setPdfViewerObj(pdfViewer);
-    
-		pdfLinkServiceRef.current.setViewer(pdfViewer);
-		pdfScriptingManagerRef.current.setViewer(pdfViewer);
-
-		eventBus.on('pagesinit', () => {
-			pdfViewer.currentScaleValue = 'page-width';
-			// document
-		});
-
-		eventBus.on('updatefindmatchescount', ({ matchesCount }) => {
-			console.log(matchesCount, 'matchescount');
-			setMatchesCount(matchesCount?.total);
-		});
-
-		eventBus.on('pagechanging', ({
-			pageNumber
-		}) => {
-			// console.log(pageNumber, 'page 111f')
-			setActivePage(pageNumber);
-			const target = document.getElementById(`thumbnail-${pageNumber}`);
-			if (!target) {
-				return;
-			}
-			target.scrollIntoView();
-		});
-    
-		const loadingTask = pdfjs.getDocument(modifiedFile || file);
-
-		loadingTask.promise.then(
-			async loadedPdfDocument => {
-				console.log(loadedPdfDocument, 'loadedPdfDocument', loadedPdfDocument.numPages);
-				
-				if (pdfViewer && modifiedFile) {
-					pdfViewer.setDocument(null);
-					pdfLinkServiceRef.current.setDocument(null);
-					// await pdfScriptingManager.destroyPromise();
-					pdfViewer.cleanup();
-					const viewerElement = document.getElementById('viewer');
-					if (viewerElement) {
-						// viewerElement.innerHTML = '';
-					}
-				}
-
-				setPdfProxyObj(loadedPdfDocument);
-				pdfViewer.setDocument(loadedPdfDocument);
-				pdfLinkServiceRef.current.setDocument(loadedPdfDocument, null);
-			},
-			reason => {
-				setFileLoadFailError(reason?.message);
-				console.error(reason, 'reason', reason?.message);
-			}
-		);
-	};
-
 	useEffect(() => {
 		console.log('start change');
 		function handleVisibilityChange() {
@@ -196,13 +140,13 @@ export const PdfViewer = ({
 
 				// You can put your logic here to re-render the PDF or perform some other actions
 				// For example, you might call a function to reload the PDF:
-				reloadPdf();
+				applyDocument();
 			}
 		}
 	
 		document.addEventListener('visibilitychange', handleVisibilityChange);
 		return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-	}, []);
+	}, [modifiedFile, file]);
 
 	const width = () => {
 		if (!tools.includes("thumbnails")) {

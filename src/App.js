@@ -10,6 +10,19 @@ import { PdfViewer } from './PdfViewer';
 import Panel from './Panel/Panel';
 import { heightOffset0, heightOffset1, heightOffset2 } from "./constants";
 import __wbg_init, { greet, remove_pages, move_page } from '../lib/pdf_wasm_project.js';
+import { savePDF } from './utils/indexDbUtils';
+
+function deepCopyArrayBuffer(srcBuffer) {
+  const srcView = new Uint8Array(srcBuffer);
+  const cloneBuffer = new ArrayBuffer(srcView.length);
+  const cloneView = new Uint8Array(cloneBuffer);
+  
+  for (let i = 0; i < srcView.length; i++) {
+    cloneView[i] = srcView[i];
+  }
+  
+  return cloneBuffer;
+}
 
 const Flex = css`
 display: flex;
@@ -140,7 +153,10 @@ const App = () => {
 		try {
 			// Call the remove_pages function from the WASM module
 			const modifiedPdfArray = await remove_pages(new Uint8Array(buffer), pagesToDelete);
-			setModifiedFile(modifiedPdfArray.buffer);
+			// const newBuffer = modifiedPdfArray.buffer.slice(0);
+			await savePDF(modifiedPdfArray.buffer, 'pdfId1');
+
+			setModifiedFile(new Date().toISOString());
 			// Convert result to Blob and download
 			const blob = new Blob([modifiedPdfArray.buffer], { type: 'application/pdf' });
 			const url = URL.createObjectURL(blob);
