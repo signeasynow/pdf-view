@@ -293,18 +293,50 @@ const App = () => {
 	const showSubheader = () => {
 		return tools.includes("remove")
 	}
+	
+	const doDelete = async (pages) => {
+		if (!pdfProxyObj) {
+			console.log('No PDF loaded to download');
+			return;
+		}
+		const buffer = await pdfProxyObj.getData();
+		try {
+			const modifiedPdfArray = await remove_pages(new Uint8Array(buffer), pages);
+			await savePDF(modifiedPdfArray.buffer, 'pdfId1');
 
-	const onDelete = async () => {
+			setModifiedFile(new Date().toISOString());
+		} catch (error) {
+			console.error('Error modifying PDF:', error);
+		}
+		return;
+	}
+
+	const applyOperation = async (operation) => {
+		switch (operation.action) {
+			case "delete": {
+				doDelete(operation.pages);
+				return;
+			}
+		}
+	}
+
+	const onDelete = () => {
+		if (!pdfProxyObj) {
+			console.log('No PDF loaded to download');
+			return;
+		}
+		const operation = { action: "delete", pages: [activePage]};
+		applyOperation(operation);
+	}
+
+	const onDelete2 = async () => {
 		if (!pdfProxyObj) {
 			console.log('No PDF loaded to download');
 			return;
 		}
 		const pagesToDelete = [activePage];
 		const buffer = await pdfProxyObj.getData();
-		// const pagesToDelete = hiddenPages.map(page => page); // Convert 1-indexed to 0-indexed
-		console.log(pagesToDelete, 'pagesToDelete')
 		try {
-			// Call the remove_pages function from the WASM module
 			const modifiedPdfArray = await remove_pages(new Uint8Array(buffer), pagesToDelete);
 			await savePDF(modifiedPdfArray.buffer, 'pdfId1');
 

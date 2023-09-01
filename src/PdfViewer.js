@@ -5,7 +5,7 @@ import * as pdfjs from 'pdfjs-dist';
 import { EventBus, PDFLinkService, PDFViewer, PDFFindController, PDFScriptingManager } from 'pdfjs-dist/web/pdf_viewer';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import { heightOffset0, heightOffset1, heightOffset2 } from "./constants";
-import { retrievePDF } from './utils/indexDbUtils';
+import { retrievePDF, savePDF } from './utils/indexDbUtils';
 const SANDBOX_BUNDLE_SRC = 'pdfjs-dist/build/pdf.sandbox.js';
 
 const containerStyle = css`
@@ -96,17 +96,18 @@ export const PdfViewer = ({
 			}
 			target.scrollIntoView();
 		});
-    console.log(modifiedFile, 'modifiedFile', file)
 		let modFile;
 		if (modifiedFile) {
 			modFile = await retrievePDF("pdfId1");
 		}
-		console.log(modFile, 'modFile')
+		if (!modifiedFile && !!file) {
+			savePDF(file, "original");
+		}
 		const loadingTask = pdfjs.getDocument(modFile || file);
 
 		loadingTask.promise.then(
 			async (loadedPdfDocument) => {
-				console.log(loadedPdfDocument, 'loadedPdfDocumentmod', loadedPdfDocument.numPages);
+				// console.log(loadedPdfDocument, 'loadedPdfDocumentmod', loadedPdfDocument.numPages);
 
 				// If no modifiedFile, continue to set the loaded PDF document.
 				setPdfProxyObj(loadedPdfDocument);
