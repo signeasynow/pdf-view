@@ -482,6 +482,7 @@ const App = () => {
 				}
 				<div css={pdfViewerWrapper}>
 					<PdfViewer
+						activePage={activePage}
 						modifiedFile={modifiedFile}
 						showHeader={showHeader()}
 						showSubheader={showSubheader()}

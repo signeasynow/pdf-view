@@ -17,6 +17,7 @@ const containerStyle = css`
 `;
 
 export const PdfViewer = ({
+	activePage,
 	modifiedFile,
 	showHeader,
 	showSubheader,
@@ -77,6 +78,13 @@ export const PdfViewer = ({
 
 		eventBus.on('pagesinit', () => {
 			pdfViewerRef.current.currentScaleValue = 'page-width';
+		});
+
+		eventBus.on('pagesloaded', () => {
+			console.log(pdfViewerRef.current, 'pdfViewerRef.current')
+			if (typeof activePage === "number") {
+				pdfLinkServiceRef.current?.goToPage(activePage || 1);
+			}
 			// document
 		});
 
@@ -109,6 +117,7 @@ export const PdfViewer = ({
 				setPdfProxyObj(loadedPdfDocument);
 				pdfViewerRef.current.setDocument(loadedPdfDocument);
 				pdfLinkServiceRef.current.setDocument(loadedPdfDocument, null);
+				
 				if (!modifiedFile) {
 					savePDF(await loadedPdfDocument.getData(), "original");
 					// console.log("updating original", loadedPdfDocument.getData())
