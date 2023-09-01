@@ -30,7 +30,8 @@ const Panel = ({
 	activePage,
 	pdf,
 	pdfProxyObj,
-	hiddenPages
+	hiddenPages,
+	onDragEnd
 }) => {
 
 	const [activeTab, setActiveTab] = useState(0);
@@ -53,6 +54,7 @@ const Panel = ({
 			{
 				activeTab === 0 && tools.includes('thumbnails') && (
 					<ThumbnailsSection
+						onDragEnd={onDragEnd}
 						hiddenPages={hiddenPages}
 						tools={tools}
 						setActivePage={setActivePage}

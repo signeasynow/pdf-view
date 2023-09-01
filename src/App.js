@@ -12,18 +12,6 @@ import { heightOffset0, heightOffset1, heightOffset2 } from "./constants";
 import __wbg_init, { greet, remove_pages, move_page } from '../lib/pdf_wasm_project.js';
 import { savePDF } from './utils/indexDbUtils';
 
-function deepCopyArrayBuffer(srcBuffer) {
-  const srcView = new Uint8Array(srcBuffer);
-  const cloneBuffer = new ArrayBuffer(srcView.length);
-  const cloneView = new Uint8Array(cloneBuffer);
-  
-  for (let i = 0; i < srcView.length; i++) {
-    cloneView[i] = srcView[i];
-  }
-  
-  return cloneBuffer;
-}
-
 const Flex = css`
 display: flex;
 width: 100%;
@@ -148,17 +136,17 @@ const App = () => {
 		}
 	
 		const buffer = await pdfProxyObj.getData();
-		const pagesToDelete = hiddenPages.map(page => page); // Convert 1-indexed to 0-indexed
-		console.log(pagesToDelete, 'pagesToDelete')
+		// const pagesToDelete = hiddenPages.map(page => page); // Convert 1-indexed to 0-indexed
+		// console.log(pagesToDelete, 'pagesToDelete')
 		try {
 			// Call the remove_pages function from the WASM module
-			const modifiedPdfArray = await remove_pages(new Uint8Array(buffer), pagesToDelete);
+			// const modifiedPdfArray = await remove_pages(new Uint8Array(buffer), pagesToDelete);
 			// const newBuffer = modifiedPdfArray.buffer.slice(0);
-			await savePDF(modifiedPdfArray.buffer, 'pdfId1');
+			// await savePDF(modifiedPdfArray.buffer, 'pdfId1');
 
-			setModifiedFile(new Date().toISOString());
+			// setModifiedFile(new Date().toISOString());
 			// Convert result to Blob and download
-			const blob = new Blob([modifiedPdfArray.buffer], { type: 'application/pdf' });
+			const blob = new Blob([buffer], { type: 'application/pdf' });
 			const url = URL.createObjectURL(blob);
 			const link = document.createElement('a');
 			link.href = url;
@@ -306,7 +294,25 @@ const App = () => {
 		return tools.includes("remove")
 	}
 
-	const onDelete = () => {
+	const onDelete = async () => {
+		if (!pdfProxyObj) {
+			console.log('No PDF loaded to download');
+			return;
+		}
+		const pagesToDelete = [activePage];
+		const buffer = await pdfProxyObj.getData();
+		// const pagesToDelete = hiddenPages.map(page => page); // Convert 1-indexed to 0-indexed
+		console.log(pagesToDelete, 'pagesToDelete')
+		try {
+			// Call the remove_pages function from the WASM module
+			const modifiedPdfArray = await remove_pages(new Uint8Array(buffer), pagesToDelete);
+			await savePDF(modifiedPdfArray.buffer, 'pdfId1');
+
+			setModifiedFile(new Date().toISOString());
+		} catch (error) {
+			console.error('Error modifying PDF:', error);
+		}
+		return;
 		const newHiddenPages = [...hiddenPages, activePage];
 	
 		const newCommand = {
@@ -377,6 +383,30 @@ const App = () => {
 		}
 		return `calc(100vh - ${myHeight}px)`;
 	}
+
+	const onDragEnd = async (start, end) => {
+		if (!pdfProxyObj) {
+			console.log('No PDF loaded to download');
+			return;
+		}
+
+		console.log(start, end, 'start end')
+
+		if (start === end) {
+			return;
+		}
+		const buffer = await pdfProxyObj.getData();
+		// const pagesToDelete = hiddenPages.map(page => page); // Convert 1-indexed to 0-indexed
+		// console.log(pagesToDelete, 'pagesToDelete')
+		try {
+			// Call the remove_pages function from the WASM module
+			const modifiedPdfArray = await move_page(new Uint8Array(buffer), start, end);
+			await savePDF(modifiedPdfArray.buffer, 'pdfId1');
+			setModifiedFile(new Date().toISOString());
+		} catch (error) {
+			console.error('Error modifying PDF:', error);
+		}
+	}
 	
 	if (fileLoadFailError) {
 		return (
@@ -419,6 +449,7 @@ const App = () => {
 				{
 					tools.includes('thumbnails') && (
 						<Panel
+						  onDragEnd={onDragEnd}
 						  hiddenPages={hiddenPages}
 							tools={tools}
 							setActivePage={setActivePage}

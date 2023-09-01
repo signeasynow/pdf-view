@@ -3,6 +3,7 @@ import { css } from '@emotion/react';
 import { useState } from 'preact/hooks'; // add this import
 import { h } from 'preact';
 import { Thumbnail } from './Thumbnail';
+import { greet, remove_pages, move_page } from '../lib/pdf_wasm_project.js';
 
 const wrapperStyle = css`
   position: relative;
@@ -14,7 +15,15 @@ const lineIndicatorStyle = css`
   width: 100%;
 `;
 
-const ThumbnailsContainer = ({ hiddenPages, activePage, pdf, scale, onThumbnailClick, pdfProxyObj }) => {
+const ThumbnailsContainer = ({
+	onDragEnd,
+	hiddenPages,
+	activePage,
+	pdf,
+	scale,
+	onThumbnailClick,
+	pdfProxyObj
+}) => {
 	const numPages = pdfProxyObj?.numPages;
 
 	const [draggingIndex, setDraggingIndex] = useState(null);
@@ -43,8 +52,14 @@ const ThumbnailsContainer = ({ hiddenPages, activePage, pdf, scale, onThumbnailC
 						e.preventDefault();
 						setDragOverIndex(pageNum);
 					}}
-					onDragEnd={() => {
-						console.log(`Dropped at index: ${dragOverIndex - 1}`); // Subtract 1 because your pageNum starts from 1
+					onDragEnd={async () => {
+						if (dragOverIndex > i) {
+							onDragEnd(i, dragOverIndex - 2);
+						} else {
+							onDragEnd(i, dragOverIndex - 1);
+						}
+						
+						console.log(`Dropped at index: ${dragOverIndex - 1}`, i); // Subtract 1 because your pageNum starts from 1
 						// logic for reordering thumbnails based on draggingIndex and dragOverIndex
 						setDraggingIndex(null);
 						setDragOverIndex(null);
