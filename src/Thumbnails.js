@@ -15,6 +15,15 @@ const lineIndicatorStyle = css`
   width: 100%;
 `;
 
+const canvasStyle = css`
+  padding-bottom: 4px;
+`;
+
+const activeCanvasStyle = css`
+	border: 2px solid #3183c8;
+`;
+
+
 const ThumbnailsContainer = ({
 	onDragEnd,
 	hiddenPages,
@@ -80,6 +89,25 @@ const ThumbnailsContainer = ({
 
 	return (<div css={wrapperStyle}>
 		{thumbnails}
+		<div
+      draggable
+      onDragOver={(e) => {
+        e.preventDefault();
+        // set the dragOverIndex to numPages + 1 for the dummy element
+        setDragOverIndex(numPages + 1);
+      }}
+      onDragEnd={() => {
+        // If dummy is the target, move the dragging item to the end
+        onDragEnd(draggingIndex, numPages);
+        setDraggingIndex(null);
+        setDragOverIndex(null);
+      }}
+    >
+      {/* Style your dummy thumbnail here */}
+      <div style={{height: "40px", width: "150px", borderTop: dragOverIndex === numPages + 1 ? "2px solid red" : ""}}>
+
+      </div>
+    </div>
 	</div>);
 };
 

@@ -12,6 +12,7 @@ const thumbnailWrapper = css`
   cursor: pointer;
 	font-family: Lato;
 	color: #8b8b8b;
+	margin-bottom: 20px;
 `;
 
 const hiddenThumbnailWrapper = css`
