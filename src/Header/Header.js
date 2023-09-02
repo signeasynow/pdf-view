@@ -80,7 +80,7 @@ const Header = ({
 		<Wrapper>
 			<div css={contentLeftStyle}>
 				{
-					tools?.includes('download') && (
+					tools?.general?.includes('download') && (
 						<>
 							<HeaderBtn onClick={onDownload} title="Download" iconAlt="Download" icon={Download} />
 							<VerticalDivider />
@@ -88,12 +88,12 @@ const Header = ({
 					)
 				}
 				{
-					tools.includes('thumbnails') && (
+					tools?.general?.includes('thumbnails') && (
 						<HeaderBtn onClick={onPanel} title="Panel" iconAlt="Panel" icon={Panel} />
 					)
 				}
 				{
-					tools.includes('rotation') && (
+					tools?.editing?.includes('rotation') && (
 						<ControlsSection
 							eventBusRef={eventBusRef}
 							pdfViewerObj={pdfViewerObj}
@@ -101,7 +101,7 @@ const Header = ({
 					)
 				}
 				{
-					tools.includes('zoom') && (
+					tools?.general.includes('zoom') && (
 						<>
 							<VerticalDivider />
 							<ZoomSection
@@ -128,7 +128,7 @@ const Header = ({
       */
 			}
 			{
-				tools.includes('search') && (
+				tools?.general?.includes('search') && (
 					<HeaderBtn onClick={onSearch} title="Search" iconAlt="Search" icon={Search} />
 				)
 			}

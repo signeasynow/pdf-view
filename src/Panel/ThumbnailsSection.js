@@ -92,7 +92,7 @@ const ThumbnailsSection = ({
 	return (
 		<>
 			{
-				tools?.includes('thumbnail-zoom') && (
+				tools?.thumbnails?.includes('zoom') && (
 					<div css={topSectionStyle}>
 						<div css={rangeWrapperStyle}>
 							<label css={minusStyle}>—</label>

@@ -159,7 +159,7 @@ export const PdfViewer = ({
 	}, [modifiedFile, file]);
 
 	const width = () => {
-		if (!tools.includes("thumbnails")) {
+		if (!tools?.general?.includes("thumbnails")) {
 			return "100%"
 		}
 		return `calc(100% - ${panelSpaceUsed()}px)`;

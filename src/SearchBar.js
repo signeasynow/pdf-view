@@ -1,6 +1,5 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-
 import { useRef } from 'preact/hooks';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import { Icon } from 'aleon_35_pdf_ui_lib';

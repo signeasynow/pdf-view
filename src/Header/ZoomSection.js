@@ -9,7 +9,6 @@ import Dropdown from '../SharedComponents/Dropdown';
 import { useDebounce } from '../utils/useDebounce';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { Icon, Tooltip } from 'aleon_35_pdf_ui_lib';
-// import Pan from "./assets/pan.svg";
 
 const SCROLLBAR_PADDING = 40;
 

@@ -284,13 +284,13 @@ const App = () => {
 	};
 
 	const showHeader = () => {
-		return tools.includes("download") || tools.includes("thumbnails")
-		|| tools.includes("zoom") || tools.includes("search")
-		|| tools.includes("rotation")
+		return tools?.general?.includes("download") || tools?.general?.includes("thumbnails")
+		|| tools?.general?.includes("zoom") || tools?.general?.includes("search")
+		|| tools?.editing?.includes("rotation")
 	}
 
 	const showSubheader = () => {
-		return tools.includes("remove")
+		return tools?.editing?.includes("remove")
 	}
 
 	const undoLastAction = async () => {
@@ -467,7 +467,7 @@ const App = () => {
 			}
 			<div css={Flex}>
 				{
-					tools.includes('thumbnails') && (
+					tools?.general?.includes('thumbnails') && (
 						<Panel
 						  onDragEnd={onDragEnd}
 						  hiddenPages={hiddenPages}

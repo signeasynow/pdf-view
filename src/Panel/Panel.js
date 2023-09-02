@@ -6,6 +6,8 @@ import 'pdfjs-dist/web/pdf_viewer.css';
 import { useState } from 'preact/hooks';
 import ThumbnailsSection from './ThumbnailsSection';
 import BookmarksSection from './BookmarksSection';
+import { Icon, Tooltip } from 'aleon_35_pdf_ui_lib';
+import ExpandIcon from "../../assets/expand-svgrepo-com.svg";
 
 const visibleSearchWrapper = css`
   background: #f1f3f5;
@@ -23,6 +25,10 @@ const invisibleSearchWrapper = css`
   display: none;
 `;
 
+const optionsWrapper = css`
+
+`;
+
 const Panel = ({
 	showPanel,
 	tools,
@@ -38,21 +44,20 @@ const Panel = ({
 
 	return (
 		<div css={showPanel ? visibleSearchWrapper : invisibleSearchWrapper}>
-			{
-
-				/*
 				<div css={optionsWrapper}>
-				<Tooltip title="Thumbnails">
-					<Icon onClick={() => setActiveTab(0)} src={ThumbnailsIcon} alt="Menu" />
-				</Tooltip>
-				<Tooltip title="Bookmarks">
-					<Icon onClick={() => setActiveTab(1)} src={Bookmark} alt="Menu" />
-				</Tooltip>
-			</div>
-			*/
-			}
+					<Tooltip title="View thumbnails in full screen">
+						<Icon onClick={() => setActiveTab(0)} src={ExpandIcon} alt="Menu" />
+					</Tooltip>
+					{
+						/*
+						<Tooltip title="Bookmarks">
+							<Icon onClick={() => setActiveTab(1)} src={Bookmark} alt="Menu" />
+						</Tooltip>
+						*/
+					}
+				</div>
 			{
-				activeTab === 0 && tools.includes('thumbnails') && (
+				activeTab === 0 && tools?.general?.includes('thumbnails') && (
 					<ThumbnailsSection
 						onDragEnd={onDragEnd}
 						hiddenPages={hiddenPages}
