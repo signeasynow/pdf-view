@@ -5,6 +5,7 @@ import 'pdfjs-dist/web/pdf_viewer.css';
 import { Icon } from 'aleon_35_pdf_ui_lib';
 import ChevronLeft from '../assets/chevron-left-svgrepo-com.svg';
 import ChevronRight from '../assets/chevron-right-svgrepo-com.svg';
+import { useTranslation } from 'react-i18next';
 
 const visibleSearchWrapper = css`
   background: #f1f3f5;
@@ -81,6 +82,7 @@ const SearchBar = ({
 	onClear
 }) => {
 
+	const { t } = useTranslation();
 	const searchTextRef = useRef('');
 
 	const onClickClear = () => {
@@ -93,7 +95,7 @@ const SearchBar = ({
 			<div css={innerWrapperStyle}>
 				<div>
 					<div css={inputWrapperStyle}>
-						<input css={inputStyle} ref={searchTextRef} onChange={onChange} placeholder="Search document" />
+						<input css={inputStyle} ref={searchTextRef} onChange={onChange} placeholder={t("searchDocument")} />
 						{
 							!!searchText && <button css={inputCloseStyle} onClick={onClickClear}>✖</button>
 						}
@@ -101,23 +103,23 @@ const SearchBar = ({
 				</div>
 				<div css={belowInputStyle}>
 					<input value={caseSensitive} onClick={onToggleCaseSensitive} type="checkbox" id="caseSensitive" />
-					<label css={checkboxLabelStyle} htmlFor="caseSensitive">Case sensitive</label>
+					<label css={checkboxLabelStyle} htmlFor="caseSensitive">{t("caseSensitive")}</label>
 					<input value={matchWholeWord} onClick={onToggleWholeWord} type="checkbox" id="wholeWord" />
-					<label css={checkboxLabelStyle} htmlFor="wholeWord">Whole word</label>
+					<label css={checkboxLabelStyle} htmlFor="wholeWord">{t("wholeWord")}</label>
 					{
 						!!searchText && (
 							<>
 								<hr css={hrStyle} />
 								<div css={resultsCountSectionStyle}>
 									<div>
-										{matchesCount} results found
+									{t('resultsFound', { count: matchesCount })}
 									</div>
 									<div css={arrowsStyle}>
 										<div onClick={onPrev}>
-											<Icon src={ChevronLeft} alt="Arrow left" />
+											<Icon src={ChevronLeft} alt={t("arrowLeft")} />
 										</div>
 										<div onClick={onNext}>
-											<Icon src={ChevronRight} alt="Arrow right" />
+											<Icon src={ChevronRight} alt={t("arrowRight")} />
 										</div>
 									</div>
 								</div>

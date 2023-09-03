@@ -11,6 +11,7 @@ import Download from '../../assets/download-svgrepo-com.svg';
 import ZoomSection from './ZoomSection';
 import ControlsSection from './ControlsSection';
 import HeaderBtn from './HeaderBtn';
+import { useTranslation } from 'react-i18next';
 
 const VerticalDivider = () => (
 	<div css={css`
@@ -49,47 +50,23 @@ const Header = ({
 	leftPanelEnabled,
 	eventBusRef,
 	viewerContainerRef
-}) =>
+}) => {
+	const { t } = useTranslation();
 
-/*
-  useEffect(() => {
-      const viewerContainer = viewerContainerRef.current;
-
-      // Other setup code...
-
-      const debouncedHandleWheel = useDebounce((event) => {
-          // prevent the default zooming behavior in the browser
-          event.preventDefault();
-          if (event.deltaY < 0) {
-              // Wheel scrolled up, zoom in
-              onZoomIn();
-          } else if (event.deltaY > 0) {
-              // Wheel scrolled down, zoom out
-              onZoomOut();
-          }
-      }, 50);
-
-      viewerContainer.addEventListener('wheel', debouncedHandleWheel, { passive: false });
-      return () => {
-          // Cleanup - remove the event listener when the component unmounts
-          viewerContainer.removeEventListener('wheel', debouncedHandleWheel);
-      };
-  }, []);
-  */
-	(
+ return (
 		<Wrapper>
 			<div css={contentLeftStyle}>
 				{
 					tools?.general?.includes('download') && (
 						<>
-							<HeaderBtn onClick={onDownload} title="Download" iconAlt="Download" icon={Download} />
+							<HeaderBtn onClick={onDownload} title={t("download")} iconAlt={t("download")}  icon={Download} />
 							<VerticalDivider />
 						</>
 					)
 				}
 				{
 					tools?.general?.includes('thumbnails') && (
-						<HeaderBtn onClick={onPanel} title="Panel" iconAlt="Panel" icon={Panel} />
+						<HeaderBtn onClick={onPanel} title={t("panel")} iconAlt={t("panel")} icon={Panel} />
 					)
 				}
 				{
@@ -129,7 +106,7 @@ const Header = ({
 			}
 			{
 				tools?.general?.includes('search') && (
-					<HeaderBtn onClick={onSearch} title="Search" iconAlt="Search" icon={Search} />
+					<HeaderBtn onClick={onSearch} title={t("search")} iconAlt={t("search")} icon={Search} />
 				)
 			}
 			{
@@ -140,6 +117,6 @@ const Header = ({
 			}
 		</Wrapper>
 	)
-;
+}
 
 export default Header;

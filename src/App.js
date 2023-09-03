@@ -11,6 +11,8 @@ import Panel from './Panel/Panel';
 import { heightOffset0, heightOffset1, heightOffset2 } from "./constants";
 import __wbg_init, { greet, remove_pages, move_page } from '../lib/pdf_wasm_project.js';
 import { retrievePDF, savePDF } from './utils/indexDbUtils';
+import { I18nextProvider } from 'react-i18next';
+import i18n from "./utils/i18n";
 
 const Flex = css`
 display: flex;
@@ -52,7 +54,7 @@ const App = () => {
 	const viewerContainerRef = useRef(null);
 
 	const [file, setFile] = useState(null);
-	const [fileName, setFileName] = useState('');
+	const [fileName, setFileName] = useState('file.pdf');
 
 	const [showSearch, setShowSearch] = useState(false);
 	const [showPanel, setShowPanel] = useState(true);
@@ -129,28 +131,19 @@ const App = () => {
 		
 	};
 */
-	const onDownload = async (name) => {
+	const onDownload = async () => {
 		if (!pdfProxyObj) {
 			console.log('No PDF loaded to download');
 			return;
 		}
 	
 		const buffer = await pdfProxyObj.getData();
-		// const pagesToDelete = hiddenPages.map(page => page); // Convert 1-indexed to 0-indexed
-		// console.log(pagesToDelete, 'pagesToDelete')
 		try {
-			// Call the remove_pages function from the WASM module
-			// const modifiedPdfArray = await remove_pages(new Uint8Array(buffer), pagesToDelete);
-			// const newBuffer = modifiedPdfArray.buffer.slice(0);
-			// await savePDF(modifiedPdfArray.buffer, 'pdfId1');
-
-			// setModifiedFile(new Date().toISOString());
-			// Convert result to Blob and download
 			const blob = new Blob([buffer], { type: 'application/pdf' });
 			const url = URL.createObjectURL(blob);
 			const link = document.createElement('a');
 			link.href = url;
-			link.download = name || fileName || 'file.pdf';
+			link.download = fileName;
 			link.click();
 		} catch (error) {
 			console.error('Error modifying PDF:', error);
@@ -174,6 +167,11 @@ const App = () => {
 			}
 			if (typeof event.data === 'object' && event.data.tools) {
 				setTools(event.data.tools);
+			}
+			console.log(event.data, 'event.data')
+			if (typeof event.data === 'object' && event.data.locale) {
+				console.log(event.data.locale, 'localeee')
+				i18n.changeLanguage(event.data.locale)
 			}
 		}, false);
 
@@ -200,7 +198,7 @@ const App = () => {
 	useEffect(() => {
 		const messageFunc =  (event) => {
 			if (event.data && event.data.type === 'download') {
-				onDownload(event.data.name);
+				onDownload();
     	}
 		};
 		window.addEventListener('message', messageFunc, false);
@@ -438,83 +436,86 @@ const App = () => {
 	}
 
 	return (
-		<div ref={appRef} css={WrapperStyle} style={{height: mainHeight()}}>
-			{
-				showHeader() && (
-					<Header
-						tools={tools}
-						onDownload={onDownload}
-						pdfProxyObj={pdfProxyObj}
-						appRef={appRef}
-						eventBusRef={eventBusRef}
-						viewerContainerRef={viewerContainerRef}
-						pdfViewerObj={pdfViewerObj}
-						onSearch={onSearchBtnClick}
-						onPanel={onPanelBtnClick}
-						leftPanelEnabled={showPanel}
-					/>
-				)
-			}
-			{
-				showSubheader() && (
-					<Subheader
-						undoLastAction={undoLastAction}
-						redoLastAction={redoLastAction}
-						onDownload={onDownload}
-						onDelete={onDelete}
-					/>
-				)
-			}
-			<div css={Flex}>
+		<I18nextProvider i18n={i18n}>
+			<div ref={appRef} css={WrapperStyle} style={{height: mainHeight()}}>
 				{
-					tools?.general?.includes('thumbnails') && (
-						<Panel
-						  onDragEnd={onDragEnd}
-						  hiddenPages={hiddenPages}
+					showHeader() && (
+						<Header
 							tools={tools}
-							setActivePage={setActivePage}
-							activePage={activePage}
+							onDownload={onDownload}
 							pdfProxyObj={pdfProxyObj}
-							pdf={pdfViewerObj}
-							showPanel={showPanel}
+							appRef={appRef}
+							eventBusRef={eventBusRef}
+							viewerContainerRef={viewerContainerRef}
+							pdfViewerObj={pdfViewerObj}
+							onSearch={onSearchBtnClick}
+							onPanel={onPanelBtnClick}
+							leftPanelEnabled={showPanel}
 						/>
 					)
 				}
-				<div css={pdfViewerWrapper}>
-					<PdfViewer
-						activePage={activePage}
-						modifiedFile={modifiedFile}
-						showHeader={showHeader()}
-						showSubheader={showSubheader()}
-						tools={tools}
-						fileLoadFailError={fileLoadFailError}
-						setFileLoadFailError={setFileLoadFailError}
-						rightPanelEnabled={showSearch}
-						leftPanelEnabled={showPanel}
-						setActivePage={setActivePage}
-						setPdfProxyObj={setPdfProxyObj}
-						setMatchesCount={setMatchesCount}
-						eventBusRef={eventBusRef}
-						viewerContainerRef={viewerContainerRef}
-						setPdfViewerObj={setPdfViewerObj}
-						file={file}
+				{
+					showSubheader() && (
+						<Subheader
+							undoLastAction={undoLastAction}
+							redoLastAction={redoLastAction}
+							onDownload={onDownload}
+							onDelete={onDelete}
+						/>
+					)
+				}
+				<div css={Flex}>
+					{
+						tools?.general?.includes('thumbnails') && (
+							<Panel
+								onDragEnd={onDragEnd}
+								hiddenPages={hiddenPages}
+								tools={tools}
+								setActivePage={setActivePage}
+								activePage={activePage}
+								pdfProxyObj={pdfProxyObj}
+								pdf={pdfViewerObj}
+								showPanel={showPanel}
+							/>
+						)
+					}
+					<div css={pdfViewerWrapper}>
+						<PdfViewer
+							activePage={activePage}
+							modifiedFile={modifiedFile}
+							showHeader={showHeader()}
+							showSubheader={showSubheader()}
+							tools={tools}
+							fileLoadFailError={fileLoadFailError}
+							setFileLoadFailError={setFileLoadFailError}
+							rightPanelEnabled={showSearch}
+							leftPanelEnabled={showPanel}
+							setActivePage={setActivePage}
+							setPdfProxyObj={setPdfProxyObj}
+							setMatchesCount={setMatchesCount}
+							eventBusRef={eventBusRef}
+							viewerContainerRef={viewerContainerRef}
+							setPdfViewerObj={setPdfViewerObj}
+							file={file}
+						/>
+					</div>
+					<SearchBar
+						onClear={onClearSearch}
+						onToggleWholeWord={onToggleWholeWord}
+						searchText={searchText}
+						onNext={onNext}
+						onPrev={onPrev}
+						matchesCount={matchesCount}
+						matchWholeWord={matchWholeWord}
+						onChange={onSearchText}
+						showSearch={showSearch}
+						caseSensitive={caseSensitive}
+						onToggleCaseSensitive={onToggleCaseSensitive}
 					/>
 				</div>
-				<SearchBar
-					onClear={onClearSearch}
-					onToggleWholeWord={onToggleWholeWord}
-					searchText={searchText}
-					onNext={onNext}
-					onPrev={onPrev}
-					matchesCount={matchesCount}
-					matchWholeWord={matchWholeWord}
-					onChange={onSearchText}
-					showSearch={showSearch}
-					caseSensitive={caseSensitive}
-					onToggleCaseSensitive={onToggleCaseSensitive}
-				/>
 			</div>
-		</div>
+		</I18nextProvider>
+		
 	);
 };
 

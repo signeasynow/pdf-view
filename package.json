@@ -44,9 +44,11 @@
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "aleon_35_pdf_ui_lib": "^1.1.13",
+    "i18next": "^23.4.6",
     "pdfjs-dist": "^3.7.107",
     "preact": "^10.15.1",
     "preact-compat": "^3.19.0",
+    "react-i18next": "^13.2.1",
     "react-onclickoutside": "^6.13.0",
     "react-select": "^5.7.3"
   }

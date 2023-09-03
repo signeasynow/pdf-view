@@ -8,6 +8,7 @@ import ThumbnailsSection from './ThumbnailsSection';
 import BookmarksSection from './BookmarksSection';
 import { Icon, Tooltip } from 'aleon_35_pdf_ui_lib';
 import ExpandIcon from "../../assets/expand-svgrepo-com.svg";
+import { useTranslation } from 'react-i18next';
 
 const visibleSearchWrapper = css`
   background: #f1f3f5;
@@ -40,13 +41,14 @@ const Panel = ({
 	onDragEnd
 }) => {
 
+	const { t } = useTranslation();
 	const [activeTab, setActiveTab] = useState(0);
 
 	return (
 		<div css={showPanel ? visibleSearchWrapper : invisibleSearchWrapper}>
 				<div css={optionsWrapper}>
-					<Tooltip title="View thumbnails in full screen">
-						<Icon onClick={() => setActiveTab(0)} src={ExpandIcon} alt="Menu" />
+					<Tooltip title={t("view thumbnails in full screen")}>
+						<Icon onClick={() => setActiveTab(0)} src={ExpandIcon} alt={t("expand")} />
 					</Tooltip>
 					{
 						/*

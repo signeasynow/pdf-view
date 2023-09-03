@@ -9,6 +9,7 @@ import Dropdown from '../SharedComponents/Dropdown';
 import { useDebounce } from '../utils/useDebounce';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { Icon, Tooltip } from 'aleon_35_pdf_ui_lib';
+import { useTranslation } from 'react-i18next';
 
 const SCROLLBAR_PADDING = 40;
 
@@ -86,6 +87,8 @@ const ZoomSection = ({
 	leftPanelEnabled
 }) => {
 
+	const { t } = useTranslation();
+	
 	const zoomTextRef = useRef('100');
 
 	const [zoomValue, setZoomValue] = useState(100);
@@ -247,7 +250,7 @@ const ZoomSection = ({
 					title={
 						<div css={dropdownTitle}>
 							<div css={percentStyle}>%</div>
-							<Icon size="sm" src={ChevronDown} alt="arrow down" />
+							<Icon size="sm" src={ChevronDown} alt={t("arrowDown")} />
 						</div>
 					}
 					child={<div css={childStyle}>
@@ -272,12 +275,12 @@ const ZoomSection = ({
 					</div>}
 				/>
 				<div css={zoomLeft}>
-					<Tooltip title="Zoom in">
-						<Icon onClick={onZoomIn} src={ZoomOut} alt="Zoom in" />
+					<Tooltip title={t("zoomIn")}>
+						<Icon onClick={onZoomIn} src={ZoomOut} alt={t("zoomIn")} />
 					</Tooltip>
 				</div>
-				<Tooltip title="Zoom out">
-					<Icon onClick={onZoomOut} src={ZoomIn} alt="Zoom out" />
+				<Tooltip title={t("zoomOut")}>
+					<Icon onClick={onZoomOut} src={ZoomIn} alt={t("zoomOut")} />
 				</Tooltip>
 			</div>
 		</div>
