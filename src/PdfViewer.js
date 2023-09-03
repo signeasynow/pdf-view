@@ -26,12 +26,16 @@ export const PdfViewer = ({
 	setPdfViewerObj,
 	file,
 	viewerContainerRef,
+	viewerContainerRef1,
+	viewerContainerRef2,
 	eventBusRef,
 	setMatchesCount,
 	setActivePage,
 	leftPanelEnabled,
 	rightPanelEnabled,
-	setFileLoadFailError
+	setFileLoadFailError,
+	switchBuffer,
+	buffer
 }) => {
 
 	const panelSpaceUsed = () => {
@@ -60,10 +64,8 @@ export const PdfViewer = ({
 		pdfViewerRef.current?.cleanup();
 
 	}
-	const applyDocument = async () => {
+	const applyDocument = async (viewerContainer) => {
 		await cleanupDocument();
-
-		const viewerContainer = viewerContainerRef.current;
 
 		const eventBus = new EventBus();
 		eventBusRef.current = eventBus;
@@ -132,8 +134,9 @@ export const PdfViewer = ({
 	}
 
 	useEffect(() => {
-		if (!file || !viewerContainerRef.current) return;
-		applyDocument();
+    if (!file || !viewerContainerRef1.current || !viewerContainerRef2.current) return;
+    const targetContainer = buffer === 1 ? viewerContainerRef2 : viewerContainerRef1;
+    applyDocument(targetContainer.current).then(switchBuffer); // assume applyDocument is async
 	}, [file, modifiedFile]);
 
 	
@@ -150,7 +153,8 @@ export const PdfViewer = ({
 
 				// You can put your logic here to re-render the PDF or perform some other actions
 				// For example, you might call a function to reload the PDF:
-				applyDocument();
+				const targetContainer = buffer === 1 ? viewerContainerRef2.current : viewerContainerRef1.current;
+				applyDocument(targetContainer).then(switchBuffer);
 			}
 		}
 	
@@ -179,7 +183,10 @@ export const PdfViewer = ({
 
 	return (
 		<div>
-			<div ref={viewerContainerRef} id="viewerContainer" css={containerStyle} style={{ width: width(), height: height() }}>
+			<div ref={viewerContainerRef1} id="viewerContainer" css={containerStyle} style={{ width: width(), height: height(), visibility: buffer === 1 ? "visible" : "hidden" }}>
+				<div id="viewer" class="pdfViewer" />
+			</div>
+			<div ref={viewerContainerRef2} id="viewerContainer" css={containerStyle} style={{ width: width(), height: height(), visibility: buffer === 2 ? "visible" : "hidden" }}>
 				<div id="viewer" class="pdfViewer" />
 			</div>
 		</div>

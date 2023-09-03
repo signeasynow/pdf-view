@@ -51,7 +51,18 @@ const App = () => {
 
 	const [pdfProxyObj, setPdfProxyObj] = useState(null);
 	const [pdfViewerObj, setPdfViewerObj] = useState(null);
-	const viewerContainerRef = useRef(null);
+
+	const [buffer, setBuffer] = useState(1); // 1 for primary, 2 for secondary
+	const viewerContainerRef1 = useRef(null);
+	const viewerContainerRef2 = useRef(null);
+
+	const switchBuffer = () => setBuffer(buffer === 1 ? 2 : 1);
+
+	const getTargetContainer = () => {
+		return buffer === 1 ? viewerContainerRef2 : viewerContainerRef1;
+	};
+
+	console.log(buffer, 'buffer bro')
 
 	const [file, setFile] = useState(null);
 	const [fileName, setFileName] = useState('file.pdf');
@@ -446,7 +457,7 @@ const App = () => {
 							pdfProxyObj={pdfProxyObj}
 							appRef={appRef}
 							eventBusRef={eventBusRef}
-							viewerContainerRef={viewerContainerRef}
+							viewerContainerRef={getTargetContainer()}
 							pdfViewerObj={pdfViewerObj}
 							onSearch={onSearchBtnClick}
 							onPanel={onPanelBtnClick}
@@ -481,6 +492,8 @@ const App = () => {
 					}
 					<div css={pdfViewerWrapper}>
 						<PdfViewer
+							buffer={buffer}
+							switchBuffer={switchBuffer}
 							activePage={activePage}
 							modifiedFile={modifiedFile}
 							showHeader={showHeader()}
@@ -494,7 +507,9 @@ const App = () => {
 							setPdfProxyObj={setPdfProxyObj}
 							setMatchesCount={setMatchesCount}
 							eventBusRef={eventBusRef}
-							viewerContainerRef={viewerContainerRef}
+							viewerContainerRef={getTargetContainer()}
+							viewerContainerRef1={viewerContainerRef1}
+							viewerContainerRef2={viewerContainerRef2}
 							setPdfViewerObj={setPdfViewerObj}
 							file={file}
 						/>
