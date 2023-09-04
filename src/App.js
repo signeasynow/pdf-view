@@ -37,6 +37,27 @@ const failWrap = css`
 	text-align: center;
 `;
 
+let requestID = 0;
+const pendingRequests = {};
+
+const invokePlugin = ({ pluginName, funcName, args }) => {
+  return new Promise((resolve, reject) => {
+    const id = ++requestID;
+
+    // Add to pending requests
+    pendingRequests[id] = { resolve, reject };
+
+    // Send the request
+    window.parent.postMessage({
+      type: "fromUi",
+      pluginName,
+      funcName,
+      args,
+      id // add id to keep track
+    }, '*');
+  });
+};
+
 const MAX_STACK_SIZE = 50;
 
 const App = () => {
@@ -179,10 +200,18 @@ const App = () => {
 			if (typeof event.data === 'object' && event.data.tools) {
 				setTools(event.data.tools);
 			}
-			console.log(event.data, 'event.data')
 			if (typeof event.data === 'object' && event.data.locale) {
-				console.log(event.data.locale, 'localeee')
 				i18n.changeLanguage(event.data.locale)
+			}
+			if (event.data?.type === 'fromCore') {
+				const id = event.data.id;
+				console.log(event.data, 'data in here', pendingRequests, id)
+				if (pendingRequests[id]) {
+					// Resolve the promise with the result
+					pendingRequests[id].resolve(event.data.result);
+					// Remove the pending request
+					delete pendingRequests[id];
+				}
 			}
 		}, false);
 
@@ -290,6 +319,19 @@ const App = () => {
 				value: ''
 			}
 		});
+	};
+
+	const onClickTestHandler = async () => {
+		try {
+			const result = await invokePlugin({
+				pluginName: "myPlugin",
+				funcName: "sayHello",
+				args: []
+			});
+			console.log('Received data:', result);
+		} catch (err) {
+			console.log('Error:', err);
+		}
 	};
 
 	const showHeader = () => {
@@ -448,6 +490,7 @@ const App = () => {
 
 	return (
 		<I18nextProvider i18n={i18n}>
+			<button onClick={onClickTestHandler}>Crazy btn</button>
 			<div ref={appRef} css={WrapperStyle} style={{height: mainHeight()}}>
 				{
 					showHeader() && (
