@@ -80,15 +80,12 @@ const SLOW_ZOOM_FACTOR = 0.05;
 const RoundZoomValue = (v) => Math.floor(v * 100);
 
 const ZoomSection = ({
-	appRef,
-	pdfProxyObj,
 	pdfViewerObj,
 	viewerContainerRef,
-	leftPanelEnabled
 }) => {
 
 	const { t } = useTranslation();
-	
+
 	const zoomTextRef = useRef('100');
 
 	const [zoomValue, setZoomValue] = useState(100);
@@ -221,25 +218,6 @@ const ZoomSection = ({
 			container.removeEventListener('wheel', handleWheel);
 		};
 	}, [pdfViewerObj, setZoomValue]);
-
-	const onFitToWidth = async () => {
-		const app = appRef.current;
-		console.log(app.innerWidth, 'width', app, app.offsetWidth, 'off', app.clientWidth);
-		const samplePage = await pdfProxyObj.getPage(1);
-		const viewport = samplePage.getViewport({ scale: 1 });
-		const screenWidth = app.offsetWidth - SCROLLBAR_PADDING;
-		const newScale = screenWidth / viewport.width;
-		const hPadding = SCROLLBAR_PADDING + leftPanelEnabled ? 300 : 0;
-		console.log(zoomValue, 'zoomValue');
-		const zoomLevel = zoomValue / 100;
-		const pageWidthScale =
-        (((app.offsetWidth - hPadding) / viewport.width) *
-        zoomLevel / 1.4);
-
-		console.log(newScale, 'newscale', pageWidthScale, 'zoomLevel', zoomLevel, 'samplePage.width', samplePage.width, 'app.offsetWidth', app.offsetWidth, 'hPadding', hPadding, 'viewport.width', viewport.width);
-		setZoom(pageWidthScale);
-	};
-
 
 	return (
 		<div css={wrapper}>

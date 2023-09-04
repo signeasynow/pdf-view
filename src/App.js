@@ -9,11 +9,15 @@ import SearchBar from './SearchBar';
 import { PdfViewer } from './PdfViewer';
 import Panel from './Panel/Panel';
 import { heightOffset0, heightOffset1, heightOffset2 } from "./constants";
-import __wbg_init, { remove_pages, move_page } from '../lib/pdf_wasm_project.js';
+import { remove_pages, move_page } from '../lib/pdf_wasm_project.js';
 import { retrievePDF, savePDF } from './utils/indexDbUtils';
 import { invokePlugin, pendingRequests } from './utils/pluginUtils';
 import { I18nextProvider } from 'react-i18next';
 import i18n from "./utils/i18n";
+import useInitWasm from './hooks/useInitWasm';
+import useDeclareIframeLoaded from './hooks/useDeclareIframeLoaded';
+import useDownload from './hooks/useDownload';
+import useListenForDownloadRequest from './hooks/useListenForDownloadRequest';
 
 const Flex = css`
 display: flex;
@@ -56,8 +60,6 @@ const App = () => {
 		return buffer === 1 ? viewerContainerRef2 : viewerContainerRef1;
 	};
 
-	console.log(buffer, 'buffer bro')
-
 	const [file, setFile] = useState(null);
 	const [fileName, setFileName] = useState('file.pdf');
 
@@ -68,8 +70,6 @@ const App = () => {
 
 	const [tools, setTools] = useState([]);
 
-	const [hiddenPages, setHiddenPages] = useState([]);
-
 	const onSearchBtnClick = () => {
 		setShowSearch(() => !showSearch);
 	};
@@ -78,38 +78,11 @@ const App = () => {
 		setShowPanel(() => !showPanel);
 	};
 
-	useEffect(() => {
-		async function initWasmAsync() {
-			const response = await fetch('lib/pdf_wasm_project_bg.wasm');
-			const bufferSource = await response.arrayBuffer();
-			
-			// Use async init function
-			await __wbg_init(bufferSource);
-		}
-		initWasmAsync();
-}, []);
+	useInitWasm();
 
   const [modifiedFile, setModifiedFile] = useState(null);
-	const onDownload = async () => {
-		if (!pdfProxyObj) {
-			console.log('No PDF loaded to download');
-			return;
-		}
-	
-		const buffer = await pdfProxyObj.getData();
-		try {
-			const blob = new Blob([buffer], { type: 'application/pdf' });
-			const url = URL.createObjectURL(blob);
-			const link = document.createElement('a');
-			link.href = url;
-			link.download = fileName;
-			link.click();
-		} catch (error) {
-			console.error('Error modifying PDF:', error);
-		}
-		
-	};
-		
+	const { triggerDownload: onDownload } = useDownload(pdfProxyObj, fileName);
+
 	const [operations, setOperations] = useState([]);
 	const [redoStack, setRedoStack] = useState([]);
 
@@ -153,24 +126,8 @@ const App = () => {
 		});
 	}, []);
 
-	useEffect(() => {
-		window.onload = function() {
-			console.log('sending iframe-loaded');
-			window.parent.postMessage({ type: 'iframe-loaded', success: true }, '*');
-		};
-	}, []);
-
-	useEffect(() => {
-		const messageFunc =  (event) => {
-			if (event.data && event.data.type === 'download') {
-				onDownload();
-    	}
-		};
-		window.addEventListener('message', messageFunc, false);
-		return () => {
-			window.removeEventListener('message', messageFunc);
-		};
-	}, [onDownload]);
+	useDeclareIframeLoaded();
+	useListenForDownloadRequest(onDownload);
 
 	const [matchWholeWord, setMatchWholeWord] = useState(false);
 
@@ -365,8 +322,6 @@ const App = () => {
 		setRedoStack([]);
 	}
 
-	const appRef = useRef(null);
-
 	const mainHeight = () => {
 		let myHeight;
 		if (!showHeader() && !showSubheader()) {
@@ -416,14 +371,13 @@ const App = () => {
 	return (
 		<I18nextProvider i18n={i18n}>
 			{/*<button onClick={onClickTestHandler}>Crazy btn</button>*/}
-			<div ref={appRef} css={WrapperStyle} style={{height: mainHeight()}}>
+			<div style={{height: mainHeight()}}>
 				{
 					showHeader() && (
 						<Header
 							tools={tools}
 							onDownload={onDownload}
 							pdfProxyObj={pdfProxyObj}
-							appRef={appRef}
 							eventBusRef={eventBusRef}
 							viewerContainerRef={getTargetContainer()}
 							pdfViewerObj={pdfViewerObj}
@@ -448,7 +402,6 @@ const App = () => {
 						tools?.general?.includes('thumbnails') && (
 							<Panel
 								onDragEnd={onDragEnd}
-								hiddenPages={hiddenPages}
 								tools={tools}
 								setActivePage={setActivePage}
 								activePage={activePage}

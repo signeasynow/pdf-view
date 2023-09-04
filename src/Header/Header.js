@@ -40,7 +40,6 @@ const contentLeftStyle = css`
 `;
 
 const Header = ({
-	appRef,
 	tools,
 	pdfProxyObj,
 	pdfViewerObj,
@@ -84,7 +83,6 @@ const Header = ({
 							<ZoomSection
 								leftPanelEnabled={leftPanelEnabled}
 								pdfProxyObj={pdfProxyObj}
-								appRef={appRef}
 								viewerContainerRef={viewerContainerRef}
 								pdfViewerObj={pdfViewerObj}
 							/>

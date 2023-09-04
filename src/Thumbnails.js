@@ -15,18 +15,8 @@ const lineIndicatorStyle = css`
   width: 100%;
 `;
 
-const canvasStyle = css`
-  padding-bottom: 4px;
-`;
-
-const activeCanvasStyle = css`
-	border: 2px solid #3183c8;
-`;
-
-
 const ThumbnailsContainer = ({
 	onDragEnd,
-	hiddenPages,
 	activePage,
 	pdf,
 	scale,
@@ -42,13 +32,7 @@ const ThumbnailsContainer = ({
 		<div>Loading...</div>
 	);
 
-	let displayPageNum = 0; // Initialize the counter
-
 	const thumbnails = Array.from({ length: numPages }, (_, i) => {
-    const isHidden = hiddenPages.includes(i + 1);
-		if (!isHidden) {
-			displayPageNum++;  // Increment the counter if the thumbnail is not hidden
-		}
     return (
       <>
 				{dragOverIndex === i + 1 && <div css={lineIndicatorStyle}></div>}

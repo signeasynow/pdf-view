@@ -71,7 +71,6 @@ const ThumbnailsSection = ({
 	pdf,
 	tools,
 	pdfProxyObj,
-	hiddenPages,
 	onDragEnd
 }) => {
 	const [thumbnailScale, setThumbnailScale] = useState(2);
@@ -113,7 +112,6 @@ const ThumbnailsSection = ({
 			}
 			<ThumbnailsContainer
 				onDragEnd={onDragEnd}
-				hiddenPages={hiddenPages}
 				activePage={activePage}
 				pdfProxyObj={pdfProxyObj}
 				pdf={pdf}
