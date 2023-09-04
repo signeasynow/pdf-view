@@ -14,17 +14,11 @@ import { retrievePDF, savePDF } from './utils/indexDbUtils';
 import { invokePlugin, pendingRequests } from './utils/pluginUtils';
 import { I18nextProvider } from 'react-i18next';
 import i18n from "./utils/i18n";
-// import { PdfViewer } from "aleon_35_pdf_viewer_lib";
 
 const Flex = css`
 display: flex;
 width: 100%;
 height: 100%;
-`;
-
-const pdfViewerWrapper = css`
-  height: 100%;
-  width: 100%;
 `;
 
 // relative
@@ -38,8 +32,6 @@ const failWrap = css`
 	margin: 0 8px;
 	text-align: center;
 `;
-
-const MAX_STACK_SIZE = 50;
 
 const App = () => {
 
@@ -86,25 +78,6 @@ const App = () => {
 		setShowPanel(() => !showPanel);
 	};
 
-	/*
-	const onDownload = (name) => {
-		console.log(pdfProxyObj, 'pdfProxyObj');
-		if (!pdfProxyObj) {
-			console.log('No PDF loaded to download');
-			return;
-		}
-	
-		pdfProxyObj.getData().then(buffer => {
-			const blob = new Blob([new Uint8Array(buffer)], { type: 'application/pdf' });
-			const url = URL.createObjectURL(blob);
-			const link = document.createElement('a');
-			link.href = url;
-			link.download = name || fileName || 'file.pdf'; // You might want to provide a more meaningful filename
-			link.click();
-		});
-	};
-	*/
-
 	useEffect(() => {
 		async function initWasmAsync() {
 			const response = await fetch('lib/pdf_wasm_project_bg.wasm');
@@ -117,33 +90,6 @@ const App = () => {
 }, []);
 
   const [modifiedFile, setModifiedFile] = useState(null);
-/*
-	const onDownload = async (name) => {
-		if (!pdfProxyObj) {
-			console.log('No PDF loaded to download');
-			return;
-		}
-
-		const buffer = await pdfProxyObj.getData();
-		const pagesToDelete = hiddenPages.map(page => page); // Convert 1-indexed to 0-indexed
-		console.log(pagesToDelete, 'pagesToDelete')
-		try {
-			// Call the remove_pages function from the WASM module
-			const modifiedPdfArray = await move_page(new Uint8Array(buffer), 0, 3);
-			setModifiedFile(modifiedPdfArray.buffer);
-			// Convert result to Blob and download
-			const blob = new Blob([modifiedPdfArray.buffer], { type: 'application/pdf' });
-			const url = URL.createObjectURL(blob);
-			const link = document.createElement('a');
-			link.href = url;
-			link.download = name || fileName || 'file.pdf';
-			link.click();
-		} catch (error) {
-			console.error('Error modifying PDF:', error);
-		}
-		
-	};
-*/
 	const onDownload = async () => {
 		if (!pdfProxyObj) {
 			console.log('No PDF loaded to download');
@@ -166,8 +112,6 @@ const App = () => {
 		
 	const [operations, setOperations] = useState([]);
 	const [redoStack, setRedoStack] = useState([]);
-
-	console.log(tools, 'tools');
 
 	useEffect(() => {
 		window.addEventListener('message', (event) => {
@@ -471,7 +415,7 @@ const App = () => {
 
 	return (
 		<I18nextProvider i18n={i18n}>
-			<button onClick={onClickTestHandler}>Crazy btn</button>
+			{/*<button onClick={onClickTestHandler}>Crazy btn</button>*/}
 			<div ref={appRef} css={WrapperStyle} style={{height: mainHeight()}}>
 				{
 					showHeader() && (
@@ -514,30 +458,28 @@ const App = () => {
 							/>
 						)
 					}
-					<div css={pdfViewerWrapper}>
-						<PdfViewer
-							buffer={buffer}
-							switchBuffer={switchBuffer}
-							activePage={activePage}
-							modifiedFile={modifiedFile}
-							showHeader={showHeader()}
-							showSubheader={showSubheader()}
-							tools={tools}
-							fileLoadFailError={fileLoadFailError}
-							setFileLoadFailError={setFileLoadFailError}
-							rightPanelEnabled={showSearch}
-							leftPanelEnabled={showPanel}
-							setActivePage={setActivePage}
-							setPdfProxyObj={setPdfProxyObj}
-							setMatchesCount={setMatchesCount}
-							eventBusRef={eventBusRef}
-							viewerContainerRef={getTargetContainer()}
-							viewerContainerRef1={viewerContainerRef1}
-							viewerContainerRef2={viewerContainerRef2}
-							setPdfViewerObj={setPdfViewerObj}
-							file={file}
-						/>
-					</div>
+					<PdfViewer
+						buffer={buffer}
+						switchBuffer={switchBuffer}
+						activePage={activePage}
+						modifiedFile={modifiedFile}
+						showHeader={showHeader()}
+						showSubheader={showSubheader()}
+						tools={tools}
+						fileLoadFailError={fileLoadFailError}
+						setFileLoadFailError={setFileLoadFailError}
+						rightPanelEnabled={showSearch}
+						leftPanelEnabled={showPanel}
+						setActivePage={setActivePage}
+						setPdfProxyObj={setPdfProxyObj}
+						setMatchesCount={setMatchesCount}
+						eventBusRef={eventBusRef}
+						viewerContainerRef={getTargetContainer()}
+						viewerContainerRef1={viewerContainerRef1}
+						viewerContainerRef2={viewerContainerRef2}
+						setPdfViewerObj={setPdfViewerObj}
+						file={file}
+					/>
 					<SearchBar
 						onClear={onClearSearch}
 						onToggleWholeWord={onToggleWholeWord}
@@ -554,7 +496,6 @@ const App = () => {
 				</div>
 			</div>
 		</I18nextProvider>
-		
 	);
 };
 
