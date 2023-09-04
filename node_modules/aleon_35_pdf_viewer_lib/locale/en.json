@@ -1,0 +1,23 @@
+{
+  "wholeWord": "Whole word",
+  "caseSensitive": "Case sensitive",
+  "arrowLeft": "Arrow left",
+  "arrowRight": "Arrow right",
+  "resultsFound": "{{count}} results found",
+  "searchDocument": "Search document",
+  "download": "Download",
+  "panel": "Panel",
+  "search": "Search",
+  "pageOrientation": "Page orientation",
+  "rotateClockwise": "Rotate clockwise",
+  "rotateCounterClockwise": "Rotate counterclockwise",
+  "viewControls": "View controls",
+  "zoomOut": "Zoom out",
+  "zoomIn": "Zoom in",
+  "arrowDown": "Arrow down",
+  "view thumbnails in full screen": "View thumbnails in full screen",
+  "expand": "Expand",
+  "undo": "Undo",
+  "redo": "Redo",
+  "remove": "Remove"
+}

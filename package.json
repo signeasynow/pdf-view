@@ -44,6 +44,7 @@
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "aleon_35_pdf_ui_lib": "^1.1.13",
+    "aleon_35_pdf_viewer_lib": "^1.0.8",
     "i18next": "^23.4.6",
     "pdfjs-dist": "^3.7.107",
     "preact": "^10.15.1",

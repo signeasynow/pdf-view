@@ -1,0 +1,23 @@
+{
+  "wholeWord": "Palabra completa",
+  "caseSensitive": "Sensible a mayúsculas",
+  "arrowLeft": "Flecha izquierda",
+  "arrowRight": "Flecha derecha",
+  "resultsFound": "{{count}} resultados encontrados",
+  "searchDocument": "Buscar en el documento",
+  "download": "Descargar",
+  "panel": "Panel",
+  "search": "Buscar",
+  "pageOrientation": "Orientación de la página",
+  "rotateClockwise": "Girar en sentido horario",
+  "rotateCounterClockwise": "Girar en sentido antihorario",
+  "viewControls": "Controles de vista",
+  "zoomOut": "Alejar",
+  "zoomIn": "Acercar",
+  "arrowDown": "Flecha abajo",
+  "view thumbnails in full screen": "Ver miniaturas en pantalla completa",
+  "expand": "Expandir",
+  "undo": "Deshacer",
+  "redo": "Rehacer",
+  "remove": "Eliminar"
+}

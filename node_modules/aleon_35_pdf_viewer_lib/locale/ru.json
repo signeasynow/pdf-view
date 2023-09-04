@@ -1,0 +1,23 @@
+{
+  "wholeWord": "Целое слово",
+  "caseSensitive": "Чувствительный к регистру",
+  "arrowLeft": "Стрелка влево",
+  "arrowRight": "Стрелка вправо",
+  "resultsFound": "{{count}} результатов найдено",
+  "searchDocument": "Поиск в документе",
+  "download": "Скачать",
+  "panel": "Панель",
+  "search": "Поиск",
+  "pageOrientation": "Ориентация страницы",
+  "rotateClockwise": "Повернуть по часовой стрелке",
+  "rotateCounterClockwise": "Повернуть против часовой стрелки",
+  "viewControls": "Элементы управления просмотром",
+  "zoomOut": "Уменьшить",
+  "zoomIn": "Увеличить",
+  "arrowDown": "Стрелка вниз",
+  "view thumbnails in full screen": "Просмотр миниатюр в полноэкранном режиме",
+  "expand": "Развернуть",
+  "undo": "Отменить",
+  "redo": "Повторить",
+  "remove": "Удалить"
+}
