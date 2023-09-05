@@ -5,7 +5,7 @@ import 'pdfjs-dist/web/pdf_viewer.css';
 import Gear from '../../assets/gear-svgrepo-com.svg';
 import RotateRight from '../../assets/rotate-right-svgrepo-com.svg';
 import RotateLeft from '../../assets/rotate-left-svgrepo-com.svg';
-import Dropdown from '../SharedComponents/Dropdown';
+import Dropdown from '../components/Dropdown';
 import { Icon } from 'aleon_35_pdf_ui_lib';
 import HeaderBtn from './HeaderBtn';
 import { useTranslation } from 'react-i18next';

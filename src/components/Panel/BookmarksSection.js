@@ -2,11 +2,11 @@
 import { css } from '@emotion/react';
 import { useState } from 'react';
 import 'pdfjs-dist/web/pdf_viewer.css';
-import usePdfBookmarks from '../hooks/usePdfBookmarks';
-import BookmarkIconFilledUrl from '../../assets/bookmark-svgrepo-com.svg';  // Update path if needed
-import BookmarkIconUrl from '../../assets/bookmark-fill-svgrepo-com.svg';  // Update path if needed
-import Dropdown from '../SharedComponents/Dropdown';
-import Gear from '../../assets/gear-svgrepo-com.svg';
+import usePdfBookmarks from '../../hooks/usePdfBookmarks';
+import BookmarkIconFilledUrl from '../../../assets/bookmark-svgrepo-com.svg';  // Update path if needed
+import BookmarkIconUrl from '../../../assets/bookmark-fill-svgrepo-com.svg';  // Update path if needed
+import Dropdown from '../Dropdown';
+import Gear from '../../../assets/gear-svgrepo-com.svg';
 import { Icon } from "aleon_35_pdf_ui_lib";
 
 const optionsWrapper = css`

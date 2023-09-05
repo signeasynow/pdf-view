@@ -2,7 +2,7 @@
 import { css } from '@emotion/react';
 
 import 'pdfjs-dist/web/pdf_viewer.css';
-import ThumbnailsContainer from '../Thumbnails';
+import ThumbnailsContainer from '../../Thumbnails';
 import { useState } from 'preact/hooks';
 
 const rangeStyle = css`

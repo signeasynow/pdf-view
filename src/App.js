@@ -7,7 +7,7 @@ import Subheader from './Subheader/Subheader';
 import { useDebounce } from './utils/useDebounce';
 import SearchBar from './SearchBar';
 import { PdfViewer } from './PdfViewer';
-import Panel from './Panel/Panel';
+import Panel from './components/Panel/Panel';
 import { heightOffset0, heightOffset1, heightOffset2 } from "./constants";
 import { remove_pages, move_page } from '../lib/pdf_wasm_project.js';
 import { retrievePDF, savePDF } from './utils/indexDbUtils';

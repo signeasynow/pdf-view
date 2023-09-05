@@ -5,7 +5,7 @@ import 'pdfjs-dist/web/pdf_viewer.css';
 import ZoomIn from '../../assets/minus-circle-svgrepo-com.svg';
 import ZoomOut from '../../assets/add-circle-svgrepo-com.svg';
 import ChevronDown from '../../assets/chevron-down-svgrepo-com.svg';
-import Dropdown from '../SharedComponents/Dropdown';
+import Dropdown from '../components/Dropdown';
 import { useDebounce } from '../utils/useDebounce';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { Icon, Tooltip } from 'aleon_35_pdf_ui_lib';

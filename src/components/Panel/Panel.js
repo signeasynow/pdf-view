@@ -7,7 +7,7 @@ import { useState } from 'preact/hooks';
 import ThumbnailsSection from './ThumbnailsSection';
 import BookmarksSection from './BookmarksSection';
 import { Icon, Tooltip } from 'aleon_35_pdf_ui_lib';
-import ExpandIcon from "../../assets/expand-svgrepo-com.svg";
+import ExpandIcon from "../../../assets/expand-svgrepo-com.svg";
 import { useTranslation } from 'react-i18next';
 
 const visibleSearchWrapper = css`
