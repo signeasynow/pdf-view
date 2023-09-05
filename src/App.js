@@ -18,6 +18,7 @@ import useInitWasm from './hooks/useInitWasm';
 import useDeclareIframeLoaded from './hooks/useDeclareIframeLoaded';
 import useDownload from './hooks/useDownload';
 import useListenForDownloadRequest from './hooks/useListenForDownloadRequest';
+import usePropageClickEvents from './hooks/usePropagateClickEvents';
 
 const Flex = css`
 display: flex;
@@ -112,20 +113,9 @@ const App = () => {
 				}
 			}
 		}, false);
-
-		window.addEventListener('click', (event) => {
-			// Create a new event
-			const newEvent = new MouseEvent('click', {
-				bubbles: true,
-				cancelable: true,
-				view: window.parent
-			});
-    
-			// Dispatch the event to the parent document
-			window.parent.document.dispatchEvent(newEvent);
-		});
 	}, []);
 
+	usePropageClickEvents();
 	useDeclareIframeLoaded();
 	useListenForDownloadRequest(onDownload);
 
