@@ -26,6 +26,11 @@ width: 100%;
 height: 100%;
 `;
 
+const pdfViewerWrapper = css`
+  height: 100%;
+  width: 100%;
+`;
+
 // relative
 
 const WrapperStyle = css`
@@ -401,28 +406,30 @@ const App = () => {
 							/>
 						)
 					}
-					<PdfViewer
-						buffer={buffer}
-						switchBuffer={switchBuffer}
-						activePage={activePage}
-						modifiedFile={modifiedFile}
-						showHeader={showHeader()}
-						showSubheader={showSubheader()}
-						tools={tools}
-						fileLoadFailError={fileLoadFailError}
-						setFileLoadFailError={setFileLoadFailError}
-						rightPanelEnabled={showSearch}
-						leftPanelEnabled={showPanel}
-						setActivePage={setActivePage}
-						setPdfProxyObj={setPdfProxyObj}
-						setMatchesCount={setMatchesCount}
-						eventBusRef={eventBusRef}
-						viewerContainerRef={getTargetContainer()}
-						viewerContainerRef1={viewerContainerRef1}
-						viewerContainerRef2={viewerContainerRef2}
-						setPdfViewerObj={setPdfViewerObj}
-						file={file}
-					/>
+					<div css={pdfViewerWrapper}>
+						<PdfViewer
+							buffer={buffer}
+							switchBuffer={switchBuffer}
+							activePage={activePage}
+							modifiedFile={modifiedFile}
+							showHeader={showHeader()}
+							showSubheader={showSubheader()}
+							tools={tools}
+							fileLoadFailError={fileLoadFailError}
+							setFileLoadFailError={setFileLoadFailError}
+							rightPanelEnabled={showSearch}
+							leftPanelEnabled={showPanel}
+							setActivePage={setActivePage}
+							setPdfProxyObj={setPdfProxyObj}
+							setMatchesCount={setMatchesCount}
+							eventBusRef={eventBusRef}
+							viewerContainerRef={getTargetContainer()}
+							viewerContainerRef1={viewerContainerRef1}
+							viewerContainerRef2={viewerContainerRef2}
+							setPdfViewerObj={setPdfViewerObj}
+							file={file}
+						/>
+					</div>
 					<SearchBar
 						onClear={onClearSearch}
 						onToggleWholeWord={onToggleWholeWord}
