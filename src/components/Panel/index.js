@@ -7,6 +7,8 @@ import BookmarksSection from './BookmarksSection';
 import { Icon, Tooltip } from 'aleon_35_pdf_ui_lib';
 import ExpandIcon from "../../../assets/expand-svgrepo-com.svg";
 import { useTranslation } from 'react-i18next';
+import PanelTools from './PanelTools';
+import FullScreenThumbnails from './FullScreenThumbnails';
 
 const visibleSearchWrapper = css`
   background: #f1f3f5;
@@ -38,6 +40,14 @@ const thumbnailTopActionsWrapper = css`
 	border-radius: 4px;
 `
 
+const fullScreenWrapper = css`
+  position: absolute;
+	width: 100vw;
+	height: 100%;
+	z-index: 4;
+	background: gray;
+`
+
 const Panel = ({
 	showPanel,
 	tools,
@@ -51,13 +61,24 @@ const Panel = ({
 	const { t } = useTranslation();
 	const [activeTab, setActiveTab] = useState(0);
 
+	const [showFullScreen, setShowFullScreen] = useState(false);
+
+	if (showFullScreen) {
+		return <FullScreenThumbnails
+		onDragEnd={onDragEnd}
+		activePage={activePage}
+		pdf={pdf}
+		scale={0.2}
+		onThumbnailClick={() => {}}
+		pdfProxyObj={pdfProxyObj}
+		/>
+	}
+
 	return (
 		<div css={showPanel ? visibleSearchWrapper : invisibleSearchWrapper}>
 				<div css={optionsWrapper}>
 					<div css={thumbnailTopActionsWrapper}>
-						<Tooltip title={t("view thumbnails in full screen")}>
-							<Icon onClick={() => setActiveTab(0)} src={ExpandIcon} alt={t("expand")} />
-						</Tooltip>
+						<PanelTools onToggle={() => setShowFullScreen(true)} />
 					</div>
 					{
 						/*

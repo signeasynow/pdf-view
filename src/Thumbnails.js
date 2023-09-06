@@ -3,7 +3,6 @@ import { css } from '@emotion/react';
 import { useState } from 'preact/hooks'; // add this import
 import { h } from 'preact';
 import { Thumbnail } from './Thumbnail';
-import { greet, remove_pages, move_page } from '../lib/pdf_wasm_project.js';
 
 const wrapperStyle = css`
   position: relative;
@@ -11,7 +10,7 @@ const wrapperStyle = css`
 
 const lineIndicatorStyle = css`
   height: 2px;
-  background-color: red;
+  background-color: #3183c8;
   width: 100%;
 `;
 
