@@ -20,7 +20,9 @@ const ThumbnailsContainer = ({
 	pdf,
 	scale,
 	onThumbnailClick,
-	pdfProxyObj
+	pdfProxyObj,
+	multiPageSelections,
+	setMultiPageSelections
 }) => {
 	const numPages = pdfProxyObj?.numPages;
 
@@ -36,6 +38,8 @@ const ThumbnailsContainer = ({
       <>
 				{dragOverIndex === i + 1 && <div css={lineIndicatorStyle}></div>}
 				<Thumbnail
+					multiPageSelections={multiPageSelections}
+					setMultiPageSelections={setMultiPageSelections}
 					onDragStart={(e, pageNum) => {
 						e.dataTransfer.setData("text/plain", pageNum);
 						setDraggingIndex(pageNum);

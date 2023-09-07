@@ -4,6 +4,7 @@ import { css } from '@emotion/react';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import ThumbnailsContainer from '../../Thumbnails';
 import { useState } from 'preact/hooks';
+import PanelTools from './PanelTools';
 
 const rangeStyle = css`
   -webkit-appearance: none; /* Override default CSS styles */
@@ -53,6 +54,8 @@ const topSectionStyle = css`
   width: 100%;
   display: flex;
   justify-content: center;
+	flex-direction: column;
+	align-items: center;
 `;
 
 const minusStyle = css`
@@ -65,13 +68,29 @@ const plusStyle = css`
   margin-left: 4px;
 `;
 
+
+const thumbnailTopActionsWrapper = css`
+  background: #d6dee8;
+	width: 100px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-top: 8px;
+	margin-bottom: 8px;
+	border-radius: 4px;
+
+`;
+
 const ThumbnailsSection = ({
 	setActivePage,
 	activePage,
 	pdf,
 	tools,
 	pdfProxyObj,
-	onDragEnd
+	onDragEnd,
+	multiPageSelections,
+	setMultiPageSelections,
+	onExpand
 }) => {
 	const [thumbnailScale, setThumbnailScale] = useState(2);
 
@@ -93,6 +112,9 @@ const ThumbnailsSection = ({
 			{
 				tools?.thumbnails?.includes('zoom') && (
 					<div css={topSectionStyle}>
+						<div css={thumbnailTopActionsWrapper}>
+							<PanelTools onToggle={() => onExpand()} />
+						</div>
 						<div css={rangeWrapperStyle}>
 							<label css={minusStyle}>—</label>
 							<input
@@ -117,6 +139,8 @@ const ThumbnailsSection = ({
 				pdf={pdf}
 				scale={thumbnailScale / 10}
 				onThumbnailClick={handleThumbnailClick}
+				multiPageSelections={multiPageSelections}
+				setMultiPageSelections={setMultiPageSelections}
 			/>
 		</>
 	);

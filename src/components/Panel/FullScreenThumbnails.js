@@ -12,7 +12,7 @@ const fullScreenWrapper = css`
 	width: 100vw;
 	height: 100%;
 	z-index: 4;
-	background: #151515;
+	background: #f1f3f5;
   overflow: auto;
   display: flex;
   flex-wrap: wrap;
@@ -38,6 +38,8 @@ const FullScreenThumbnails = ({
   scale,
   onThumbnailClick,
   pdfProxyObj,
+  multiPageSelections,
+	setMultiPageSelections,
 }) => {
 
   const numPages = pdfProxyObj?.numPages;
@@ -74,18 +76,26 @@ const FullScreenThumbnails = ({
     const thumbnailElement = (
       <div css={thumbnailStyle}>
         <Thumbnail
+          multiPageSelections={multiPageSelections}
+          setMultiPageSelections={setMultiPageSelections}
           onDragStart={(e, pageNum) => {
             e.dataTransfer.setData("text/plain", pageNum);
             setDraggingIndex(pageNum);
           }}
           onDragOver={(e, pageNum) => {
             e.preventDefault();
-            setDragOverIndex(pageNum);
+            const boundingRect = e.currentTarget.getBoundingClientRect();
+            const midX = boundingRect.left + (boundingRect.right - boundingRect.left) / 2;
+      
+            // Decide whether to move the dragOverIndex to the left or right based on the position of the drag
+            if (e.clientX < midX) {
+              setDragOverIndex(pageNum);
+            } else {
+              setDragOverIndex(pageNum + 1);
+            }
           }}
           onDragEnd={() => {
             setPendingDragEnd(i);
-            // setDraggingIndex(null);
-            // setDragOverIndex(null);
           }}
           hidden={false}
           activePage={activePage}

@@ -19,5 +19,6 @@
   "expand": "Expand",
   "undo": "Undo",
   "redo": "Redo",
-  "remove": "Remove"
+  "remove": "Remove",
+  "minimize": "Minimize"
 }

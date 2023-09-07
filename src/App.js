@@ -72,6 +72,8 @@ const App = () => {
 	const [showSearch, setShowSearch] = useState(false);
 	const [showPanel, setShowPanel] = useState(true);
 
+	const [multiPageSelections, setMultiPageSelections] = useState([]);
+
 	const [activePage, setActivePage] = useState(1);
 
 	const [tools, setTools] = useState([]);
@@ -353,6 +355,16 @@ const App = () => {
 		setOperations([...operations, operation]);
 		setRedoStack([]);
 	}	
+
+	const [showFullScreenThumbnails, setShowFullScreenThumbnails] = useState(false);
+
+	const onMinimize = () => {
+		setShowFullScreenThumbnails(false);
+	}
+
+	const onExpand = () => {
+		setShowFullScreenThumbnails(true);
+	}
 	
 	if (fileLoadFailError) {
 		return (
@@ -385,6 +397,10 @@ const App = () => {
 				{
 					showSubheader() && (
 						<Subheader
+							setMultiPageSelections={setMultiPageSelections}
+							multiPageSelections={multiPageSelections}
+						  showFullScreenThumbnails={showFullScreenThumbnails}
+						  onMinimize={onMinimize}
 							undoLastAction={undoLastAction}
 							redoLastAction={redoLastAction}
 							onDownload={onDownload}
@@ -396,6 +412,9 @@ const App = () => {
 					{
 						tools?.general?.includes('thumbnails') && (
 							<Panel
+								multiPageSelections={multiPageSelections}
+								setMultiPageSelections={setMultiPageSelections}
+								onExpand={onExpand}
 								onDragEnd={onDragEnd}
 								tools={tools}
 								setActivePage={setActivePage}
@@ -403,6 +422,7 @@ const App = () => {
 								pdfProxyObj={pdfProxyObj}
 								pdf={pdfViewerObj}
 								showPanel={showPanel}
+								showFullScreenThumbnails={showFullScreenThumbnails}
 							/>
 						)
 					}

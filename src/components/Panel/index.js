@@ -30,15 +30,6 @@ const optionsWrapper = css`
 
 `;
 
-const thumbnailTopActionsWrapper = css`
-  background: #d6dee8;
-	width: 100px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	margin-top: 8px;
-	border-radius: 4px;
-`
 
 const fullScreenWrapper = css`
   position: absolute;
@@ -55,48 +46,43 @@ const Panel = ({
 	activePage,
 	pdf,
 	pdfProxyObj,
-	onDragEnd
+	onDragEnd,
+	showFullScreenThumbnails,
+	onExpand,
+	multiPageSelections,
+	setMultiPageSelections
 }) => {
 
 	const { t } = useTranslation();
 	const [activeTab, setActiveTab] = useState(0);
 
-	const [showFullScreen, setShowFullScreen] = useState(false);
-
-	if (showFullScreen) {
+	if (showFullScreenThumbnails) {
 		return <FullScreenThumbnails
 		onDragEnd={onDragEnd}
 		activePage={activePage}
 		pdf={pdf}
 		scale={0.2}
-		onThumbnailClick={() => {}}
+		onThumbnailClick={setActivePage}
 		pdfProxyObj={pdfProxyObj}
+		multiPageSelections={multiPageSelections}
+		setMultiPageSelections={setMultiPageSelections}
 		/>
 	}
 
 	return (
 		<div css={showPanel ? visibleSearchWrapper : invisibleSearchWrapper}>
-				<div css={optionsWrapper}>
-					<div css={thumbnailTopActionsWrapper}>
-						<PanelTools onToggle={() => setShowFullScreen(true)} />
-					</div>
-					{
-						/*
-						<Tooltip title="Bookmarks">
-							<Icon onClick={() => setActiveTab(1)} src={Bookmark} alt="Menu" />
-						</Tooltip>
-						*/
-					}
-				</div>
 			{
 				activeTab === 0 && tools?.general?.includes('thumbnails') && (
 					<ThumbnailsSection
+						onExpand={onExpand}
 						onDragEnd={onDragEnd}
 						tools={tools}
 						setActivePage={setActivePage}
 						activePage={activePage}
 						pdf={pdf}
 						pdfProxyObj={pdfProxyObj}
+						multiPageSelections={multiPageSelections}
+						setMultiPageSelections={setMultiPageSelections}
 					/>
 				)
 			}
@@ -113,3 +99,9 @@ const Panel = ({
 };
 
 export default Panel;
+
+				/*
+						<Tooltip title="Bookmarks">
+							<Icon onClick={() => setActiveTab(1)} src={Bookmark} alt="Menu" />
+						</Tooltip>
+						*/

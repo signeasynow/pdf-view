@@ -4,6 +4,11 @@ import { css } from '@emotion/react';
 import { h } from 'preact';
 import { useEffect, useRef } from 'preact/hooks';
 
+const partialOpacityStyle = css`
+  position: relative;
+	opacity: 0.5;
+`;
+
 const thumbnailWrapper = css`
   display: flex;
   flex-direction: column;
@@ -13,6 +18,7 @@ const thumbnailWrapper = css`
 	font-family: Lato;
 	color: #8b8b8b;
 	margin-bottom: 20px;
+	position: relative;
 `;
 
 const hiddenThumbnailWrapper = css`
@@ -27,18 +33,50 @@ const activeThumbnailWrapper = css`
   cursor: pointer;
 	font-family: Lato;
 	color: #3183c8;
+	position: relative;
 `;
 
 const canvasStyle = css`
-  padding-bottom: 4px;
+  margin-bottom: 4px;
 `;
 
 const activeCanvasStyle = css`
 	border: 2px solid #3183c8;
 `;
 
-export const Thumbnail = ({ onDragStart, onDragOver, onDragEnd, displayPageNum, hidden, pdfProxyObj, activePage, pageNum, scale, onThumbnailClick }) => {
+const checkboxStyle = css`
+	position: absolute;
+	top: 4px;
+	right: 20px;
+`;
+
+export const Thumbnail = ({
+	multiPageSelections,
+	setMultiPageSelections,
+	onDragStart,
+	onDragOver,
+	onDragEnd,
+	displayPageNum,
+	hidden,
+	pdfProxyObj,
+	activePage,
+	pageNum,
+	scale,
+	onThumbnailClick
+}) => {
 	const canvasRef = useRef(null);
+
+	const onToggleMultiSelect = () => {
+		if (multiPageSelections?.includes(pageNum)) {
+			setMultiPageSelections(multiPageSelections.filter((each) => each !== pageNum));
+		} else {
+			setMultiPageSelections([...multiPageSelections, pageNum]);
+		}
+	}
+
+	const isMultiSelected = () => {
+		return multiPageSelections?.includes(pageNum);
+	}
 
 	useEffect(() => {
 		const renderThumbnail = async () => {
@@ -68,7 +106,10 @@ export const Thumbnail = ({ onDragStart, onDragOver, onDragEnd, displayPageNum, 
       css={hidden ? hiddenThumbnailWrapper : (activePage === pageNum ? activeThumbnailWrapper : thumbnailWrapper)}
       id={`thumbnail-${pageNum}`}
       onClick={() => onThumbnailClick(pageNum)}>
-			<canvas css={activePage === pageNum ? activeCanvasStyle : canvasStyle} class="canvas-page" ref={canvasRef} />
+			<div style={{display: "inline-flex"}} css={[activePage === pageNum ? activeCanvasStyle : canvasStyle]} >
+				<canvas style={{opacity: isMultiSelected() ? 0.5 : 1}} class="canvas-page" ref={canvasRef} />
+			</div>
+			<input checked={isMultiSelected()} onClick={onToggleMultiSelect} css={checkboxStyle} type="checkbox" />
 			<div style={{ fontSize: '0.8rem', marginTop: '0.5rem' }}>{displayPageNum}</div>
 		</div>
 	);
