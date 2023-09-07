@@ -70,7 +70,7 @@ const Panel = ({
 	}
 
 	return (
-		<div css={showPanel ? visibleSearchWrapper : invisibleSearchWrapper}>
+		<div id="panel" css={showPanel ? visibleSearchWrapper : invisibleSearchWrapper}>
 			{
 				activeTab === 0 && tools?.general?.includes('thumbnails') && (
 					<ThumbnailsSection

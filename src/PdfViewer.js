@@ -131,7 +131,10 @@ export const PdfViewer = ({
 			if (!target) {
 				return;
 			}
-			target.scrollIntoView();
+			const container = document.getElementById("panel");
+			container.scrollTop = target.offsetTop;
+
+			// target.scrollIntoView({ block: 'start', inline: 'start' });
 		});
 		let modFile;
 		if (modifiedFile) {

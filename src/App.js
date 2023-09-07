@@ -310,7 +310,9 @@ const App = () => {
 		}
 
 		const buffer = await pdfProxyObj.getData();
-		const operation = { action: "delete", pages: [activePage]};
+		const pagesToRemove = multiPageSelections?.length ? multiPageSelections : [activePage];
+		const operation = { action: "delete", pages: pagesToRemove};
+		setMultiPageSelections([]);
 		const bufferResult = await applyOperation(operation, buffer);
 		await savePDF(bufferResult, 'pdfId1');
 		setModifiedFile(new Date().toISOString());
