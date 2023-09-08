@@ -22,7 +22,8 @@ const ThumbnailsContainer = ({
 	onThumbnailClick,
 	pdfProxyObj,
 	multiPageSelections,
-	setMultiPageSelections
+	setMultiPageSelections,
+	onDelete
 }) => {
 	const numPages = pdfProxyObj?.numPages;
 
@@ -38,6 +39,7 @@ const ThumbnailsContainer = ({
       <>
 				{dragOverIndex === i + 1 && <div css={lineIndicatorStyle}></div>}
 				<Thumbnail
+					onDelete={onDelete}
 					multiPageSelections={multiPageSelections}
 					setMultiPageSelections={setMultiPageSelections}
 					onDragStart={(e, pageNum) => {

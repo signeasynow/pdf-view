@@ -8,6 +8,7 @@ import RotateLeft from '../../assets/rotate-left-svgrepo-com.svg';
 import Dropdown from '../SharedComponents/Dropdown';
 import { Icon } from 'aleon_35_pdf_ui_lib';
 import HeaderBtn from './HeaderBtn';
+import { useTranslation } from 'react-i18next';
 
 const optionStyle = css`
   display: flex;
@@ -45,20 +46,22 @@ const ControlsSection = ({
 		}
 	};
 
+	const { t } = useTranslation();
+
 	return (
 		<>
 			<Dropdown title={
 				<HeaderBtn title="View controls" iconAlt="View controls" icon={Gear} />
 			}
 				child={<div css={childStyle}>
-				<h4 css={titleStyle}>Page orientation</h4>
+				<h4 css={titleStyle}>{t("pageOrientation")}</h4>
 				<div css={optionStyle} onClick={() => onRotate(true)}>
-					<Icon src={RotateRight} alt="Rotate clockwise" />
-					<p css={optionTextStyle}>Rotate clockwise</p>
+					<Icon src={RotateRight} alt={t("rotateClockwise")} />
+					<p css={optionTextStyle}>{t("rotateClockwise")}</p>
 				</div>
 				<div css={optionStyle} onClick={() => onRotate(false)}>
-					<Icon src={RotateLeft} alt="Rotate counterclockwise" />
-					<p css={optionTextStyle}>Rotate counterclockwise</p>
+					<Icon src={RotateLeft} alt={t("rotateCounterClockwise")} />
+					<p css={optionTextStyle}>{t("rotateCounterClockwise")}</p>
 				</div>
 			</div>}
 			/>

@@ -50,7 +50,8 @@ const Panel = ({
 	showFullScreenThumbnails,
 	onExpand,
 	multiPageSelections,
-	setMultiPageSelections
+	setMultiPageSelections,
+	onDeleteThumbnail
 }) => {
 
 	const { t } = useTranslation();
@@ -58,6 +59,7 @@ const Panel = ({
 
 	if (showFullScreenThumbnails) {
 		return <FullScreenThumbnails
+		onDeleteThumbnail={onDeleteThumbnail}
 		onDragEnd={onDragEnd}
 		activePage={activePage}
 		pdf={pdf}
@@ -74,6 +76,7 @@ const Panel = ({
 			{
 				activeTab === 0 && tools?.general?.includes('thumbnails') && (
 					<ThumbnailsSection
+						onDeleteThumbnail={onDeleteThumbnail}
 						onExpand={onExpand}
 						onDragEnd={onDragEnd}
 						tools={tools}

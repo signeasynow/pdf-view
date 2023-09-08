@@ -40,6 +40,7 @@ const FullScreenThumbnails = ({
   pdfProxyObj,
   multiPageSelections,
 	setMultiPageSelections,
+  onDeleteThumbnail
 }) => {
 
   const numPages = pdfProxyObj?.numPages;
@@ -76,6 +77,7 @@ const FullScreenThumbnails = ({
     const thumbnailElement = (
       <div css={thumbnailStyle}>
         <Thumbnail
+          onDelete={onDeleteThumbnail}
           multiPageSelections={multiPageSelections}
           setMultiPageSelections={setMultiPageSelections}
           onDragStart={(e, pageNum) => {

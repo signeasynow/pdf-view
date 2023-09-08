@@ -321,6 +321,23 @@ const App = () => {
 		setRedoStack([]);
 	}
 
+	const onDeleteThumbnail = async (page) => {
+		if (!pdfProxyObj) {
+			console.log('No PDF loaded to download');
+			return;
+		}
+
+		const buffer = await pdfProxyObj.getData();
+		const pagesToRemove = [page];
+		const operation = { action: "delete", pages: pagesToRemove};
+		const bufferResult = await applyOperation(operation, buffer);
+		await savePDF(bufferResult, 'pdfId1');
+		setModifiedFile(new Date().toISOString());
+	
+		setOperations([...operations, operation]);
+		setRedoStack([]);
+	}
+
 	const mainHeight = () => {
 		let myHeight;
 		if (!showHeader() && !showSubheader()) {
@@ -414,6 +431,7 @@ const App = () => {
 					{
 						tools?.general?.includes('thumbnails') && (
 							<Panel
+								onDeleteThumbnail={onDeleteThumbnail}
 								multiPageSelections={multiPageSelections}
 								setMultiPageSelections={setMultiPageSelections}
 								onExpand={onExpand}

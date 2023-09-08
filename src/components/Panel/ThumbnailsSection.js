@@ -90,7 +90,8 @@ const ThumbnailsSection = ({
 	onDragEnd,
 	multiPageSelections,
 	setMultiPageSelections,
-	onExpand
+	onExpand,
+	onDeleteThumbnail
 }) => {
 	const [thumbnailScale, setThumbnailScale] = useState(2);
 
@@ -133,6 +134,7 @@ const ThumbnailsSection = ({
 				)
 			}
 			<ThumbnailsContainer
+				onDelete={onDeleteThumbnail}
 				onDragEnd={onDragEnd}
 				activePage={activePage}
 				pdfProxyObj={pdfProxyObj}

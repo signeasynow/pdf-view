@@ -2,7 +2,9 @@
 import { css } from '@emotion/react';
 
 import { h } from 'preact';
-import { useEffect, useRef } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
+import { Icon } from 'aleon_35_pdf_ui_lib';
+import Trash from '../assets/trash-svgrepo-com.svg';
 
 const partialOpacityStyle = css`
   position: relative;
@@ -62,9 +64,12 @@ export const Thumbnail = ({
 	activePage,
 	pageNum,
 	scale,
-	onThumbnailClick
+	onThumbnailClick,
+	onDelete
 }) => {
 	const canvasRef = useRef(null);
+
+	const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0 });
 
 	const onToggleMultiSelect = () => {
 		if (multiPageSelections?.includes(pageNum)) {
@@ -97,8 +102,36 @@ export const Thumbnail = ({
     }
 	}, [hidden, pageNum, scale, pdfProxyObj]);
 
+	const onRightClick = (e) => {
+		e.preventDefault();
+		// Hide any other context menus before showing this one
+		document.dispatchEvent(new Event('hide-contextmenu'));
+		
+		setContextMenu({ visible: true, x: e.clientX, y: e.clientY });
+		
+		// Add the click listener to the document
+		document.addEventListener('click', hideContextMenu);
+	};
+
+	const hideContextMenu = () => {
+		setContextMenu({ visible: false, x: 0, y: 0 });
+		// Remove the click listener from the document
+		document.removeEventListener('click', hideContextMenu);
+	};
+
+	useEffect(() => {
+    const onHide = () => {
+      hideContextMenu();
+    };
+    document.addEventListener('hide-contextmenu', onHide);
+    return () => {
+      document.removeEventListener('hide-contextmenu', onHide);
+    };
+  }, []);
+
 	return (
 		<div
+		  onContextMenu={onRightClick}
 			draggable
 			onDragStart={(e) => onDragStart(e, pageNum)}
 			onDragOver={(e) => onDragOver(e, pageNum)}
@@ -106,6 +139,23 @@ export const Thumbnail = ({
       css={hidden ? hiddenThumbnailWrapper : (activePage === pageNum ? activeThumbnailWrapper : thumbnailWrapper)}
       id={`thumbnail-${pageNum}`}
       onClick={() => onThumbnailClick(pageNum)}>
+				{
+				contextMenu.visible && 
+				<div style={{
+					position: 'fixed',
+					top: `${contextMenu.y}px`,
+					left: `${contextMenu.x}px`,
+					background: '#fff',
+					border: '1px solid #ccc',
+				}}
+				onClick={hideContextMenu}
+				>
+					<div onClick={() => onDelete(pageNum)} style={{display: "flex", alignItems: "center", padding: "4px"}}>
+						<Icon src={Trash} alt="Delete" />
+						<p style={{marginLeft: "4px", color: "#7f7f7f"}}>Delete</p>
+					</div>
+				</div>
+			}
 			<div style={{display: "inline-flex"}} css={[activePage === pageNum ? activeCanvasStyle : canvasStyle]} >
 				<canvas style={{opacity: isMultiSelected() ? 0.5 : 1}} class="canvas-page" ref={canvasRef} />
 			</div>
