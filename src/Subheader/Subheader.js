@@ -5,6 +5,8 @@ import Redo from '../../assets/arrow-undo-down-right-svgrepo-com.svg';
 import Undo from '../../assets/arrow-undo-up-left-svgrepo-com.svg';
 import Minimize from '../../assets/minimize-svgrepo-com.svg';
 import Trash from '../../assets/trash-svgrepo-com.svg';
+import RotateRight from '../../assets/rotate-right-svgrepo-com.svg';
+import RotateLeft from '../../assets/rotate-left-svgrepo-com.svg';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'aleon_35_pdf_ui_lib';
 
@@ -28,6 +30,7 @@ const contentLeftStyle = css`
 
 const Subheader = ({
 	onDelete,
+	onRotate,
 	undoLastAction,
 	redoLastAction,
 	onMinimize,

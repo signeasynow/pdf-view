@@ -9,7 +9,7 @@ import SearchBar from './SearchBar';
 import { PdfViewer } from './PdfViewer';
 import Panel from './components/Panel';
 import { heightOffset0, heightOffset1, heightOffset2 } from "./constants";
-import { remove_pages, move_page } from '../lib/pdf_wasm_project.js';
+import { remove_pages, move_page, rotate_pages } from '../lib/pdf_wasm_project.js';
 import { retrievePDF, savePDF } from './utils/indexDbUtils';
 import { invokePlugin, pendingRequests } from './utils/pluginUtils';
 import { I18nextProvider } from 'react-i18next';
@@ -292,6 +292,16 @@ const App = () => {
 		return;
 	}
 
+	const doRotate = async (pages, buffer, clockwise = true) => {
+		try {
+			const modifiedPdfArray = await rotate_pages(new Uint8Array(buffer), pages, clockwise);
+			return modifiedPdfArray.buffer;
+		} catch (error) {
+			console.error('Error modifying PDF:', error);
+		}
+		return;
+	}
+
 	const applyOperation = async (operation, buffer) => {
 		switch (operation.action) {
 			case "delete": {
@@ -300,7 +310,46 @@ const App = () => {
 			case "drag": {
 				return await doDrag(operation.start, operation.end, buffer);
 			}
+			case "rotate": {
+				return await doRotate(operation.pages, buffer, operation.clockwise);
+			}
 		}
+	}
+
+	const onRotate = async (clockwise) => {
+		if (!pdfProxyObj) {
+			console.log('No PDF loaded to download');
+			return;
+		}
+
+		const buffer = await pdfProxyObj.getData();
+		const numPages = pdfProxyObj?.numPages;
+		const pagesToRotate = Array.from({length: numPages}).map((_, i) => i + 1);
+		const operation = { action: "rotate", pages: pagesToRotate, clockwise};
+		setMultiPageSelections([]);
+		const bufferResult = await applyOperation(operation, buffer);
+		await savePDF(bufferResult, 'pdfId1');
+		setModifiedFile(new Date().toISOString());
+	
+		setOperations([...operations, operation]);
+		setRedoStack([]);
+	}
+
+	const onRotateThumbnail = async (clockwise) => {
+		if (!pdfProxyObj) {
+			console.log('No PDF loaded to download');
+			return;
+		}
+
+		const buffer = await pdfProxyObj.getData();
+		const pagesToRotate = multiPageSelections?.length ? multiPageSelections : [activePage];
+		const operation = { action: "rotate", pages: pagesToRotate, clockwise};
+		const bufferResult = await applyOperation(operation, buffer);
+		await savePDF(bufferResult, 'pdfId1');
+		setModifiedFile(new Date().toISOString());
+	
+		setOperations([...operations, operation]);
+		setRedoStack([]);
 	}
 
 	const onDelete = async () => {
@@ -373,7 +422,7 @@ const App = () => {
 		// Update undo and redo stacks
 		setOperations([...operations, operation]);
 		setRedoStack([]);
-	}	
+	}
 
 	const [showFullScreenThumbnails, setShowFullScreenThumbnails] = useState(false);
 
@@ -404,7 +453,7 @@ const App = () => {
 							tools={tools}
 							onDownload={onDownload}
 							pdfProxyObj={pdfProxyObj}
-							eventBusRef={eventBusRef}
+							onRotate={onRotate}
 							viewerContainerRef={getTargetContainer()}
 							pdfViewerObj={pdfViewerObj}
 							onSearch={onSearchBtnClick}
@@ -424,6 +473,7 @@ const App = () => {
 							redoLastAction={redoLastAction}
 							onDownload={onDownload}
 							onDelete={onDelete}
+							onRotate={onRotate}
 						/>
 					)
 				}
@@ -431,6 +481,7 @@ const App = () => {
 					{
 						tools?.general?.includes('thumbnails') && (
 							<Panel
+								onRotate={onRotateThumbnail}
 								onDeleteThumbnail={onDeleteThumbnail}
 								multiPageSelections={multiPageSelections}
 								setMultiPageSelections={setMultiPageSelections}

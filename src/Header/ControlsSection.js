@@ -33,20 +33,10 @@ const titleStyle = css`
 `;
 
 const ControlsSection = ({
-	pdfViewerObj,
-	eventBusRef
+	onRotate
 }) => {
 
 	const { t } = useTranslation();
-
-	const onRotate = (clockwise) => {
-		if (clockwise) {
-			pdfViewerObj.pagesRotation += 90;
-		}
-		else {
-			pdfViewerObj.pagesRotation -= 90;
-		}
-	};
 
 	return (
 		<>

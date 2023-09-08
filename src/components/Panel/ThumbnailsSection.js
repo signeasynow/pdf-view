@@ -91,7 +91,8 @@ const ThumbnailsSection = ({
 	multiPageSelections,
 	setMultiPageSelections,
 	onExpand,
-	onDeleteThumbnail
+	onDeleteThumbnail,
+	onRotate
 }) => {
 	const [thumbnailScale, setThumbnailScale] = useState(2);
 
@@ -134,6 +135,7 @@ const ThumbnailsSection = ({
 				)
 			}
 			<ThumbnailsContainer
+				onRotate={onRotate}
 				onDelete={onDeleteThumbnail}
 				onDragEnd={onDragEnd}
 				activePage={activePage}

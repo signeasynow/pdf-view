@@ -51,7 +51,8 @@ const Panel = ({
 	onExpand,
 	multiPageSelections,
 	setMultiPageSelections,
-	onDeleteThumbnail
+	onDeleteThumbnail,
+	onRotate
 }) => {
 
 	const { t } = useTranslation();
@@ -68,6 +69,7 @@ const Panel = ({
 		pdfProxyObj={pdfProxyObj}
 		multiPageSelections={multiPageSelections}
 		setMultiPageSelections={setMultiPageSelections}
+		onRotate={onRotate}
 		/>
 	}
 
@@ -76,6 +78,7 @@ const Panel = ({
 			{
 				activeTab === 0 && tools?.general?.includes('thumbnails') && (
 					<ThumbnailsSection
+						onRotate={onRotate}
 						onDeleteThumbnail={onDeleteThumbnail}
 						onExpand={onExpand}
 						onDragEnd={onDragEnd}

@@ -17,9 +17,12 @@ export function remove_pages(pdf_data: Uint8Array, pages_to_delete: Uint32Array)
 */
 export function move_page(pdf_data: Uint8Array, from_index: number, to_index: number): Uint8Array;
 /**
-* @returns {string}
+* @param {Uint8Array} pdf_data
+* @param {Uint32Array} pages_to_rotate
+* @param {boolean} clockwise
+* @returns {Uint8Array}
 */
-export function greet(): string;
+export function rotate_pages(pdf_data: Uint8Array, pages_to_rotate: Uint32Array, clockwise: boolean): Uint8Array;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
@@ -27,7 +30,7 @@ export interface InitOutput {
   readonly memory: WebAssembly.Memory;
   readonly remove_pages: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly move_page: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly greet: (a: number) => void;
+  readonly rotate_pages: (a: number, b: number, c: number, d: number, e: number, f: number) => void;
   readonly start: () => void;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
   readonly __wbindgen_malloc: (a: number, b: number) => number;

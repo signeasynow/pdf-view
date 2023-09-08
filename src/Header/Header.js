@@ -47,7 +47,7 @@ const Header = ({
 	onPanel,
 	onDownload,
 	leftPanelEnabled,
-	eventBusRef,
+	onRotate,
 	viewerContainerRef
 }) => {
 	const { t } = useTranslation();
@@ -71,8 +71,7 @@ const Header = ({
 				{
 					tools?.editing?.includes('rotation') && (
 						<ControlsSection
-							eventBusRef={eventBusRef}
-							pdfViewerObj={pdfViewerObj}
+							onRotate={onRotate}
 						/>
 					)
 				}

@@ -5,6 +5,8 @@ import { h } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { Icon } from 'aleon_35_pdf_ui_lib';
 import Trash from '../assets/trash-svgrepo-com.svg';
+import RotateRight from '../assets/rotate-right-svgrepo-com.svg';
+import RotateLeft from '../assets/rotate-left-svgrepo-com.svg';
 
 const partialOpacityStyle = css`
   position: relative;
@@ -52,6 +54,31 @@ const checkboxStyle = css`
 	right: 20px;
 `;
 
+const contextMenuStyle = css`
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  z-index: 1;
+	padding: 8px;
+`;
+
+const contextMenuLabel = css`
+  color: black;
+`;
+
+const contextMenuItem = css`
+  display: flex;
+  align-items: center;
+  padding: 4px;
+`;
+
+const contextMenuItemText = css`
+  margin: 0 4px;
+  color: #7f7f7f;
+`;
+
 export const Thumbnail = ({
 	multiPageSelections,
 	setMultiPageSelections,
@@ -65,7 +92,8 @@ export const Thumbnail = ({
 	pageNum,
 	scale,
 	onThumbnailClick,
-	onDelete
+	onDelete,
+	onRotate
 }) => {
 	const canvasRef = useRef(null);
 
@@ -131,6 +159,7 @@ export const Thumbnail = ({
 
 	return (
 		<div
+			style={{color: "#7f7f7f"}}
 		  onContextMenu={onRightClick}
 			draggable
 			onDragStart={(e) => onDragStart(e, pageNum)}
@@ -141,18 +170,28 @@ export const Thumbnail = ({
       onClick={() => onThumbnailClick(pageNum)}>
 				{
 				contextMenu.visible && 
-				<div style={{
-					position: 'fixed',
+				<div
+					css={contextMenuStyle}
+					style={{
 					top: `${contextMenu.y}px`,
 					left: `${contextMenu.x}px`,
-					background: '#fff',
-					border: '1px solid #ccc',
 				}}
 				onClick={hideContextMenu}
 				>
-					<div onClick={() => onDelete(pageNum)} style={{display: "flex", alignItems: "center", padding: "4px"}}>
+					<strong css={contextMenuLabel}>Page orientation</strong>
+					<div onClick={() => onRotate(true)} css={contextMenuItem}>
+						<Icon src={RotateRight} alt="Delete" />
+						<p css={contextMenuItemText}>Rotate clockwise</p>
+					</div>
+					<div onClick={() => onRotate(false)} css={contextMenuItem}>
+						<Icon src={RotateLeft} alt="Delete" />
+						<p css={contextMenuItemText}>Rotate counterclockwise</p>
+					</div>
+					<hr />
+					<strong css={contextMenuLabel}>Page manipulation</strong>
+					<div onClick={() => onDelete(pageNum)} css={contextMenuItem}>
 						<Icon src={Trash} alt="Delete" />
-						<p style={{marginLeft: "4px", color: "#7f7f7f"}}>Delete</p>
+						<p css={contextMenuItemText}>Delete</p>
 					</div>
 				</div>
 			}
