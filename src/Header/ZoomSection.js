@@ -11,8 +11,6 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import { Icon, Tooltip } from 'aleon_35_pdf_ui_lib';
 import { useTranslation } from 'react-i18next';
 
-const SCROLLBAR_PADDING = 40;
-
 const inputStyles = css`
   font-size: 16px;
   height: 12px;
@@ -20,7 +18,7 @@ const inputStyles = css`
   font-weight: 600;
   color: #5b5b5b;
   background: transparent;
-  width: 36px;
+  width: 28px;
   text-align: right; // This line was added
   &:focus {
     outline: none;
@@ -45,7 +43,7 @@ const dropdownTitle = css`
   display: flex;
   align-items: center;
   cursor: pointer;
-  margin-right: 20px;
+  margin-right: 12px;
 `;
 
 const percentStyle = css`
@@ -54,7 +52,7 @@ const percentStyle = css`
 `;
 
 const zoomLeft = css`
-  margin-right: 12px;
+  margin-right: 4px;
 `;
 
 const childStyle = css`
@@ -62,7 +60,7 @@ const childStyle = css`
 `; // padding: 12px 16px;
 
 const zoomOptionStyle = css`
-  padding: 8px 16px;
+  padding: 4px 16px;
   cursor: pointer;
   &:hover {
     background-color: #e7e7e7;
@@ -82,6 +80,7 @@ const RoundZoomValue = (v) => Math.floor(v * 100);
 const ZoomSection = ({
 	pdfViewerObj,
 	viewerContainerRef,
+	defaultZoom
 }) => {
 
 	const { t } = useTranslation();
@@ -89,6 +88,13 @@ const ZoomSection = ({
 	const zoomTextRef = useRef('100');
 
 	const [zoomValue, setZoomValue] = useState(100);
+
+	useEffect(() => {
+		if (typeof defaultZoom !== "number") {
+			return;
+		}
+		setZoomValue(defaultZoom);
+	}, [defaultZoom]);
 
 	const _onZoomOut = () => {
 		if (pdfViewerObj && pdfViewerObj.currentScale > ZOOM_FACTOR) { // minimum scale 0.1
@@ -196,6 +202,16 @@ const ZoomSection = ({
   }, [initialTouchDistance, scale]);
 */
 
+	const onFitWidth = () => {
+		pdfViewerObj.currentScaleValue = "page-width";
+		setZoomValue(Math.round(pdfViewerObj.currentScale * 100))
+	}
+
+	const onFitHeight = () => {
+		pdfViewerObj.currentScaleValue = "page-height";
+		setZoomValue(Math.round(pdfViewerObj.currentScale * 100))
+	}
+
 	useEffect(() => {
 		if (!pdfViewerObj) {
 			return;
@@ -224,6 +240,7 @@ const ZoomSection = ({
 			<div css={innerWrapper}>
 				<input value={zoomValue} css={inputStyles} ref={zoomTextRef} onChange={onChangeZoomByText} type="text" />
 				<Dropdown
+					width={100}
 					marginTop={28}
 					title={
 						<div css={dropdownTitle}>
@@ -239,6 +256,9 @@ const ZoomSection = ({
 					<div onClick={() => setZoom(0.1)}>Fit to page</div>
           */
 						}
+						<div css={zoomOptionStyle} onClick={onFitWidth}>Fit to width</div>
+						<div css={zoomOptionStyle} onClick={onFitHeight}>Fit to page</div>
+						<hr />
 						<div css={zoomOptionStyle} onClick={() => setZoom(0.1)}>10%</div>
 						<div css={zoomOptionStyle} onClick={() => setZoom(0.25)}>25%</div>
 						<div css={zoomOptionStyle} onClick={() => setZoom(0.5)}>50%</div>

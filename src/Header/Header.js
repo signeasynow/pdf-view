@@ -18,6 +18,7 @@ const VerticalDivider = () => (
     width: 1px;
     background-color: #ccc;
     margin: 12px 12px;
+		height: 32px;
   `}
 	/>
 );
@@ -27,6 +28,7 @@ const Wrapper = ({ children }) => (
 		display: 'flex',
 		background: 'white',
 		height: 50,
+		alignItems: "center",
 		margin: '0 12px',
 		justifyContent: 'space-between'
 	})}
@@ -37,6 +39,7 @@ const Wrapper = ({ children }) => (
 
 const contentLeftStyle = css`
 	display: flex;
+	align-items: center;
 `;
 
 const Header = ({
@@ -48,7 +51,8 @@ const Header = ({
 	onDownload,
 	leftPanelEnabled,
 	onRotate,
-	viewerContainerRef
+	viewerContainerRef,
+	defaultZoom
 }) => {
 	const { t } = useTranslation();
 
@@ -58,7 +62,7 @@ const Header = ({
 				{
 					tools?.general?.includes('download') && (
 						<>
-							<HeaderBtn onClick={onDownload} title={t("download")} iconAlt={t("download")}  icon={Download} />
+							<HeaderBtn offsetX="10px" onClick={onDownload} title={t("download")} iconAlt={t("download")}  icon={Download} />
 							<VerticalDivider />
 						</>
 					)
@@ -80,6 +84,7 @@ const Header = ({
 						<>
 							<VerticalDivider />
 							<ZoomSection
+								defaultZoom={defaultZoom}
 								leftPanelEnabled={leftPanelEnabled}
 								pdfProxyObj={pdfProxyObj}
 								viewerContainerRef={viewerContainerRef}

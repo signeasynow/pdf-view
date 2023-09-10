@@ -36,7 +36,8 @@ export const PdfViewer = ({
 	rightPanelEnabled,
 	setFileLoadFailError,
 	switchBuffer,
-	buffer
+	buffer,
+	updateCurrentScale
 }) => {
 
 	const panelSpaceUsed = () => {
@@ -100,13 +101,16 @@ export const PdfViewer = ({
 		pdfFindControllerRef.current = new PDFFindController({ eventBus: eventBusRef.current, linkService: pdfLinkServiceRef.current });
 		pdfScriptingManagerRef.current = new PDFScriptingManager({ eventBus: eventBusRef.current, sandboxBundleSrc: SANDBOX_BUNDLE_SRC });
 		pdfViewerRef.current = new PDFViewer({ container: viewerContainer, eventBus: eventBusRef.current, linkService: pdfLinkServiceRef.current, findController: pdfFindControllerRef.current, scriptingManager: pdfScriptingManagerRef.current });
+		// pdfViewerRef.current.currentScale = 0.2 // WIP
 		setPdfViewerObj(pdfViewerRef.current);
     
 		pdfLinkServiceRef.current.setViewer(pdfViewerRef.current);
 		pdfScriptingManagerRef.current.setViewer(pdfViewerRef.current);
 
 		eventBus.on('pagesinit', () => {
-			pdfViewerRef.current.currentScaleValue = 'page-width';
+			pdfViewerRef.current.currentScaleValue = "page-height";
+			updateCurrentScale(Math.round(pdfViewerRef.current.currentScale * 100))
+			// pdfViewerRef.current.currentScaleValue = 'page-width';
 		});
 
 		eventBus.on('pagesloaded', () => {

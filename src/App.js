@@ -15,6 +15,7 @@ import { invokePlugin, pendingRequests } from './utils/pluginUtils';
 import { I18nextProvider } from 'react-i18next';
 import i18n from "./utils/i18n";
 import useInitWasm from './hooks/useInitWasm';
+import { useMediaQuery } from './hooks/useMediaQuery';
 import useDeclareIframeLoaded from './hooks/useDeclareIframeLoaded';
 import useDownload from './hooks/useDownload';
 import useListenForDownloadRequest from './hooks/useListenForDownloadRequest';
@@ -426,13 +427,29 @@ const App = () => {
 
 	const [showFullScreenThumbnails, setShowFullScreenThumbnails] = useState(false);
 
-	const onMinimize = () => {
-		setShowFullScreenThumbnails(false);
-	}
-
 	const onExpand = () => {
 		setShowFullScreenThumbnails(true);
 	}
+
+	const [defaultZoom, setDefaultZoom] = useState(null);
+
+	const updateCurrentScale = (num) => {
+		setDefaultZoom(num);
+	}
+
+	const isSmallScreen = useMediaQuery('(max-width: 550px)');
+
+	const forceFullThumbnailsView = () => {
+		return isSmallScreen && showPanel;
+	}
+
+	const onMinimize = () => {
+		setShowFullScreenThumbnails(false);
+		if (isSmallScreen) {
+			setShowPanel(false);
+		}
+	}
+
 	
 	if (fileLoadFailError) {
 		return (
@@ -450,6 +467,7 @@ const App = () => {
 				{
 					showHeader() && (
 						<Header
+							defaultZoom={defaultZoom}
 							tools={tools}
 							onDownload={onDownload}
 							pdfProxyObj={pdfProxyObj}
@@ -467,7 +485,7 @@ const App = () => {
 						<Subheader
 							setMultiPageSelections={setMultiPageSelections}
 							multiPageSelections={multiPageSelections}
-						  showFullScreenThumbnails={showFullScreenThumbnails}
+						  showFullScreenThumbnails={showFullScreenThumbnails || forceFullThumbnailsView()}
 						  onMinimize={onMinimize}
 							undoLastAction={undoLastAction}
 							redoLastAction={redoLastAction}
@@ -493,12 +511,13 @@ const App = () => {
 								pdfProxyObj={pdfProxyObj}
 								pdf={pdfViewerObj}
 								showPanel={showPanel}
-								showFullScreenThumbnails={showFullScreenThumbnails}
+								showFullScreenThumbnails={showFullScreenThumbnails || forceFullThumbnailsView()}
 							/>
 						)
 					}
 					<div css={pdfViewerWrapper}>
 						<PdfViewer
+							updateCurrentScale={updateCurrentScale}
 							buffer={buffer}
 							switchBuffer={switchBuffer}
 							activePage={activePage}

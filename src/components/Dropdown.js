@@ -6,7 +6,6 @@ const dropdownContent = css`
   display: none;
   position: absolute;
   background-color: #f9f9f9;
-  min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
 `;
@@ -39,7 +38,7 @@ function listenForOutsideClicks(listening, setListening, menuRef, setIsOpen) {
 	};
 }
 
-const Dropdown = ({ title, child, marginTop }) => {
+const Dropdown = ({ title, child, marginTop, width = 160 }) => {
 	const [isOpen, setIsOpen] = useState(false);
 
 	const childClick = (e) => {
@@ -64,7 +63,8 @@ const Dropdown = ({ title, child, marginTop }) => {
 			<div css={styleRefresh} onClick={() => setIsOpen(!isOpen)}>
 				{title}
 				<div onClick={childClick} css={isOpen ? dropdownVisible : dropdownContent} style={{
-					marginTop: marginTop || 48
+					marginTop: marginTop || 48,
+					minWidth: width
 				}}
 				>
 					{child}

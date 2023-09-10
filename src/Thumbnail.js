@@ -51,7 +51,6 @@ const activeCanvasStyle = css`
 const checkboxStyle = css`
 	position: absolute;
 	top: 4px;
-	right: 20px;
 `;
 
 const contextMenuStyle = css`
@@ -196,9 +195,9 @@ export const Thumbnail = ({
 				</div>
 			}
 			<div style={{display: "inline-flex"}} css={[activePage === pageNum ? activeCanvasStyle : canvasStyle]} >
+				<input checked={isMultiSelected()} onClick={onToggleMultiSelect} css={checkboxStyle} type="checkbox" />
 				<canvas style={{opacity: isMultiSelected() ? 0.5 : 1}} class="canvas-page" ref={canvasRef} />
 			</div>
-			<input checked={isMultiSelected()} onClick={onToggleMultiSelect} css={checkboxStyle} type="checkbox" />
 			<div style={{ fontSize: '0.8rem', marginTop: '0.5rem' }}>{displayPageNum}</div>
 		</div>
 	);

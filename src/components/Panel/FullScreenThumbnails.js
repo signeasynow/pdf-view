@@ -16,16 +16,19 @@ const fullScreenWrapper = css`
   overflow: auto;
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
 `
 
 const dummyThumbnailStyle = css`
   flex: 1 1 calc(25% - 16px);
   margin: 8px;
+  min-width: fit-content;
   max-width: calc(25% - 16px);
   border: 2px dashed #ccc; // or any other styles to indicate it's a placeholder
 `;
 
 const thumbnailStyle = css`
+  min-width: fit-content;
   flex: 1 1 calc(25% - 16px); // 25% for 4 items per row and 16px for margin
   margin: 8px; // Add margin around each thumbnail
   max-width: calc(25% - 16px); // Cap width at 25% for 4 per row

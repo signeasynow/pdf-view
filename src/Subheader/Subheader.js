@@ -1,6 +1,5 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import HeaderBtn from './HeaderBtn';
 import Redo from '../../assets/arrow-undo-down-right-svgrepo-com.svg';
 import Undo from '../../assets/arrow-undo-up-left-svgrepo-com.svg';
 import Minimize from '../../assets/minimize-svgrepo-com.svg';
@@ -9,12 +8,14 @@ import RotateRight from '../../assets/rotate-right-svgrepo-com.svg';
 import RotateLeft from '../../assets/rotate-left-svgrepo-com.svg';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'aleon_35_pdf_ui_lib';
+import HeaderBtn from '../Header/HeaderBtn';
 
 const Wrapper = ({ children }) => (
 	<div css={css({
 		display: 'flex',
 		background: 'white',
 		height: 50,
+		alignItems: "center",
 		margin: '0 12px',
 		justifyContent: 'space-between',
 		borderTop: '1px solid #ccc'
