@@ -214,6 +214,22 @@ const App = () => {
 		}
 	};
 
+	const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  useEffect(() => {
+    const updateOnlineStatus = () => {
+      setIsOnline(navigator.onLine);
+    };
+
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+
+    return () => {
+      window.removeEventListener('online', updateOnlineStatus);
+      window.removeEventListener('offline', updateOnlineStatus);
+    };
+  }, []);
+
 	const showHeader = () => {
 		return tools?.general?.includes("download") || tools?.general?.includes("thumbnails")
 		|| tools?.general?.includes("zoom") || tools?.general?.includes("search")
@@ -458,6 +474,15 @@ const App = () => {
 				<p>{fileLoadFailError}</p>
 			</div>
 		);
+	}
+
+	if (!isOnline) {
+		return (
+			<div style={{fontFamily: "Lato", margin: 4}}>
+				<h1>Connection Issue Detected</h1>
+				<p>We couldn't find an active internet connection. Please ensure you're connected to the internet to continue.</p>
+			</div>
+		)
 	}
 
 	return (

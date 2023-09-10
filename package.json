@@ -7,7 +7,7 @@
     "lint": "eslint .",
     "start": "webpack serve --open --mode development",
     "build": "webpack --mode production",
-    "process": "npm run build && cp -rf dist ../ts-regular/public && cp -rf dist ../htmltest/html2pdf-app/public && cp -rf dist ../react_plugin/public && cp -rf dist ../extension3/public && cp -rf dist ../extension-preact/public && cp -rf dist ../pdf-sdk-showcase/public",
+    "process": "npm run build && cp -rf dist ../ts-regular/public && cp -rf dist ../htmltest/html2pdf-app/public && cp -rf dist ../react_plugin/public && cp -rf dist ../extension3/public && cp -rf dist ../extension-preact/public",
     "send-to-app": "npm run build && cp -rf dist ../htmltest/html2pdf-app/public"
   },
   "keywords": [],
@@ -43,6 +43,7 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@supabase/supabase-js": "^2.33.1",
     "aleon_35_pdf_ui_lib": "^1.1.29",
     "aleon_35_pdf_viewer_lib": "^1.0.8",
     "i18next": "^23.4.6",
