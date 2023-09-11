@@ -23,6 +23,11 @@ export function move_page(pdf_data: Uint8Array, from_index: number, to_index: nu
 * @returns {Uint8Array}
 */
 export function rotate_pages(pdf_data: Uint8Array, pages_to_rotate: Uint32Array, clockwise: boolean): Uint8Array;
+/**
+* @param {Uint8Array} pdf_data
+* @returns {Uint8Array}
+*/
+export function add_watermark(pdf_data: Uint8Array): Uint8Array;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
@@ -31,6 +36,7 @@ export interface InitOutput {
   readonly remove_pages: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly move_page: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly rotate_pages: (a: number, b: number, c: number, d: number, e: number, f: number) => void;
+  readonly add_watermark: (a: number, b: number, c: number) => void;
   readonly start: () => void;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
   readonly __wbindgen_malloc: (a: number, b: number) => number;

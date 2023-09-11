@@ -1,5 +1,8 @@
-function useDownload(pdfProxyObj, fileName) {
+function useDownload(pdfProxyObj, fileName, isSandbox) {
 	const triggerDownload = async () => {
+		if (isSandbox) {
+			return alert("Download is not enabled in Sandbox mode.");
+		}
     if (!pdfProxyObj) {
 			console.log('No PDF loaded to download');
 			return;

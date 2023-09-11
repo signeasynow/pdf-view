@@ -37,7 +37,8 @@ export const PdfViewer = ({
 	setFileLoadFailError,
 	switchBuffer,
 	buffer,
-	updateCurrentScale
+	updateCurrentScale,
+	addWatermark
 }) => {
 
 	const panelSpaceUsed = () => {
@@ -109,7 +110,8 @@ export const PdfViewer = ({
 
 		eventBus.on('pagesinit', () => {
 			pdfViewerRef.current.currentScaleValue = "page-height";
-			updateCurrentScale(Math.round(pdfViewerRef.current.currentScale * 100))
+			updateCurrentScale(Math.round(pdfViewerRef.current.currentScale * 100));
+			
 			// pdfViewerRef.current.currentScaleValue = 'page-width';
 		});
 
@@ -118,6 +120,7 @@ export const PdfViewer = ({
 			if (typeof activePage === "number") {
 				pdfLinkServiceRef.current?.goToPage(activePage || 1);
 			}
+			addWatermark();
 			// document
 		});
 

@@ -47,6 +47,7 @@
     "aleon_35_pdf_ui_lib": "^1.1.29",
     "aleon_35_pdf_viewer_lib": "^1.0.8",
     "i18next": "^23.4.6",
+    "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^3.7.107",
     "preact": "^10.15.1",
     "preact-compat": "^3.19.0",

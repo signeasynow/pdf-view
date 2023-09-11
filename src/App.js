@@ -9,7 +9,7 @@ import SearchBar from './SearchBar';
 import { PdfViewer } from './PdfViewer';
 import Panel from './components/Panel';
 import { heightOffset0, heightOffset1, heightOffset2 } from "./constants";
-import { remove_pages, move_page, rotate_pages } from '../lib/pdf_wasm_project.js';
+import { remove_pages, move_page, rotate_pages, add_watermark } from '../lib/pdf_wasm_project.js';
 import { retrievePDF, savePDF } from './utils/indexDbUtils';
 import { invokePlugin, pendingRequests } from './utils/pluginUtils';
 import { I18nextProvider } from 'react-i18next';
@@ -20,6 +20,7 @@ import useDeclareIframeLoaded from './hooks/useDeclareIframeLoaded';
 import useDownload from './hooks/useDownload';
 import useListenForDownloadRequest from './hooks/useListenForDownloadRequest';
 import usePropageClickEvents from './hooks/usePropagateClickEvents';
+import {supabase} from './utils/supabase';
 
 const Flex = css`
 display: flex;
@@ -66,6 +67,7 @@ const App = () => {
 	const getTargetContainer = () => {
 		return buffer === 1 ? viewerContainerRef2 : viewerContainerRef1;
 	};
+	const [isSandbox, setIsSandbox] = useState(false);
 
 	const [file, setFile] = useState(null);
 	const [fileName, setFileName] = useState('file.pdf');
@@ -90,10 +92,12 @@ const App = () => {
 	useInitWasm();
 
   const [modifiedFile, setModifiedFile] = useState(null);
-	const { triggerDownload: onDownload } = useDownload(pdfProxyObj, fileName);
+	const { triggerDownload: onDownload } = useDownload(pdfProxyObj, fileName, isSandbox);
 
 	const [operations, setOperations] = useState([]);
 	const [redoStack, setRedoStack] = useState([]);
+
+	const [inputtedLicenseKey, setInputtedLicenseKey] = useState(null);
 
 	useEffect(() => {
 		window.addEventListener('message', (event) => {
@@ -109,6 +113,10 @@ const App = () => {
 			}
 			if (typeof event.data === 'object' && event.data.locale) {
 				i18n.changeLanguage(event.data.locale)
+			}
+			console.log(event.data, 'event.data bro')
+			if (typeof event.data === 'object' && event.data.licenseKey) {
+				setInputtedLicenseKey(event.data.licenseKey);
 			}
 			if (event.data?.type === 'fromCore') {
 				const id = event.data.id;
@@ -216,6 +224,57 @@ const App = () => {
 
 	const [isOnline, setIsOnline] = useState(navigator.onLine);
 
+	const [hasValidLicense, setHasValidLicense] = useState(null);
+	const [isInValidDomain, setIsInValidDomain] = useState(null);
+
+	const checkLicense = async () => {
+		const { data, error } = await supabase.functions.invoke('verify-license-key', {
+      body: { licenseKey: inputtedLicenseKey, origin: window.origin },
+    });
+		if (error) {
+			if (error.message === "Invalid license key") {
+				setHasValidLicense(false);
+			}
+			// we'll take the blame here
+			return;
+		}
+		if (data.message === "Unauthorized domain") {
+			setIsInValidDomain(false);
+			return;
+		}
+		if (data.error === "Unauthorized domain") {
+			setIsInValidDomain(false);
+			return;
+		}
+		if (data.error === "Invalid license key") {
+			setIsInValidDomain(false);
+			return;
+		}
+		if (data.message === "License and domain are valid") {
+			setHasValidLicense(true);
+		} else {
+			// not sure what this is actually
+			setHasValidLicense(false);
+		}
+	}
+
+	useEffect(() => {
+		if (!isOnline) {
+			return;
+		}
+		if (hasValidLicense === true) {
+			return;
+		}
+		if (!inputtedLicenseKey) {
+			return;
+		}
+		if (inputtedLicenseKey.toLowerCase() === "sandbox") {
+			setIsSandbox(true);
+			return;
+		}
+		checkLicense();
+	}, [isOnline, inputtedLicenseKey]);
+
   useEffect(() => {
     const updateOnlineStatus = () => {
       setIsOnline(navigator.onLine);
@@ -299,6 +358,39 @@ const App = () => {
 		}
 	}
 
+	const appliedSandox = useRef(false);
+
+	const [watermarkQueue, setWatermarkQueue] = useState(false);
+  const appliedSandbox = useRef(false);
+
+	async function addWatermark(pdfBytes) {
+		// Load a PDFDocument from the existing PDF bytes
+		const pdfDoc = await PDFDocument.load(pdfBytes);
+
+		// Embed the Helvetica font
+		const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+	
+		// Get all the pages in the PDF
+		const pages = pdfDoc.getPages();
+	
+		// Draw a watermark on each page
+		for (const page of pages) {
+			const { width, height } = page.getSize();
+			page.drawText('Watermark Text Here', {
+				x: 50,
+				y: height - 4 * 12,
+				size: 12,
+				font: helveticaFont,
+				color: rgb(0.95, 0.1, 0.1),
+			});
+		}
+	
+		// Serialize the PDF
+		let result = await pdfDoc.save();
+	
+		return result;
+	}
+  
 	const doDelete = async (pages, buffer) => {
 		try {
 			const modifiedPdfArray = await remove_pages(new Uint8Array(buffer), pages);
@@ -485,6 +577,30 @@ const App = () => {
 		)
 	}
 
+	if (hasValidLicense === false) {
+		return (
+			<div style={{fontFamily: "Lato", margin: 4}}>
+				<h1>License Key Invalid</h1>
+				<p>Your provided license key appears to be invalid. To resolve this issue, please reach out to your account administrator.</p>
+			</div>
+		)
+	}
+
+	if (isInValidDomain === false) {
+		return (
+			<div style={{fontFamily: "Lato", margin: 4}}>
+				<h1>Invalid domain</h1>
+				<p>This domain ({window.origin}) is not permitted to render the PDF Web SDK. If this is a mistake, please update the Authorized Domains list in your Account portal.</p>
+			</div>
+		)
+	}
+
+	if (!inputtedLicenseKey) {
+		return (
+			<div></div>
+		)
+	}
+
 	return (
 		<I18nextProvider i18n={i18n}>
 			{/*<button onClick={onClickTestHandler}>Crazy btn</button>*/}
@@ -542,6 +658,7 @@ const App = () => {
 					}
 					<div css={pdfViewerWrapper}>
 						<PdfViewer
+							addWatermark={addWatermark}
 							updateCurrentScale={updateCurrentScale}
 							buffer={buffer}
 							switchBuffer={switchBuffer}
