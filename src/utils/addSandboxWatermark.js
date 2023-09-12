@@ -23,7 +23,7 @@ async function addWatermark(pdfBytes, copy) {
   for (const page of pages) {
     const { width, height } = page.getSize();
     const text = copy;
-    const fontSize = 48; // Make text bigger
+    const fontSize = 24; // Make text bigger
 
     const x = width / 2;
     const y = height / 1.5;

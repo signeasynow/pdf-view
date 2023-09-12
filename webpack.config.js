@@ -1,4 +1,7 @@
 const path = require('path');
+const envPath = path.join(__dirname, `.env.${process.env.NODE_ENV}`);
+require('dotenv').config({ path: envPath });
+
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 

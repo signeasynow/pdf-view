@@ -21,6 +21,9 @@ import useDownload from './hooks/useDownload';
 import useListenForDownloadRequest from './hooks/useListenForDownloadRequest';
 import usePropageClickEvents from './hooks/usePropagateClickEvents';
 import {supabase} from './utils/supabase';
+import * as amplitude from '@amplitude/analytics-browser';
+
+amplitude.init("76825a74ed5e5f72bc6a75fd052e78ad")
 
 const Flex = css`
 display: flex;
@@ -88,6 +91,18 @@ const App = () => {
 	const onPanelBtnClick = () => {
 		setShowPanel(() => !showPanel);
 	};
+
+	const initAnalytics = () => {
+		console.log(process.env.NODE_ENV, 'process.env.NODE_ENV')
+		if (process.env.NODE_ENV === "development") {
+			return;
+		}
+		amplitude.track('session_start');
+	}
+
+	useEffect(() => {
+		initAnalytics();
+	}, []);
 
 	useInitWasm();
 

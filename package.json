@@ -7,7 +7,8 @@
     "lint": "eslint .",
     "start": "webpack serve --open --mode development",
     "build": "webpack --mode production",
-    "process": "npm run build && cp -rf dist ../ts-regular/public && cp -rf dist ../htmltest/html2pdf-app/public && cp -rf dist ../react_plugin/public && cp -rf dist ../extension3/public && cp -rf dist ../extension-preact/public",
+    "dev-process": "NODE_ENV=development webpack --mode development && cp -rf dist ../ts-regular/public && cp -rf dist ../htmltest/html2pdf-app/public && cp -rf dist ../react_plugin/public && cp -rf dist ../extension3/public && cp -rf dist ../extension-preact/public && rm -rf pdf-ui && mv dist pdf-ui && cp -rf pdf-ui ../react-pdf-demo/public",
+    "process": "npm run build && cp -rf dist ../ts-regular/public && cp -rf dist ../htmltest/html2pdf-app/public && cp -rf dist ../react_plugin/public && cp -rf dist ../extension3/public && cp -rf dist ../extension-preact/public && rm -rf pdf-ui && mv dist pdf-ui && cp -rf pdf-ui ../react-pdf-demo/public",
     "send-to-app": "npm run build && cp -rf dist ../htmltest/html2pdf-app/public"
   },
   "keywords": [],
@@ -22,6 +23,7 @@
     "babel-plugin-jsx-pragmatic": "^1.0.2",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.8.1",
+    "dotenv": "^16.3.1",
     "eslint": "^8.45.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-preact": "^1.3.0",
@@ -41,6 +43,7 @@
     "webpack-dev-server": "^4.15.1"
   },
   "dependencies": {
+    "@amplitude/analytics-browser": "^2.2.3",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@supabase/supabase-js": "^2.33.1",
