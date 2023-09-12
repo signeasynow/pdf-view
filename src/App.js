@@ -22,6 +22,7 @@ import useListenForDownloadRequest from './hooks/useListenForDownloadRequest';
 import usePropageClickEvents from './hooks/usePropagateClickEvents';
 import {supabase} from './utils/supabase';
 import * as amplitude from '@amplitude/analytics-browser';
+import useListenForThumbnailFullScreenRequest from './hooks/useListenForThumbnailFullScreenRequest';
 
 amplitude.init("76825a74ed5e5f72bc6a75fd052e78ad")
 
@@ -34,12 +35,6 @@ height: 100%;
 const pdfViewerWrapper = css`
   height: 100%;
   width: 100%;
-`;
-
-// relative
-
-const WrapperStyle = css`
-  width: 100vw;
 `;
 
 const failWrap = css`
@@ -129,13 +124,11 @@ const App = () => {
 			if (typeof event.data === 'object' && event.data.locale) {
 				i18n.changeLanguage(event.data.locale)
 			}
-			console.log(event.data, 'event.data bro')
 			if (typeof event.data === 'object' && event.data.licenseKey) {
 				setInputtedLicenseKey(event.data.licenseKey);
 			}
 			if (event.data?.type === 'fromCore') {
 				const id = event.data.id;
-				console.log(event.data, 'data in here', pendingRequests, id)
 				if (pendingRequests[id]) {
 					// Resolve the promise with the result
 					pendingRequests[id].resolve(event.data.result);
@@ -149,6 +142,17 @@ const App = () => {
 	usePropageClickEvents();
 	useDeclareIframeLoaded();
 	useListenForDownloadRequest(onDownload);
+	useListenForThumbnailFullScreenRequest((enable) => {
+		if (enable === true) {
+			onExpand();
+		} else if (enable === false) {
+			onMinimize();
+		} else if (showFullScreenThumbnails) {
+			onMinimize();
+		} else {
+			onExpand();
+		}
+	});
 
 	const [matchWholeWord, setMatchWholeWord] = useState(false);
 
@@ -623,6 +627,7 @@ const App = () => {
 				{
 					showHeader() && (
 						<Header
+							showFullScreenThumbnails={showFullScreenThumbnails}
 							defaultZoom={defaultZoom}
 							tools={tools}
 							onDownload={onDownload}

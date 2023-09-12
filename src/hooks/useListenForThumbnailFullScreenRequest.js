@@ -1,11 +1,11 @@
 import { useEffect } from 'preact/hooks';
 
-function useListenForDownloadRequest(callback) {
+function useListenForThumbnailFullScreenRequest(callback) {
 	useEffect(() => {
 		const messageFunc =  (event) => {
-			console.log("listen bro download", event)
-			if (event.data && event.data.type === 'download') {
-				callback();
+      console.log(event, 'event within bro')
+			if (event.data && event.data.type === 'toggle-full-screen-thumbnails') {
+				callback(event.data.enable);
     	}
 		};
 		window.addEventListener('message', messageFunc, false);
@@ -17,4 +17,4 @@ function useListenForDownloadRequest(callback) {
 	return null;
 }
 
-export default useListenForDownloadRequest;
+export default useListenForThumbnailFullScreenRequest;

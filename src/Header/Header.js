@@ -52,7 +52,8 @@ const Header = ({
 	leftPanelEnabled,
 	onRotate,
 	viewerContainerRef,
-	defaultZoom
+	defaultZoom,
+	showFullScreenThumbnails
 }) => {
 	const { t } = useTranslation();
 
@@ -68,11 +69,6 @@ const Header = ({
 					)
 				}
 				{
-					tools?.general?.includes('thumbnails') && (
-						<HeaderBtn onClick={onPanel} title={t("panel")} iconAlt={t("panel")} icon={Panel} />
-					)
-				}
-				{
 					tools?.editing?.includes('rotation') && (
 						<ControlsSection
 							onRotate={onRotate}
@@ -80,7 +76,12 @@ const Header = ({
 					)
 				}
 				{
-					tools?.general.includes('zoom') && (
+					tools?.general?.includes('thumbnails') && !showFullScreenThumbnails && (
+						<HeaderBtn onClick={onPanel} title={t("panel")} iconAlt={t("panel")} icon={Panel} />
+					)
+				}
+				{
+					tools?.general.includes('zoom') && !showFullScreenThumbnails && (
 						<>
 							<VerticalDivider />
 							<ZoomSection
