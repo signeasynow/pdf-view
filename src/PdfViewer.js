@@ -7,6 +7,7 @@ import 'pdfjs-dist/web/pdf_viewer.css';
 import { heightOffset0, heightOffset1, heightOffset2 } from "./constants";
 import { retrievePDF, savePDF } from './utils/indexDbUtils';
 import { invokePlugin } from './utils/pluginUtils';
+import { addSandboxWatermark } from './utils/addSandboxWatermark';
 const SANDBOX_BUNDLE_SRC = 'pdfjs-dist/build/pdf.sandbox.js';
 
 const containerStyle = css`
@@ -37,9 +38,10 @@ export const PdfViewer = ({
 	setFileLoadFailError,
 	switchBuffer,
 	buffer,
-	updateCurrentScale,
-	addWatermark
+	isSandbox,
+	updateCurrentScale
 }) => {
+	console.log(isSandbox, 'isSandbox bro')
 
 	const panelSpaceUsed = () => {
 		let result = 0;
@@ -51,6 +53,8 @@ export const PdfViewer = ({
 		}
 		return result;
 	};
+
+	const hasWatermarkAdded = useRef(false);
 
 
 	const pdfLinkServiceRef = useRef(null);
@@ -120,8 +124,6 @@ export const PdfViewer = ({
 			if (typeof activePage === "number") {
 				pdfLinkServiceRef.current?.goToPage(activePage || 1);
 			}
-			addWatermark();
-			// document
 		});
 
 		eventBus.on('updatefindmatchescount', ({ matchesCount }) => {
@@ -151,6 +153,12 @@ export const PdfViewer = ({
 
 		loadingTask.promise.then(
 			async (loadedPdfDocument) => {
+				if (isSandbox) {
+					const pdfData = await loadedPdfDocument.getData();
+					const pdfWithWatermark = await addSandboxWatermark(new Uint8Array(pdfData));
+					loadedPdfDocument = await pdfjs.getDocument({data: pdfWithWatermark}).promise;
+					hasWatermarkAdded.current = true;
+				}
 				// console.log(loadedPdfDocument, 'loadedPdfDocumentmod', loadedPdfDocument.numPages);
 				// If no modifiedFile, continue to set the loaded PDF document.
 				setPdfProxyObj(loadedPdfDocument);

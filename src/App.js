@@ -658,6 +658,7 @@ const App = () => {
 					}
 					<div css={pdfViewerWrapper}>
 						<PdfViewer
+							isSandbox={inputtedLicenseKey?.toLowerCase() === "sandbox"}
 							addWatermark={addWatermark}
 							updateCurrentScale={updateCurrentScale}
 							buffer={buffer}
