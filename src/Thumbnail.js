@@ -218,16 +218,14 @@ export const Thumbnail = ({
 				</div>
 			}
 			<div style={{display: "inline-flex"}} css={getThumbnailClass()} >
-				{
-					!clickIsMultiSelect && (
-						<div css={checkboxStyle}>
-							<Checkbox onChange={(e) => {
-								onToggleMultiSelect();
-							}} checked={isMultiSelected()}
-							/>
-						</div>
-					)
-				}
+				<div css={checkboxStyle}>
+					<Checkbox onChange={(e) => {
+						if (!clickIsMultiSelect) {
+							onToggleMultiSelect();
+						}
+					}} checked={isMultiSelected()}
+					/>
+				</div>
 				{/*<input checked={isMultiSelected()} onClick={onToggleMultiSelect} css={checkboxStyle} type="checkbox" />*/}
 				<canvas style={{opacity: isMultiSelected() ? 0.5 : 1}} class="canvas-page" ref={canvasRef} />
 			</div>

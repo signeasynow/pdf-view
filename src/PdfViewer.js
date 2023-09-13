@@ -41,7 +41,6 @@ export const PdfViewer = ({
 	isSandbox,
 	updateCurrentScale
 }) => {
-	console.log(isSandbox, 'isSandbox bro')
 
 	const panelSpaceUsed = () => {
 		let result = 0;
@@ -72,31 +71,6 @@ export const PdfViewer = ({
 
 	}
 
-	const applyDocument2 = async (viewerContainer) => {
-		await invokePlugin({
-			pluginName: "PdfViewPlugin",
-			funcName: "applyDocument",
-			args: [{
-				viewerContainer,
-				eventBusRef,
-				pdfLinkServiceRef,
-				pdfFindControllerRef,
-				pdfScriptingManagerRef,
-				pdfViewerRef,
-				setPdfViewerObj,
-				modifiedFile,
-				file,
-				activePage,
-				setMatchesCount,
-				setActivePage,
-				retrievePDF,
-				setPdfProxyObj,
-				savePDF,
-				setFileLoadFailError
-			}]
-		});
-	}
-
 	const applyDocument = async (viewerContainer) => {
 		await cleanupDocument();
 
@@ -120,14 +94,12 @@ export const PdfViewer = ({
 		});
 
 		eventBus.on('pagesloaded', () => {
-			console.log(pdfViewerRef.current, 'pdfViewerRef.current')
 			if (typeof activePage === "number") {
 				pdfLinkServiceRef.current?.goToPage(activePage || 1);
 			}
 		});
 
 		eventBus.on('updatefindmatchescount', ({ matchesCount }) => {
-			console.log(matchesCount, 'matchescount');
 			setMatchesCount(matchesCount?.total);
 		});
 
@@ -175,7 +147,6 @@ export const PdfViewer = ({
 					loadedPdfDocument = await pdfjs.getDocument({data: pdfWithWatermark}).promise;
 					hasWatermarkAdded.current = true;
 				}
-				// console.log(loadedPdfDocument, 'loadedPdfDocumentmod', loadedPdfDocument.numPages);
 				// If no modifiedFile, continue to set the loaded PDF document.
 				setPdfProxyObj(loadedPdfDocument);
 				pdfViewerRef.current.setDocument(loadedPdfDocument);
@@ -183,12 +154,11 @@ export const PdfViewer = ({
 				
 				if (!modifiedFile) {
 					savePDF(await loadedPdfDocument.getData(), "original");
-					// console.log("updating original", loadedPdfDocument.getData())
 				}
 			},
 			reason => {
 				setFileLoadFailError(reason?.message);
-				console.error(JSON.stringify(reason), 'error man.');
+				console.error(JSON.stringify(reason), 'error.');
 				window.parent.postMessage({ type: 'file-failed', message: reason?.message }, '*');
 			}
 		);
@@ -202,14 +172,11 @@ export const PdfViewer = ({
 
 	
 	useEffect(() => {
-		console.log('start change');
 		function handleVisibilityChange() {
 			if (document.hidden) {
 				// Page is now hidden
-				console.log('Page is hidden');
 			}
 			else {
-				console.log('page is showing');
 				// Page is now visible
 
 				// You can put your logic here to re-render the PDF or perform some other actions
