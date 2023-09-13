@@ -95,7 +95,8 @@ const ThumbnailsSection = ({
 	onDeleteThumbnail,
 	onRotate,
 	thumbnailScale,
-	setThumbnailScale
+	setThumbnailScale,
+	onThumbnailClick
 }) => {
 
 	const handleInputChange = (e) => {
@@ -103,12 +104,14 @@ const ThumbnailsSection = ({
 		setThumbnailScale(num);
 	};
 
-	const handleThumbnailClick = (num) => {
+/*
+	const handleThumbnailClick = (num, e) => {
 		setActivePage(num);
 		pdf.scrollPageIntoView({
 			pageNumber: num
 		});
 	};
+	*/
 
 	return (
 		<>
@@ -133,7 +136,7 @@ const ThumbnailsSection = ({
 				pdfProxyObj={pdfProxyObj}
 				pdf={pdf}
 				scale={thumbnailScale / 10}
-				onThumbnailClick={handleThumbnailClick}
+				onThumbnailClick={onThumbnailClick}
 				multiPageSelections={multiPageSelections}
 				setMultiPageSelections={setMultiPageSelections}
 			/>

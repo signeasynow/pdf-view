@@ -102,6 +102,8 @@ export const Thumbnail = ({
 	const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0 });
 
 	const onToggleMultiSelect = () => {
+		// console.log(e, 'e multi')
+		// e.stopPropagation();
 		if (multiPageSelections?.includes(pageNum)) {
 			setMultiPageSelections(multiPageSelections.filter((each) => each !== pageNum));
 		} else {
@@ -160,11 +162,21 @@ export const Thumbnail = ({
   }, []);
 
 	const onClick = (e) => {
+		// e.stopPropagation();
+		// e.preventDefault();
 		if (clickIsMultiSelect) {
-			onToggleMultiSelect();
+			onToggleMultiSelect(e);
 			return;
 		}
+		console.log("clicking bro")
 		onThumbnailClick(pageNum, e);
+	}
+
+	const getThumbnailClass = () => {
+		if (clickIsMultiSelect) {
+			return [multiPageSelections.includes(pageNum) ? activeCanvasStyle : canvasStyle]
+		}
+		return [activePage === pageNum ? activeCanvasStyle : canvasStyle];
 	}
 
 	return (
@@ -205,11 +217,17 @@ export const Thumbnail = ({
 					</div>
 				</div>
 			}
-			<div style={{display: "inline-flex"}} css={[activePage === pageNum ? activeCanvasStyle : canvasStyle]} >
-				<div css={checkboxStyle}>
-					<Checkbox onChange={onToggleMultiSelect} checked={isMultiSelected()} />
-				</div>
-				
+			<div style={{display: "inline-flex"}} css={getThumbnailClass()} >
+				{
+					!clickIsMultiSelect && (
+						<div css={checkboxStyle}>
+							<Checkbox onChange={(e) => {
+								onToggleMultiSelect();
+							}} checked={isMultiSelected()}
+							/>
+						</div>
+					)
+				}
 				{/*<input checked={isMultiSelected()} onClick={onToggleMultiSelect} css={checkboxStyle} type="checkbox" />*/}
 				<canvas style={{opacity: isMultiSelected() ? 0.5 : 1}} class="canvas-page" ref={canvasRef} />
 			</div>

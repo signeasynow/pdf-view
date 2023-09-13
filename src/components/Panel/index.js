@@ -95,6 +95,7 @@ const Panel = ({
 			{
 				activeTab === 0 && tools?.general?.includes('thumbnails') && (
 					<ThumbnailsSection
+						onThumbnailClick={onThumbnailClick}
 						onRotate={onRotate}
 						onDeleteThumbnail={onDeleteThumbnail}
 						onExpand={onExpand}
