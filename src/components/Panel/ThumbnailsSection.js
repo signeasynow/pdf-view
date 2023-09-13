@@ -5,6 +5,7 @@ import 'pdfjs-dist/web/pdf_viewer.css';
 import ThumbnailsContainer from '../../Thumbnails';
 import { useState } from 'preact/hooks';
 import PanelTools from './PanelTools';
+import Slider from '../Slider';
 
 const rangeStyle = css`
   -webkit-appearance: none; /* Override default CSS styles */
@@ -92,9 +93,10 @@ const ThumbnailsSection = ({
 	setMultiPageSelections,
 	onExpand,
 	onDeleteThumbnail,
-	onRotate
+	onRotate,
+	thumbnailScale,
+	setThumbnailScale
 }) => {
-	const [thumbnailScale, setThumbnailScale] = useState(2);
 
 	const handleInputChange = (e) => {
 		const num = parseInt(e.target.value);
@@ -103,7 +105,6 @@ const ThumbnailsSection = ({
 
 	const handleThumbnailClick = (num) => {
 		setActivePage(num);
-		console.log(num, 'num here 12', pdf);
 		pdf.scrollPageIntoView({
 			pageNumber: num
 		});
@@ -117,20 +118,10 @@ const ThumbnailsSection = ({
 						<div css={thumbnailTopActionsWrapper}>
 							<PanelTools onToggle={() => onExpand()} />
 						</div>
-						<div css={rangeWrapperStyle}>
-							<label css={minusStyle}>—</label>
-							<input
-								css={rangeStyle}
-								value={thumbnailScale}
-								onChange={handleInputChange}
-								type="range"
-								id="scale"
-								name="scale"
-								min="0"
-								max="10"
-							/>
-							<label css={plusStyle}>+</label>
-						</div>
+						<Slider
+							value={thumbnailScale}
+							onChange={handleInputChange}
+						/>
 					</div>
 				)
 			}

@@ -3,7 +3,6 @@ import { useEffect } from 'preact/hooks';
 function useListenForDownloadRequest(callback) {
 	useEffect(() => {
 		const messageFunc =  (event) => {
-			console.log("listen bro download", event)
 			if (event.data && event.data.type === 'download') {
 				callback();
     	}

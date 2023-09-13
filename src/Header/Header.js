@@ -76,7 +76,7 @@ const Header = ({
 					)
 				}
 				{
-					tools?.general?.includes('thumbnails') && !showFullScreenThumbnails && (
+					(tools?.general?.includes('panel-toggle') && !showFullScreenThumbnails) && (
 						<HeaderBtn onClick={onPanel} title={t("panel")} iconAlt={t("panel")} icon={Panel} />
 					)
 				}

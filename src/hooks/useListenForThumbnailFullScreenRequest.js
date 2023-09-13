@@ -3,7 +3,6 @@ import { useEffect } from 'preact/hooks';
 function useListenForThumbnailFullScreenRequest(callback) {
 	useEffect(() => {
 		const messageFunc =  (event) => {
-      console.log(event, 'event within bro')
 			if (event.data && event.data.type === 'toggle-full-screen-thumbnails') {
 				callback(event.data.enable);
     	}

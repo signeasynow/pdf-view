@@ -2,6 +2,7 @@
 import { css } from '@emotion/react';
 import { useEffect, useState } from 'preact/hooks';
 import { Thumbnail } from '../../Thumbnail';
+import Slider from '../Slider';
 
 const wrapperStyle = css`
   position: relative;
@@ -38,13 +39,13 @@ const FullScreenThumbnails = ({
   onDragEnd,
   activePage,
   pdf,
-  scale,
   onThumbnailClick,
   pdfProxyObj,
   multiPageSelections,
 	setMultiPageSelections,
   onDeleteThumbnail,
-  onRotate
+  onRotate,
+  expandedViewThumbnailScale
 }) => {
 
   const numPages = pdfProxyObj?.numPages;
@@ -66,7 +67,6 @@ const FullScreenThumbnails = ({
       setDragOverIndex(null);
     }
   }, [dragOverIndex, pendingDragEnd]);
-
 
   if (!numPages) return (<div>Loading...</div>);
 
@@ -111,7 +111,7 @@ const FullScreenThumbnails = ({
           pdfProxyObj={pdfProxyObj}
           pageNum={i + 1}
           displayPageNum={i + 1}
-          scale={scale}
+          scale={expandedViewThumbnailScale / 10}
           onThumbnailClick={onThumbnailClick}
         />
       </div>

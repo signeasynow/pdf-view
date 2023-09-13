@@ -23,6 +23,7 @@ import usePropageClickEvents from './hooks/usePropagateClickEvents';
 import {supabase} from './utils/supabase';
 import * as amplitude from '@amplitude/analytics-browser';
 import useListenForThumbnailFullScreenRequest from './hooks/useListenForThumbnailFullScreenRequest';
+import useListenForThumbnailZoomRequest from './hooks/useListenForThumbnailZoomRequest';
 
 amplitude.init("76825a74ed5e5f72bc6a75fd052e78ad")
 
@@ -59,6 +60,9 @@ const App = () => {
 	const [buffer, setBuffer] = useState(1); // 1 for primary, 2 for secondary
 	const viewerContainerRef1 = useRef(null);
 	const viewerContainerRef2 = useRef(null);
+
+	const [expandedViewThumbnailScale, setExpandedViewThumbnailScale] = useState(2);
+	const [thumbnailScale, setThumbnailScale] = useState(2);
 
 	const switchBuffer = () => setBuffer(buffer === 1 ? 2 : 1);
 
@@ -153,6 +157,10 @@ const App = () => {
 			onExpand();
 		}
 	});
+	useListenForThumbnailZoomRequest((v) => {
+		setExpandedViewThumbnailScale(v);
+		setThumbnailScale(v);
+	})
 
 	const [matchWholeWord, setMatchWholeWord] = useState(false);
 
@@ -309,7 +317,7 @@ const App = () => {
   }, []);
 
 	const showHeader = () => {
-		return tools?.general?.includes("download") || tools?.general?.includes("thumbnails")
+		return tools?.general?.includes("download") || tools?.general?.includes("panel-toggle")
 		|| tools?.general?.includes("zoom") || tools?.general?.includes("search")
 		|| tools?.editing?.includes("rotation")
 	}
@@ -577,6 +585,7 @@ const App = () => {
 		}
 	}
 
+
 	
 	if (fileLoadFailError) {
 		return (
@@ -644,6 +653,8 @@ const App = () => {
 				{
 					showSubheader() && (
 						<Subheader
+							setExpandedViewThumbnailScale={setExpandedViewThumbnailScale}
+							expandedViewThumbnailScale={expandedViewThumbnailScale}
 							setMultiPageSelections={setMultiPageSelections}
 							multiPageSelections={multiPageSelections}
 						  showFullScreenThumbnails={showFullScreenThumbnails || forceFullThumbnailsView()}
@@ -660,6 +671,9 @@ const App = () => {
 					{
 						tools?.general?.includes('thumbnails') && (
 							<Panel
+								thumbnailScale={thumbnailScale}
+								setThumbnailScale={setThumbnailScale}
+								expandedViewThumbnailScale={expandedViewThumbnailScale}
 								onRotate={onRotateThumbnail}
 								onDeleteThumbnail={onDeleteThumbnail}
 								multiPageSelections={multiPageSelections}

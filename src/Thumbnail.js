@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 
 import { h } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { Icon } from 'aleon_35_pdf_ui_lib';
+import { Icon, Checkbox } from 'aleon_35_pdf_ui_lib';
 import Trash from '../assets/trash-svgrepo-com.svg';
 import RotateRight from '../assets/rotate-right-svgrepo-com.svg';
 import RotateLeft from '../assets/rotate-left-svgrepo-com.svg';
@@ -42,6 +42,7 @@ const activeThumbnailWrapper = css`
 
 const canvasStyle = css`
   margin-bottom: 4px;
+	border: 2px solid transparent;
 `;
 
 const activeCanvasStyle = css`
@@ -51,6 +52,7 @@ const activeCanvasStyle = css`
 const checkboxStyle = css`
 	position: absolute;
 	top: 4px;
+	z-index: 1;
 `;
 
 const contextMenuStyle = css`
@@ -166,7 +168,7 @@ export const Thumbnail = ({
 			onDragEnd={onDragEnd}
       css={hidden ? hiddenThumbnailWrapper : (activePage === pageNum ? activeThumbnailWrapper : thumbnailWrapper)}
       id={`thumbnail-${pageNum}`}
-      onClick={() => onThumbnailClick(pageNum)}>
+      onClick={(e) => onThumbnailClick(pageNum, e)}>
 				{
 				contextMenu.visible && 
 				<div
@@ -195,7 +197,11 @@ export const Thumbnail = ({
 				</div>
 			}
 			<div style={{display: "inline-flex"}} css={[activePage === pageNum ? activeCanvasStyle : canvasStyle]} >
-				<input checked={isMultiSelected()} onClick={onToggleMultiSelect} css={checkboxStyle} type="checkbox" />
+				<div css={checkboxStyle}>
+					<Checkbox onChange={onToggleMultiSelect} checked={isMultiSelected()} />
+				</div>
+				
+				{/*<input checked={isMultiSelected()} onClick={onToggleMultiSelect} css={checkboxStyle} type="checkbox" />*/}
 				<canvas style={{opacity: isMultiSelected() ? 0.5 : 1}} class="canvas-page" ref={canvasRef} />
 			</div>
 			<div style={{ fontSize: '0.8rem', marginTop: '0.5rem' }}>{displayPageNum}</div>

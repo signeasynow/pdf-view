@@ -9,6 +9,8 @@ import RotateLeft from '../../assets/rotate-left-svgrepo-com.svg';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'aleon_35_pdf_ui_lib';
 import HeaderBtn from '../Header/HeaderBtn';
+import Slider from '../components/Slider';
+import { useState } from 'preact/hooks';
 
 const Wrapper = ({ children }) => (
 	<div css={css({
@@ -37,10 +39,19 @@ const Subheader = ({
 	onMinimize,
 	showFullScreenThumbnails,
 	setMultiPageSelections,
-	multiPageSelections
+	multiPageSelections,
+	expandedViewThumbnailScale,
+	setExpandedViewThumbnailScale
 }) => {
+	
 
 	const { t } = useTranslation();
+
+  const handleInputChange = (e) => {
+		const num = parseInt(e.target.value);
+		setExpandedViewThumbnailScale(num);
+	};
+
 	return (
 		<Wrapper>
 			<div css={contentLeftStyle}>
@@ -52,7 +63,7 @@ const Subheader = ({
 					)
 				}
 				{
-					!!multiPageSelections?.length && (
+					!!multiPageSelections?.length ? (
 						<div style={{
 							display: "flex",
 							alignItems: "center"
@@ -72,9 +83,23 @@ const Subheader = ({
 								Clear selection
 							</button>
 						</div>
+					) : (
+						<div style={{width: "111px"}}></div>
 					)
 				}
 			</div>
+			{
+				showFullScreenThumbnails && (
+					<div style={{display: "flex", alignItems: "center"}}>
+						<div>
+							<Slider
+								value={expandedViewThumbnailScale}
+								onChange={handleInputChange}
+							/>
+						</div>
+					</div>
+				)
+			}
 			<div css={contentLeftStyle}>
 				<>
 					<HeaderBtn onClick={undoLastAction} title={t("undo")} iconAlt={t("undo")} icon={Undo} />

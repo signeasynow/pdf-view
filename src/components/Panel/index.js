@@ -52,11 +52,28 @@ const Panel = ({
 	multiPageSelections,
 	setMultiPageSelections,
 	onDeleteThumbnail,
-	onRotate
+	onRotate,
+	expandedViewThumbnailScale,
+	thumbnailScale,
+	setThumbnailScale
 }) => {
 
 	const { t } = useTranslation();
 	const [activeTab, setActiveTab] = useState(0);
+
+	const onThumbnailClick = (num, e) => {
+		console.log(e, 'e bro 1', e.shiftKey)
+		setActivePage(num)
+		if (e.shiftKey) {
+			let resultingArray = [...multiPageSelections.filter((each) => each !== num)];
+			if (multiPageSelections.includes(num)) {
+				// redundant now: resultingArray = resultingArray.filter((each) => each !== num);
+			} else {
+				resultingArray.push(num);
+			}
+			setMultiPageSelections(resultingArray);
+		}
+	}
 
 	if (showFullScreenThumbnails) {
 		return <FullScreenThumbnails
@@ -64,12 +81,12 @@ const Panel = ({
 		onDragEnd={onDragEnd}
 		activePage={activePage}
 		pdf={pdf}
-		scale={0.2}
-		onThumbnailClick={setActivePage}
+		onThumbnailClick={onThumbnailClick}
 		pdfProxyObj={pdfProxyObj}
 		multiPageSelections={multiPageSelections}
 		setMultiPageSelections={setMultiPageSelections}
 		onRotate={onRotate}
+		expandedViewThumbnailScale={expandedViewThumbnailScale}
 		/>
 	}
 
@@ -86,6 +103,8 @@ const Panel = ({
 						setActivePage={setActivePage}
 						activePage={activePage}
 						pdf={pdf}
+						thumbnailScale={thumbnailScale}
+						setThumbnailScale={setThumbnailScale}
 						pdfProxyObj={pdfProxyObj}
 						multiPageSelections={multiPageSelections}
 						setMultiPageSelections={setMultiPageSelections}
