@@ -94,7 +94,8 @@ export const Thumbnail = ({
 	scale,
 	onThumbnailClick,
 	onDelete,
-	onRotate
+	onRotate,
+	clickIsMultiSelect
 }) => {
 	const canvasRef = useRef(null);
 
@@ -158,6 +159,14 @@ export const Thumbnail = ({
     };
   }, []);
 
+	const onClick = (e) => {
+		if (clickIsMultiSelect) {
+			onToggleMultiSelect();
+			return;
+		}
+		onThumbnailClick(pageNum, e);
+	}
+
 	return (
 		<div
 			style={{color: "#7f7f7f"}}
@@ -168,7 +177,7 @@ export const Thumbnail = ({
 			onDragEnd={onDragEnd}
       css={hidden ? hiddenThumbnailWrapper : (activePage === pageNum ? activeThumbnailWrapper : thumbnailWrapper)}
       id={`thumbnail-${pageNum}`}
-      onClick={(e) => onThumbnailClick(pageNum, e)}>
+      onClick={onClick}>
 				{
 				contextMenu.visible && 
 				<div

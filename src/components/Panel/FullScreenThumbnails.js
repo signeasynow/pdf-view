@@ -37,7 +37,6 @@ const thumbnailStyle = css`
 
 const FullScreenThumbnails = ({
   onDragEnd,
-  activePage,
   pdf,
   onThumbnailClick,
   pdfProxyObj,
@@ -47,6 +46,8 @@ const FullScreenThumbnails = ({
   onRotate,
   expandedViewThumbnailScale
 }) => {
+  
+  const activePage = -1;
 
   const numPages = pdfProxyObj?.numPages;
   const [draggingIndex, setDraggingIndex] = useState(null);
@@ -81,6 +82,7 @@ const FullScreenThumbnails = ({
     const thumbnailElement = (
       <div css={thumbnailStyle}>
         <Thumbnail
+          clickIsMultiSelect
           onRotate={onRotate}
           onDelete={onDeleteThumbnail}
           multiPageSelections={multiPageSelections}

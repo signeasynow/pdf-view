@@ -131,19 +131,35 @@ export const PdfViewer = ({
 			setMatchesCount(matchesCount?.total);
 		});
 
-		eventBus.on('pagechanging', ({
-			pageNumber
-		}) => {
-			// console.log(pageNumber, 'page 111f')
+		eventBus.on('pagechanging', ({ pageNumber }) => {
+			// Set the active page
 			setActivePage(pageNumber);
+		
+			// Get the target thumbnail element
 			const target = document.getElementById(`thumbnail-${pageNumber}`);
 			if (!target) {
 				return;
 			}
+		
+			// Get the scroll container
 			const container = document.getElementById("panel");
+			
+			// Calculate the visible area within the container
+			const containerTop = container.scrollTop;
+			const containerBottom = containerTop + container.clientHeight;
+		
+			// Calculate the position of the target element
+			const targetTop = target.offsetTop;
+			const targetBottom = targetTop + target.clientHeight;
+		
+			// Check if the target element is fully visible
+			if (targetTop >= containerTop && targetBottom <= containerBottom) {
+				// The target element is already visible, no need to scroll
+				return;
+			}
+		
+			// Scroll to make the target element visible
 			container.scrollTop = target.offsetTop;
-
-			// target.scrollIntoView({ block: 'start', inline: 'start' });
 		});
 		let modFile;
 		if (modifiedFile) {
