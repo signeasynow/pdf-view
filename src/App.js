@@ -710,7 +710,6 @@ const App = () => {
 							setPdfProxyObj={setPdfProxyObj}
 							setMatchesCount={setMatchesCount}
 							eventBusRef={eventBusRef}
-							viewerContainerRef={getTargetContainer()}
 							viewerContainerRef1={viewerContainerRef1}
 							viewerContainerRef2={viewerContainerRef2}
 							setPdfViewerObj={setPdfViewerObj}

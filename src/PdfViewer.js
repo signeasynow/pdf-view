@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { useEffect, useRef } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import * as pdfjs from 'pdfjs-dist';
 import { EventBus, PDFLinkService, PDFViewer, PDFFindController, PDFScriptingManager } from 'pdfjs-dist/web/pdf_viewer';
 import 'pdfjs-dist/web/pdf_viewer.css';
@@ -27,7 +27,6 @@ export const PdfViewer = ({
 	tools,
 	setPdfViewerObj,
 	file,
-	viewerContainerRef,
 	viewerContainerRef1,
 	viewerContainerRef2,
 	eventBusRef,
@@ -41,6 +40,8 @@ export const PdfViewer = ({
 	isSandbox,
 	updateCurrentScale
 }) => {
+
+	const [isBufferReady, setIsBufferReady] = useState(false);
 
 	const panelSpaceUsed = () => {
 		let result = 0;
@@ -97,6 +98,7 @@ export const PdfViewer = ({
 			if (typeof activePage === "number") {
 				pdfLinkServiceRef.current?.goToPage(activePage || 1);
 			}
+			// setIsBufferReady(true);
 		});
 
 		eventBus.on('updatefindmatchescount', ({ matchesCount }) => {
@@ -141,6 +143,7 @@ export const PdfViewer = ({
 
 		loadingTask.promise.then(
 			async (loadedPdfDocument) => {
+				console.log("doc loaded")
 				if (isSandbox) {
 					const pdfData = await loadedPdfDocument.getData();
 					const pdfWithWatermark = await addSandboxWatermark(new Uint8Array(pdfData));
@@ -151,7 +154,7 @@ export const PdfViewer = ({
 				setPdfProxyObj(loadedPdfDocument);
 				pdfViewerRef.current.setDocument(loadedPdfDocument);
 				pdfLinkServiceRef.current.setDocument(loadedPdfDocument, null);
-				
+
 				if (!modifiedFile) {
 					savePDF(await loadedPdfDocument.getData(), "original");
 				}
@@ -166,11 +169,18 @@ export const PdfViewer = ({
 
 	useEffect(() => {
     if (!file || !viewerContainerRef1.current || !viewerContainerRef2.current) return;
-    const targetContainer = buffer === 1 ? viewerContainerRef2 : viewerContainerRef1;
-    applyDocument(targetContainer.current).then(switchBuffer); // assume applyDocument is async
+		setIsBufferReady(false);
+    const targetContainer = viewerContainerRef1 // buffer === 1 ? viewerContainerRef2 : viewerContainerRef1;
+    applyDocument(targetContainer.current); // assume applyDocument is async
 	}, [file, modifiedFile]);
 
-	
+	useEffect(() => {
+		if (isBufferReady) {
+				switchBuffer();
+				setIsBufferReady(false); // Reset for the next cycle
+		}
+	}, [isBufferReady]);
+
 	useEffect(() => {
 		function handleVisibilityChange() {
 			if (document.hidden) {
@@ -181,8 +191,8 @@ export const PdfViewer = ({
 
 				// You can put your logic here to re-render the PDF or perform some other actions
 				// For example, you might call a function to reload the PDF:
-				const targetContainer = buffer === 1 ? viewerContainerRef2.current : viewerContainerRef1.current;
-				applyDocument(targetContainer).then(switchBuffer);
+				const targetContainer = viewerContainerRef1 // buffer === 1 ? viewerContainerRef2 : viewerContainerRef1;
+				applyDocument(targetContainer.current).then(switchBuffer);
 			}
 		}
 	
@@ -211,10 +221,17 @@ export const PdfViewer = ({
 
 	return (
 		<div>
-			<div ref={viewerContainerRef1} id="viewerContainer" css={containerStyle} style={{ width: width(), height: height(), visibility: buffer === 1 ? "visible" : "hidden" }}>
+			<div ref={viewerContainerRef1} id="viewerContainer" css={containerStyle}
+				style={{
+					pointerEvents: buffer === 1 ? 'auto' : 'none',
+					width: width(), height: height(), opacity: buffer === 1 ? 1 : 0
+				}}>
 				<div id="viewer" class="pdfViewer" />
 			</div>
-			<div ref={viewerContainerRef2} id="viewerContainer" css={containerStyle} style={{ width: width(), height: height(), visibility: buffer === 2 ? "visible" : "hidden" }}>
+			<div ref={viewerContainerRef2} id="viewerContainer" css={containerStyle}
+				style={{
+					pointerEvents: buffer === 2 ? 'auto' : 'none',
+					width: width(), height: height(), opacity: buffer === 2 ? 1 : 0 }}>
 				<div id="viewer" class="pdfViewer" />
 			</div>
 		</div>
