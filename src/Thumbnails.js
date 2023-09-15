@@ -18,6 +18,7 @@ const ThumbnailsContainer = ({
 	onDragEnd,
 	activePage,
 	pdf,
+	tools,
 	scale,
 	onThumbnailClick,
 	pdfProxyObj,
@@ -40,6 +41,7 @@ const ThumbnailsContainer = ({
       <>
 				{dragOverIndex === i + 1 && <div css={lineIndicatorStyle}></div>}
 				<Thumbnail
+					tools={tools}
 					onRotate={onRotate}
 					onDelete={onDelete}
 					multiPageSelections={multiPageSelections}
@@ -58,9 +60,6 @@ const ThumbnailsContainer = ({
 						} else {
 							onDragEnd(i, dragOverIndex - 1);
 						}
-						
-						console.log(`Dropped at index: ${dragOverIndex - 1}`, i); // Subtract 1 because your pageNum starts from 1
-						// logic for reordering thumbnails based on draggingIndex and dragOverIndex
 						setDraggingIndex(null);
 						setDragOverIndex(null);
 					}}

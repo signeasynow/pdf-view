@@ -136,6 +136,7 @@ const ThumbnailsSection = ({
 				activePage={activePage}
 				pdfProxyObj={pdfProxyObj}
 				pdf={pdf}
+				tools={tools}
 				scale={thumbnailScale / 10}
 				onThumbnailClick={handleThumbnailClick}
 				multiPageSelections={multiPageSelections}

@@ -84,6 +84,7 @@ export const Thumbnail = ({
 	multiPageSelections,
 	setMultiPageSelections,
 	onDragStart,
+	tools,
 	onDragOver,
 	onDragEnd,
 	displayPageNum,
@@ -183,8 +184,10 @@ export const Thumbnail = ({
 		<div
 			style={{color: "#7f7f7f"}}
 		  onContextMenu={onRightClick}
-			draggable
-			onDragStart={(e) => onDragStart(e, pageNum)}
+			draggable={tools?.editing?.includes('move')}
+			onDragStart={(e) => {
+				onDragStart(e, pageNum)
+			}}
 			onDragOver={(e) => onDragOver(e, pageNum)}
 			onDragEnd={onDragEnd}
       css={hidden ? hiddenThumbnailWrapper : (activePage === pageNum ? activeThumbnailWrapper : thumbnailWrapper)}

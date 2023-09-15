@@ -8,7 +8,7 @@ import { useDebounce } from './utils/useDebounce';
 import SearchBar from './SearchBar';
 import { PdfViewer } from './PdfViewer';
 import Panel from './components/Panel';
-import { heightOffset0, heightOffset1, heightOffset2 } from "./constants";
+import { heightOffset0, heightOffset1, heightOffset2, heightOffset3 } from "./constants";
 import { remove_pages, move_page, rotate_pages, add_watermark } from '../lib/pdf_wasm_project.js';
 import { retrievePDF, savePDF } from './utils/indexDbUtils';
 import { invokePlugin, pendingRequests } from './utils/pluginUtils';
@@ -529,6 +529,8 @@ const App = () => {
 			myHeight = heightOffset0;
 		} else if (!showSubheader()) {
 			myHeight = heightOffset1;
+		} else if (!showHeader()) {
+			myHeight = heightOffset3;
 		} else {
 			myHeight = heightOffset2;
 		}
