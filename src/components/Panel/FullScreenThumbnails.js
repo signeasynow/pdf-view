@@ -80,7 +80,14 @@ const FullScreenThumbnails = ({
         height,
       };
       setDragRect(newDragRect);
-      
+
+      const normalizedDragRect = {
+        x: width < 0 ? dragStart.x + width : dragStart.x,
+        y: height < 0 ? dragStart.y + height : dragStart.y,
+        width: Math.abs(width),
+        height: Math.abs(height),
+      };
+
       const newSelectedIndexes = [];
       const thumbnailElements = containerRef.current.querySelectorAll('[data-type="regular-full-screen-thumbnail"]');
       console.log(thumbnailElements, 'thumbnailElements')
@@ -89,10 +96,10 @@ const FullScreenThumbnails = ({
         const childRect = child.getBoundingClientRect();
         console.log(childRect, 'childrect 1')
         if (
-          newDragRect.x < childRect.right - rect.left &&
-          newDragRect.x + newDragRect.width > childRect.left - rect.left &&
-          newDragRect.y < childRect.bottom - rect.top &&
-          newDragRect.y + newDragRect.height > childRect.top - rect.top
+          normalizedDragRect.x < childRect.right - rect.left &&
+          normalizedDragRect.x + normalizedDragRect.width > childRect.left - rect.left &&
+          normalizedDragRect.y < childRect.bottom - rect.top &&
+          normalizedDragRect.y + normalizedDragRect.height > childRect.top - rect.top
         ) {
           newSelectedIndexes.push(index);
         }
