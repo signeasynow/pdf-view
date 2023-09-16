@@ -3,6 +3,7 @@ import { css } from '@emotion/react';
 import Redo from '../../assets/arrow-undo-down-right-svgrepo-com.svg';
 import Undo from '../../assets/arrow-undo-up-left-svgrepo-com.svg';
 import Minimize from '../../assets/minimize-svgrepo-com.svg';
+import RemoveSelection from '../../assets/notification-remove-svgrepo-com.svg';
 import Trash from '../../assets/trash-svgrepo-com.svg';
 import RotateRight from '../../assets/rotate-right-svgrepo-com.svg';
 import RotateLeft from '../../assets/rotate-left-svgrepo-com.svg';
@@ -33,6 +34,9 @@ const contentLeftStyle = css`
 `;
 
 const Subheader = ({
+	canDelete,
+	undoStackLength,
+	redoStackLength,
 	onDelete,
 	onRotate,
 	undoLastAction,
@@ -53,6 +57,14 @@ const Subheader = ({
 		setExpandedViewThumbnailScale(num);
 	};
 
+	const getSelectionsCount = () => {
+		const { length } = multiPageSelections;
+		if (length > 99) {
+			return "99+"
+		}
+		return length;
+	}
+
 	return (
 		<Wrapper>
 			<div css={contentLeftStyle}>
@@ -72,20 +84,12 @@ const Subheader = ({
 							display: "flex",
 							alignItems: "center"
 						}}>
-							<button
-							  onClick={() => {
-									setMultiPageSelections([]);
-								}}
-							  style={{
-								cursor: "pointer",
-								border: "2px solid #7f7f7f",
-								color: "#7f7f7f",
-								borderRadius: "4px",
-								fontWeight: "600",
-								background: "none"
-							}}>
-								Clear selection
-							</button>
+							<AccessibleButton
+								onClick={() => setMultiPageSelections([])} 
+								ariaLabel={t("redo")}
+							>
+								<HeaderBtn title={"Clear selection"} iconAlt={t("redo")} icon={RemoveSelection} />
+							</AccessibleButton>
 						</div>
 					) : (
 						<div style={{width: "111px"}}></div>
@@ -110,20 +114,48 @@ const Subheader = ({
 						onClick={undoLastAction} 
 						ariaLabel={t("undo")}
 					>
-						<HeaderBtn title={t("undo")} iconAlt={t("undo")} icon={Undo} />
+						<HeaderBtn
+							style={{opacity: undoStackLength ? 1 : 0.5}}
+							title={t("undo")} iconAlt={t("undo")} icon={Undo} />
 					</AccessibleButton>
 					<AccessibleButton
 						onClick={redoLastAction} 
 						ariaLabel={t("redo")}
 					>
-						<HeaderBtn title={t("redo")} iconAlt={t("redo")} icon={Redo} />
+						<HeaderBtn
+							style={{opacity: redoStackLength ? 1 : 0.5}}
+							title={t("redo")} iconAlt={t("redo")} icon={Redo} />
 					</AccessibleButton>
-					<AccessibleButton
-						onClick={onDelete} 
-						ariaLabel={t("redo")}
-					>
-						<HeaderBtn title={t("remove")} iconAlt={t("remove")} icon={Trash} />
-					</AccessibleButton>
+					<div style={{position: "relative"}}>
+						<AccessibleButton
+							onClick={onDelete} 
+							ariaLabel={t("redo")}
+						>
+							<HeaderBtn style={{opacity: canDelete ? 1 : 0.5}} title={t("remove")} iconAlt={t("remove")} icon={Trash} />
+							{
+								!!multiPageSelections?.length && (
+									<div style={{
+										position: "absolute",
+										bottom: 0,
+										color: "white",
+										fontFamily: "Lato",
+										right: 0,
+										pointerEvents: "none",
+										height: 12,
+										minWidth: 12,
+										background: "#f96804",
+										fontSize: 12,
+										padding: 2,
+										display: "flex",
+										alignItems: "center",
+										justifyContent: "center",
+										borderRadius: "8px"
+									}}>{getSelectionsCount()}</div>
+								)
+							}
+							
+						</AccessibleButton>
+					</div>
 				</>
 			</div>
 		</Wrapper>

@@ -20,12 +20,13 @@ const HeaderBtn = ({
   title,
   iconAlt,
   onClick,
-  offsetX
+  offsetX,
+  style = {}
 }) => {
 
   return (
     <Tooltip offsetX={offsetX} title={title}>
-      <div onClick={onClick} css={wrapper}>
+      <div onClick={onClick} css={wrapper} style={style}>
           <Icon src={icon} alt={iconAlt} />
       </div>
     </Tooltip>

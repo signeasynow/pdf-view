@@ -351,7 +351,6 @@ const App = () => {
 	};
 	
 	const redoLastAction = async () => {
-		console.log(redoStack, 'redoStack')
 		if (redoStack.length === 0) return;
 	
 		const lastRedoOperation = redoStack[redoStack.length - 1];
@@ -488,7 +487,17 @@ const App = () => {
 		setRedoStack([]);
 	}
 
+	const canDelete = () => {
+		if (showFullScreenThumbnails) {
+			return !!multiPageSelections?.length
+		}
+		return !!multiPageSelections?.length || !!activePage
+	}
+
 	const onDelete = async () => {
+		if (!canDelete()) {
+			return;
+		}
 		if (!pdfProxyObj) {
 			console.log('No PDF loaded to download');
 			return;
@@ -655,6 +664,9 @@ const App = () => {
 				{
 					showSubheader() && (
 						<Subheader
+							canDelete={canDelete()}
+							undoStackLength={operations.length}
+							redoStackLength={redoStack.length}
 							setExpandedViewThumbnailScale={setExpandedViewThumbnailScale}
 							expandedViewThumbnailScale={expandedViewThumbnailScale}
 							setMultiPageSelections={setMultiPageSelections}
