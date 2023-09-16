@@ -4,18 +4,26 @@ import { useEffect, useRef } from 'preact/hooks';
 import * as pdfjs from 'pdfjs-dist';
 import { EventBus, PDFLinkService, PDFViewer, PDFFindController, PDFScriptingManager } from 'pdfjs-dist/web/pdf_viewer';
 import 'pdfjs-dist/web/pdf_viewer.css';
-import { heightOffset0, heightOffset1, heightOffset2 } from "./constants";
+import { heightOffset0, heightOffset1, heightOffset2, heightOffset3 } from "./constants";
 import { retrievePDF, savePDF } from './utils/indexDbUtils';
 import { invokePlugin } from './utils/pluginUtils';
 import { addSandboxWatermark } from './utils/addSandboxWatermark';
 const SANDBOX_BUNDLE_SRC = 'pdfjs-dist/build/pdf.sandbox.js';
 
 const containerStyle = css`
-  overflow: auto;
+  overflow-y: scroll;
   position: absolute;
-	border-right: 1px solid #c6c6c6;
-	border-left: 1px solid #c6c6c6;
-	background: #282828;
+  border-right: 1px solid #c6c6c6;
+  border-left: 1px solid #c6c6c6;
+  background: #282828;
+
+  /* Custom scrollbar styles */
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+  }
 `;
 
 export const PdfViewer = ({
@@ -203,6 +211,8 @@ export const PdfViewer = ({
 			toolbarSpaceUsed = heightOffset0;
 		} else if (!showSubheader) {
 			toolbarSpaceUsed = heightOffset1;
+		} else if (!showHeader) {
+			toolbarSpaceUsed = heightOffset3;
 		} else {
 			toolbarSpaceUsed = heightOffset2;
 		}

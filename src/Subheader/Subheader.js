@@ -11,6 +11,7 @@ import { Button } from 'aleon_35_pdf_ui_lib';
 import HeaderBtn from '../Header/HeaderBtn';
 import Slider from '../components/Slider';
 import { useState } from 'preact/hooks';
+import AccessibleButton from '../components/AccessibleButton';
 
 const Wrapper = ({ children }) => (
 	<div css={css({
@@ -57,9 +58,12 @@ const Subheader = ({
 			<div css={contentLeftStyle}>
 				{
 					showFullScreenThumbnails && (
-						<div>
-							<HeaderBtn onClick={onMinimize} title={t("minimize")} iconAlt={t("minimize")} icon={Minimize} />
-						</div>
+						<AccessibleButton
+							onClick={onMinimize} 
+							ariaLabel={t("minimize")}
+						>
+							<HeaderBtn title={t("minimize")} iconAlt={t("minimize")} icon={Minimize} />
+						</AccessibleButton>
 					)
 				}
 				{
@@ -102,9 +106,24 @@ const Subheader = ({
 			}
 			<div css={contentLeftStyle}>
 				<>
-					<HeaderBtn onClick={undoLastAction} title={t("undo")} iconAlt={t("undo")} icon={Undo} />
-					<HeaderBtn onClick={redoLastAction} title={t("redo")} iconAlt={t("redo")} icon={Redo} />
-					<HeaderBtn onClick={onDelete} title={t("remove")} iconAlt={t("remove")} icon={Trash} />
+					<AccessibleButton
+						onClick={undoLastAction} 
+						ariaLabel={t("undo")}
+					>
+						<HeaderBtn title={t("undo")} iconAlt={t("undo")} icon={Undo} />
+					</AccessibleButton>
+					<AccessibleButton
+						onClick={redoLastAction} 
+						ariaLabel={t("redo")}
+					>
+						<HeaderBtn title={t("redo")} iconAlt={t("redo")} icon={Redo} />
+					</AccessibleButton>
+					<AccessibleButton
+						onClick={onDelete} 
+						ariaLabel={t("redo")}
+					>
+						<HeaderBtn title={t("remove")} iconAlt={t("remove")} icon={Trash} />
+					</AccessibleButton>
 				</>
 			</div>
 		</Wrapper>

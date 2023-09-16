@@ -18,6 +18,13 @@ const fullScreenWrapper = css`
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+  }
 `
 
 const dummyThumbnailStyle = css`

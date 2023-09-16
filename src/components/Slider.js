@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
+import AccessibleButton from './AccessibleButton';
 
 const rangeStyle = css`
   -webkit-appearance: none; /* Override default CSS styles */
@@ -53,7 +54,19 @@ const plusStyle = css`
 
 const Slider = ({ value, onChange }) => (
   <div css={rangeWrapperStyle}>
-    <label css={minusStyle}>—</label>
+    <AccessibleButton
+      ariaLabel="Minus"
+      onClick={() => {
+        console.log(value, 'value bro here')
+        onChange({
+          target: {
+            value: Math.max(value - 1, 0)
+          }
+        })
+      }}
+    >
+      <label css={minusStyle}>—</label>
+    </AccessibleButton>
     <input
       css={rangeStyle}
       value={value}
@@ -64,7 +77,18 @@ const Slider = ({ value, onChange }) => (
       min="0"
       max="10"
     />
-    <label css={plusStyle}>+</label>
+    <AccessibleButton
+      ariaLabel="Plus"
+      onClick={() => {
+        onChange({
+          target: {
+            value: Math.min(value + 1, 10)
+          }
+        })
+      }}
+    >
+      <label css={plusStyle}>+</label>
+    </AccessibleButton>
   </div>
 );
 

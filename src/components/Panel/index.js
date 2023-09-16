@@ -19,6 +19,13 @@ const visibleSearchWrapper = css`
   display: flex;
   flex-direction: column;
   align-items: center;
+
+	&::-webkit-scrollbar {
+    width: 10px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+  }
 `;
 
 const invisibleSearchWrapper = css`
