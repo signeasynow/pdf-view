@@ -3,8 +3,8 @@ import { css } from "@emotion/react";
 
 const spinnerStyle = css`
   border: 4px solid rgba(0, 0, 0, 0.1);
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   border-top-color: #3183c8;
   animation: spin 2s linear infinite;

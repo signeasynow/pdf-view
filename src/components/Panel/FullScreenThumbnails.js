@@ -3,6 +3,7 @@ import { css } from '@emotion/react';
 import { useEffect, useState } from 'preact/hooks';
 import { Thumbnail } from '../../Thumbnail';
 import Slider from '../Slider';
+import { LoadingSpinner } from '../LoadingSpinner';
 
 const wrapperStyle = css`
   position: relative;
@@ -76,7 +77,7 @@ const FullScreenThumbnails = ({
     }
   }, [dragOverIndex, pendingDragEnd]);
 
-  if (!numPages) return (<div>Loading...</div>);
+  // if (!numPages) return null;
 
   const thumbnails = Array.from({ length: numPages })
   .flatMap((_, i) => {
@@ -130,6 +131,21 @@ const FullScreenThumbnails = ({
 
     return elements;
   });
+
+  if (!numPages) {
+    return (
+      <div css={wrapperStyle}>
+        <div css={fullScreenWrapper}>
+          <div style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
+            <div style={{display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column"}}>
+              <LoadingSpinner />
+              <div style={{fontFamily: "Lato"}}>Loading...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div css={wrapperStyle}>
