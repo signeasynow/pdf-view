@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { Thumbnail } from '../../Thumbnail';
 import Slider from '../Slider';
 import { LoadingSpinner } from '../LoadingSpinner';
@@ -54,6 +54,52 @@ const FullScreenThumbnails = ({
   onRotate,
   expandedViewThumbnailScale
 }) => {
+
+  const containerRef = useRef(null);
+
+  const [dragStart, setDragStart] = useState(null);
+  const [dragRect, setDragRect] = useState(null);
+  const [selectedThumbnails, setSelectedThumbnails] = useState([]); // NEW: To keep track of selected thumbnails
+  console.log(dragRect, 'dragRect')
+  const onMouseDown = (e) => {
+    const rect = containerRef.current.getBoundingClientRect();  // Get bounding box
+    setDragStart({ x: e.clientX - rect.left, y: e.clientY - rect.top });  // Correct for offset
+  };
+
+  const onMouseMove = (e) => {
+    if (dragStart) {
+      const rect = containerRef.current.getBoundingClientRect();  // Get bounding box
+      const width = (e.clientX - rect.left) - dragStart.x;  // Correct for offset
+      const height = (e.clientY - rect.top) - dragStart.y;  // Correct for offset
+      setDragRect({
+        x: dragStart.x,
+        y: dragStart.y,
+        width,
+        height,
+      });
+      // TODO: Check which thumbnails are inside the rect and mark them as selected
+    }
+  };
+
+  const onMouseUp = () => {
+    setDragStart(null);
+    setDragRect(null);
+    // TODO: Take action on the selected thumbnails, like multi-select
+  };
+  
+  useEffect(() => {
+    if (dragStart) {
+      window.addEventListener('mousemove', onMouseMove);
+      window.addEventListener('mouseup', onMouseUp);
+    } else {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    }
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+  }, [dragStart]);
   
   const activePage = -1;
 
@@ -148,7 +194,23 @@ const FullScreenThumbnails = ({
   }
 
   return (
-    <div css={wrapperStyle}>
+    <div
+      ref={containerRef}
+      onMouseDown={onMouseDown}
+      css={wrapperStyle}
+    >
+      {dragRect && (
+        <div style={{
+          position: 'absolute',
+          left: `${dragRect.width < 0 ? dragRect.x + dragRect.width : dragRect.x}px`,
+          top: `${dragRect.height < 0 ? dragRect.y + dragRect.height : dragRect.y}px`,
+          zIndex: 5,
+          width: `${Math.abs(dragRect.width)}px`,
+          height: `${Math.abs(dragRect.height)}px`,
+          backgroundColor: 'rgba(0, 128, 255, 0.3)',
+          border: '2px solid blue',
+        }} />
+      )}
       <div css={fullScreenWrapper}>
         {thumbnails}
       </div>

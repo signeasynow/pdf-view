@@ -81,7 +81,8 @@ const ThumbnailsContainer = ({
     );
   });
 
-	return (<div css={wrapperStyle}>
+	return (<div
+		css={wrapperStyle}>
 		{thumbnails}
 		<div
       draggable
