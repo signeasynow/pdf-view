@@ -3,6 +3,7 @@ import { css } from '@emotion/react';
 import { useState } from 'preact/hooks'; // add this import
 import { h } from 'preact';
 import { Thumbnail } from './Thumbnail';
+import {LoadingSpinner} from "./components/LoadingSpinner";
 
 const wrapperStyle = css`
   position: relative;
@@ -33,7 +34,10 @@ const ThumbnailsContainer = ({
 	const [dragOverIndex, setDragOverIndex] = useState(null);
 
 	if (!numPages) return (
-		<div>Loading...</div>
+		<div style={{display: "flex", flexDirection: "column", alignItems: "center", marginTop: 20}}>
+			<LoadingSpinner />
+			<div style={{fontFamily: "Lato"}}>Loading...</div>
+		</div>
 	);
 
 	const thumbnails = Array.from({ length: numPages }, (_, i) => {
