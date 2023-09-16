@@ -39,7 +39,6 @@ const activeThumbnailWrapper = css`
 `;
 
 const canvasStyle = css`
-  margin-bottom: 4px;
 	border: 2px solid transparent;
 `;
 
