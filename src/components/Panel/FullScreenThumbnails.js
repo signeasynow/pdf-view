@@ -111,9 +111,11 @@ const FullScreenThumbnails = ({
       setMultiPageSelections(newSet);
       setSelectedIndexes([]); // Reset the selected indexes
     }
-  }, [mouseUp, selectedIndexes]);
+    setDragRect(null);
+  }, [mouseUp]);
 
   const onMouseUp = () => {
+    console.log(selectedIndexes, 'selectedInde22')
     setDragStart(null);
     setDragRect(null);
     setMouseUp(new Date().toISOString());
@@ -122,17 +124,13 @@ const FullScreenThumbnails = ({
   useEffect(() => {
     if (dragStart) {
       window.addEventListener('mousemove', onMouseMove);
-      window.addEventListener('mouseup', onMouseUp);
+    } else {
+      window.removeEventListener('mousemove', onMouseMove);
     }
-  }, [dragStart]);
-  
-  // Remove event listeners when component unmounts
-  useEffect(() => {
     return () => {
       window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mouseup', onMouseUp);
     };
-  }, []);
+  }, [dragStart]);
   
   const activePage = -1;
 
@@ -230,6 +228,7 @@ const FullScreenThumbnails = ({
     <div
       ref={containerRef}
       onMouseDown={onMouseDown}
+      onMouseUp={onMouseUp}
       css={wrapperStyle}
     >
       {dragRect && (
