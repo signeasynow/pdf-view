@@ -181,7 +181,6 @@ export const Thumbnail = ({
 	return (
 		<div
 			style={{color: "#7f7f7f"}}
-		  onContextMenu={onRightClick}
 			draggable={tools?.editing?.includes('move')}
 			onDragStart={(e) => {
 				onDragStart(e, pageNum)
@@ -219,6 +218,7 @@ export const Thumbnail = ({
 				</div>
 			}
 			<div
+				onContextMenu={onRightClick}
 				onClick={onClick}
 				style={{display: "inline-flex", cursor: "pointer"}} css={getThumbnailClass()} >
 				<div css={checkboxStyle}>
