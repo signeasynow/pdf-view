@@ -92,7 +92,7 @@ const Subheader = ({
 							</AccessibleButton>
 						</div>
 					) : (
-						<div style={{width: "111px"}}></div>
+						<div style={{width: "37px"}}></div>
 					)
 				}
 			</div>

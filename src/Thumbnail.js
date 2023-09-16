@@ -18,7 +18,6 @@ const thumbnailWrapper = css`
   flex-direction: column;
   align-items: center;
   margin-top: 20px;
-  cursor: pointer;
 	font-family: Lato;
 	color: #8b8b8b;
 	margin-bottom: 20px;
@@ -34,7 +33,6 @@ const activeThumbnailWrapper = css`
   flex-direction: column;
   align-items: center;
   margin-top: 20px;
-  cursor: pointer;
 	font-family: Lato;
 	color: #3183c8;
 	position: relative;
@@ -192,7 +190,7 @@ export const Thumbnail = ({
 			onDragEnd={onDragEnd}
       css={hidden ? hiddenThumbnailWrapper : (activePage === pageNum ? activeThumbnailWrapper : thumbnailWrapper)}
       id={`thumbnail-${pageNum}`}
-      onClick={onClick}>
+    >
 				{
 				contextMenu.visible && 
 				<div
@@ -220,7 +218,9 @@ export const Thumbnail = ({
 					</div>
 				</div>
 			}
-			<div style={{display: "inline-flex"}} css={getThumbnailClass()} >
+			<div
+				onClick={onClick}
+				style={{display: "inline-flex", cursor: "pointer"}} css={getThumbnailClass()} >
 				<div css={checkboxStyle}>
 					<Checkbox onChange={(e) => {
 						if (!clickIsMultiSelect) {
