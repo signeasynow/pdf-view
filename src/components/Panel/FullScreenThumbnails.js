@@ -59,8 +59,8 @@ const FullScreenThumbnails = ({
 
   const [dragStart, setDragStart] = useState(null);
   const [dragRect, setDragRect] = useState(null);
-  const [selectedThumbnails, setSelectedThumbnails] = useState([]);
   const [selectedIndexes, setSelectedIndexes] = useState([]);
+  const [mouseUp, setMouseUp] = useState(new Date().toISOString());
 
   console.log(dragRect, 'dragRect')
   const onMouseDown = (e) => {
@@ -82,17 +82,19 @@ const FullScreenThumbnails = ({
       setDragRect(newDragRect);
       
       const newSelectedIndexes = [];
-      Array.from(containerRef.current.children).forEach((child, index) => {
-        if (child.getAttribute('data-type') === 'regular-thumbnail') {
-          const childRect = child.getBoundingClientRect();
-          if (
-            newDragRect.x < childRect.right - rect.left &&
-            newDragRect.x + newDragRect.width > childRect.left - rect.left &&
-            newDragRect.y < childRect.bottom - rect.top &&
-            newDragRect.y + newDragRect.height > childRect.top - rect.top
-          ) {
-            newSelectedIndexes.push(index);
-          }
+      const thumbnailElements = containerRef.current.querySelectorAll('[data-type="regular-full-screen-thumbnail"]');
+      console.log(thumbnailElements, 'thumbnailElements')
+      Array.from(thumbnailElements).forEach((child, index) => {
+        // console.log(child, 'child found brouu')
+        const childRect = child.getBoundingClientRect();
+        console.log(childRect, 'childrect 1')
+        if (
+          newDragRect.x < childRect.right - rect.left &&
+          newDragRect.x + newDragRect.width > childRect.left - rect.left &&
+          newDragRect.y < childRect.bottom - rect.top &&
+          newDragRect.y + newDragRect.height > childRect.top - rect.top
+        ) {
+          newSelectedIndexes.push(index);
         }
       });
   
@@ -102,25 +104,35 @@ const FullScreenThumbnails = ({
 
   console.log(selectedIndexes, 'selectedIndexes')
 
+  useEffect(() => {
+    if (selectedIndexes.length > 0) {
+      const newSet = Array.from(new Set([...multiPageSelections, ...selectedIndexes.map((each) => each + 1)]));
+      console.log(newSet, 'newSet');
+      setMultiPageSelections(newSet);
+      setSelectedIndexes([]); // Reset the selected indexes
+    }
+  }, [mouseUp, selectedIndexes]);
+
   const onMouseUp = () => {
     setDragStart(null);
     setDragRect(null);
-    // TODO: Take action on the selected thumbnails, like multi-select
+    setMouseUp(new Date().toISOString());
   };
   
   useEffect(() => {
     if (dragStart) {
       window.addEventListener('mousemove', onMouseMove);
       window.addEventListener('mouseup', onMouseUp);
-    } else {
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mouseup', onMouseUp);
     }
+  }, [dragStart]);
+  
+  // Remove event listeners when component unmounts
+  useEffect(() => {
     return () => {
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);
     };
-  }, [dragStart]);
+  }, []);
   
   const activePage = -1;
 
@@ -131,7 +143,6 @@ const FullScreenThumbnails = ({
 
   useEffect(() => {
     if (pendingDragEnd !== null && dragOverIndex !== null) {
-      console.log(dragOverIndex, 'dragOverIndex', pendingDragEnd)
       if (dragOverIndex > pendingDragEnd) {
         onDragEnd(pendingDragEnd, Math.max(dragOverIndex - 2, 0));
       } else {
@@ -155,11 +166,12 @@ const FullScreenThumbnails = ({
     }
 
     const thumbnailElement = (
-      <div data-type="regular-thumbnail" css={thumbnailStyle}>
+      <div data-type="regular-full-screen-thumbnail" css={thumbnailStyle}>
         <Thumbnail
           clickIsMultiSelect
           onRotate={onRotate}
           onDelete={onDeleteThumbnail}
+          selectedIndexes={selectedIndexes}
           multiPageSelections={multiPageSelections}
           setMultiPageSelections={setMultiPageSelections}
           onDragStart={(e, pageNum) => {

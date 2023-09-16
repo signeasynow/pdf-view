@@ -80,6 +80,7 @@ const contextMenuItemText = css`
 
 export const Thumbnail = ({
 	multiPageSelections,
+	selectedIndexes,
 	setMultiPageSelections,
 	onDragStart,
 	tools,
@@ -110,9 +111,15 @@ export const Thumbnail = ({
 		}
 	}
 
-	const isMultiSelected = () => {
-		return multiPageSelections?.includes(pageNum);
+
+	const isTargetedByDragRect = () => {
+		return selectedIndexes?.includes(pageNum - 1);
 	}
+
+	const isMultiSelected = () => {
+		return multiPageSelections?.includes(pageNum) || isTargetedByDragRect();
+	}
+
 
 	useEffect(() => {
 		const renderThumbnail = async () => {
@@ -173,7 +180,7 @@ export const Thumbnail = ({
 
 	const getThumbnailClass = () => {
 		if (clickIsMultiSelect) {
-			return [multiPageSelections.includes(pageNum) ? activeCanvasStyle : canvasStyle]
+			return [isMultiSelected() ? activeCanvasStyle : canvasStyle]
 		}
 		return [activePage === pageNum ? activeCanvasStyle : canvasStyle];
 	}
