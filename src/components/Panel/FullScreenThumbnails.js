@@ -59,7 +59,9 @@ const FullScreenThumbnails = ({
 
   const [dragStart, setDragStart] = useState(null);
   const [dragRect, setDragRect] = useState(null);
-  const [selectedThumbnails, setSelectedThumbnails] = useState([]); // NEW: To keep track of selected thumbnails
+  const [selectedThumbnails, setSelectedThumbnails] = useState([]);
+  const [selectedIndexes, setSelectedIndexes] = useState([]);
+
   console.log(dragRect, 'dragRect')
   const onMouseDown = (e) => {
     const rect = containerRef.current.getBoundingClientRect();  // Get bounding box
@@ -71,15 +73,34 @@ const FullScreenThumbnails = ({
       const rect = containerRef.current.getBoundingClientRect();  // Get bounding box
       const width = (e.clientX - rect.left) - dragStart.x;  // Correct for offset
       const height = (e.clientY - rect.top) - dragStart.y;  // Correct for offset
-      setDragRect({
+      const newDragRect = {
         x: dragStart.x,
         y: dragStart.y,
         width,
         height,
+      };
+      setDragRect(newDragRect);
+      
+      const newSelectedIndexes = [];
+      Array.from(containerRef.current.children).forEach((child, index) => {
+        if (child.getAttribute('data-type') === 'regular-thumbnail') {
+          const childRect = child.getBoundingClientRect();
+          if (
+            newDragRect.x < childRect.right - rect.left &&
+            newDragRect.x + newDragRect.width > childRect.left - rect.left &&
+            newDragRect.y < childRect.bottom - rect.top &&
+            newDragRect.y + newDragRect.height > childRect.top - rect.top
+          ) {
+            newSelectedIndexes.push(index);
+          }
+        }
       });
-      // TODO: Check which thumbnails are inside the rect and mark them as selected
+  
+      setSelectedIndexes(newSelectedIndexes);
     }
   };
+
+  console.log(selectedIndexes, 'selectedIndexes')
 
   const onMouseUp = () => {
     setDragStart(null);
@@ -134,7 +155,7 @@ const FullScreenThumbnails = ({
     }
 
     const thumbnailElement = (
-      <div css={thumbnailStyle}>
+      <div data-type="regular-thumbnail" css={thumbnailStyle}>
         <Thumbnail
           clickIsMultiSelect
           onRotate={onRotate}
