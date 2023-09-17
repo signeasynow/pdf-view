@@ -29,18 +29,16 @@ const fullScreenWrapper = css`
 `
 
 const dummyThumbnailStyle = css`
-  flex: 1 1 calc(25% - 16px);
+  flex: 1 1 auto;  // Automatically adjust the size based on container size
   margin: 8px;
-  min-width: fit-content;
-  max-width: calc(25% - 16px);
+  min-width: 32px;
   border: 2px dashed #ccc; // or any other styles to indicate it's a placeholder
 `;
 
 const thumbnailStyle = css`
-  min-width: fit-content;
-  flex: 1 1 calc(25% - 16px); // 25% for 4 items per row and 16px for margin
-  margin: 8px; // Add margin around each thumbnail
-  max-width: calc(25% - 16px); // Cap width at 25% for 4 per row
+  flex: 1 1 auto;  // Automatically adjust the size based on container size
+  margin: 8px;  // Add margin around each thumbnail
+  min-width: 32px;
 `;
 
 const FullScreenThumbnails = ({
