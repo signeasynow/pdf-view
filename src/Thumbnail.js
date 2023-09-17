@@ -20,7 +20,6 @@ const thumbnailWrapper = css`
   margin-top: 20px;
 	font-family: Lato;
 	color: #8b8b8b;
-	margin-bottom: 20px;
 	position: relative;
 `;
 
