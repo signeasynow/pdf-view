@@ -138,7 +138,7 @@ const Subheader = ({
 							}}>
 								<div style={{position: "relative"}}>
 									<AccessibleButton
-										onClick={onDelete} 
+										onClick={() => onRotate(false)} 
 										ariaLabel={t("redo")}
 									>
 										<HeaderBtn offsetX="-20px" style={{opacity: canDelete ? 1 : 0.5}} title={"Rotate counterclockwise"} iconAlt={t("remove")} icon={RotateLeft} />
@@ -167,7 +167,7 @@ const Subheader = ({
 								</div>
 								<div style={{position: "relative"}}>
 									<AccessibleButton
-										onClick={onDelete} 
+										onClick={() => onRotate(true)} 
 										ariaLabel={t("redo")}
 									>
 										<HeaderBtn offsetX="-30px" style={{opacity: canDelete ? 1 : 0.5}} title={"Rotate clockwise"} iconAlt={t("remove")} icon={RotateRight} />
