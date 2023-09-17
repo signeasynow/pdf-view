@@ -76,8 +76,8 @@ export const Thumbnail = ({
 	selectedIndexes,
 	setMultiPageSelections,
 	onDragStart,
+	isFullScreen,
 	tools,
-	something,
 	onDragOver,
 	onDragEnd,
 	displayPageNum,
@@ -251,7 +251,7 @@ export const Thumbnail = ({
 				{/*<input checked={isMultiSelected()} onClick={onToggleMultiSelect} css={checkboxStyle} type="checkbox" />*/}
 				<canvas style={{opacity: isMultiSelected() ? 0.5 : 1}} class="canvas-page" ref={canvasRef} />
 			</div>
-			<div style={{ fontSize: '0.8rem', marginTop: '0.5rem', pointerEvents: "none" }}>{displayPageNum}</div>
+			<div style={{ fontSize: '0.8rem', marginTop: '0.5rem', pointerEvents: "none", color: isFullScreen ? "white" : "" }}>{displayPageNum}</div>
 		</div>
 	);
 };

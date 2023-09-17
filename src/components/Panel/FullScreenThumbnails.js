@@ -14,7 +14,7 @@ const fullScreenWrapper = css`
 	width: 100vw;
 	height: 100%;
 	z-index: 4;
-	background: #f1f3f5;
+	background: #282828;
   overflow: auto;
   display: flex;
   flex-wrap: wrap;
@@ -174,6 +174,7 @@ const FullScreenThumbnails = ({
     const thumbnailElement = (
       <div data-type="regular-full-screen-thumbnail" css={thumbnailStyle}>
         <Thumbnail
+          isFullScreen
           tools={tools}
           clickIsMultiSelect
           onRotate={onRotate}
@@ -225,7 +226,7 @@ const FullScreenThumbnails = ({
           <div style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
             <div style={{marginTop: 20, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column"}}>
               <LoadingSpinner />
-              <div style={{fontFamily: "Lato"}}>Loading...</div>
+              <div style={{fontFamily: "Lato", color: "white"}}>Loading...</div>
             </div>
           </div>
         </div>
