@@ -17,10 +17,10 @@ const thumbnailWrapper = css`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 20px;
 	font-family: Lato;
 	color: #8b8b8b;
 	position: relative;
+	margin-top: 20px;
 `;
 
 const hiddenThumbnailWrapper = css`
@@ -29,9 +29,9 @@ const hiddenThumbnailWrapper = css`
 
 const activeThumbnailWrapper = css`
   display: flex;
+	margin-top: 20px;
   flex-direction: column;
   align-items: center;
-  margin-top: 20px;
 	font-family: Lato;
 	color: #3183c8;
 	position: relative;
@@ -185,7 +185,7 @@ export const Thumbnail = ({
 
 	return (
 		<div
-			style={{color: "#7f7f7f"}}
+			style={{color: "#7f7f7f", alignSelf: "auto"}}
 			draggable={tools?.editing?.includes('move')}
 			onDragStart={(e) => {
 				onDragStart(e, pageNum)

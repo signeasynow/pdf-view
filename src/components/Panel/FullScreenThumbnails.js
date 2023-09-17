@@ -19,6 +19,7 @@ const fullScreenWrapper = css`
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-content: flex-start;  // Add this line
 
   &::-webkit-scrollbar {
     width: 10px;
@@ -39,6 +40,7 @@ const thumbnailStyle = css`
   flex: 1 1 auto;  // Automatically adjust the size based on container size
   margin: 8px;  // Add margin around each thumbnail
   min-width: 32px;
+  height: fit-content;
 `;
 
 const FullScreenThumbnails = ({

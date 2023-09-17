@@ -33,19 +33,6 @@ const invisibleSearchWrapper = css`
   display: none;
 `;
 
-const optionsWrapper = css`
-
-`;
-
-
-const fullScreenWrapper = css`
-  position: absolute;
-	width: 100vw;
-	height: 100%;
-	z-index: 4;
-	background: gray;
-`
-
 const Panel = ({
 	showPanel,
 	tools,
