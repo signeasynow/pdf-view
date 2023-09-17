@@ -223,7 +223,7 @@ const FullScreenThumbnails = ({
       <div css={wrapperStyle}>
         <div css={fullScreenWrapper}>
           <div style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
-            <div style={{display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column"}}>
+            <div style={{marginTop: 20, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column"}}>
               <LoadingSpinner />
               <div style={{fontFamily: "Lato"}}>Loading...</div>
             </div>
