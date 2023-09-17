@@ -323,7 +323,7 @@ const App = () => {
 	}
 
 	const showSubheader = () => {
-		return tools?.editing?.includes("remove") || tools?.editing?.includes("rotation")
+		return !!tools?.editing?.length
 	}
 
 	const undoLastAction = async () => {
@@ -514,6 +514,39 @@ const App = () => {
 		}
 		return !!multiPageSelections?.length || !!activePage
 	}
+	
+	const canExtract = () => {
+		if (showFullScreenThumbnails) {
+			return !!multiPageSelections?.length
+		}
+		return !!multiPageSelections?.length || !!activePage
+	}
+
+	const onExtract = async () => {
+    if (!canExtract()) {
+        return;
+    }
+    if (!pdfProxyObj) {
+        console.log('No PDF loaded to download');
+        return;
+    }
+
+    const buffer = await pdfProxyObj.getData();
+    const totalPages = pdfProxyObj.numPages;
+    const selectedPages = multiPageSelections?.length ? new Set(multiPageSelections) : new Set([activePage]);
+
+    // Use Set for O(1) lookup, then generate the pagesToRemove array in O(n) time
+    const pagesToRemove = Array.from({ length: totalPages }, (_, i) => i + 1).filter((pageNum) => !selectedPages.has(pageNum));
+
+    const operation = { action: "delete", pages: pagesToRemove };
+    setMultiPageSelections([]);
+    const bufferResult = await applyOperation(operation, buffer);
+    await savePDF(bufferResult, 'pdfId1');
+    setModifiedFile(new Date().toISOString());
+
+    setOperations([...operations, operation]);
+    setRedoStack([]);
+};
 
 	const onDelete = async () => {
 		if (!canDelete()) {
@@ -686,6 +719,8 @@ const App = () => {
 				{
 					showSubheader() && (
 						<Subheader
+							canExtract={canExtract()}
+							onExtract={onExtract}
 							tools={tools}
 							canDelete={canDelete()}
 							undoStackLength={operations.length}

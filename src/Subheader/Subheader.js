@@ -7,6 +7,7 @@ import RemoveSelection from '../../assets/notification-remove-svgrepo-com.svg';
 import Trash from '../../assets/trash-svgrepo-com.svg';
 import RotateRight from '../../assets/rotate-right-svgrepo-com.svg';
 import RotateLeft from '../../assets/rotate-left-svgrepo-com.svg';
+import Extract from '../../assets/gradebook-export-svgrepo-com.svg';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'aleon_35_pdf_ui_lib';
 import HeaderBtn from '../Header/HeaderBtn';
@@ -38,6 +39,7 @@ const Subheader = ({
 	canDelete,
 	undoStackLength,
 	redoStackLength,
+	canExtract,
 	onDelete,
 	tools,
 	onRotate,
@@ -48,7 +50,8 @@ const Subheader = ({
 	setMultiPageSelections,
 	multiPageSelections,
 	expandedViewThumbnailScale,
-	setExpandedViewThumbnailScale
+	setExpandedViewThumbnailScale,
+	onExtract
 }) => {
 	
 	const { t } = useTranslation();
@@ -128,6 +131,41 @@ const Subheader = ({
 							title={t("redo")} iconAlt={t("redo")} icon={Redo} />
 					</AccessibleButton>
 					<VerticalDivider />
+					{
+						tools?.editing?.includes("extract") && (
+							<div style={{position: "relative"}}>
+								<AccessibleButton
+									onClick={onExtract} 
+									ariaLabel={t("redo")}
+								>
+									<HeaderBtn
+										style={{opacity: canExtract ? 1 : 0.5}}
+										title={"Extract"} iconAlt={t("redo")} icon={Extract} />
+										{
+											!!multiPageSelections?.length && (
+												<div style={{
+													position: "absolute",
+													bottom: 0,
+													color: "white",
+													fontFamily: "Lato",
+													left: 0,
+													pointerEvents: "none",
+													height: 12,
+													minWidth: 12,
+													background: "#f96804",
+													fontSize: 12,
+													padding: 2,
+													display: "flex",
+													alignItems: "center",
+													justifyContent: "center",
+													borderRadius: "8px"
+												}}>{getSelectionsCount()}</div>
+											)
+										}
+								</AccessibleButton>
+							</div>
+						)
+					}
 					{
 						tools?.editing?.includes("rotation") && (
 							<div style={{
