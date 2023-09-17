@@ -46,6 +46,7 @@ const thumbnailStyle = css`
 const FullScreenThumbnails = ({
   onDragEnd,
   pdf,
+  tools,
   onThumbnailClick,
   pdfProxyObj,
   multiPageSelections,
@@ -173,6 +174,7 @@ const FullScreenThumbnails = ({
     const thumbnailElement = (
       <div data-type="regular-full-screen-thumbnail" css={thumbnailStyle}>
         <Thumbnail
+          tools={tools}
           clickIsMultiSelect
           onRotate={onRotate}
           onDelete={onDeleteThumbnail}

@@ -75,6 +75,7 @@ const Panel = ({
 		onDragEnd={onDragEnd}
 		activePage={activePage}
 		pdf={pdf}
+		tools={tools}
 		onThumbnailClick={onThumbnailClick}
 		pdfProxyObj={pdfProxyObj}
 		multiPageSelections={multiPageSelections}

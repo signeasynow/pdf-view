@@ -8,11 +8,6 @@ import Trash from '../assets/trash-svgrepo-com.svg';
 import RotateRight from '../assets/rotate-right-svgrepo-com.svg';
 import RotateLeft from '../assets/rotate-left-svgrepo-com.svg';
 
-const partialOpacityStyle = css`
-  position: relative;
-	opacity: 0.5;
-`;
-
 const thumbnailWrapper = css`
   display: flex;
   flex-direction: column;
@@ -82,6 +77,7 @@ export const Thumbnail = ({
 	setMultiPageSelections,
 	onDragStart,
 	tools,
+	something,
 	onDragOver,
 	onDragEnd,
 	displayPageNum,
@@ -95,6 +91,7 @@ export const Thumbnail = ({
 	onRotate,
 	clickIsMultiSelect
 }) => {
+
 	const canvasRef = useRef(null);
 
 	const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0 });
@@ -205,21 +202,38 @@ export const Thumbnail = ({
 				}}
 				onClick={hideContextMenu}
 				>
-					<strong css={contextMenuLabel}>Page orientation</strong>
-					<div onClick={() => onRotate(true)} css={contextMenuItem}>
-						<Icon src={RotateRight} alt="Delete" />
-						<p css={contextMenuItemText}>Rotate clockwise</p>
-					</div>
-					<div onClick={() => onRotate(false)} css={contextMenuItem}>
-						<Icon src={RotateLeft} alt="Delete" />
-						<p css={contextMenuItemText}>Rotate counterclockwise</p>
-					</div>
-					<hr />
-					<strong css={contextMenuLabel}>Page manipulation</strong>
-					<div onClick={() => onDelete(pageNum)} css={contextMenuItem}>
-						<Icon src={Trash} alt="Delete" />
-						<p css={contextMenuItemText}>Delete</p>
-					</div>
+					{
+						tools?.editing?.includes("rotation") && (
+							<>
+								<strong css={contextMenuLabel}>Page orientation</strong>
+								<div onClick={() => onRotate(true)} css={contextMenuItem}>
+									<Icon src={RotateRight} alt="Delete" />
+									<p css={contextMenuItemText}>Rotate clockwise</p>
+								</div>
+								<div onClick={() => onRotate(false)} css={contextMenuItem}>
+									<Icon src={RotateLeft} alt="Delete" />
+									<p css={contextMenuItemText}>Rotate counterclockwise</p>
+								</div>
+							</>
+						)
+					}
+					{
+						tools?.editing?.includes("rotation")
+						&& tools?.editing?.includes("remove") && (
+							<hr />
+						)
+					}
+					{
+						tools?.editing?.includes("remove") && (
+							<>
+								<strong css={contextMenuLabel}>Page manipulation</strong>
+								<div onClick={() => onDelete(pageNum)} css={contextMenuItem}>
+									<Icon src={Trash} alt="Delete" />
+									<p css={contextMenuItemText}>Delete</p>
+								</div>
+							</>
+						)
+					}
 				</div>
 			}
 			<div

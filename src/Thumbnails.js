@@ -28,24 +28,17 @@ const ThumbnailsContainer = ({
 	onDelete,
 	onRotate
 }) => {
+	console.log(tools, 'too thuco')
 	const numPages = pdfProxyObj?.numPages;
 
 	const [draggingIndex, setDraggingIndex] = useState(null);
 	const [dragOverIndex, setDragOverIndex] = useState(null);
-
-	if (!numPages) return (
-		<div style={{display: "flex", flexDirection: "column", alignItems: "center", marginTop: 20}}>
-			<LoadingSpinner />
-			<div style={{fontFamily: "Lato"}}>Loading...</div>
-		</div>
-	);
 
 	const thumbnails = Array.from({ length: numPages }, (_, i) => {
     return (
       <>
 				{dragOverIndex === i + 1 && <div css={lineIndicatorStyle}></div>}
 				<Thumbnail
-					tools={tools}
 					onRotate={onRotate}
 					onDelete={onDelete}
 					multiPageSelections={multiPageSelections}
@@ -75,11 +68,20 @@ const ThumbnailsContainer = ({
 					pageNum={i + 1}
 					displayPageNum={i + 1}
 					scale={scale}
+					something={() => {console.log("DOG")}}
 					onThumbnailClick={onThumbnailClick}
+					tools={true}
 				/>
 			</>
     );
   });
+
+	if (!numPages) return (
+		<div style={{display: "flex", flexDirection: "column", alignItems: "center", marginTop: 20}}>
+			<LoadingSpinner />
+			<div style={{fontFamily: "Lato"}}>Loading...</div>
+		</div>
+	);
 
 	return (<div
 		css={wrapperStyle}>
