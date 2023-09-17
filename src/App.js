@@ -323,7 +323,7 @@ const App = () => {
 	}
 
 	const showSubheader = () => {
-		return tools?.editing?.includes("remove")
+		return tools?.editing?.includes("remove") || tools?.editing?.includes("rotation")
 	}
 
 	const undoLastAction = async () => {
@@ -665,6 +665,7 @@ const App = () => {
 				{
 					showSubheader() && (
 						<Subheader
+							tools={tools}
 							canDelete={canDelete()}
 							undoStackLength={operations.length}
 							redoStackLength={redoStack.length}

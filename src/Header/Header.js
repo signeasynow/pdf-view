@@ -12,16 +12,7 @@ import ZoomSection from './ZoomSection';
 import ControlsSection from './ControlsSection';
 import HeaderBtn from './HeaderBtn';
 import { useTranslation } from 'react-i18next';
-
-const VerticalDivider = () => (
-	<div css={css`
-    width: 1px;
-    background-color: #ccc;
-    margin: 12px 12px;
-		height: 32px;
-  `}
-	/>
-);
+import VerticalDivider from '../components/VerticalDivider';
 
 const Wrapper = ({ children }) => (
 	<div css={css({
@@ -50,7 +41,6 @@ const Header = ({
 	onPanel,
 	onDownload,
 	leftPanelEnabled,
-	onRotate,
 	viewerContainerRef,
 	defaultZoom,
 	showFullScreenThumbnails
@@ -66,13 +56,6 @@ const Header = ({
 							<HeaderBtn offsetX="10px" onClick={onDownload} title={t("download")} iconAlt={t("download")}  icon={Download} />
 							<VerticalDivider />
 						</>
-					)
-				}
-				{
-					tools?.editing?.includes('rotation') && (
-						<ControlsSection
-							onRotate={onRotate}
-						/>
 					)
 				}
 				{

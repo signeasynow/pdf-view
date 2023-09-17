@@ -13,6 +13,7 @@ import HeaderBtn from '../Header/HeaderBtn';
 import Slider from '../components/Slider';
 import { useState } from 'preact/hooks';
 import AccessibleButton from '../components/AccessibleButton';
+import VerticalDivider from '../components/VerticalDivider';
 
 const Wrapper = ({ children }) => (
 	<div css={css({
@@ -38,6 +39,7 @@ const Subheader = ({
 	undoStackLength,
 	redoStackLength,
 	onDelete,
+	tools,
 	onRotate,
 	undoLastAction,
 	redoLastAction,
@@ -49,7 +51,6 @@ const Subheader = ({
 	setExpandedViewThumbnailScale
 }) => {
 	
-
 	const { t } = useTranslation();
 
   const handleInputChange = (e) => {
@@ -126,36 +127,88 @@ const Subheader = ({
 							style={{opacity: redoStackLength ? 1 : 0.5}}
 							title={t("redo")} iconAlt={t("redo")} icon={Redo} />
 					</AccessibleButton>
-					<div style={{position: "relative"}}>
-						<AccessibleButton
-							onClick={onDelete} 
-							ariaLabel={t("redo")}
-						>
-							<HeaderBtn style={{opacity: canDelete ? 1 : 0.5}} title={t("remove")} iconAlt={t("remove")} icon={Trash} />
-							{
-								!!multiPageSelections?.length && (
-									<div style={{
-										position: "absolute",
-										bottom: 0,
-										color: "white",
-										fontFamily: "Lato",
-										right: 0,
-										pointerEvents: "none",
-										height: 12,
-										minWidth: 12,
-										background: "#f96804",
-										fontSize: 12,
-										padding: 2,
-										display: "flex",
-										alignItems: "center",
-										justifyContent: "center",
-										borderRadius: "8px"
-									}}>{getSelectionsCount()}</div>
-								)
-							}
-							
-						</AccessibleButton>
-					</div>
+					<VerticalDivider />
+					{
+						tools?.editing?.includes("rotation") && (
+							<div style={{
+								display: "flex",
+								border: !!multiPageSelections?.length ? "1px solid #f96804" : "1px solid transparent",
+								background: !!multiPageSelections?.length ? "#f6f6f6" : "",
+								borderRadius: "10px"
+							}}>
+								<div style={{position: "relative"}}>
+									<AccessibleButton
+										onClick={onDelete} 
+										ariaLabel={t("redo")}
+									>
+										<HeaderBtn offsetX="-20px" style={{opacity: canDelete ? 1 : 0.5}} title={"Rotate counterclockwise"} iconAlt={t("remove")} icon={RotateLeft} />
+										{
+											!!multiPageSelections?.length && (
+												<div style={{
+													position: "absolute",
+													bottom: 0,
+													color: "white",
+													fontFamily: "Lato",
+													left: 0,
+													pointerEvents: "none",
+													height: 12,
+													minWidth: 12,
+													background: "#f96804",
+													fontSize: 12,
+													padding: 2,
+													display: "flex",
+													alignItems: "center",
+													justifyContent: "center",
+													borderRadius: "8px"
+												}}>{getSelectionsCount()}</div>
+											)
+										}
+									</AccessibleButton>
+								</div>
+								<div style={{position: "relative"}}>
+									<AccessibleButton
+										onClick={onDelete} 
+										ariaLabel={t("redo")}
+									>
+										<HeaderBtn offsetX="-30px" style={{opacity: canDelete ? 1 : 0.5}} title={"Rotate clockwise"} iconAlt={t("remove")} icon={RotateRight} />
+									</AccessibleButton>
+								</div>
+							</div>
+						)
+					}
+					{
+						tools?.editing?.includes("remove") && (
+							<div style={{position: "relative"}}>
+								<AccessibleButton
+									onClick={onDelete} 
+									ariaLabel={t("redo")}
+								>
+									<HeaderBtn style={{opacity: canDelete ? 1 : 0.5}} title={t("remove")} iconAlt={t("remove")} icon={Trash} />
+									{
+										!!multiPageSelections?.length && (
+											<div style={{
+												position: "absolute",
+												bottom: 4,
+												color: "white",
+												fontFamily: "Lato",
+												left: 0,
+												pointerEvents: "none",
+												height: 12,
+												minWidth: 12,
+												background: "#f96804",
+												fontSize: 12,
+												padding: 2,
+												display: "flex",
+												alignItems: "center",
+												justifyContent: "center",
+												borderRadius: "8px"
+											}}>{getSelectionsCount()}</div>
+										)
+									}
+								</AccessibleButton>
+							</div>
+						)
+					}
 				</>
 			</div>
 		</Wrapper>

@@ -28,7 +28,7 @@ const ThumbnailsContainer = ({
 	onDelete,
 	onRotate
 }) => {
-	console.log(tools, 'too thuco')
+	
 	const numPages = pdfProxyObj?.numPages;
 
 	const [draggingIndex, setDraggingIndex] = useState(null);
@@ -68,9 +68,8 @@ const ThumbnailsContainer = ({
 					pageNum={i + 1}
 					displayPageNum={i + 1}
 					scale={scale}
-					something={() => {console.log("DOG")}}
 					onThumbnailClick={onThumbnailClick}
-					tools={true}
+					tools={tools}
 				/>
 			</>
     );
