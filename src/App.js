@@ -491,14 +491,14 @@ const App = () => {
 		setRedoStack([]);
 	}
 
-	const onRotateThumbnail = async (clockwise) => {
+	const onRotateThumbnail = async (clockwise, pageNum) => {
 		if (!pdfProxyObj) {
 			console.log('No PDF loaded to download');
 			return;
 		}
 
 		const buffer = await pdfProxyObj.getData();
-		const pagesToRotate = multiPageSelections?.length ? multiPageSelections : [activePage];
+		const pagesToRotate = multiPageSelections?.length ? Array.from(new Set([...multiPageSelections, pageNum])) : [pageNum];
 		const operation = { action: "rotate", pages: pagesToRotate, clockwise};
 		const bufferResult = await applyOperation(operation, buffer);
 		await savePDF(bufferResult, 'pdfId1');

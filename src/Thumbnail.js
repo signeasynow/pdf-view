@@ -206,11 +206,11 @@ export const Thumbnail = ({
 						tools?.editing?.includes("rotation") && (
 							<>
 								<strong css={contextMenuLabel}>Page orientation</strong>
-								<div onClick={() => onRotate(true)} css={contextMenuItem}>
+								<div onClick={() => onRotate(true, pageNum)} css={contextMenuItem}>
 									<Icon src={RotateRight} alt="Delete" />
 									<p css={contextMenuItemText}>Rotate clockwise</p>
 								</div>
-								<div onClick={() => onRotate(false)} css={contextMenuItem}>
+								<div onClick={() => onRotate(false, pageNum)} css={contextMenuItem}>
 									<Icon src={RotateLeft} alt="Delete" />
 									<p css={contextMenuItemText}>Rotate counterclockwise</p>
 								</div>
