@@ -451,6 +451,27 @@ const App = () => {
 		}
 	}
 
+	const onRotateFullScreenThumbnails = async (clockwise) => {
+		if (!pdfProxyObj) {
+			console.log('No PDF loaded to download');
+			return;
+		}
+
+		const buffer = await pdfProxyObj.getData();
+		const pagesToRotate = multiPageSelections?.length ? multiPageSelections : [activePage];
+		if (!pagesToRotate.length) {
+			return;
+		}
+		const operation = { action: "rotate", pages: pagesToRotate, clockwise};
+		setMultiPageSelections([]);
+		const bufferResult = await applyOperation(operation, buffer);
+		await savePDF(bufferResult, 'pdfId1');
+		setModifiedFile(new Date().toISOString());
+	
+		setOperations([...operations, operation]);
+		setRedoStack([]);
+	}
+
 	const onRotate = async (clockwise) => {
 		if (!pdfProxyObj) {
 			console.log('No PDF loaded to download');
@@ -679,7 +700,7 @@ const App = () => {
 							redoLastAction={redoLastAction}
 							onDownload={onDownload}
 							onDelete={onDelete}
-							onRotate={onRotate}
+							onRotate={onRotateFullScreenThumbnails}
 						/>
 					)
 				}
