@@ -28,7 +28,6 @@ const BookmarksSection = ({
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
   const toggleBookmark = (pageNumber) => {
-    console.log(pageNumber, 'pageNumber')
     setBookmarkedPages(prevBookmarkedPages => {
       const pageIndex = prevBookmarkedPages.map((page) => page.pageNumber).indexOf(pageNumber);
       if (pageIndex > -1) {
@@ -54,7 +53,6 @@ const BookmarksSection = ({
     } else {
       applyBookmarkButtons(toggleBookmark);
     }
-    console.log(e.target.value, 'value bro', e.checked, e.target?.checked)
   }
 
   return (

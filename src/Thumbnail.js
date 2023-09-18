@@ -97,7 +97,6 @@ export const Thumbnail = ({
 	const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0 });
 
 	const onToggleMultiSelect = () => {
-		// console.log(e, 'e multi')
 		// e.stopPropagation();
 		if (multiPageSelections?.includes(pageNum)) {
 			setMultiPageSelections(multiPageSelections.filter((each) => each !== pageNum));
@@ -169,7 +168,6 @@ export const Thumbnail = ({
 			onToggleMultiSelect(e);
 			return;
 		}
-		console.log("clicking bro")
 		onThumbnailClick(pageNum, e);
 	}
 

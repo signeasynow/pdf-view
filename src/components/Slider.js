@@ -57,7 +57,6 @@ const Slider = ({ value, onChange }) => (
     <AccessibleButton
       ariaLabel="Minus"
       onClick={() => {
-        console.log(value, 'value bro here')
         onChange({
           target: {
             value: Math.max(value - 1, 0)

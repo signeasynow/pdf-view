@@ -63,7 +63,6 @@ const FullScreenThumbnails = ({
   const [selectedIndexes, setSelectedIndexes] = useState([]);
   const [mouseUp, setMouseUp] = useState(new Date().toISOString());
 
-  console.log(dragRect, 'dragRect')
   const onMouseDown = (e) => {
     const rect = containerRef.current.getBoundingClientRect();  // Get bounding box
     setDragStart({ x: e.clientX - rect.left, y: e.clientY - rect.top });  // Correct for offset
@@ -91,11 +90,8 @@ const FullScreenThumbnails = ({
 
       const newSelectedIndexes = [];
       const thumbnailElements = containerRef.current.querySelectorAll('[data-type="regular-full-screen-thumbnail"]');
-      console.log(thumbnailElements, 'thumbnailElements')
       Array.from(thumbnailElements).forEach((child, index) => {
-        // console.log(child, 'child found brouu')
         const childRect = child.getBoundingClientRect();
-        console.log(childRect, 'childrect 1')
         if (
           normalizedDragRect.x < childRect.right - rect.left &&
           normalizedDragRect.x + normalizedDragRect.width > childRect.left - rect.left &&
@@ -110,12 +106,9 @@ const FullScreenThumbnails = ({
     }
   };
 
-  console.log(selectedIndexes, 'selectedIndexes')
-
   useEffect(() => {
     if (selectedIndexes.length > 0) {
       const newSet = Array.from(new Set([...multiPageSelections, ...selectedIndexes.map((each) => each + 1)]));
-      console.log(newSet, 'newSet');
       setMultiPageSelections(newSet);
       setSelectedIndexes([]); // Reset the selected indexes
     }
@@ -123,7 +116,6 @@ const FullScreenThumbnails = ({
   }, [mouseUp]);
 
   const onMouseUp = () => {
-    console.log(selectedIndexes, 'selectedInde22')
     setDragStart(null);
     setDragRect(null);
     setMouseUp(new Date().toISOString());

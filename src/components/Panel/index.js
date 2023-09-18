@@ -56,7 +56,6 @@ const Panel = ({
 	const [activeTab, setActiveTab] = useState(0);
 
 	const onThumbnailClick = (num, e) => {
-		console.log(e, 'e bro 1', e.shiftKey)
 		setActivePage(num)
 		if (e.shiftKey) {
 			let resultingArray = [...multiPageSelections.filter((each) => each !== num)];

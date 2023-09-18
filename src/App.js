@@ -97,7 +97,6 @@ const App = () => {
 	};
 
 	const initAnalytics = () => {
-		console.log(process.env.NODE_ENV, 'process.env.NODE_ENV')
 		if (process.env.NODE_ENV === "development") {
 			return;
 		}
@@ -561,7 +560,6 @@ const App = () => {
 };
 
 useListenForExtractPagesRequest((v) => {
-	console.log(v, 'extracting bro')
 	onExtract(v);
 })
 

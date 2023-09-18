@@ -139,7 +139,7 @@ const Subheader = ({
 									ariaLabel={t("redo")}
 								>
 									<HeaderBtn
-										style={{opacity: canExtract ? 1 : 0.5}}
+										style={{opacity: canExtract ? 1 : 0.3}}
 										title={"Extract"} iconAlt={t("redo")} icon={Extract} />
 										{
 											!!multiPageSelections?.length && (
