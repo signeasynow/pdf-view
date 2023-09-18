@@ -24,6 +24,7 @@ import {supabase} from './utils/supabase';
 import * as amplitude from '@amplitude/analytics-browser';
 import useListenForThumbnailFullScreenRequest from './hooks/useListenForThumbnailFullScreenRequest';
 import useListenForThumbnailZoomRequest from './hooks/useListenForThumbnailZoomRequest';
+import useListenForExtractPagesRequest from './hooks/useListenForExtractPagesRequest';
 
 amplitude.init("76825a74ed5e5f72bc6a75fd052e78ad")
 
@@ -78,6 +79,10 @@ const App = () => {
 	const [showPanel, setShowPanel] = useState(true);
 
 	const [multiPageSelections, setMultiPageSelections] = useState([]);
+
+	useEffect(() => {
+		window.parent.postMessage({ type: 'multi-page-selection-change', message: multiPageSelections }, window.parent.origin);
+	}, [multiPageSelections]);
 
 	const [activePage, setActivePage] = useState(1);
 
@@ -146,6 +151,7 @@ const App = () => {
 	usePropageClickEvents();
 	useDeclareIframeLoaded();
 	useListenForDownloadRequest(onDownload);
+	
 	useListenForThumbnailFullScreenRequest((enable) => {
 		if (enable === true) {
 			onExpand();
@@ -515,15 +521,18 @@ const App = () => {
 		return !!multiPageSelections?.length || !!activePage
 	}
 	
-	const canExtract = () => {
+	const canExtract = (override) => {
+		if (Array.isArray(override)) {
+			return !!override?.length;
+		}
 		if (showFullScreenThumbnails) {
 			return !!multiPageSelections?.length
 		}
 		return !!multiPageSelections?.length || !!activePage
 	}
 
-	const onExtract = async () => {
-    if (!canExtract()) {
+	const onExtract = async (override) => {
+    if (!canExtract(override)) {
         return;
     }
     if (!pdfProxyObj) {
@@ -533,8 +542,10 @@ const App = () => {
 
     const buffer = await pdfProxyObj.getData();
     const totalPages = pdfProxyObj.numPages;
-    const selectedPages = multiPageSelections?.length ? new Set(multiPageSelections) : new Set([activePage]);
-
+    let selectedPages = multiPageSelections?.length ? new Set(multiPageSelections) : new Set([activePage]);
+		if (override?.length) {
+			selectedPages = new Set(override);
+		}
     // Use Set for O(1) lookup, then generate the pagesToRemove array in O(n) time
     const pagesToRemove = Array.from({ length: totalPages }, (_, i) => i + 1).filter((pageNum) => !selectedPages.has(pageNum));
 
@@ -542,11 +553,17 @@ const App = () => {
     setMultiPageSelections([]);
     const bufferResult = await applyOperation(operation, buffer);
     await savePDF(bufferResult, 'pdfId1');
+		window.parent.postMessage({ type: "extract-pages-completed", success: true});
     setModifiedFile(new Date().toISOString());
 
     setOperations([...operations, operation]);
     setRedoStack([]);
 };
+
+useListenForExtractPagesRequest((v) => {
+	console.log(v, 'extracting bro')
+	onExtract(v);
+})
 
 	const onDelete = async () => {
 		if (!canDelete()) {

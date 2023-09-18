@@ -105,6 +105,10 @@ export const PdfViewer = ({
 			if (typeof activePage === "number") {
 				pdfLinkServiceRef.current?.goToPage(activePage || 1);
 			}
+			window.parent.postMessage({
+				type: "pages-loaded",
+				message: new Date().toISOString()
+			})
 		});
 
 		eventBus.on('updatefindmatchescount', ({ matchesCount }) => {
