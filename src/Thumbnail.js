@@ -7,6 +7,7 @@ import { Icon, Checkbox } from 'aleon_35_pdf_ui_lib';
 import Trash from '../assets/trash-svgrepo-com.svg';
 import RotateRight from '../assets/rotate-right-svgrepo-com.svg';
 import RotateLeft from '../assets/rotate-left-svgrepo-com.svg';
+import Extract from '../assets/gradebook-export-svgrepo-com.svg';
 
 const thumbnailWrapper = css`
   display: flex;
@@ -88,6 +89,7 @@ export const Thumbnail = ({
 	scale,
 	onThumbnailClick,
 	onDelete,
+	onExtract,
 	onRotate,
 	clickIsMultiSelect
 }) => {
@@ -222,12 +224,26 @@ export const Thumbnail = ({
 						)
 					}
 					{
+						tools?.editing?.includes("remove") || tools?.editing?.includes("extract") && (
+							<strong css={contextMenuLabel}>Page manipulation</strong>
+						)
+					}
+					{
 						tools?.editing?.includes("remove") && (
 							<>
-								<strong css={contextMenuLabel}>Page manipulation</strong>
 								<div onClick={() => onDelete(pageNum)} css={contextMenuItem}>
 									<Icon src={Trash} alt="Delete" />
 									<p css={contextMenuItemText}>Delete</p>
+								</div>
+							</>
+						)
+					}
+					{
+						tools?.editing?.includes("extract") && (
+							<>
+								<div onClick={() => onExtract(pageNum)} css={contextMenuItem}>
+									<Icon src={Extract} alt="Delete" />
+									<p css={contextMenuItemText}>Extract</p>
 								</div>
 							</>
 						)

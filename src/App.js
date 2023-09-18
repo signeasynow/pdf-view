@@ -557,11 +557,11 @@ const App = () => {
 
     setOperations([...operations, operation]);
     setRedoStack([]);
-};
+	};
 
-useListenForExtractPagesRequest((v) => {
-	onExtract(v);
-})
+	useListenForExtractPagesRequest((v) => {
+		onExtract(v);
+	})
 
 	const onDelete = async () => {
 		if (!canDelete()) {
@@ -582,6 +582,29 @@ useListenForExtractPagesRequest((v) => {
 	
 		setOperations([...operations, operation]);
 		setRedoStack([]);
+	}
+
+	const onExtractThumbnail = async (page) => {
+    if (!pdfProxyObj) {
+        console.log('No PDF loaded to download');
+        return;
+    }
+
+    const buffer = await pdfProxyObj.getData();
+    const totalPages = pdfProxyObj.numPages;
+    let selectedPages = multiPageSelections?.length ? new Set([...multiPageSelections, page]) : new Set([page]);
+    // Use Set for O(1) lookup, then generate the pagesToRemove array in O(n) time
+    const pagesToRemove = Array.from({ length: totalPages }, (_, i) => i + 1).filter((pageNum) => !selectedPages.has(pageNum));
+
+    const operation = { action: "delete", pages: pagesToRemove };
+    setMultiPageSelections([]);
+    const bufferResult = await applyOperation(operation, buffer);
+    await savePDF(bufferResult, 'pdfId1');
+		window.parent.postMessage({ type: "extract-pages-completed", success: true});
+    setModifiedFile(new Date().toISOString());
+
+    setOperations([...operations, operation]);
+    setRedoStack([]);
 	}
 
 	const onDeleteThumbnail = async (page) => {
@@ -763,6 +786,7 @@ useListenForExtractPagesRequest((v) => {
 								expandedViewThumbnailScale={expandedViewThumbnailScale}
 								onRotate={onRotateThumbnail}
 								onDeleteThumbnail={onDeleteThumbnail}
+								onExtractThumbnail={onExtractThumbnail}
 								multiPageSelections={multiPageSelections}
 								setMultiPageSelections={setMultiPageSelections}
 								onExpand={onExpand}

@@ -52,6 +52,7 @@ const FullScreenThumbnails = ({
   multiPageSelections,
 	setMultiPageSelections,
   onDeleteThumbnail,
+  onExtractThumbnail,
   onRotate,
   expandedViewThumbnailScale
 }) => {
@@ -166,6 +167,7 @@ const FullScreenThumbnails = ({
     const thumbnailElement = (
       <div data-type="regular-full-screen-thumbnail" css={thumbnailStyle}>
         <Thumbnail
+          onExtract={onExtractThumbnail}
           isFullScreen
           tools={tools}
           clickIsMultiSelect

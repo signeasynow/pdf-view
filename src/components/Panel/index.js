@@ -46,6 +46,7 @@ const Panel = ({
 	multiPageSelections,
 	setMultiPageSelections,
 	onDeleteThumbnail,
+	onExtractThumbnail,
 	onRotate,
 	expandedViewThumbnailScale,
 	thumbnailScale,
@@ -71,6 +72,7 @@ const Panel = ({
 	if (showFullScreenThumbnails) {
 		return <FullScreenThumbnails
 		onDeleteThumbnail={onDeleteThumbnail}
+		onExtractThumbnail={onExtractThumbnail}
 		onDragEnd={onDragEnd}
 		activePage={activePage}
 		pdf={pdf}
@@ -92,6 +94,7 @@ const Panel = ({
 						onThumbnailClick={onThumbnailClick}
 						onRotate={onRotate}
 						onDeleteThumbnail={onDeleteThumbnail}
+						onExtractThumbnail={onExtractThumbnail}
 						onExpand={onExpand}
 						onDragEnd={onDragEnd}
 						tools={tools}

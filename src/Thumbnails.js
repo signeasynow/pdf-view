@@ -21,6 +21,7 @@ const ThumbnailsContainer = ({
 	pdf,
 	tools,
 	scale,
+	onExtract,
 	onThumbnailClick,
 	pdfProxyObj,
 	multiPageSelections,
@@ -39,6 +40,7 @@ const ThumbnailsContainer = ({
       <>
 				{dragOverIndex === i + 1 && <div css={lineIndicatorStyle}></div>}
 				<Thumbnail
+					onExtract={onExtract}
 					onRotate={onRotate}
 					onDelete={onDelete}
 					multiPageSelections={multiPageSelections}
