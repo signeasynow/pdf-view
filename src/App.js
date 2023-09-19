@@ -4,12 +4,13 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import Header from './Header/Header';
 import Subheader from './Subheader/Subheader';
+import Tabs from './components/Tabs';
 import { useDebounce } from './utils/useDebounce';
 import SearchBar from './SearchBar';
 import { PdfViewer } from './PdfViewer';
 import Panel from './components/Panel';
-import { heightOffset0, heightOffset1, heightOffset2, heightOffset3 } from "./constants";
-import { remove_pages, move_page, rotate_pages, add_watermark } from '../lib/pdf_wasm_project.js';
+import { heightOffset0, heightOffset1, heightOffset3, heightOffsetTabs } from "./constants";
+import { remove_pages, move_page, rotate_pages, merge_pdfs, PdfMergeData } from '../lib/pdf_wasm_project.js';
 import { retrievePDF, savePDF } from './utils/indexDbUtils';
 import { invokePlugin, pendingRequests } from './utils/pluginUtils';
 import { I18nextProvider } from 'react-i18next';
@@ -25,6 +26,9 @@ import * as amplitude from '@amplitude/analytics-browser';
 import useListenForThumbnailFullScreenRequest from './hooks/useListenForThumbnailFullScreenRequest';
 import useListenForThumbnailZoomRequest from './hooks/useListenForThumbnailZoomRequest';
 import useListenForExtractPagesRequest from './hooks/useListenForExtractPagesRequest';
+import useListenForMergeFilesRequest from './hooks/useListenForMergeFilesRequest';
+import useListenForCombineFilesRequest from './hooks/useListForCombineFilesRequest';
+import { PDFDocument } from 'pdf-lib';
 
 amplitude.init("76825a74ed5e5f72bc6a75fd052e78ad")
 
@@ -47,6 +51,7 @@ const failWrap = css`
 
 const App = () => {
 
+	const [activePageIndex, setActivePageIndex] = useState(0);
 	const [matchesCount, setMatchesCount] = useState(0);
 
 	const [fileLoadFailError, setFileLoadFailError] = useState('');
@@ -116,11 +121,13 @@ const App = () => {
 	const [redoStack, setRedoStack] = useState([]);
 
 	const [inputtedLicenseKey, setInputtedLicenseKey] = useState(null);
-
+	const [files, setFiles] = useState([]);
 	useEffect(() => {
 		window.addEventListener('message', (event) => {
-			if (typeof event.data === 'object' && event.data.file) {
-				setFile(event.data.file);
+			console.log(event.data, 'event data 2')
+			if (typeof event.data === 'object' && event.data.files?.length) {
+				setFile(event.data.files[0].url);
+				setFiles(event.data.files);
 				event.source.postMessage({ type: 'file-received', success: true }, event.origin);
 			}
 			if (typeof event.data === 'object' && event.data.fileName) {
@@ -147,9 +154,60 @@ const App = () => {
 		}, false);
 	}, []);
 
+	async function doMerge(pdfList) {
+		const mergedPdf = await PDFDocument.create();
+	
+		for (const { pdfBuffer, pages, position } of pdfList) {
+			const pdf = await PDFDocument.load(pdfBuffer);
+			const copiedPages = await mergedPdf.copyPages(pdf, pages);
+			for (const [i, page] of copiedPages.entries()) {
+				mergedPdf.insertPage(position + i, page);
+			}
+		}
+	
+		return await mergedPdf.save();
+	}
+
+	const onMergeFiles = async (pdfList) => {
+		// const buffer = await pdfProxyObj.getData();
+		/*
+		const pdfList = [
+			{ pdfBuffer: buffer, pages: [0, 2], position: 0 },
+			{ pdfBuffer: buffer, pages: [0, 2], position: 2 },
+		];
+		*/
+		const modifiedPdfArray = await doMerge(pdfList);
+		window.parent.postMessage({ type: "merge-files-completed", message: modifiedPdfArray});
+	}
+
+	const combinePDFs = async (pdfBuffers) => {
+		const combinedPdf = await PDFDocument.create();
+	
+		for (const pdfBuffer of pdfBuffers) {
+			const pdf = await PDFDocument.load(pdfBuffer);
+			const pageCount = pdf.getPageCount();
+			const pageIndices = Array.from({ length: pageCount }, (_, i) => i); // [0, 1, 2, ..., pageCount - 1]
+	
+			const copiedPages = await combinedPdf.copyPages(pdf, pageIndices);
+	
+			for (const page of copiedPages) {
+				combinedPdf.addPage(page);
+			}
+		}
+	
+		return await combinedPdf.save();
+	}
+
+	const onCombinePdfs = async (pdfBuffers) => {
+		const modifiedPdfArray = await combinePDFs(pdfBuffers);
+		window.parent.postMessage({ type: "combine-files-completed", message: modifiedPdfArray});
+	}
+
 	usePropageClickEvents();
 	useDeclareIframeLoaded();
 	useListenForDownloadRequest(onDownload);
+	useListenForMergeFilesRequest(onMergeFiles);
+	useListenForCombineFilesRequest(onCombinePdfs);
 	
 	useListenForThumbnailFullScreenRequest((enable) => {
 		if (enable === true) {
@@ -634,8 +692,9 @@ const App = () => {
 		} else if (!showHeader()) {
 			myHeight = heightOffset3;
 		} else {
-			myHeight = heightOffset2;
+			myHeight = heightOffset1 + heightOffset3;
 		}
+		myHeight += heightOffsetTabs;
 		return `calc(100vh - ${myHeight}px)`;
 	}
 
@@ -777,6 +836,7 @@ const App = () => {
 						/>
 					)
 				}
+				<Tabs activePageIndex={activePageIndex} fileNames={files.map((e) => e.name)} />
 				<div css={Flex}>
 					{
 						tools?.general?.includes('thumbnails') && (

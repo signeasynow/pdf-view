@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'preact/hooks';
 import * as pdfjs from 'pdfjs-dist';
 import { EventBus, PDFLinkService, PDFViewer, PDFFindController, PDFScriptingManager } from 'pdfjs-dist/web/pdf_viewer';
 import 'pdfjs-dist/web/pdf_viewer.css';
-import { heightOffset0, heightOffset1, heightOffset2, heightOffset3 } from "./constants";
+import { heightOffset0, heightOffset1, heightOffset3, heightOffsetTabs } from "./constants";
 import { retrievePDF, savePDF } from './utils/indexDbUtils';
 import { invokePlugin } from './utils/pluginUtils';
 import { addSandboxWatermark } from './utils/addSandboxWatermark';
@@ -218,8 +218,9 @@ export const PdfViewer = ({
 		} else if (!showHeader) {
 			toolbarSpaceUsed = heightOffset3;
 		} else {
-			toolbarSpaceUsed = heightOffset2;
+			toolbarSpaceUsed = heightOffset1 + heightOffset3;
 		}
+		toolbarSpaceUsed += heightOffsetTabs;
 		return `calc(100% - ${toolbarSpaceUsed}px)`;
 	}
 
