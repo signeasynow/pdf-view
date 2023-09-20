@@ -208,6 +208,13 @@ const App = () => {
 	useListenForDownloadRequest(onDownload);
 	useListenForMergeFilesRequest(onMergeFiles);
 	useListenForCombineFilesRequest(onCombinePdfs);
+
+	useEffect(() => {
+		if (!files[activePageIndex]?.url) {
+			return;
+		}
+		setFile(files[activePageIndex].url);
+	}, [activePageIndex]);
 	
 	useListenForThumbnailFullScreenRequest((enable) => {
 		if (enable === true) {
@@ -737,6 +744,10 @@ const App = () => {
 
 	const isSmallScreen = useMediaQuery('(max-width: 550px)');
 
+	const onChangeActivePageIndex = (idx) => {
+		setActivePageIndex(idx);
+	}
+
 	const forceFullThumbnailsView = () => {
 		return isSmallScreen && showPanel;
 	}
@@ -836,7 +847,11 @@ const App = () => {
 						/>
 					)
 				}
-				<Tabs activePageIndex={activePageIndex} fileNames={files.map((e) => e.name)} />
+				<Tabs
+					onClick={onChangeActivePageIndex}
+					activePageIndex={activePageIndex}
+					fileNames={files.map((e) => e.name)}
+				/>
 				<div css={Flex}>
 					{
 						tools?.general?.includes('thumbnails') && (

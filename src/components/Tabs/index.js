@@ -26,14 +26,15 @@ const Wrapper = ({ children }) => (
 
 const Tabs = ({
 	fileNames,
-	activePageIndex
+	activePageIndex,
+	onClick
 }) => {
 	console.log(fileNames, 'fileNames')
 	return (
 		<Wrapper>
 			{
 				fileNames.map((name, idx) => (
-					<span style={{
+					<span onClick={() => onClick(idx)} style={{
 						cursor: activePageIndex === idx ? "" : "pointer",
 						border: activePageIndex === idx ? "1px solid #1c1c1c" : "1px solid white",
 						background: activePageIndex === idx ? "#e4e4e4" : ""
