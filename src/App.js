@@ -55,7 +55,7 @@ const App = () => {
 	const [matchesCount, setMatchesCount] = useState(0);
 
 	const pdfId = `pdfId${activePageIndex}`;
-	const originalPdfId = "original" || `original${activePageIndex}`;
+	const originalPdfId = `original${activePageIndex}`;
 
 	const [fileLoadFailError, setFileLoadFailError] = useState('');
 
