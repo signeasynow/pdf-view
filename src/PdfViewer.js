@@ -148,7 +148,7 @@ export const PdfViewer = ({
 		});
 		let modFile;
 		if (modifiedFile) {
-			modFile = await retrievePDF("pdfId1");
+			modFile = await retrievePDF(`pdfId${activePageIndex}`);
 		}
 		const loadingTask = pdfjs.getDocument(modFile || file);
 
