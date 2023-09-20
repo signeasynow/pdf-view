@@ -118,6 +118,7 @@ const App = () => {
 	useInitWasm();
 
   const [modifiedFile, setModifiedFile] = useState(null);
+	const [modifiedFiles, setModifiedFiles] = useState([]);
 	const { triggerDownload: onDownload } = useDownload(pdfProxyObj, fileName, isSandbox);
 
 	const [operations, setOperations] = useState([]);
@@ -212,15 +213,13 @@ const App = () => {
 	useListenForMergeFilesRequest(onMergeFiles);
 	useListenForCombineFilesRequest(onCombinePdfs);
 
-	/*
 	useEffect(() => {
 		if (!files[activePageIndex]?.url) {
 			return;
 		}
 		setFile(files[activePageIndex].url);
-		setModifiedFile(null);
 	}, [activePageIndex]);
-	*/
+
 	
 	useListenForThumbnailFullScreenRequest((enable) => {
 		if (enable === true) {
@@ -418,7 +417,9 @@ const App = () => {
 	
 		// Save the buffer after undo as the current state
 		await savePDF(buffer, pdfId);
-		setModifiedFile(new Date().toISOString());
+		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
+		newModifiedPayload[activePageIndex] = new Date().toISOString();
+		setModifiedFiles(newModifiedPayload);
 	
 		// Update undo and redo stacks
 		const newUndoStack = operations.slice(0, -1);
@@ -443,7 +444,9 @@ const App = () => {
 	
 		// Save the buffer after redo as the current state
 		await savePDF(buffer, pdfId);
-		setModifiedFile(new Date().toISOString());
+		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
+		newModifiedPayload[activePageIndex] = new Date().toISOString();
+		setModifiedFiles(newModifiedPayload);
 	
 		// Update undo and redo stacks
 		setOperations(prevOperations => [...prevOperations, lastRedoOperation]);
@@ -542,7 +545,9 @@ const App = () => {
 		setMultiPageSelections([]);
 		const bufferResult = await applyOperation(operation, buffer);
 		await savePDF(bufferResult, pdfId);
-		setModifiedFile(new Date().toISOString());
+		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
+		newModifiedPayload[activePageIndex] = new Date().toISOString();
+		setModifiedFiles(newModifiedPayload);
 	
 		setOperations([...operations, operation]);
 		setRedoStack([]);
@@ -561,7 +566,9 @@ const App = () => {
 		setMultiPageSelections([]);
 		const bufferResult = await applyOperation(operation, buffer);
 		await savePDF(bufferResult, pdfId);
-		setModifiedFile(new Date().toISOString());
+		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
+		newModifiedPayload[activePageIndex] = new Date().toISOString();
+		setModifiedFiles(newModifiedPayload);
 	
 		setOperations([...operations, operation]);
 		setRedoStack([]);
@@ -578,7 +585,9 @@ const App = () => {
 		const operation = { action: "rotate", pages: pagesToRotate, clockwise};
 		const bufferResult = await applyOperation(operation, buffer);
 		await savePDF(bufferResult, pdfId);
-		setModifiedFile(new Date().toISOString());
+		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
+		newModifiedPayload[activePageIndex] = new Date().toISOString();
+		setModifiedFiles(newModifiedPayload);
 	
 		setOperations([...operations, operation]);
 		setRedoStack([]);
@@ -624,7 +633,9 @@ const App = () => {
     const bufferResult = await applyOperation(operation, buffer);
     await savePDF(bufferResult, pdfId);
 		window.parent.postMessage({ type: "extract-pages-completed", success: true});
-    setModifiedFile(new Date().toISOString());
+    let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
+		newModifiedPayload[activePageIndex] = new Date().toISOString();
+		setModifiedFiles(newModifiedPayload);
 
     setOperations([...operations, operation]);
     setRedoStack([]);
@@ -649,7 +660,9 @@ const App = () => {
 		setMultiPageSelections([]);
 		const bufferResult = await applyOperation(operation, buffer);
 		await savePDF(bufferResult, pdfId);
-		setModifiedFile(new Date().toISOString());
+		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
+		newModifiedPayload[activePageIndex] = new Date().toISOString();
+		setModifiedFiles(newModifiedPayload);
 	
 		setOperations([...operations, operation]);
 		setRedoStack([]);
@@ -672,7 +685,9 @@ const App = () => {
     const bufferResult = await applyOperation(operation, buffer);
     await savePDF(bufferResult, pdfId);
 		window.parent.postMessage({ type: "extract-pages-completed", success: true});
-    setModifiedFile(new Date().toISOString());
+    let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
+		newModifiedPayload[activePageIndex] = new Date().toISOString();
+		setModifiedFiles(newModifiedPayload);
 
     setOperations([...operations, operation]);
     setRedoStack([]);
@@ -690,7 +705,9 @@ const App = () => {
 		setMultiPageSelections([]);
 		const bufferResult = await applyOperation(operation, buffer);
 		await savePDF(bufferResult, pdfId);
-		setModifiedFile(new Date().toISOString());
+		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
+		newModifiedPayload[activePageIndex] = new Date().toISOString();
+		setModifiedFiles(newModifiedPayload);
 	
 		setOperations([...operations, operation]);
 		setRedoStack([]);
@@ -729,7 +746,9 @@ const App = () => {
 	
 		// Save and update state
 		await savePDF(newBuffer, pdfId);
-		setModifiedFile(new Date().toISOString());
+		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
+		newModifiedPayload[activePageIndex] = new Date().toISOString();
+		setModifiedFiles(newModifiedPayload);
 		
 		// Update undo and redo stacks
 		setOperations([...operations, operation]);
@@ -884,6 +903,8 @@ const App = () => {
 					}
 					<div css={pdfViewerWrapper}>
 						<PdfViewer
+							setModifiedFiles={setModifiedFiles}
+							modifiedFiles={modifiedFiles}
 							activePageIndex={activePageIndex}
 							isSandbox={inputtedLicenseKey?.toLowerCase() === "sandbox"}
 							addWatermark={addWatermark}
