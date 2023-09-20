@@ -54,6 +54,9 @@ const App = () => {
 	const [activePageIndex, setActivePageIndex] = useState(0);
 	const [matchesCount, setMatchesCount] = useState(0);
 
+	const pdfId = "pdfId1" || `pdfId${activePageIndex}`;
+	const originalPdfId = "original" || `original${activePageIndex}`;
+
 	const [fileLoadFailError, setFileLoadFailError] = useState('');
 
 	const [searchText, setSearchText] = useState('');
@@ -209,12 +212,15 @@ const App = () => {
 	useListenForMergeFilesRequest(onMergeFiles);
 	useListenForCombineFilesRequest(onCombinePdfs);
 
+	/*
 	useEffect(() => {
 		if (!files[activePageIndex]?.url) {
 			return;
 		}
 		setFile(files[activePageIndex].url);
+		setModifiedFile(null);
 	}, [activePageIndex]);
+	*/
 	
 	useListenForThumbnailFullScreenRequest((enable) => {
 		if (enable === true) {
@@ -401,7 +407,7 @@ const App = () => {
 	
 		const lastOperation = operations[operations.length - 1];
 		// Start with the original PDF
-		let buffer = await retrievePDF("original");
+		let buffer = await retrievePDF(originalPdfId);
 		// console.log(buffer, 'undo buffer')
 	
 		// Replay all operations except for the last one
@@ -411,7 +417,7 @@ const App = () => {
 		}
 	
 		// Save the buffer after undo as the current state
-		await savePDF(buffer, 'pdfId1');
+		await savePDF(buffer, pdfId);
 		setModifiedFile(new Date().toISOString());
 	
 		// Update undo and redo stacks
@@ -426,7 +432,7 @@ const App = () => {
 		const lastRedoOperation = redoStack[redoStack.length - 1];
 		
 		// Start with the original PDF
-		let buffer = await retrievePDF("original");
+		let buffer = await retrievePDF(originalPdfId);
 		// console.log(buffer, 'buffer')
 		// Replay all operations including the redo operation
 		const allOperationsUpToRedo = [...operations, lastRedoOperation];
@@ -436,7 +442,7 @@ const App = () => {
 		}
 	
 		// Save the buffer after redo as the current state
-		await savePDF(buffer, 'pdfId1');
+		await savePDF(buffer, pdfId);
 		setModifiedFile(new Date().toISOString());
 	
 		// Update undo and redo stacks
@@ -535,7 +541,7 @@ const App = () => {
 		const operation = { action: "rotate", pages: pagesToRotate, clockwise};
 		setMultiPageSelections([]);
 		const bufferResult = await applyOperation(operation, buffer);
-		await savePDF(bufferResult, 'pdfId1');
+		await savePDF(bufferResult, pdfId);
 		setModifiedFile(new Date().toISOString());
 	
 		setOperations([...operations, operation]);
@@ -554,7 +560,7 @@ const App = () => {
 		const operation = { action: "rotate", pages: pagesToRotate, clockwise};
 		setMultiPageSelections([]);
 		const bufferResult = await applyOperation(operation, buffer);
-		await savePDF(bufferResult, 'pdfId1');
+		await savePDF(bufferResult, pdfId);
 		setModifiedFile(new Date().toISOString());
 	
 		setOperations([...operations, operation]);
@@ -571,7 +577,7 @@ const App = () => {
 		const pagesToRotate = multiPageSelections?.length ? Array.from(new Set([...multiPageSelections, pageNum])) : [pageNum];
 		const operation = { action: "rotate", pages: pagesToRotate, clockwise};
 		const bufferResult = await applyOperation(operation, buffer);
-		await savePDF(bufferResult, 'pdfId1');
+		await savePDF(bufferResult, pdfId);
 		setModifiedFile(new Date().toISOString());
 	
 		setOperations([...operations, operation]);
@@ -616,7 +622,7 @@ const App = () => {
     const operation = { action: "delete", pages: pagesToRemove };
     setMultiPageSelections([]);
     const bufferResult = await applyOperation(operation, buffer);
-    await savePDF(bufferResult, 'pdfId1');
+    await savePDF(bufferResult, pdfId);
 		window.parent.postMessage({ type: "extract-pages-completed", success: true});
     setModifiedFile(new Date().toISOString());
 
@@ -642,7 +648,7 @@ const App = () => {
 		const operation = { action: "delete", pages: pagesToRemove};
 		setMultiPageSelections([]);
 		const bufferResult = await applyOperation(operation, buffer);
-		await savePDF(bufferResult, 'pdfId1');
+		await savePDF(bufferResult, pdfId);
 		setModifiedFile(new Date().toISOString());
 	
 		setOperations([...operations, operation]);
@@ -664,7 +670,7 @@ const App = () => {
     const operation = { action: "delete", pages: pagesToRemove };
     setMultiPageSelections([]);
     const bufferResult = await applyOperation(operation, buffer);
-    await savePDF(bufferResult, 'pdfId1');
+    await savePDF(bufferResult, pdfId);
 		window.parent.postMessage({ type: "extract-pages-completed", success: true});
     setModifiedFile(new Date().toISOString());
 
@@ -683,7 +689,7 @@ const App = () => {
 		const operation = { action: "delete", pages: pagesToRemove};
 		setMultiPageSelections([]);
 		const bufferResult = await applyOperation(operation, buffer);
-		await savePDF(bufferResult, 'pdfId1');
+		await savePDF(bufferResult, pdfId);
 		setModifiedFile(new Date().toISOString());
 	
 		setOperations([...operations, operation]);
@@ -722,7 +728,7 @@ const App = () => {
 		const newBuffer = await applyOperation(operation, buffer);
 	
 		// Save and update state
-		await savePDF(newBuffer, 'pdfId1');
+		await savePDF(newBuffer, pdfId);
 		setModifiedFile(new Date().toISOString());
 		
 		// Update undo and redo stacks
@@ -878,6 +884,7 @@ const App = () => {
 					}
 					<div css={pdfViewerWrapper}>
 						<PdfViewer
+							activePageIndex={activePageIndex}
 							isSandbox={inputtedLicenseKey?.toLowerCase() === "sandbox"}
 							addWatermark={addWatermark}
 							updateCurrentScale={updateCurrentScale}

@@ -27,6 +27,7 @@ const containerStyle = css`
 `;
 
 export const PdfViewer = ({
+	activePageIndex,
 	activePage,
 	modifiedFile,
 	showHeader,
@@ -165,7 +166,7 @@ export const PdfViewer = ({
 				pdfLinkServiceRef.current.setDocument(loadedPdfDocument, null);
 				
 				if (!modifiedFile) {
-					savePDF(await loadedPdfDocument.getData(), "original");
+					savePDF(await loadedPdfDocument.getData(), "original" /*`original${activePageIndex}`*/);
 				}
 			},
 			reason => {
