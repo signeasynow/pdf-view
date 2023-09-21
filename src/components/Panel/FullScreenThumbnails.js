@@ -195,7 +195,8 @@ const FullScreenThumbnails = ({
               setDragOverIndex(pageNum + 1);
             }
           }}
-          onDragEnd={() => {
+          onDragEnd={(e) => {
+            e.preventDefault();
             setPendingDragEnd(i);
           }}
           hidden={false}

@@ -19,6 +19,10 @@ const thumbnailWrapper = css`
 	margin-top: 20px;
 `;
 
+const draggingStyle = css`
+  opacity: 0 !important;
+`;
+
 const hiddenThumbnailWrapper = css`
   display: none;
 `;
@@ -95,6 +99,7 @@ export const Thumbnail = ({
 }) => {
 
 	const canvasRef = useRef(null);
+	const [isDragging, setIsDragging] = useState(false); // Add this state to keep track
 
 	const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0 });
 
@@ -187,12 +192,21 @@ export const Thumbnail = ({
 			style={{color: "#7f7f7f", alignSelf: "auto"}}
 			draggable={tools?.editing?.includes('move')}
 			onDragStart={(e) => {
+				setIsDragging(true); // set the state to true when dragging starts
+
+				setIsDragging(true);
 				onDragStart(e, pageNum)
 			}}
 			onDragOver={(e) => onDragOver(e, pageNum)}
-			onDragEnd={onDragEnd}
-      css={hidden ? hiddenThumbnailWrapper : (activePage === pageNum ? activeThumbnailWrapper : thumbnailWrapper)}
-      id={`thumbnail-${pageNum}`}
+			onDragEnd={(e) => {
+				setIsDragging(false);
+				onDragEnd(e);
+			}}
+			css={[
+				hidden ? hiddenThumbnailWrapper : (activePage === pageNum ? activeThumbnailWrapper : thumbnailWrapper),
+				isDragging ? draggingStyle : null
+			]}
+			id={`thumbnail-${pageNum}`}
     >
 				{
 				contextMenu.visible && 
