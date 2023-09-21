@@ -180,6 +180,8 @@ export const Thumbnail = ({
 		return [activePage === pageNum ? activeCanvasStyle : canvasStyle];
 	}
 
+	// console.log(tools?.editing?.includes('move'), "tools?.editing?.includes('move')")
+
 	return (
 		<div
 			style={{color: "#7f7f7f", alignSelf: "auto"}}
