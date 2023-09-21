@@ -142,7 +142,6 @@ const App = () => {
 
 	useEffect(() => {
 		window.addEventListener('message', (event) => {
-			console.log(event.data, 'event data 2')
 			if (typeof event.data === 'object' && event.data.files?.length) {
 				setFile(event.data.files[0].url);
 				setFiles(event.data.files);
@@ -417,11 +416,9 @@ const App = () => {
 
 	const undoLastAction = async () => {
 		if (operations[activePageIndex]?.length === 0) return;
-		console.log(operations, 'operation222')
 		const lastOperation = operations[activePageIndex]?.[operations[activePageIndex].length - 1];
 		// Start with the original PDF
 		let buffer = await retrievePDF(originalPdfId);
-		// console.log(buffer, 'undo buffer')
 	
 		// Replay all operations except for the last one
 		for (let i = 0; i < operations[activePageIndex]?.length - 1; i++) {
@@ -434,7 +431,6 @@ const App = () => {
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
-		console.log(lastOperation, 'lastOperation')
 		// Update undo and redo stacks
 		const newUndoStack = operations[activePageIndex]?.slice(0, -1);
 		// setRedoStack(prevRedoStack => [...prevRedoStack, lastOperation]);
@@ -452,14 +448,10 @@ const App = () => {
 		if (redoStack[activePageIndex]?.length === 0) return;
 	
 		const lastRedoOperation = redoStack[activePageIndex]?.[redoStack[activePageIndex].length - 1];
-		console.log(lastRedoOperation, 'lastRedoOperation')
 		// Start with the original PDF
 		let buffer = await retrievePDF(originalPdfId);
-		// console.log(buffer, 'buffer')
 		// Replay all operations including the redo operation
 		const allOperationsUpToRedo = [...operations[activePageIndex], lastRedoOperation];
-		console.log(allOperationsUpToRedo, 'allOperationsUpToRedo')
-		// console.log(allOperationsUpToRedo, 'allOperationsUpToRedo')
 		for (const operation of allOperationsUpToRedo) {
 			buffer = await applyOperation(operation, buffer); // Assuming applyOperation returns the updated buffer
 		}
@@ -818,10 +810,6 @@ const App = () => {
 			setShowPanel(false);
 		}
 	}
-
-	console.log(operations, 'operations 1222', redoStack)
-
-
 	
 	if (fileLoadFailError) {
 		return (
