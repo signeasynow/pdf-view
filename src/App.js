@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import Header from './Header/Header';
-import Subheader from './Subheader/Subheader';
+import Subheader from './Subheader';
 import Tabs from './components/Tabs';
 import { useDebounce } from './utils/useDebounce';
 import SearchBar from './SearchBar';
