@@ -32,7 +32,7 @@ const fullScreenWrapper = css`
 const dummyThumbnailStyle = css`
   flex: 1 1 auto;  // Automatically adjust the size based on container size
   margin: 8px;
-  min-width: 32px;
+  min-width: 60px;
   border: 2px dashed #ccc; // or any other styles to indicate it's a placeholder
 `;
 
