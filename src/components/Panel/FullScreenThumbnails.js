@@ -65,6 +65,9 @@ const FullScreenThumbnails = ({
   const [mouseUp, setMouseUp] = useState(new Date().toISOString());
 
   const onMouseDown = (e) => {
+    if (e.target.closest('.canvas-page')) {
+      return;
+    }
     const rect = containerRef.current.getBoundingClientRect();  // Get bounding box
     setDragStart({ x: e.clientX - rect.left, y: e.clientY - rect.top });  // Correct for offset
   };
