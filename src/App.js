@@ -121,11 +121,25 @@ const App = () => {
 	const [modifiedFiles, setModifiedFiles] = useState([]);
 	const { triggerDownload: onDownload } = useDownload(pdfProxyObj, fileName, isSandbox);
 
-	const [operations, setOperations] = useState([]);
-	const [redoStack, setRedoStack] = useState([]);
-
 	const [inputtedLicenseKey, setInputtedLicenseKey] = useState(null);
 	const [files, setFiles] = useState([]);
+
+	const initialRedoUndoObject = () => {
+		const result = {};
+		for (let i = 0; i < files.length; i ++) {
+			result[i] = [];
+		}
+		return result;
+	};
+	
+	const [operations, setOperations] = useState(initialRedoUndoObject());
+	const [redoStack, setRedoStack] = useState(initialRedoUndoObject());
+
+	useEffect(() => {
+		setOperations(initialRedoUndoObject());
+		setRedoStack(initialRedoUndoObject());
+	}, [files]);
+
 	useEffect(() => {
 		window.addEventListener('message', (event) => {
 			console.log(event.data, 'event data 2')
@@ -402,16 +416,16 @@ const App = () => {
 	}
 
 	const undoLastAction = async () => {
-		if (operations.length === 0) return;
-	
-		const lastOperation = operations[operations.length - 1];
+		if (operations[activePageIndex]?.length === 0) return;
+		console.log(operations, 'operation222')
+		const lastOperation = operations[activePageIndex]?.[operations[activePageIndex].length - 1];
 		// Start with the original PDF
 		let buffer = await retrievePDF(originalPdfId);
 		// console.log(buffer, 'undo buffer')
 	
 		// Replay all operations except for the last one
-		for (let i = 0; i < operations.length - 1; i++) {
-			const operation = operations[i];
+		for (let i = 0; i < operations[activePageIndex]?.length - 1; i++) {
+			const operation = operations[activePageIndex][i];
 			buffer = await applyOperation(operation, buffer); // Assuming applyOperation returns the updated buffer
 		}
 	
@@ -420,23 +434,31 @@ const App = () => {
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
-	
+		console.log(lastOperation, 'lastOperation')
 		// Update undo and redo stacks
-		const newUndoStack = operations.slice(0, -1);
-		setRedoStack(prevRedoStack => [...prevRedoStack, lastOperation]);
-		setOperations(newUndoStack);
+		const newUndoStack = operations[activePageIndex]?.slice(0, -1);
+		// setRedoStack(prevRedoStack => [...prevRedoStack, lastOperation]);
+		setRedoStack({
+			...redoStack,
+			[activePageIndex]: [...redoStack[activePageIndex], lastOperation]
+		});
+		setOperations({
+			...operations,
+			[activePageIndex]: newUndoStack
+		});
 	};
 	
 	const redoLastAction = async () => {
-		if (redoStack.length === 0) return;
+		if (redoStack[activePageIndex]?.length === 0) return;
 	
-		const lastRedoOperation = redoStack[redoStack.length - 1];
-		
+		const lastRedoOperation = redoStack[activePageIndex]?.[redoStack[activePageIndex].length - 1];
+		console.log(lastRedoOperation, 'lastRedoOperation')
 		// Start with the original PDF
 		let buffer = await retrievePDF(originalPdfId);
 		// console.log(buffer, 'buffer')
 		// Replay all operations including the redo operation
-		const allOperationsUpToRedo = [...operations, lastRedoOperation];
+		const allOperationsUpToRedo = [...operations[activePageIndex], lastRedoOperation];
+		console.log(allOperationsUpToRedo, 'allOperationsUpToRedo')
 		// console.log(allOperationsUpToRedo, 'allOperationsUpToRedo')
 		for (const operation of allOperationsUpToRedo) {
 			buffer = await applyOperation(operation, buffer); // Assuming applyOperation returns the updated buffer
@@ -449,8 +471,14 @@ const App = () => {
 		setModifiedFiles(newModifiedPayload);
 	
 		// Update undo and redo stacks
-		setOperations(prevOperations => [...prevOperations, lastRedoOperation]);
-		setRedoStack(redoStack.slice(0, -1));
+		setOperations({
+			...operations,
+			[activePageIndex]: [...operations[activePageIndex], lastRedoOperation]
+		});
+		setRedoStack({
+			...redoStack,
+			[activePageIndex]: redoStack[activePageIndex].slice(0, -1)
+		});
 	};
 
 	const doDrag = async (start, end, buffer) => {
@@ -549,6 +577,10 @@ const App = () => {
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
 	
+		setOperations({
+			...operations,
+			[activePageIndex]: [...operations[activePageIndex], operation]
+		});
 		setOperations([...operations, operation]);
 		setRedoStack([]);
 	}
@@ -637,8 +669,11 @@ const App = () => {
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
 
-    setOperations([...operations, operation]);
-    setRedoStack([]);
+		setOperations({
+			...operations,
+			[activePageIndex]: [...operations[activePageIndex], operation]
+		});
+    setRedoStack(initialRedoUndoObject());
 	};
 
 	useListenForExtractPagesRequest((v) => {
@@ -784,6 +819,8 @@ const App = () => {
 		}
 	}
 
+	console.log(operations, 'operations 1222', redoStack)
+
 
 	
 	if (fileLoadFailError) {
@@ -856,8 +893,8 @@ const App = () => {
 							onExtract={onExtract}
 							tools={tools}
 							canDelete={canDelete()}
-							undoStackLength={operations.length}
-							redoStackLength={redoStack.length}
+							undoStackLength={operations[activePageIndex]?.length}
+							redoStackLength={redoStack[activePageIndex]?.length}
 							setExpandedViewThumbnailScale={setExpandedViewThumbnailScale}
 							expandedViewThumbnailScale={expandedViewThumbnailScale}
 							setMultiPageSelections={setMultiPageSelections}

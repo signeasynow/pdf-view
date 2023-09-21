@@ -6,6 +6,7 @@ const tabStyle = css`
   margin-right: 16px;
 	padding-left: 4px;
 	padding-right: 4px;
+	font-family: Lato;
 `;
 
 const Wrapper = ({ children }) => (
@@ -36,7 +37,7 @@ const Tabs = ({
 				fileNames.map((name, idx) => (
 					<span onClick={() => onClick(idx)} style={{
 						cursor: activePageIndex === idx ? "" : "pointer",
-						border: activePageIndex === idx ? "1px solid #1c1c1c" : "1px solid white",
+						border: activePageIndex === idx ? "1px solid #1c1c1c" : "1px solid #cccccc",
 						background: activePageIndex === idx ? "#e4e4e4" : ""
 					}} css={tabStyle}>{name}</span>
 				))
