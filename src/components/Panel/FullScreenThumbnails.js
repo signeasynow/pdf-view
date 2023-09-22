@@ -30,10 +30,15 @@ const fullScreenWrapper = css`
 `
 
 const dummyThumbnailStyle = css`
-  flex: 1 1 auto;  // Automatically adjust the size based on container size
-  margin: 8px;
-  min-width: 60px;
-  border: 2px dashed #ccc; // or any other styles to indicate it's a placeholder
+  min-width: 1px;
+  max-width: 1px;
+  border-left: 2px dashed #ccc; // or any other styles to indicate it's a placeholder
+`;
+
+const emptyDummyThumbnailStyle = css`
+min-width: 1px;
+max-width: 1px;
+border-left: 2px dashed transparent; // or any other styles to indicate it's a placeholder
 `;
 
 const thumbnailStyle = css`
@@ -165,11 +170,14 @@ const FullScreenThumbnails = ({
     
     if (i === dragOverIndex - 1) {
       elements = [...elements, <div css={dummyThumbnailStyle}></div>];
+    } else {
+      elements = [...elements, <div css={emptyDummyThumbnailStyle}></div>];
     }
 
     const thumbnailElement = (
       <div data-type="regular-full-screen-thumbnail" css={thumbnailStyle}>
         <Thumbnail
+          draggingIndex={draggingIndex}
           onExtract={onExtractThumbnail}
           isFullScreen
           tools={tools}

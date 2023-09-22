@@ -20,7 +20,7 @@ const thumbnailWrapper = css`
 `;
 
 const draggingStyle = css`
-  opacity: 0 !important;
+  opacity: 0.1 !important;
 `;
 
 const hiddenThumbnailWrapper = css`
@@ -89,6 +89,7 @@ export const Thumbnail = ({
 	hidden,
 	pdfProxyObj,
 	activePage,
+	draggingIndex,
 	pageNum,
 	scale,
 	onThumbnailClick,
@@ -112,7 +113,6 @@ export const Thumbnail = ({
 		}
 	}
 
-
 	const isTargetedByDragRect = () => {
 		return selectedIndexes?.includes(pageNum - 1);
 	}
@@ -121,6 +121,12 @@ export const Thumbnail = ({
 		return multiPageSelections?.includes(pageNum) || isTargetedByDragRect();
 	}
 
+	const isSingleOrMultiDragging = () => {
+		if (isDragging) {
+			return true;
+		}
+		return typeof draggingIndex === "number" && isMultiSelected()
+	}
 
 	useEffect(() => {
 		const renderThumbnail = async () => {
@@ -192,8 +198,6 @@ export const Thumbnail = ({
 			style={{color: "#7f7f7f", alignSelf: "auto"}}
 			draggable={tools?.editing?.includes('move')}
 			onDragStart={(e) => {
-				setIsDragging(true); // set the state to true when dragging starts
-
 				setIsDragging(true);
 				onDragStart(e, pageNum)
 			}}
@@ -204,7 +208,7 @@ export const Thumbnail = ({
 			}}
 			css={[
 				hidden ? hiddenThumbnailWrapper : (activePage === pageNum ? activeThumbnailWrapper : thumbnailWrapper),
-				isDragging ? draggingStyle : null
+				isSingleOrMultiDragging() ? draggingStyle : null
 			]}
 			id={`thumbnail-${pageNum}`}
     >
