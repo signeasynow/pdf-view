@@ -38,8 +38,12 @@ function markIndexes(numPages, startIndexes) {
 }
 
 function placeIndexesInPlace(array, startIndexes, end) {
-	array.splice(end + 1, 0, ...startIndexes);
-	return array;
+  if (end === 0) {
+    array.splice(0, 0, ...startIndexes);  // Insert at the beginning
+  } else {
+    array.splice(end + 1, 0, ...startIndexes);  // Insert after the "end" element
+  }
+  return array;
 }
 
 function removeIndexPlaceholders(array) {
