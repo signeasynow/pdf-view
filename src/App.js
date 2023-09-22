@@ -510,6 +510,17 @@ const App = () => {
 		return !!tools?.editing?.length
 	}
 
+	const updateRedoUndoStack = (lastRedoOperation) => {
+		setOperations({
+			...operations,
+			[activePageIndex]: [...operations[activePageIndex], lastRedoOperation]
+		});
+		setRedoStack({
+			...redoStack,
+			[activePageIndex]: redoStack[activePageIndex].slice(0, -1)
+		});
+	}
+
 	const undoLastAction = async () => {
 		if (operations[activePageIndex]?.length === 0) return;
 		const lastOperation = operations[activePageIndex]?.[operations[activePageIndex].length - 1];
