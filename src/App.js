@@ -10,7 +10,7 @@ import SearchBar from './SearchBar';
 import { PdfViewer } from './PdfViewer';
 import Panel from './components/Panel';
 import { heightOffset0, heightOffset1, heightOffset3, heightOffsetTabs } from "./constants";
-import { remove_pages, move_page, rotate_pages, merge_pdfs, PdfMergeData } from '../lib/pdf_wasm_project.js';
+import { remove_pages, move_page, move_pages, rotate_pages, merge_pdfs, PdfMergeData } from '../lib/pdf_wasm_project.js';
 import { retrievePDF, savePDF } from './utils/indexDbUtils';
 import { invokePlugin, pendingRequests } from './utils/pluginUtils';
 import { I18nextProvider } from 'react-i18next';
@@ -29,6 +29,48 @@ import useListenForExtractPagesRequest from './hooks/useListenForExtractPagesReq
 import useListenForMergeFilesRequest from './hooks/useListenForMergeFilesRequest';
 import useListenForCombineFilesRequest from './hooks/useListForCombineFilesRequest';
 import { PDFDocument } from 'pdf-lib';
+
+export async function movePages(pdfBytes, fromIndexes, toIndex) {
+  const pdfDoc = await PDFDocument.load(pdfBytes);
+  const originalPages = pdfDoc.getPages();
+
+  if (originalPages.length === 0) {
+    throw new Error('The PDF document has no pages.');
+  }
+
+  // Sort fromIndexes for easier manipulation
+  fromIndexes.sort((a, b) => a - b);
+
+  // Adjust toIndex based on the direction of the move
+  let adjustedToIndex = toIndex;
+  for (const index of fromIndexes) {
+    if (index < adjustedToIndex) adjustedToIndex--;
+  }
+
+  const newPdfDoc = await PDFDocument.create();
+  
+  // Copy over the rearranged pages to the new document
+  const indicesToCopy = [];
+  for (let i = 0; i < originalPages.length; i++) {
+    if (!fromIndexes.includes(i)) {
+      indicesToCopy.push(i);
+    }
+  }
+
+  // Insert the pages to be moved at the new index
+  for (const index of fromIndexes) {
+    indicesToCopy.splice(adjustedToIndex++, 0, index);
+  }
+
+  const copiedPages = await newPdfDoc.copyPages(pdfDoc, indicesToCopy);
+  for (const page of copiedPages) {
+    newPdfDoc.addPage(page);
+  }
+
+  // Serialize the new PDF to bytes and return
+  const newPdfBytes = await newPdfDoc.save();
+  return newPdfBytes;
+}
 
 amplitude.init("76825a74ed5e5f72bc6a75fd052e78ad")
 
@@ -474,6 +516,13 @@ const App = () => {
 	};
 
 	const doDrag = async (start, end, buffer) => {
+		console.log(start, 'start here', end)
+		if (start?.length) {
+			console.log("applying")
+			const modifiedPdfArray = await movePages(new Uint8Array(buffer), start, end - 1);
+			console.log("applying end")
+			return modifiedPdfArray.buffer;
+		}
 		try {
 			const modifiedPdfArray = await move_page(new Uint8Array(buffer), start, end);
 			return modifiedPdfArray.buffer;
@@ -760,13 +809,17 @@ const App = () => {
 			console.log('No PDF loaded to download');
 			return;
 		}
-	
-		if (start === end) {
+		let startToUse = start;
+		console.log(multiPageSelections, 'multiPageSelections 22', startToUse, 'plus', startToUse + 1, 'end', end)
+		if (multiPageSelections?.length) {
+			startToUse = Array.from(new Set([...multiPageSelections.map((e) => e - 1), startToUse])).sort();
+		} else if (start === end) {
 			return;
 		}
+		console.log(startToUse, 'startToUse', multiPageSelections)
 	
 		const buffer = await pdfProxyObj.getData();
-		const operation = { action: "drag", start, end };
+		const operation = { action: "drag", start: startToUse, end: end + 1 };
 	
 		// Apply the drag and drop operation
 		const newBuffer = await applyOperation(operation, buffer);

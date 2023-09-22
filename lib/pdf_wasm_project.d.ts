@@ -11,6 +11,13 @@ export function start(): void;
 export function remove_pages(pdf_data: Uint8Array, pages_to_delete: Uint32Array): Uint8Array;
 /**
 * @param {Uint8Array} pdf_data
+* @param {Uint32Array} from_indexes
+* @param {number} to_index
+* @returns {Uint8Array}
+*/
+export function move_pages(pdf_data: Uint8Array, from_indexes: Uint32Array, to_index: number): Uint8Array;
+/**
+* @param {Uint8Array} pdf_data
 * @param {number} from_index
 * @param {number} to_index
 * @returns {Uint8Array}
@@ -34,6 +41,7 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
   readonly remove_pages: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly move_pages: (a: number, b: number, c: number, d: number, e: number, f: number) => void;
   readonly move_page: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly rotate_pages: (a: number, b: number, c: number, d: number, e: number, f: number) => void;
   readonly merge_pdfs: (a: number, b: number) => void;

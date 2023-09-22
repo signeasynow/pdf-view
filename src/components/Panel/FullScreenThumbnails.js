@@ -253,6 +253,11 @@ const FullScreenThumbnails = ({
       )}
       <div css={fullScreenWrapper}>
         {thumbnails}
+        {
+          dragOverIndex === numPages + 1 && (
+            <div css={dummyThumbnailStyle}></div>
+          )
+        }
       </div>
     </div>
   );
