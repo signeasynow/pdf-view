@@ -10,7 +10,7 @@ import SearchBar from './SearchBar';
 import { PdfViewer } from './PdfViewer';
 import Panel from './components/Panel';
 import { heightOffset0, heightOffset1, heightOffset3, heightOffsetTabs } from "./constants";
-import { remove_pages, move_page, move_pages, rotate_pages, merge_pdfs, PdfMergeData } from '../lib/pdf_wasm_project.js';
+import { remove_pages, move_page, move_pages, rotate_pages, merge_pdfs, PdfMergeData, start } from '../lib/pdf_wasm_project.js';
 import { retrievePDF, savePDF } from './utils/indexDbUtils';
 import { invokePlugin, pendingRequests } from './utils/pluginUtils';
 import { I18nextProvider } from 'react-i18next';
@@ -29,6 +29,56 @@ import useListenForExtractPagesRequest from './hooks/useListenForExtractPagesReq
 import useListenForMergeFilesRequest from './hooks/useListenForMergeFilesRequest';
 import useListenForCombineFilesRequest from './hooks/useListForCombineFilesRequest';
 import { PDFDocument } from 'pdf-lib';
+
+function markIndexes(numPages, startIndexes) {
+	const initialOrder = Array.from({ length: numPages }, (_, i) => i);
+	return initialOrder.map((item, index) => 
+		startIndexes.includes(index) ? `m${item}` : item
+	);
+}
+
+function placeIndexesInPlace(array, startIndexes, end) {
+	array.splice(end + 1, 0, ...startIndexes);
+	return array;
+}
+
+function removeIndexPlaceholders(array) {
+	return array.filter((e) => typeof e !== "string")
+}
+
+function getArrayOrder(numPages, startIndexes, end) {
+	const marked = markIndexes(numPages, startIndexes);
+	const update = placeIndexesInPlace(marked, startIndexes, end);
+	return removeIndexPlaceholders(update);
+}
+
+async function reorderPages(pdfBytes, newOrder) {
+  const originalPdfDoc = await PDFDocument.load(pdfBytes);
+  const newPdfDoc = await PDFDocument.create();
+
+  const numPages = originalPdfDoc.getPageCount();
+  const pages = Array.from({ length: numPages }, (_, i) => originalPdfDoc.getPage(i));
+
+  // Reorder pages based on newOrder
+  for (const oldIndex of newOrder) {
+    if (oldIndex < numPages) {
+      const [copiedPage] = await newPdfDoc.copyPages(originalPdfDoc, [oldIndex]);
+      newPdfDoc.addPage(copiedPage);
+    }
+  }
+
+  // Fill in the gaps with pages that were not reordered
+  for (let i = 0; i < numPages; i++) {
+    if (!newOrder.includes(i)) {
+      const [copiedPage] = await newPdfDoc.copyPages(originalPdfDoc, [i]);
+      newPdfDoc.addPage(copiedPage);
+    }
+  }
+
+  const newPdfBytes = await newPdfDoc.save();
+  return newPdfBytes;
+}
+
 
 export async function movePages(pdfBytes, fromIndexes, toIndex) {
   const pdfDoc = await PDFDocument.load(pdfBytes);
@@ -519,9 +569,11 @@ const App = () => {
 		console.log(start, 'start here', end)
 		if (start?.length) {
 			console.log("applying")
-			const modifiedPdfArray = await movePages(new Uint8Array(buffer), start, end - 1);
-			console.log("applying end")
-			return modifiedPdfArray.buffer;
+			const order = getArrayOrder(pdfProxyObj.numPages, start, end);
+			console.log(order,'order bro here')
+			const modifiedPdfArray = await reorderPages(new Uint8Array(buffer), order);
+			console.log("applying end", modifiedPdfArray, 'do', modifiedPdfArray.buffer)
+			return modifiedPdfArray;
 		}
 		try {
 			const modifiedPdfArray = await move_page(new Uint8Array(buffer), start, end);
@@ -810,7 +862,6 @@ const App = () => {
 			return;
 		}
 		let startToUse = start;
-		console.log(multiPageSelections, 'multiPageSelections 22', startToUse, 'plus', startToUse + 1, 'end', end)
 		if (multiPageSelections?.length) {
 			startToUse = Array.from(new Set([...multiPageSelections.map((e) => e - 1), startToUse])).sort();
 		} else if (start === end) {
@@ -819,7 +870,7 @@ const App = () => {
 		console.log(startToUse, 'startToUse', multiPageSelections)
 	
 		const buffer = await pdfProxyObj.getData();
-		const operation = { action: "drag", start: startToUse, end: end + 1 };
+		const operation = { action: "drag", start: startToUse, end: end };
 	
 		// Apply the drag and drop operation
 		const newBuffer = await applyOperation(operation, buffer);

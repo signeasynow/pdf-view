@@ -2,7 +2,7 @@
 /* eslint-disable */
 export const memory: WebAssembly.Memory;
 export function remove_pages(a: number, b: number, c: number, d: number, e: number): void;
-export function move_pages(a: number, b: number, c: number, d: number, e: number, f: number): void;
+export function move_pages(a: number, b: number, c: number, d: number, e: number): void;
 export function move_page(a: number, b: number, c: number, d: number, e: number): void;
 export function rotate_pages(a: number, b: number, c: number, d: number, e: number, f: number): void;
 export function merge_pdfs(a: number, b: number): void;
