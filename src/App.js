@@ -570,13 +570,9 @@ const App = () => {
 	};
 
 	const doDrag = async (start, end, buffer) => {
-		console.log(start, 'start here', end)
 		if (start?.length) {
-			console.log("applying")
 			const order = getArrayOrder(pdfProxyObj.numPages, start, end);
-			console.log(order,'order bro here')
 			const modifiedPdfArray = await reorderPages(new Uint8Array(buffer), order);
-			console.log("applying end", modifiedPdfArray, 'do', modifiedPdfArray.buffer)
 			return modifiedPdfArray;
 		}
 		try {
@@ -871,10 +867,8 @@ const App = () => {
 		} else if (start === end) {
 			return;
 		}
-		console.log(startToUse, 'startToUse', multiPageSelections)
-	
 		const buffer = await pdfProxyObj.getData();
-		const operation = { action: "drag", start: startToUse, end: end };
+		const operation = { action: "drag", start: startToUse, end };
 	
 		// Apply the drag and drop operation
 		const newBuffer = await applyOperation(operation, buffer);
@@ -883,6 +877,20 @@ const App = () => {
 		await savePDF(newBuffer, pdfId);
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
+		if (Array.isArray(startToUse)) {
+			const order = getArrayOrder(pdfProxyObj.numPages, startToUse, end);
+			console.log(order, 'order225', startToUse)
+			const newOrderSet = new Set(order);
+			const startToUseSet = new Set(startToUse);
+			const newIndexes = [];
+			for (let i = 0; i < order.length; i ++) {
+				if (startToUseSet.has(order[i])) {
+					newIndexes.push(i);
+				}
+			}
+			console.log(newIndexes, 'newIndexes')
+			setMultiPageSelections(newIndexes.map((e) => e + 1));
+		}
 		setModifiedFiles(newModifiedPayload);
 		
 		// Update undo and redo stacks
