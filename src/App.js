@@ -510,15 +510,12 @@ const App = () => {
 		return !!tools?.editing?.length
 	}
 
-	const updateRedoUndoStack = (lastRedoOperation) => {
+	const onAddOperation = (operation) => {
 		setOperations({
 			...operations,
-			[activePageIndex]: [...operations[activePageIndex], lastRedoOperation]
+			[activePageIndex]: [...operations[activePageIndex], operation]
 		});
-		setRedoStack({
-			...redoStack,
-			[activePageIndex]: redoStack[activePageIndex].slice(0, -1)
-		});
+		setRedoStack(initialRedoUndoObject());
 	}
 
 	const undoLastAction = async () => {
@@ -681,12 +678,7 @@ const App = () => {
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
 	
-		setOperations({
-			...operations,
-			[activePageIndex]: [...operations[activePageIndex], operation]
-		});
-		setOperations([...operations, operation]);
-		setRedoStack([]);
+		onAddOperation(operation);
 	}
 
 	const onRotate = async (clockwise) => {
@@ -706,8 +698,7 @@ const App = () => {
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
 	
-		setOperations([...operations, operation]);
-		setRedoStack([]);
+		onAddOperation(operation);
 	}
 
 	const onRotateThumbnail = async (clockwise, pageNum) => {
@@ -725,8 +716,7 @@ const App = () => {
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
 	
-		setOperations([...operations, operation]);
-		setRedoStack([]);
+		onAddOperation(operation);
 	}
 
 	const canDelete = () => {
@@ -773,11 +763,7 @@ const App = () => {
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
 
-		setOperations({
-			...operations,
-			[activePageIndex]: [...operations[activePageIndex], operation]
-		});
-    setRedoStack(initialRedoUndoObject());
+		onAddOperation(operation);
 	};
 
 	useListenForExtractPagesRequest((v) => {
@@ -803,8 +789,7 @@ const App = () => {
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
 	
-		setOperations([...operations, operation]);
-		setRedoStack([]);
+		onAddOperation(operation);
 	}
 
 	const onExtractThumbnail = async (page) => {
@@ -828,8 +813,7 @@ const App = () => {
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
 
-    setOperations([...operations, operation]);
-    setRedoStack([]);
+		onAddOperation(operation);
 	}
 
 	const onDeleteThumbnail = async (page) => {
@@ -848,8 +832,7 @@ const App = () => {
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
 	
-		setOperations([...operations, operation]);
-		setRedoStack([]);
+		onAddOperation(operation);
 	}
 
 	const mainHeight = () => {
@@ -888,6 +871,7 @@ const App = () => {
 		await savePDF(newBuffer, pdfId);
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
+		/*
 		if (Array.isArray(startToUse)) {
 			const order = getArrayOrder(pdfProxyObj.numPages, startToUse, end);
 			console.log(order, 'order225', startToUse)
@@ -900,13 +884,14 @@ const App = () => {
 				}
 			}
 			console.log(newIndexes, 'newIndexes')
-			setMultiPageSelections(newIndexes.map((e) => e + 1));
+			// TODO: continue to consider benefit. especially when doing undo. setMultiPageSelections(newIndexes.map((e) => e + 1));
 		}
+		*/
+		setMultiPageSelections([]);
 		setModifiedFiles(newModifiedPayload);
 		
 		// Update undo and redo stacks
-		setOperations([...operations, operation]);
-		setRedoStack([]);
+		onAddOperation(operation);
 	}
 
 	const [showFullScreenThumbnails, setShowFullScreenThumbnails] = useState(false);
