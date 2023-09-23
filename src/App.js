@@ -10,7 +10,7 @@ import SearchBar from './SearchBar';
 import { PdfViewer } from './PdfViewer';
 import Panel from './components/Panel';
 import { heightOffset0, heightOffset1, heightOffset3, heightOffsetTabs } from "./constants";
-import { remove_pages, move_page, move_pages, rotate_pages, merge_pdfs, PdfMergeData, start } from '../lib/pdf_wasm_project.js';
+// import { remove_pages, move_page, move_pages, rotate_pages, merge_pdfs, PdfMergeData, start } from '../lib/pdf_wasm_project.js';
 import { deletePDF, retrievePDF, savePDF } from './utils/indexDbUtils';
 import { invokePlugin, pendingRequests } from './utils/pluginUtils';
 import { I18nextProvider } from 'react-i18next';
@@ -30,6 +30,24 @@ import useListenForMergeFilesRequest from './hooks/useListenForMergeFilesRequest
 import useListenForCombineFilesRequest from './hooks/useListForCombineFilesRequest';
 import { PDFDocument, degrees } from 'pdf-lib';
 import * as pdfjs from 'pdfjs-dist';
+
+async function removePdfPages(pdfBuffer, pageIndices) {
+  // Load the PDF document from the buffer
+  const pdfDoc = await PDFDocument.load(pdfBuffer);
+
+  // Sort indices in descending order so that removal doesn't affect subsequent indices
+  const sortedIndices = pageIndices.sort((a, b) => b - a);
+
+  // Loop through the sorted indices array to remove specified pages
+  sortedIndices.forEach((pageIndex) => {
+    pdfDoc.removePage(pageIndex);
+  });
+
+  // Serialize the PDF back to a buffer
+  const modifiedPdfBuffer = await pdfDoc.save();
+  
+  return modifiedPdfBuffer;
+}
 
 async function rotatePdfPages(pdfBuffer, pageIndices, angle) {
   // Load the PDF document from the buffer
@@ -741,7 +759,7 @@ const App = () => {
   
 	const doDelete = async (pages, buffer) => {
 		try {
-			const modifiedPdfArray = await remove_pages(new Uint8Array(buffer), pages);
+			const modifiedPdfArray = await removePdfPages(new Uint8Array(buffer), pages.map((each) => each - 1));
 			return modifiedPdfArray.buffer;
 		} catch (error) {
 			console.error('Error modifying PDF:', error);
