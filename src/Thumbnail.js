@@ -76,6 +76,7 @@ const contextMenuItemText = css`
   color: #7f7f7f;
 `;
 
+const MAX_RETRIES = 10;
 
 export const Thumbnail = ({
 	multiPageSelections,
@@ -103,6 +104,9 @@ export const Thumbnail = ({
 	const [renderQueue, setRenderQueue] = useState([]);
 	const [isRendering, setIsRendering] = useState(false);
 
+	const [retries, setRetries] = useState(0);
+
+  const resetRetries = () => setRetries(0); // Reset function
 
 	const [canvasKey, setCanvasKey] = useState(0);
 
@@ -161,7 +165,24 @@ export const Thumbnail = ({
 			}
 	
 			renderTaskRef.current = page.render({ canvasContext, viewport });
-			await renderTaskRef.current.promise;
+			try {
+				// Existing code for rendering
+				// ...
+				await renderTaskRef.current.promise;
+				
+				resetRetries(); // Reset retries if successful
+			} catch (err) {
+				if (err.name === 'RenderingCancelledException') {
+					if (retries < MAX_RETRIES) {
+						setRetries(prevRetries => prevRetries + 1); // Increment retries
+						setTimeout(() => renderThumbnail(), 500);  // Retry after 500ms
+					} else {
+						console.log('Max retries reached. Giving up rendering.');
+					}
+				} else {
+					throw err;  // For other exceptions, still throw
+				}
+			}
 		};
 	
 		// Execute rendering
@@ -192,39 +213,6 @@ export const Thumbnail = ({
 		processRenderQueue();
 	}, [renderQueue, isRendering]);
 	
-  useEffect(() => {
-    const renderThumbnail = async () => {
-      const page = await pdfProxyObj.getPage(pageNum);
-      const viewport = page.getViewport({ scale });
-      canvasRef.current.width = viewport.width;
-      canvasRef.current.height = viewport.height;
-      
-      const canvasContext = canvasRef.current.getContext('2d');
-      if (!canvasContext) {
-        throw new Error('Failed to get canvas context');
-      }
-      
-      // Cancel any ongoing render task before starting a new one
-      if (renderTaskRef.current) {
-        renderTaskRef.current.cancel();
-      }
-
-      renderTaskRef.current = page.render({ canvasContext, viewport });
-      await renderTaskRef.current.promise;
-    };
-
-    if (!hidden) {
-      renderThumbnail();
-    }
-
-    return () => {
-      // Cancel any ongoing render task when component unmounts or before a new render starts
-      if (renderTaskRef.current) {
-        renderTaskRef.current.cancel();
-      }
-    };
-  }, [hidden, pageNum, scale, pdfProxyObj]);
-
 	const onRightClick = (e) => {
 		e.preventDefault();
 		// Hide any other context menus before showing this one
