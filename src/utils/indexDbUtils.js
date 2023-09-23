@@ -20,7 +20,13 @@ export const retrievePDF = async (id) => {
     const objectStore = transaction.objectStore('pdfs');
     const request = objectStore.get(id);
 
-    request.onsuccess = () => resolve(request.result.pdf);
+    request.onsuccess = () => {
+      if (request.result?.pdf) {
+        resolve(request.result.pdf);
+      } else {
+        reject(null);
+      }
+    };
     request.onerror = reject;
   });
 };
@@ -38,3 +44,14 @@ export const savePDF = async (buffer, id) => {
   });
 };
 
+export const deletePDF = async (id) => {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(['pdfs'], 'readwrite');
+    const objectStore = transaction.objectStore('pdfs');
+    const request = objectStore.delete(id);
+
+    request.onsuccess = () => resolve(`Deleted record with id: ${id}`);
+    request.onerror = () => reject(`Failed to delete record with id: ${id}`);
+  });
+};

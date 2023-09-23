@@ -11,7 +11,7 @@ import { PdfViewer } from './PdfViewer';
 import Panel from './components/Panel';
 import { heightOffset0, heightOffset1, heightOffset3, heightOffsetTabs } from "./constants";
 import { remove_pages, move_page, move_pages, rotate_pages, merge_pdfs, PdfMergeData, start } from '../lib/pdf_wasm_project.js';
-import { retrievePDF, savePDF } from './utils/indexDbUtils';
+import { deletePDF, retrievePDF, savePDF } from './utils/indexDbUtils';
 import { invokePlugin, pendingRequests } from './utils/pluginUtils';
 import { I18nextProvider } from 'react-i18next';
 import i18n from "./utils/i18n";
@@ -29,6 +29,19 @@ import useListenForExtractPagesRequest from './hooks/useListenForExtractPagesReq
 import useListenForMergeFilesRequest from './hooks/useListenForMergeFilesRequest';
 import useListenForCombineFilesRequest from './hooks/useListForCombineFilesRequest';
 import { PDFDocument } from 'pdf-lib';
+import * as pdfjs from 'pdfjs-dist';
+
+const blobUrlToArrayBuffer = async (blobUrl) => {
+  try {
+    const loadingTask = pdfjs.getDocument(blobUrl);
+    const pdfDoc = await loadingTask.promise;
+    return await pdfDoc.getData();
+    // return new Uint8Array(pdfData); // or pdfData.buffer if Uint8Array is not suitable
+  } catch (err) {
+    console.error(`Error while reading PDF: ${err.message}`);
+    throw err; // or return some default/fallback value
+  }
+};
 
 function markIndexes(numPages, startIndexes) {
 	const initialOrder = Array.from({ length: numPages }, (_, i) => i);
@@ -311,20 +324,65 @@ const App = () => {
 		return await combinedPdf.save();
 	}
 
+	useEffect(() => {
+		if (!files?.length) {
+			return;
+		}
+		const doRemove = () => {
+			const arr = Array.from({ length: files.length }).fill(null);
+			const tasks = arr.map((_, idx) => deletePDF(`pdfId${idx}`));
+			Promise.allSettled(tasks);
+		};
+		doRemove();
+	}, [files]);
+
 	const onCombinePdfs = async () => {
-		const arr = Array.from({ length: files.length}).fill(null);
-		console.log(arr, 'arr bro')
-		const tasks = arr.map((e, idx) => retrievePDF(`pdfId${idx}`));
-		console.log(tasks, 'tasks22')
-		const pdfBuffers = await Promise.all(tasks)
-		console.log(pdfBuffers, 'pdfBuffers222')
-		const modifiedPdfArray = await combinePDFs(pdfBuffers);
-		await savePDF(modifiedPdfArray.buffer, pdfId);
-		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
-		newModifiedPayload[activePageIndex] = new Date().toISOString();
-		setModifiedFiles(newModifiedPayload);
-		// window.parent.postMessage({ type: "combine-files-completed", message: modifiedPdfArray});
-	}
+		const arr = Array.from({ length: files.length }).fill(null);
+		const tasks = arr.map((_, idx) => retrievePDF(`pdfId${idx}`));
+	
+		const results = await Promise.allSettled(tasks);
+	
+		const errors = [];
+	
+		const processResults = async () => {
+			const successfulBuffers = [];
+			
+			const tasks = results.map(async (result, idx) => {
+				if (result.status === "fulfilled") {
+					successfulBuffers.push(result.value);
+				} else {
+					try {
+						const buffer = await blobUrlToArrayBuffer(files[idx]);
+						console.log(buffer, 'buffer here')
+						successfulBuffers.push(buffer);
+					} catch (err) {
+						console.log(err, 'err555');
+					}
+					console.error(`Error retrieving pdfId${idx}:`, result.reason);
+				}
+			});
+		
+			await Promise.all(tasks);
+			
+			return successfulBuffers; // This will be an array of all the successful buffers.
+		};
+		const successfulBuffers = await processResults();
+		console.log(successfulBuffers.length, 'success', successfulBuffers)
+		if (successfulBuffers.length > 0) {
+			const modifiedPdfArray = await combinePDFs(successfulBuffers);
+			await savePDF(modifiedPdfArray.buffer, pdfId);
+			let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
+			newModifiedPayload[activePageIndex] = new Date().toISOString();
+			setModifiedFiles(newModifiedPayload);
+			// window.parent.postMessage({ type: "combine-files-completed", message: modifiedPdfArray });
+		} else {
+			// Handle case where no PDFs were successfully retrieved
+		}
+	
+		if (errors.length > 0) {
+			// Handle errors differently here
+		}
+	};
 
 	usePropageClickEvents();
 	useDeclareIframeLoaded();
