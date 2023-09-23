@@ -8,7 +8,6 @@ import Trash from '../assets/trash-svgrepo-com.svg';
 import RotateRight from '../assets/rotate-right-svgrepo-com.svg';
 import RotateLeft from '../assets/rotate-left-svgrepo-com.svg';
 import Extract from '../assets/gradebook-export-svgrepo-com.svg';
-import Deque from "collections/deque";
 
 const thumbnailWrapper = css`
   display: flex;
@@ -77,8 +76,6 @@ const contextMenuItemText = css`
   color: #7f7f7f;
 `;
 
-const MAX_RETRIES = 10;
-
 export const Thumbnail = ({
 	multiPageSelections,
 	selectedIndexes,
@@ -131,70 +128,22 @@ export const Thumbnail = ({
 		return typeof draggingIndex === "number" && isMultiSelected()
 	}
 
-  const renderTaskRef = useRef(null); // Add this reference to keep track of render tasks
-
-	const processRenderQueue = async () => {
-    if (renderQueue.current.length === 0 || isRendering) return;
-	
-		setIsRendering(true); // Set flag to indicate that rendering is in progress
-		
-    const pageNumToRender = renderQueue.current.shift(); // Dequeue from front
-		
+	useEffect(() => {
 		const renderThumbnail = async () => {
-			const page = await pdfProxyObj.getPage(pageNumToRender);
+			const page = await pdfProxyObj.getPage(pageNum);
 			const viewport = page.getViewport({ scale });
 			canvasRef.current.width = viewport.width;
 			canvasRef.current.height = viewport.height;
-			
+
 			const canvasContext = canvasRef.current.getContext('2d');
 			if (!canvasContext) {
 				throw new Error('Failed to get canvas context');
 			}
-			
-			// Cancel any ongoing render task before starting a new one
-			if (renderTaskRef.current) {
-				renderTaskRef.current.cancel();
-			}
-	
-			renderTaskRef.current = page.render({ canvasContext, viewport });
-			try {
-				// Existing code for rendering
-				// ...
-				await renderTaskRef.current.promise;
-				
-				resetRetries(); // Reset retries if successful
-			} catch (err) {
-				if (err.name === 'RenderingCancelledException') {
-					if (retries < MAX_RETRIES) {
-						setRetries(prevRetries => prevRetries + 1); // Increment retries
-						setTimeout(() => renderThumbnail(), 500);  // Retry after 500ms
-					} else {
-						console.log('Max retries reached. Giving up rendering.');
-					}
-				} else {
-					throw err;  // For other exceptions, still throw
-				}
-			}
+			await page.render({ canvasContext, viewport }).promise;
 		};
-	
-		// Execute rendering
-		await renderThumbnail().catch(err => {
-			if (err.name === 'RenderingCancelledException') {
-				console.log('Rendering was cancelled');
-			} else {
-				throw err;
-			}
-		});
-		
-		setIsRendering(false);
-		processRenderQueue();
-	};
 
-	useEffect(() => {
-		// Enqueue the pageNum if it needs rendering
 		if (!hidden) {
-      renderQueue.current.push(pageNum); // Enqueue at back
-      processRenderQueue(); // Start processing
+      renderThumbnail();
     }
 	}, [hidden, pageNum, scale, pdfProxyObj]);
 
@@ -224,29 +173,6 @@ export const Thumbnail = ({
       document.removeEventListener('hide-contextmenu', onHide);
     };
   }, []);
-
-	useEffect(() => {
-		// Setup code (if any)
-		
-		return () => {
-			console.log("umounting bro")
-			// Cleanup code
-			renderQueue.current.clear(); // Also clear the queue here
-
-			// Cancel any ongoing render task
-			if (renderTaskRef.current) {
-				renderTaskRef.current.cancel();
-			}
-	
-			// Clear the canvas
-			if (canvasRef.current) {
-				const context = canvasRef.current.getContext('2d');
-				if (context) {
-					context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-				}
-			}
-		};
-	}, [pdfProxyObj]);
 
 	const onClick = (e) => {
 		// e.stopPropagation();
@@ -357,7 +283,7 @@ export const Thumbnail = ({
 					/>
 				</div>
 				{/*<input checked={isMultiSelected()} onClick={onToggleMultiSelect} css={checkboxStyle} type="checkbox" />*/}
-				<canvas key={canvasKey} style={{opacity: isMultiSelected() ? 0.5 : 1}} class="canvas-page" ref={canvasRef} />
+				<canvas style={{opacity: isMultiSelected() ? 0.5 : 1}} class="canvas-page" ref={canvasRef} />
 			</div>
 			<div style={{ fontSize: '0.8rem', marginTop: '0.5rem', pointerEvents: "none", color: isFullScreen ? "white" : "" }}>{displayPageNum}</div>
 		</div>
