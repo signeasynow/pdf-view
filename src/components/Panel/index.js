@@ -34,8 +34,11 @@ const invisibleSearchWrapper = css`
 `;
 
 const Panel = ({
+	onClickSplit,
+	splitMarkers,
 	showPanel,
 	tools,
+	isSplitting,
 	fileName,
 	setActivePage,
 	activePage,
@@ -74,10 +77,13 @@ const Panel = ({
 	if (showFullScreenThumbnails) {
 		return <FullScreenThumbnails
 		fileName={fileName}
+		splitMarkers={splitMarkers}
+		onClickSplit={onClickSplit}
 		documentLoading={documentLoading}
 		onDeleteThumbnail={onDeleteThumbnail}
 		onExtractThumbnail={onExtractThumbnail}
 		onDragEnd={onDragEnd}
+		isSplitting={isSplitting}
 		activePage={activePage}
 		pdf={pdf}
 		tools={tools}

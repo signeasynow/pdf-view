@@ -212,7 +212,7 @@ const App = () => {
 	const [fileLoadFailError, setFileLoadFailError] = useState('');
 
 	const [searchText, setSearchText] = useState('');
-
+	const [isSplitting, setIsSplitting] = useState(true);
 	const eventBusRef = useRef(null);
 
 	const [pdfProxyObj, setPdfProxyObj] = useState(null);
@@ -1026,6 +1026,17 @@ const App = () => {
 		onAddOperation(operation);
 	}
 
+	const [splitMarkers, setSplitMarkers] = useState([]);
+
+	const onClickSplit = (idx) => {
+		console.log("split", idx)
+		if (splitMarkers.includes(idx)) {
+			setSplitMarkers(splitMarkers.filter((each) => each !== idx));
+		} else {
+			setSplitMarkers(Array.from(new Set([...splitMarkers, idx])));
+		}
+	}
+
 	const [showFullScreenThumbnails, setShowFullScreenThumbnails] = useState(false);
 
 	const onExpand = () => {
@@ -1150,6 +1161,9 @@ const App = () => {
 					{
 						tools?.general?.includes('thumbnails') && (
 							<Panel
+								splitMarkers={splitMarkers}
+								onClickSplit={onClickSplit}
+								isSplitting={isSplitting}
 								documentLoading={documentLoading}
 								fileName={fileNames[activePageIndex]}
 								thumbnailScale={thumbnailScale}

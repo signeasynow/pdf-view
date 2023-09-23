@@ -4,6 +4,10 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import { Thumbnail } from '../../Thumbnail';
 import Slider from '../Slider';
 import { LoadingSpinner } from '../LoadingSpinner';
+import Split from '../../../assets/split-svgrepo-com.svg';
+import HeaderBtn from '../../Header/HeaderBtn';
+import { Icon, Tooltip } from 'aleon_35_pdf_ui_lib';
+import AccessibleButton from '../AccessibleButton';
 
 const wrapperStyle = css`
   position: relative;
@@ -50,9 +54,11 @@ const thumbnailStyle = css`
 
 const FullScreenThumbnails = ({
   onDragEnd,
+  splitMarkers,
   fileName,
   documentLoading,
   pdf,
+  isSplitting,
   tools,
   onThumbnailClick,
   pdfProxyObj,
@@ -61,6 +67,7 @@ const FullScreenThumbnails = ({
   onDeleteThumbnail,
   onExtractThumbnail,
   onRotate,
+  onClickSplit,
   expandedViewThumbnailScale,
 }) => {
 
@@ -170,10 +177,34 @@ const FullScreenThumbnails = ({
   .flatMap((_, i) => {
     let elements = [];
     
-    if (i === dragOverIndex - 1) {
-      elements = [...elements, <div css={dummyThumbnailStyle}></div>];
+    if (isSplitting) {
+      if (i !== 0) {
+        if (splitMarkers.includes(i)) {
+          elements = [...elements, <div style={{display: "flex", alignItems: "center"}}>
+            <Tooltip title="Splitting here">
+            <div style={{background: "#f96804", borderRadius: "4px"}}>
+              <AccessibleButton ariaLabel="Split" onClick={() => onClickSplit(i)}>
+                <Icon src={Split} />
+              </AccessibleButton>
+            </div>
+          </Tooltip>
+          </div>];
+        } else {
+          elements = [...elements, <div style={{display: "flex", alignItems: "center"}}>
+            <Tooltip title="Add a split here">
+            <AccessibleButton ariaLabel="Split" onClick={() => onClickSplit(i)}>
+              <Icon src={Split} />
+            </AccessibleButton>
+          </Tooltip>
+          </div>];
+        }
+      }
     } else {
-      elements = [...elements, <div css={emptyDummyThumbnailStyle}></div>];
+      if (i === dragOverIndex - 1) {
+        elements = [...elements, <div css={dummyThumbnailStyle}></div>];
+      } else {
+        elements = [...elements, <div css={emptyDummyThumbnailStyle}></div>];
+      }
     }
 
     const thumbnailElement = (
