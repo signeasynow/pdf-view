@@ -242,6 +242,8 @@ const App = () => {
 		return result;
 	};
 	
+	const [documentLoading, setDocumentLoading] = useState(true);
+
 	const [operations, setOperations] = useState(initialRedoUndoObject());
 	const [redoStack, setRedoStack] = useState(initialRedoUndoObject());
 
@@ -523,6 +525,7 @@ const App = () => {
 		}
 	};
 
+	
 	const [isOnline, setIsOnline] = useState(navigator.onLine);
 
 	const [hasValidLicense, setHasValidLicense] = useState(null);
@@ -681,6 +684,10 @@ const App = () => {
 			return buffer;
 		}
 	}
+
+	useEffect(() => {
+		setDocumentLoading(true);
+	}, [activePageIndex]);
 
 	const appliedSandox = useRef(false);
 
@@ -1108,6 +1115,8 @@ const App = () => {
 					{
 						tools?.general?.includes('thumbnails') && (
 							<Panel
+								documentLoading={documentLoading}
+								fileName={fileNames[activePageIndex]}
 								thumbnailScale={thumbnailScale}
 								setThumbnailScale={setThumbnailScale}
 								expandedViewThumbnailScale={expandedViewThumbnailScale}
@@ -1130,6 +1139,7 @@ const App = () => {
 					}
 					<div css={pdfViewerWrapper}>
 						<PdfViewer
+							setDocumentLoading={setDocumentLoading}
 							setModifiedFiles={setModifiedFiles}
 							modifiedFiles={modifiedFiles}
 							activePageIndex={activePageIndex}
@@ -1154,7 +1164,7 @@ const App = () => {
 							viewerContainerRef1={viewerContainerRef1}
 							viewerContainerRef2={viewerContainerRef2}
 							setPdfViewerObj={setPdfViewerObj}
-							file={file}
+							files={files}
 						/>
 					</div>
 					<SearchBar

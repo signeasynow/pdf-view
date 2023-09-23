@@ -35,7 +35,7 @@ export const PdfViewer = ({
 	setPdfProxyObj,
 	tools,
 	setPdfViewerObj,
-	file,
+	files,
 	viewerContainerRef1,
 	eventBusRef,
 	setMatchesCount,
@@ -43,6 +43,7 @@ export const PdfViewer = ({
 	leftPanelEnabled,
 	rightPanelEnabled,
 	setFileLoadFailError,
+	setDocumentLoading,
 	isSandbox,
 	updateCurrentScale
 }) => {
@@ -99,6 +100,7 @@ export const PdfViewer = ({
 		});
 
 		eventBus.on('pagesloaded', () => {
+			setDocumentLoading(false);
 			if (typeof activePage === "number") {
 				pdfLinkServiceRef.current?.goToPage(activePage || 1);
 			}
@@ -143,10 +145,12 @@ export const PdfViewer = ({
 			container.scrollTop = target.offsetTop;
 		});
 		let modFile;
+		console.log(modifiedFiles, 'modifiedFiles2')
 		if (modifiedFiles[activePageIndex]) {
 			modFile = await retrievePDF(`pdfId${activePageIndex}`);
 		}
-		const loadingTask = pdfjs.getDocument(modFile || file);
+		console.log(files, 'filesbro')
+		const loadingTask = pdfjs.getDocument(modFile || files[activePageIndex]?.url);
 
 		loadingTask.promise.then(
 			async (loadedPdfDocument) => {
@@ -174,10 +178,10 @@ export const PdfViewer = ({
 	}
 
 	useEffect(() => {
-    if (!file || !viewerContainerRef1.current) return;
+    if (!files?.length || !viewerContainerRef1.current) return;
     const targetContainer = viewerContainerRef1;
     applyDocument(targetContainer.current); // assume applyDocument is async
-	}, [file, modifiedFiles, activePageIndex]);
+	}, [files, modifiedFiles, activePageIndex]);
 
 
 	useEffect(() => {
@@ -197,7 +201,7 @@ export const PdfViewer = ({
 	
 		document.addEventListener('visibilitychange', handleVisibilityChange);
 		return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-	}, [modifiedFiles, file]);
+	}, [modifiedFiles, files]);
 
 	const width = () => {
 		if (!tools?.general?.includes("thumbnails")) {

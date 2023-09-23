@@ -82,6 +82,7 @@ const MAX_RETRIES = 10;
 export const Thumbnail = ({
 	multiPageSelections,
 	selectedIndexes,
+	canvasKey,
 	setMultiPageSelections,
 	onDragStart,
 	isFullScreen,
@@ -101,16 +102,6 @@ export const Thumbnail = ({
 	onRotate,
 	clickIsMultiSelect
 }) => {
-
-  const renderQueue = useRef(new Deque()); // Use Deque for efficient queue management
-	const [isRendering, setIsRendering] = useState(false);
-
-	const [retries, setRetries] = useState(0);
-
-  const resetRetries = () => setRetries(0); // Reset function
-
-	const [canvasKey, setCanvasKey] = useState(0);
-
 	const canvasRef = useRef(null);
 	const [isDragging, setIsDragging] = useState(false); // Add this state to keep track
 
