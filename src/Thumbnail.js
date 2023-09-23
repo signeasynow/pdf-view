@@ -76,6 +76,7 @@ const contextMenuItemText = css`
   color: #7f7f7f;
 `;
 
+
 export const Thumbnail = ({
 	multiPageSelections,
 	selectedIndexes,
@@ -98,6 +99,12 @@ export const Thumbnail = ({
 	onRotate,
 	clickIsMultiSelect
 }) => {
+
+	const [renderQueue, setRenderQueue] = useState([]);
+	const [isRendering, setIsRendering] = useState(false);
+
+
+	const [canvasKey, setCanvasKey] = useState(0);
 
 	const canvasRef = useRef(null);
 	const [isDragging, setIsDragging] = useState(false); // Add this state to keep track
@@ -128,24 +135,95 @@ export const Thumbnail = ({
 		return typeof draggingIndex === "number" && isMultiSelected()
 	}
 
-	useEffect(() => {
+  const renderTaskRef = useRef(null); // Add this reference to keep track of render tasks
+
+	const processRenderQueue = async () => {
+		if (renderQueue.length === 0 || isRendering) return;
+	
+		setIsRendering(true); // Set flag to indicate that rendering is in progress
+		
+		const pageNumToRender = renderQueue[0]; // Peek but do not dequeue yet
+		
 		const renderThumbnail = async () => {
-			const page = await pdfProxyObj.getPage(pageNum);
+			const page = await pdfProxyObj.getPage(pageNumToRender);
 			const viewport = page.getViewport({ scale });
 			canvasRef.current.width = viewport.width;
 			canvasRef.current.height = viewport.height;
-
+			
 			const canvasContext = canvasRef.current.getContext('2d');
 			if (!canvasContext) {
 				throw new Error('Failed to get canvas context');
 			}
-			await page.render({ canvasContext, viewport }).promise;
+			
+			// Cancel any ongoing render task before starting a new one
+			if (renderTaskRef.current) {
+				renderTaskRef.current.cancel();
+			}
+	
+			renderTaskRef.current = page.render({ canvasContext, viewport });
+			await renderTaskRef.current.promise;
 		};
+	
+		// Execute rendering
+		await renderThumbnail().catch(err => {
+			if (err.name === 'RenderingCancelledException') {
+				console.log('Rendering was cancelled');
+			} else {
+				throw err;
+			}
+		});
+		
+		// Dequeue only after rendering or cancellation
+		renderQueue.shift();
+	
+		setIsRendering(false);
+		processRenderQueue();
+	};
 
+	useEffect(() => {
+		// Enqueue the pageNum if it needs rendering
 		if (!hidden) {
+			setRenderQueue(prevQueue => [...prevQueue, pageNum]);
+		}
+	}, [hidden, pageNum, scale, pdfProxyObj]);
+	
+	// Process the queue whenever it changes or rendering completes
+	useEffect(() => {
+		processRenderQueue();
+	}, [renderQueue, isRendering]);
+	
+  useEffect(() => {
+    const renderThumbnail = async () => {
+      const page = await pdfProxyObj.getPage(pageNum);
+      const viewport = page.getViewport({ scale });
+      canvasRef.current.width = viewport.width;
+      canvasRef.current.height = viewport.height;
+      
+      const canvasContext = canvasRef.current.getContext('2d');
+      if (!canvasContext) {
+        throw new Error('Failed to get canvas context');
+      }
+      
+      // Cancel any ongoing render task before starting a new one
+      if (renderTaskRef.current) {
+        renderTaskRef.current.cancel();
+      }
+
+      renderTaskRef.current = page.render({ canvasContext, viewport });
+      await renderTaskRef.current.promise;
+    };
+
+    if (!hidden) {
       renderThumbnail();
     }
-	}, [hidden, pageNum, scale, pdfProxyObj]);
+
+    return () => {
+      // Cancel any ongoing render task when component unmounts or before a new render starts
+      if (renderTaskRef.current) {
+        renderTaskRef.current.cancel();
+      }
+    };
+  }, [hidden, pageNum, scale, pdfProxyObj]);
 
 	const onRightClick = (e) => {
 		e.preventDefault();
@@ -283,7 +361,7 @@ export const Thumbnail = ({
 					/>
 				</div>
 				{/*<input checked={isMultiSelected()} onClick={onToggleMultiSelect} css={checkboxStyle} type="checkbox" />*/}
-				<canvas style={{opacity: isMultiSelected() ? 0.5 : 1}} class="canvas-page" ref={canvasRef} />
+				<canvas key={canvasKey} style={{opacity: isMultiSelected() ? 0.5 : 1}} class="canvas-page" ref={canvasRef} />
 			</div>
 			<div style={{ fontSize: '0.8rem', marginTop: '0.5rem', pointerEvents: "none", color: isFullScreen ? "white" : "" }}>{displayPageNum}</div>
 		</div>
