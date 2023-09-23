@@ -232,6 +232,7 @@ const App = () => {
 
 	const [inputtedLicenseKey, setInputtedLicenseKey] = useState(null);
 	const [files, setFiles] = useState([]);
+	const [fileNames, setFileNames] = useState([]);
 
 	const initialRedoUndoObject = () => {
 		const result = {};
@@ -245,8 +246,10 @@ const App = () => {
 	const [redoStack, setRedoStack] = useState(initialRedoUndoObject());
 
 	useEffect(() => {
-		setOperations(initialRedoUndoObject());
-		setRedoStack(initialRedoUndoObject());
+		try {
+			setOperations(initialRedoUndoObject());
+			setRedoStack(initialRedoUndoObject());
+		} catch (err) {}
 	}, [files]);
 
 	useEffect(() => {
@@ -254,6 +257,7 @@ const App = () => {
 			if (typeof event.data === 'object' && event.data.files?.length) {
 				setFile(event.data.files[0].url);
 				setFiles(event.data.files);
+				setFileNames(event.data.files.map((each) => each.name))
 				event.source.postMessage({ type: 'file-received', success: true }, event.origin);
 			}
 			if (typeof event.data === 'object' && event.data.fileName) {
@@ -328,11 +332,27 @@ const App = () => {
 		if (!files?.length) {
 			return;
 		}
-		const doRemove = () => {
-			const arr = Array.from({ length: files.length }).fill(null);
-			const tasks = arr.map((_, idx) => deletePDF(`pdfId${idx}`));
-			Promise.allSettled(tasks);
+	
+		const doRemove = async () => {
+			try {
+				const arr = Array.from({ length: files.length }).fill(null);
+				const tasks = arr.map((_, idx) => deletePDF(`pdfId${idx}`));
+	
+				const results = await Promise.allSettled(tasks);
+	
+				results.forEach((result, idx) => {
+					if (result.status === "fulfilled") {
+						console.log(`Successfully deleted pdfId${idx}`);
+					} else {
+						console.warn(`Failed to delete pdfId${idx}: ${result.reason}`);
+					}
+				});
+	
+			} catch (err) {
+				console.error("An error occurred while deleting PDFs:", err);
+			}
 		};
+	
 		doRemove();
 	}, [files]);
 
@@ -374,6 +394,8 @@ const App = () => {
 			let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 			newModifiedPayload[activePageIndex] = new Date().toISOString();
 			setModifiedFiles(newModifiedPayload);
+			setFileNames([fileNames[0].replace('.pdf', '-merged.pdf')]);
+			// setFiles(files.slice(0, 1))
 			// window.parent.postMessage({ type: "combine-files-completed", message: modifiedPdfArray });
 		} else {
 			// Handle case where no PDFs were successfully retrieved
@@ -389,7 +411,7 @@ const App = () => {
 	useListenForDownloadRequest(onDownload);
 	useListenForMergeFilesRequest(onMergeFiles);
 	useListenForCombineFilesRequest(onCombinePdfs);
-
+	console.log(files, 'files333')
 	useEffect(() => {
 		if (!files[activePageIndex]?.url) {
 			return;
@@ -1080,7 +1102,7 @@ const App = () => {
 				<Tabs
 					onClick={onChangeActivePageIndex}
 					activePageIndex={activePageIndex}
-					fileNames={files.map((e) => e.name)}
+					fileNames={fileNames}
 				/>
 				<div css={Flex}>
 					{

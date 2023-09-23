@@ -30,7 +30,6 @@ const Tabs = ({
 	activePageIndex,
 	onClick
 }) => {
-	console.log(fileNames, 'fileNames')
 	return (
 		<Wrapper>
 			{
