@@ -28,8 +28,33 @@ import useListenForThumbnailZoomRequest from './hooks/useListenForThumbnailZoomR
 import useListenForExtractPagesRequest from './hooks/useListenForExtractPagesRequest';
 import useListenForMergeFilesRequest from './hooks/useListenForMergeFilesRequest';
 import useListenForCombineFilesRequest from './hooks/useListForCombineFilesRequest';
-import { PDFDocument } from 'pdf-lib';
+import { PDFDocument, degrees } from 'pdf-lib';
 import * as pdfjs from 'pdfjs-dist';
+
+async function rotatePdfPages(pdfBuffer, pageIndices, angle) {
+  // Load the PDF document from the buffer
+  const pdfDoc = await PDFDocument.load(pdfBuffer);
+
+  // Loop through the indices array to rotate specified pages
+  pageIndices.forEach((pageIndex) => {
+    const page = pdfDoc.getPages()[pageIndex];
+    if (page) {
+      // Get current rotation angle
+      const currentRotation = page.getRotation().angle;
+
+      // Calculate the new rotation angle
+      const newRotation = (currentRotation + angle) % 360;
+
+      // Use the 'degrees' function to set the new rotation
+      page.setRotation(degrees(newRotation));
+    }
+  });
+
+  // Serialize the PDF back to a buffer
+  const rotatedPdfBuffer = await pdfDoc.save();
+  
+  return rotatedPdfBuffer;
+}
 
 const blobUrlToArrayBuffer = async (blobUrl) => {
   try {
@@ -734,7 +759,7 @@ const App = () => {
 
 	const doRotate = async (pages, buffer, clockwise = true) => {
 		try {
-			const modifiedPdfArray = await rotate_pages(new Uint8Array(buffer), pages, clockwise);
+			const modifiedPdfArray = await rotatePdfPages(new Uint8Array(buffer), pages.map((each) => each - 1), clockwise ? 90 : -90);
 			return modifiedPdfArray.buffer;
 		} catch (error) {
 			console.error('Error modifying PDF:', error);
