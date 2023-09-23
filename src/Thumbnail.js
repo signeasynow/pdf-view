@@ -129,24 +129,49 @@ export const Thumbnail = ({
 		return typeof draggingIndex === "number" && isMultiSelected()
 	}
 
+	const renderTaskRef = useRef(null);
+
 	useEffect(() => {
 		const renderThumbnail = async () => {
 			const page = await pdfProxyObj.getPage(pageNum);
 			const viewport = page.getViewport({ scale });
 			canvasRef.current.width = viewport.width;
 			canvasRef.current.height = viewport.height;
-
+	
 			const canvasContext = canvasRef.current.getContext('2d');
 			if (!canvasContext) {
 				throw new Error('Failed to get canvas context');
 			}
-			await page.render({ canvasContext, viewport }).promise;
+	
+			// Cancel any ongoing render task
+			if (renderTaskRef.current) {
+				renderTaskRef.current.cancel();
+			}
+	
+			// Render the page and keep track of the render task
+			renderTaskRef.current = page.render({ canvasContext, viewport });
+			await renderTaskRef.current.promise;
 		};
-
+	
 		if (!hidden) {
-      renderThumbnail();
-    }
-	}, [hidden, pageNum, scale, pdfProxyObj]);
+			renderThumbnail();
+		}
+	
+		return () => {
+			// Cancel any ongoing render task during cleanup
+			if (renderTaskRef.current) {
+				renderTaskRef.current.cancel();
+			}
+	
+			// Clear the canvas
+			if (canvasRef.current) {
+				const context = canvasRef.current.getContext('2d');
+				if (context) {
+					context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+				}
+			}
+		};
+	}, [hidden, pageNum, scale, pdfProxyObj]);	
 
 	const onRightClick = (e) => {
 		e.preventDefault();
@@ -191,6 +216,30 @@ export const Thumbnail = ({
 		}
 		return [activePage === pageNum ? activeCanvasStyle : canvasStyle];
 	}
+
+	useEffect(() => {
+		// Setup code (if any)
+		
+		return () => {
+			console.log("umounting bro")
+			// Cleanup code
+			/*
+			renderQueue.current.clear(); // Also clear the queue here
+
+			// Cancel any ongoing render task
+			if (renderTaskRef.current) {
+				renderTaskRef.current.cancel();
+			}
+			*/
+			// Clear the canvas
+			if (canvasRef.current) {
+				const context = canvasRef.current.getContext('2d');
+				if (context) {
+					context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+				}
+			}
+		};
+	}, [pdfProxyObj]);
 
 	// console.log(tools?.editing?.includes('move'), "tools?.editing?.includes('move')")
 
