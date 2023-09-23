@@ -311,9 +311,19 @@ const App = () => {
 		return await combinedPdf.save();
 	}
 
-	const onCombinePdfs = async (pdfBuffers) => {
+	const onCombinePdfs = async () => {
+		const arr = Array.from({ length: files.length}).fill(null);
+		console.log(arr, 'arr bro')
+		const tasks = arr.map((e, idx) => retrievePDF(`pdfId${idx}`));
+		console.log(tasks, 'tasks22')
+		const pdfBuffers = await Promise.all(tasks)
+		console.log(pdfBuffers, 'pdfBuffers222')
 		const modifiedPdfArray = await combinePDFs(pdfBuffers);
-		window.parent.postMessage({ type: "combine-files-completed", message: modifiedPdfArray});
+		await savePDF(modifiedPdfArray.buffer, pdfId);
+		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
+		newModifiedPayload[activePageIndex] = new Date().toISOString();
+		setModifiedFiles(newModifiedPayload);
+		// window.parent.postMessage({ type: "combine-files-completed", message: modifiedPdfArray});
 	}
 
 	usePropageClickEvents();
