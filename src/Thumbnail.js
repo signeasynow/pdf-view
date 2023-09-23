@@ -99,6 +99,7 @@ export const Thumbnail = ({
 	onRotate,
 	clickIsMultiSelect
 }) => {
+	console.log(canvasKey, 'canvasKey22')
 	const canvasRef = useRef(null);
 	const [isDragging, setIsDragging] = useState(false); // Add this state to keep track
 
