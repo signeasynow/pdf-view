@@ -51,6 +51,7 @@ const thumbnailStyle = css`
 const FullScreenThumbnails = ({
   onDragEnd,
   fileName,
+  documentLoading,
   pdf,
   tools,
   onThumbnailClick,
@@ -227,7 +228,7 @@ const FullScreenThumbnails = ({
     return elements;
   });
 
-  if (!numPages) {
+  if (documentLoading) {
     return (
       <div css={wrapperStyle}>
         <div css={fullScreenWrapper}>

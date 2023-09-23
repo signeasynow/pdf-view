@@ -242,6 +242,8 @@ const App = () => {
 		return result;
 	};
 	
+	const [documentLoading, setDocumentLoading] = useState(true);
+
 	const [operations, setOperations] = useState(initialRedoUndoObject());
 	const [redoStack, setRedoStack] = useState(initialRedoUndoObject());
 
@@ -523,6 +525,7 @@ const App = () => {
 		}
 	};
 
+	
 	const [isOnline, setIsOnline] = useState(navigator.onLine);
 
 	const [hasValidLicense, setHasValidLicense] = useState(null);
@@ -681,6 +684,10 @@ const App = () => {
 			return buffer;
 		}
 	}
+
+	useEffect(() => {
+		setDocumentLoading(true);
+	}, [activePageIndex]);
 
 	const appliedSandox = useRef(false);
 
@@ -1108,6 +1115,7 @@ const App = () => {
 					{
 						tools?.general?.includes('thumbnails') && (
 							<Panel
+								documentLoading={documentLoading}
 								fileName={fileNames[activePageIndex]}
 								thumbnailScale={thumbnailScale}
 								setThumbnailScale={setThumbnailScale}
@@ -1131,6 +1139,7 @@ const App = () => {
 					}
 					<div css={pdfViewerWrapper}>
 						<PdfViewer
+							setDocumentLoading={setDocumentLoading}
 							setModifiedFiles={setModifiedFiles}
 							modifiedFiles={modifiedFiles}
 							activePageIndex={activePageIndex}

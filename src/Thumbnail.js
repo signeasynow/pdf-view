@@ -8,6 +8,7 @@ import Trash from '../assets/trash-svgrepo-com.svg';
 import RotateRight from '../assets/rotate-right-svgrepo-com.svg';
 import RotateLeft from '../assets/rotate-left-svgrepo-com.svg';
 import Extract from '../assets/gradebook-export-svgrepo-com.svg';
+import Deque from "collections/deque";
 
 const thumbnailWrapper = css`
   display: flex;
@@ -76,6 +77,8 @@ const contextMenuItemText = css`
   color: #7f7f7f;
 `;
 
+const MAX_RETRIES = 10;
+
 export const Thumbnail = ({
 	multiPageSelections,
 	selectedIndexes,
@@ -99,7 +102,14 @@ export const Thumbnail = ({
 	onRotate,
 	clickIsMultiSelect
 }) => {
-	console.log(canvasKey, 'canvasKey22')
+
+  const renderQueue = useRef(new Deque()); // Use Deque for efficient queue management
+	const [isRendering, setIsRendering] = useState(false);
+
+	const [retries, setRetries] = useState(0);
+
+  const resetRetries = () => setRetries(0); // Reset function
+
 	const canvasRef = useRef(null);
 	const [isDragging, setIsDragging] = useState(false); // Add this state to keep track
 
@@ -129,49 +139,74 @@ export const Thumbnail = ({
 		return typeof draggingIndex === "number" && isMultiSelected()
 	}
 
-	const renderTaskRef = useRef(null);
+  const renderTaskRef = useRef(null); // Add this reference to keep track of render tasks
 
-	useEffect(() => {
+	const processRenderQueue = async () => {
+    if (renderQueue.current.length === 0 || isRendering) return;
+	
+		setIsRendering(true); // Set flag to indicate that rendering is in progress
+		
+    const pageNumToRender = renderQueue.current.shift(); // Dequeue from front
+		
 		const renderThumbnail = async () => {
-			const page = await pdfProxyObj.getPage(pageNum);
+			clearCanvas();
+			const page = await pdfProxyObj.getPage(pageNumToRender);
 			const viewport = page.getViewport({ scale });
 			canvasRef.current.width = viewport.width;
 			canvasRef.current.height = viewport.height;
-	
+			
 			const canvasContext = canvasRef.current.getContext('2d');
 			if (!canvasContext) {
 				throw new Error('Failed to get canvas context');
 			}
-	
-			// Cancel any ongoing render task
+			
+			// Cancel any ongoing render task before starting a new one
 			if (renderTaskRef.current) {
 				renderTaskRef.current.cancel();
 			}
 	
-			// Render the page and keep track of the render task
 			renderTaskRef.current = page.render({ canvasContext, viewport });
-			await renderTaskRef.current.promise;
-		};
-	
-		if (!hidden) {
-			renderThumbnail();
-		}
-	
-		return () => {
-			// Cancel any ongoing render task during cleanup
-			if (renderTaskRef.current) {
-				renderTaskRef.current.cancel();
-			}
-	
-			// Clear the canvas
-			if (canvasRef.current) {
-				const context = canvasRef.current.getContext('2d');
-				if (context) {
-					context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+			try {
+				// Existing code for rendering
+				// ...
+				await renderTaskRef.current.promise;
+				
+				resetRetries(); // Reset retries if successful
+			} catch (err) {
+				if (err.name === 'RenderingCancelledException') {
+					console.log(err.name, 'err')
+					if (retries < MAX_RETRIES) {
+						setRetries(prevRetries => prevRetries + 1); // Increment retries
+						setTimeout(() => renderThumbnail(), 500);  // Retry after 500ms
+					} else {
+						console.log('Max retries reached. Giving up rendering.');
+					}
+				} else {
+					throw err;  // For other exceptions, still throw
 				}
 			}
 		};
-	}, [hidden, pageNum, scale, pdfProxyObj]);	
+	
+		// Execute rendering
+		await renderThumbnail().catch(err => {
+			if (err.name === 'RenderingCancelledException') {
+				console.log('Rendering was cancelled');
+			} else {
+				throw err;
+			}
+		});
+		
+		setIsRendering(false);
+		processRenderQueue();
+	};
+
+	useEffect(() => {
+		// Enqueue the pageNum if it needs rendering
+		if (!hidden) {
+      renderQueue.current.push(pageNum); // Enqueue at back
+      processRenderQueue(); // Start processing
+    }
+	}, [hidden, pageNum, scale, pdfProxyObj]);
 
 	const onRightClick = (e) => {
 		e.preventDefault();
@@ -200,6 +235,49 @@ export const Thumbnail = ({
     };
   }, []);
 
+	const clearCanvas = () => {
+		const context = canvasRef.current?.getContext('2d');
+		if (context) {
+			context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+		}
+	};
+
+	useEffect(() => {
+		// Setup code (if any)
+		
+		return () => {
+			console.log("umounting bro")
+			// Cleanup code
+			renderQueue.current.clear(); // Also clear the queue here
+
+			// Cancel any ongoing render task
+			if (renderTaskRef.current) {
+				renderTaskRef.current.cancel();
+			}
+	
+			// Clear the canvas
+			clearCanvas();
+		};
+	}, [pdfProxyObj]);
+
+	useEffect(() => {
+		// Setup code (if any)
+		
+		return () => {
+			console.log("umounting bro")
+			// Cleanup code
+			renderQueue.current.clear(); // Also clear the queue here
+
+			// Cancel any ongoing render task
+			if (renderTaskRef.current) {
+				renderTaskRef.current.cancel();
+			}
+	
+			// Clear the canvas
+			clearCanvas();
+		};
+	}, []);
+
 	const onClick = (e) => {
 		// e.stopPropagation();
 		// e.preventDefault();
@@ -216,30 +294,6 @@ export const Thumbnail = ({
 		}
 		return [activePage === pageNum ? activeCanvasStyle : canvasStyle];
 	}
-
-	useEffect(() => {
-		// Setup code (if any)
-		
-		return () => {
-			console.log("umounting bro")
-			// Cleanup code
-			/*
-			renderQueue.current.clear(); // Also clear the queue here
-
-			// Cancel any ongoing render task
-			if (renderTaskRef.current) {
-				renderTaskRef.current.cancel();
-			}
-			*/
-			// Clear the canvas
-			if (canvasRef.current) {
-				const context = canvasRef.current.getContext('2d');
-				if (context) {
-					context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-				}
-			}
-		};
-	}, [pdfProxyObj]);
 
 	// console.log(tools?.editing?.includes('move'), "tools?.editing?.includes('move')")
 

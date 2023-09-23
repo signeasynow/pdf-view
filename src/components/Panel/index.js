@@ -40,6 +40,7 @@ const Panel = ({
 	setActivePage,
 	activePage,
 	pdf,
+	documentLoading,
 	pdfProxyObj,
 	onDragEnd,
 	showFullScreenThumbnails,
@@ -73,6 +74,7 @@ const Panel = ({
 	if (showFullScreenThumbnails) {
 		return <FullScreenThumbnails
 		fileName={fileName}
+		documentLoading={documentLoading}
 		onDeleteThumbnail={onDeleteThumbnail}
 		onExtractThumbnail={onExtractThumbnail}
 		onDragEnd={onDragEnd}

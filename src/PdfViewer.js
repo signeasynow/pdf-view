@@ -43,6 +43,7 @@ export const PdfViewer = ({
 	leftPanelEnabled,
 	rightPanelEnabled,
 	setFileLoadFailError,
+	setDocumentLoading,
 	isSandbox,
 	updateCurrentScale
 }) => {
@@ -99,6 +100,7 @@ export const PdfViewer = ({
 		});
 
 		eventBus.on('pagesloaded', () => {
+			setDocumentLoading(false);
 			if (typeof activePage === "number") {
 				pdfLinkServiceRef.current?.goToPage(activePage || 1);
 			}
