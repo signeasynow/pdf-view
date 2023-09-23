@@ -1164,7 +1164,7 @@ const App = () => {
 							viewerContainerRef1={viewerContainerRef1}
 							viewerContainerRef2={viewerContainerRef2}
 							setPdfViewerObj={setPdfViewerObj}
-							file={file}
+							files={files}
 						/>
 					</div>
 					<SearchBar
