@@ -8,6 +8,7 @@ import Trash from '../assets/trash-svgrepo-com.svg';
 import RotateRight from '../assets/rotate-right-svgrepo-com.svg';
 import RotateLeft from '../assets/rotate-left-svgrepo-com.svg';
 import Extract from '../assets/gradebook-export-svgrepo-com.svg';
+import Deque from "collections/deque";
 
 const thumbnailWrapper = css`
   display: flex;
@@ -101,7 +102,7 @@ export const Thumbnail = ({
 	clickIsMultiSelect
 }) => {
 
-	const [renderQueue, setRenderQueue] = useState([]);
+  const renderQueue = useRef(new Deque()); // Use Deque for efficient queue management
 	const [isRendering, setIsRendering] = useState(false);
 
 	const [retries, setRetries] = useState(0);
@@ -142,11 +143,11 @@ export const Thumbnail = ({
   const renderTaskRef = useRef(null); // Add this reference to keep track of render tasks
 
 	const processRenderQueue = async () => {
-		if (renderQueue.length === 0 || isRendering) return;
+    if (renderQueue.current.length === 0 || isRendering) return;
 	
 		setIsRendering(true); // Set flag to indicate that rendering is in progress
 		
-		const pageNumToRender = renderQueue[0]; // Peek but do not dequeue yet
+    const pageNumToRender = renderQueue.current.shift(); // Dequeue from front
 		
 		const renderThumbnail = async () => {
 			const page = await pdfProxyObj.getPage(pageNumToRender);
@@ -194,9 +195,6 @@ export const Thumbnail = ({
 			}
 		});
 		
-		// Dequeue only after rendering or cancellation
-		renderQueue.shift();
-	
 		setIsRendering(false);
 		processRenderQueue();
 	};
@@ -204,15 +202,11 @@ export const Thumbnail = ({
 	useEffect(() => {
 		// Enqueue the pageNum if it needs rendering
 		if (!hidden) {
-			setRenderQueue(prevQueue => [...prevQueue, pageNum]);
-		}
+      renderQueue.current.push(pageNum); // Enqueue at back
+      processRenderQueue(); // Start processing
+    }
 	}, [hidden, pageNum, scale, pdfProxyObj]);
-	
-	// Process the queue whenever it changes or rendering completes
-	useEffect(() => {
-		processRenderQueue();
-	}, [renderQueue, isRendering]);
-	
+
 	const onRightClick = (e) => {
 		e.preventDefault();
 		// Hide any other context menus before showing this one
@@ -239,6 +233,29 @@ export const Thumbnail = ({
       document.removeEventListener('hide-contextmenu', onHide);
     };
   }, []);
+
+	useEffect(() => {
+		// Setup code (if any)
+		
+		return () => {
+			console.log("umounting bro")
+			// Cleanup code
+			renderQueue.current.clear(); // Also clear the queue here
+
+			// Cancel any ongoing render task
+			if (renderTaskRef.current) {
+				renderTaskRef.current.cancel();
+			}
+	
+			// Clear the canvas
+			if (canvasRef.current) {
+				const context = canvasRef.current.getContext('2d');
+				if (context) {
+					context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+				}
+			}
+		};
+	}, [pdfProxyObj]);
 
 	const onClick = (e) => {
 		// e.stopPropagation();
