@@ -1108,6 +1108,7 @@ const App = () => {
 					{
 						tools?.general?.includes('thumbnails') && (
 							<Panel
+								fileName={fileNames[activePageIndex]}
 								thumbnailScale={thumbnailScale}
 								setThumbnailScale={setThumbnailScale}
 								expandedViewThumbnailScale={expandedViewThumbnailScale}

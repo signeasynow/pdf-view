@@ -36,6 +36,7 @@ const invisibleSearchWrapper = css`
 const Panel = ({
 	showPanel,
 	tools,
+	fileName,
 	setActivePage,
 	activePage,
 	pdf,
@@ -71,6 +72,7 @@ const Panel = ({
 
 	if (showFullScreenThumbnails) {
 		return <FullScreenThumbnails
+		fileName={fileName}
 		onDeleteThumbnail={onDeleteThumbnail}
 		onExtractThumbnail={onExtractThumbnail}
 		onDragEnd={onDragEnd}

@@ -79,6 +79,7 @@ const contextMenuItemText = css`
 export const Thumbnail = ({
 	multiPageSelections,
 	selectedIndexes,
+	canvasKey,
 	setMultiPageSelections,
 	onDragStart,
 	isFullScreen,
@@ -98,7 +99,6 @@ export const Thumbnail = ({
 	onRotate,
 	clickIsMultiSelect
 }) => {
-
 	const canvasRef = useRef(null);
 	const [isDragging, setIsDragging] = useState(false); // Add this state to keep track
 
@@ -283,7 +283,7 @@ export const Thumbnail = ({
 					/>
 				</div>
 				{/*<input checked={isMultiSelected()} onClick={onToggleMultiSelect} css={checkboxStyle} type="checkbox" />*/}
-				<canvas style={{opacity: isMultiSelected() ? 0.5 : 1}} class="canvas-page" ref={canvasRef} />
+				<canvas key={canvasKey} style={{opacity: isMultiSelected() ? 0.5 : 1}} class="canvas-page" ref={canvasRef} />
 			</div>
 			<div style={{ fontSize: '0.8rem', marginTop: '0.5rem', pointerEvents: "none", color: isFullScreen ? "white" : "" }}>{displayPageNum}</div>
 		</div>

@@ -50,6 +50,7 @@ const thumbnailStyle = css`
 
 const FullScreenThumbnails = ({
   onDragEnd,
+  fileName,
   pdf,
   tools,
   onThumbnailClick,
@@ -59,7 +60,7 @@ const FullScreenThumbnails = ({
   onDeleteThumbnail,
   onExtractThumbnail,
   onRotate,
-  expandedViewThumbnailScale
+  expandedViewThumbnailScale,
 }) => {
 
   const containerRef = useRef(null);
@@ -177,6 +178,7 @@ const FullScreenThumbnails = ({
     const thumbnailElement = (
       <div data-type="regular-full-screen-thumbnail" css={thumbnailStyle}>
         <Thumbnail
+          canvasKey={fileName}
           draggingIndex={draggingIndex}
           onExtract={onExtractThumbnail}
           isFullScreen
