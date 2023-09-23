@@ -695,19 +695,11 @@ const App = () => {
 		});
 	};
 
-	const doDrag = async (start, end, buffer) => {
-		if (start?.length) {
-			const order = getArrayOrder(pdfProxyObj.numPages, start, end);
-			const modifiedPdfArray = await reorderPages(new Uint8Array(buffer), order);
-			return modifiedPdfArray;
-		}
-		try {
-			const modifiedPdfArray = await move_page(new Uint8Array(buffer), start, end);
-			return modifiedPdfArray.buffer;
-		} catch (error) {
-			console.error('Error modifying PDF:', error);
-			return buffer;
-		}
+	const doDrag = async (_start, end, buffer) => {
+		const start = _start?.length ? _start : [_start];
+		const order = getArrayOrder(pdfProxyObj.numPages, start, end);
+		const modifiedPdfArray = await reorderPages(new Uint8Array(buffer), order);
+		return modifiedPdfArray;
 	}
 
 	useEffect(() => {
