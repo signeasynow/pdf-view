@@ -145,17 +145,15 @@ export const PdfViewer = ({
 			container.scrollTop = target.offsetTop;
 		});
 		let modFile;
-		console.log(modifiedFiles, 'modifiedFiles2')
 		if (modifiedFiles[activePageIndex]) {
 			modFile = await retrievePDF(`pdfId${activePageIndex}`);
 		}
-		console.log(files, 'filesbro')
 		const loadingTask = pdfjs.getDocument(modFile || files[activePageIndex]?.url);
 
 		loadingTask.promise.then(
 			async (loadedPdfDocument) => {
 				if (isSandbox) {
-					const pdfData = await loadedPdfDocument.getData();
+					const pdfData = new Uint8Array(await loadedPdfDocument.getData()).slice(0);
 					const pdfWithWatermark = await addSandboxWatermark(new Uint8Array(pdfData));
 					loadedPdfDocument = await pdfjs.getDocument({data: pdfWithWatermark}).promise;
 					hasWatermarkAdded.current = true;
@@ -166,7 +164,7 @@ export const PdfViewer = ({
 				pdfLinkServiceRef.current.setDocument(loadedPdfDocument, null);
 				
 				if (!modifiedFiles[activePageIndex]) {
-					savePDF(await loadedPdfDocument.getData(), `original${activePageIndex}`);
+					savePDF(new Uint8Array(await loadedPdfDocument.getData()).slice(0), `original${activePageIndex}`);
 				}
 			},
 			reason => {

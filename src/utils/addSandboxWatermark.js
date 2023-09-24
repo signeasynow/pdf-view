@@ -61,7 +61,6 @@ async function addWatermark(pdfBytes, copy) {
 }
 
 export const addSandboxWatermark = async (buffer) => {
-  // const buffer = await pdfProxyObj.getData();
   const modifiedPdfArray = await addWatermark(buffer, "Demo - Yuzbi.com");
 
   return modifiedPdfArray;

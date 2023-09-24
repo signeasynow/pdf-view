@@ -382,6 +382,14 @@ const App = () => {
 		try {
 			const modifiedPdfArrays = await splitPdfPages(new Uint8Array(buffer), splits);
 			console.log(modifiedPdfArrays, 'result end');
+			const result = modifiedPdfArrays.map((each, idx) => {
+				return {
+					name: `document-${idx + 1}.pdf`,
+					url: each.slice(0)
+				}
+			})
+			setFiles(result);
+			setFileNames(result.map((each) => each.name))
 		} catch (error) {
 			console.error('Error modifying PDF:', error);
 		}
