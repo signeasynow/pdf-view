@@ -32,51 +32,36 @@ import useListenForCombineFilesRequest from './hooks/useListForCombineFilesReque
 import useListenForSplitPagesRequest from './hooks/useListenForSplitPagesRequest';
 import { PDFDocument, degrees } from 'pdf-lib';
 
-async function splitPdfPages(pdfBuffer, splitIndices) {
-  // Load the PDF document from the buffer
-  const pdfDoc = await PDFDocument.load(pdfBuffer);
-
+async function splitPdfPages(pdfBytes, splitIndices) {
+	console.log(splitIndices, 'splitIndices')
+  const originalPdfDoc = await PDFDocument.load(pdfBytes);
+  const numPages = originalPdfDoc.getPageCount();
+	console.log(numPages, 'numPages1')
   // Sort the split indices in ascending order
-  const sortedIndices = [...splitIndices].sort((a, b) => a - b);
-
-  const allPages = pdfDoc.getPages();
-  const totalPageCount = allPages.length;
-  const splitPdfBuffers = [];
-
+  const sortedIndices = [...splitIndices, numPages].sort((a, b) => a - b);
+	console.log(sortedIndices, 'sortedIndices2')
+  const allPdfBuffers = [];
   let start = 0;
 
-  for (const endIndex of sortedIndices) {
-    if (endIndex < start || endIndex >= totalPageCount) continue;
-
+  for (const end of sortedIndices) {
+    // Create a new PDF document for each split index
     const newPdfDoc = await PDFDocument.create();
-    const pagesToCopy = allPages.slice(start, endIndex + 1);
 
-    for (const page of pagesToCopy) {
-      const [newPage] = await newPdfDoc.copyPages(pdfDoc, [page.getIndex()]);
-      newPdfDoc.addPage(newPage);
+    // Copy and add pages from the original PDF document
+		const copiedPages = await newPdfDoc.copyPages(originalPdfDoc, Array.from({ length: end - start }, (_, i) => i + start));
+		console.log(copiedPages, 'copiedPages2')
+    for (const page of copiedPages) {
+      newPdfDoc.addPage(page);
     }
 
+    // Save the new PDF document to a buffer
     const newPdfBuffer = await newPdfDoc.save();
-    splitPdfBuffers.push(newPdfBuffer);
+    allPdfBuffers.push(newPdfBuffer);
 
-    start = endIndex + 1;
+    start = end;
   }
 
-  // Add remaining pages if any
-  if (start < totalPageCount) {
-    const newPdfDoc = await PDFDocument.create();
-    const pagesToCopy = allPages.slice(start);
-
-    for (const page of pagesToCopy) {
-      const [newPage] = await newPdfDoc.copyPages(pdfDoc, [page.getIndex()]);
-      newPdfDoc.addPage(newPage);
-    }
-
-    const newPdfBuffer = await newPdfDoc.save();
-    splitPdfBuffers.push(newPdfBuffer);
-  }
-
-  return splitPdfBuffers;
+  return allPdfBuffers;
 }
 
 async function removePdfPages(pdfBuffer, pageIndices) {
@@ -307,10 +292,12 @@ const App = () => {
 
   const [modifiedFile, setModifiedFile] = useState(null);
 	const [modifiedFiles, setModifiedFiles] = useState([]);
-	const { triggerDownload: onDownload } = useDownload(pdfProxyObj, fileName, isSandbox);
 
 	const [inputtedLicenseKey, setInputtedLicenseKey] = useState(null);
 	const [files, setFiles] = useState([]);
+
+	const { triggerDownload: onDownload } = useDownload(files, fileName, isSandbox);
+
 	const [fileNames, setFileNames] = useState([]);
 
 	const initialRedoUndoObject = () => {
@@ -393,8 +380,8 @@ const App = () => {
 
 	async function doSplit(buffer, splits) {
 		try {
-			const modifiedPdfArray = await splitPdfPages(new Uint8Array(buffer), splits);
-			return modifiedPdfArray.buffer;
+			const modifiedPdfArrays = await splitPdfPages(new Uint8Array(buffer), splits);
+			console.log(modifiedPdfArrays, 'result end');
 		} catch (error) {
 			console.error('Error modifying PDF:', error);
 		}

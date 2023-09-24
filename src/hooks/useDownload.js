@@ -1,4 +1,5 @@
 import JSZip from 'jszip';
+import fetchBuffers from '../utils/fetchBuffers';
 
 const downloadAll = async (pdfBuffers) => {
   // Initialize JSZip instance
@@ -23,27 +24,33 @@ const downloadAll = async (pdfBuffers) => {
   URL.revokeObjectURL(url);
 };
 
-function useDownload(pdfProxyObj, fileName, isSandbox) {
+function useDownload(files, fileName, isSandbox) {
 	const triggerDownload = async () => {
 		if (isSandbox) {
-			return alert("Download is not enabled in Sandbox mode.");
+			// return alert("Download is not enabled in Sandbox mode.");
 		}
-    if (!pdfProxyObj) {
-			console.log('No PDF loaded to download');
+		console.log(files, 'files bro here')
+    const successfulBuffers = await fetchBuffers(files);
+		console.log(successfulBuffers, 'successfulBuffers');
+		// const buffer = await pdfProxyObj.getData();
+		if (!successfulBuffers.length) {
+			return alert("Nothing to download.");
+		}
+		if (successfulBuffers.length === 1) {
+			try {
+				const blob = new Blob([successfulBuffers[0]], { type: 'application/pdf' });
+				const url = URL.createObjectURL(blob);
+				const link = document.createElement('a');
+				link.href = url;
+				link.download = fileName;
+				link.click();
+			} catch (error) {
+				console.error('Error modifying PDF:', error);
+			}
 			return;
 		}
-	
-		const buffer = await pdfProxyObj.getData();
-		try {
-			const blob = new Blob([buffer], { type: 'application/pdf' });
-			const url = URL.createObjectURL(blob);
-			const link = document.createElement('a');
-			link.href = url;
-			link.download = fileName;
-			link.click();
-		} catch (error) {
-			console.error('Error modifying PDF:', error);
-		}
+		downloadAll(successfulBuffers);
+		
   }
 
 	return {
