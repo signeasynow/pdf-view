@@ -403,6 +403,7 @@ const App = () => {
 
 	const onSplitPages = async () => {
 		const buffer = await pdfProxyObj.getData();
+		
 		const modifiedPdfArray = await doSplit(buffer, splitMarkers);
 		window.parent.postMessage({ type: "merge-files-completed", message: modifiedPdfArray});
 
