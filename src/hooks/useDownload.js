@@ -1,3 +1,28 @@
+import JSZip from 'jszip';
+
+const downloadAll = async (pdfBuffers) => {
+  // Initialize JSZip instance
+  const zip = new JSZip();
+
+  // Loop over all PDF Buffers and add them to the ZIP file
+  pdfBuffers.forEach((buffer, index) => {
+    zip.file(`document-${index + 1}.pdf`, buffer);
+  });
+
+  // Generate ZIP file as Blob
+  const zipBlob = await zip.generateAsync({ type: 'blob' });
+
+  // Trigger download of ZIP file
+  const url = URL.createObjectURL(zipBlob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'AllDocuments.zip';
+  link.click();
+
+  // Cleanup
+  URL.revokeObjectURL(url);
+};
+
 function useDownload(pdfProxyObj, fileName, isSandbox) {
 	const triggerDownload = async () => {
 		if (isSandbox) {

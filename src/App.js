@@ -28,8 +28,56 @@ import useListenForThumbnailZoomRequest from './hooks/useListenForThumbnailZoomR
 import useListenForExtractPagesRequest from './hooks/useListenForExtractPagesRequest';
 import useListenForMergeFilesRequest from './hooks/useListenForMergeFilesRequest';
 import useListenForCombineFilesRequest from './hooks/useListForCombineFilesRequest';
+import useListenForSplitPagesRequest from './hooks/useListenForSplitPagesRequest';
 import { PDFDocument, degrees } from 'pdf-lib';
 import * as pdfjs from 'pdfjs-dist';
+
+async function splitPdfPages(pdfBuffer, splitIndices) {
+  // Load the PDF document from the buffer
+  const pdfDoc = await PDFDocument.load(pdfBuffer);
+
+  // Sort the split indices in ascending order
+  const sortedIndices = [...splitIndices].sort((a, b) => a - b);
+
+  const allPages = pdfDoc.getPages();
+  const totalPageCount = allPages.length;
+  const splitPdfBuffers = [];
+
+  let start = 0;
+
+  for (const endIndex of sortedIndices) {
+    if (endIndex < start || endIndex >= totalPageCount) continue;
+
+    const newPdfDoc = await PDFDocument.create();
+    const pagesToCopy = allPages.slice(start, endIndex + 1);
+
+    for (const page of pagesToCopy) {
+      const [newPage] = await newPdfDoc.copyPages(pdfDoc, [page.getIndex()]);
+      newPdfDoc.addPage(newPage);
+    }
+
+    const newPdfBuffer = await newPdfDoc.save();
+    splitPdfBuffers.push(newPdfBuffer);
+
+    start = endIndex + 1;
+  }
+
+  // Add remaining pages if any
+  if (start < totalPageCount) {
+    const newPdfDoc = await PDFDocument.create();
+    const pagesToCopy = allPages.slice(start);
+
+    for (const page of pagesToCopy) {
+      const [newPage] = await newPdfDoc.copyPages(pdfDoc, [page.getIndex()]);
+      newPdfDoc.addPage(newPage);
+    }
+
+    const newPdfBuffer = await newPdfDoc.save();
+    splitPdfBuffers.push(newPdfBuffer);
+  }
+
+  return splitPdfBuffers;
+}
 
 async function removePdfPages(pdfBuffer, pageIndices) {
   // Load the PDF document from the buffer
@@ -355,6 +403,23 @@ const App = () => {
 		window.parent.postMessage({ type: "merge-files-completed", message: modifiedPdfArray});
 	}
 
+	async function doSplit(buffer, splits) {
+		try {
+			const modifiedPdfArray = await splitPdfPages(new Uint8Array(buffer), splits);
+			return modifiedPdfArray.buffer;
+		} catch (error) {
+			console.error('Error modifying PDF:', error);
+		}
+		return;
+	}
+
+	const onSplitPages = async () => {
+		const buffer = await pdfProxyObj.getData();
+		const modifiedPdfArray = await doSplit(buffer, splitMarkers);
+		window.parent.postMessage({ type: "merge-files-completed", message: modifiedPdfArray});
+
+	}
+
 	const combinePDFs = async (pdfBuffers) => {
 		const combinedPdf = await PDFDocument.create();
 	
@@ -455,6 +520,7 @@ const App = () => {
 	useDeclareIframeLoaded();
 	useListenForDownloadRequest(onDownload);
 	useListenForMergeFilesRequest(onMergeFiles);
+	useListenForSplitPagesRequest(onSplitPages);
 	useListenForCombineFilesRequest(onCombinePdfs);
 	console.log(files, 'files333')
 	useEffect(() => {

@@ -51,6 +51,7 @@
     "aleon_35_pdf_viewer_lib": "^1.0.8",
     "collections": "^5.1.13",
     "i18next": "^23.4.6",
+    "jszip": "^3.10.1",
     "pdf-lib": "^1.17.1",
     "pdf_editor_aleon35_react_plugin": "^1.0.62",
     "pdfjs-dist": "^3.7.107",
