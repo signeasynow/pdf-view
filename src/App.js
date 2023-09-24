@@ -320,13 +320,37 @@ const App = () => {
 		} catch (err) {}
 	}, [files]);
 
+	const addInitialFiles = async (event) => {
+		event.source.postMessage({ type: 'file-received', success: true }, event.origin);
+		const doRemove = async () => {
+			try {
+				const arr = Array.from({ length: event.data.files.length }).fill(null);
+				const tasks = arr.map((_, idx) => deletePDF(`original${idx}`) && deletePDF(`pdfId${idx}`));
+	
+				const results = await Promise.allSettled(tasks);
+	
+				results.forEach((result, idx) => {
+					if (result.status === "fulfilled") {
+						console.log(`Successfully deleted pdfId${idx}`);
+					} else {
+						console.warn(`Failed to delete pdfId${idx}: ${result.reason}`);
+					}
+				});
+	
+			} catch (err) {
+				console.error("An error occurred while deleting PDFs:", err);
+			}
+		};
+	
+		await doRemove();
+		setFiles(event.data.files);
+		setFileNames(event.data.files.map((each) => each.name))
+	}
+
 	useEffect(() => {
 		window.addEventListener('message', (event) => {
 			if (typeof event.data === 'object' && event.data.files?.length) {
-				setFile(event.data.files[0].url);
-				setFiles(event.data.files);
-				setFileNames(event.data.files.map((each) => each.name))
-				event.source.postMessage({ type: 'file-received', success: true }, event.origin);
+				addInitialFiles(event);
 			}
 			if (typeof event.data === 'object' && event.data.fileName) {
 				setFileName(event.data.fileName);
@@ -389,7 +413,8 @@ const App = () => {
 				}
 			})
 			setFiles(result);
-			setFileNames(result.map((each) => each.name))
+			setFileNames(result.map((each) => each.name));
+			return result;
 		} catch (error) {
 			console.error('Error modifying PDF:', error);
 		}
@@ -399,8 +424,18 @@ const App = () => {
 	const onSplitPages = async () => {
 		const buffer = await pdfProxyObj.getData();
 		
-		const modifiedPdfArray = await doSplit(buffer, splitMarkers);
-		window.parent.postMessage({ type: "merge-files-completed", message: modifiedPdfArray});
+		const results = await doSplit(buffer, splitMarkers);
+		const tasks = results.map((each, idx) => savePDF(each.url.buffer, `original${idx}`));
+		await Promise.all(tasks);
+
+		let newModifiedPayload = {};
+		for (let i = 0; i < results.length; i ++) {
+			newModifiedPayload[i] = new Date().toISOString();
+		}
+		// setModifiedFiles(newModifiedPayload);
+		// setFileNames([fileNames[0].replace('.pdf', '-split.pdf')]);
+		
+		window.parent.postMessage({ type: "split-pages-completed"});
 
 	}
 
@@ -448,6 +483,10 @@ const App = () => {
 		};
 	
 		doRemove();
+
+		return () => {
+			doRemove();
+		}
 	}, [files]);
 
 	const onCombinePdfs = async () => {
@@ -1212,6 +1251,7 @@ const App = () => {
 					}
 					<div css={pdfViewerWrapper}>
 						<PdfViewer
+							onPagesLoaded={() => {}}
 							setDocumentLoading={setDocumentLoading}
 							setModifiedFiles={setModifiedFiles}
 							modifiedFiles={modifiedFiles}

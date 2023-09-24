@@ -40,6 +40,7 @@ export const PdfViewer = ({
 	eventBusRef,
 	setMatchesCount,
 	setActivePage,
+	onPagesLoaded,
 	leftPanelEnabled,
 	rightPanelEnabled,
 	setFileLoadFailError,
@@ -78,6 +79,7 @@ export const PdfViewer = ({
 	}
 
 	const applyDocument = async (viewerContainer) => {
+		console.log("applying bro")
 		await cleanupDocument();
 
 		const eventBus = new EventBus();
@@ -108,6 +110,7 @@ export const PdfViewer = ({
 				type: "pages-loaded",
 				message: new Date().toISOString()
 			})
+			onPagesLoaded();
 		});
 
 		eventBus.on('updatefindmatchescount', ({ matchesCount }) => {
@@ -146,7 +149,15 @@ export const PdfViewer = ({
 		});
 		let modFile;
 		if (modifiedFiles[activePageIndex]) {
+			console.log("files here man")
 			modFile = await retrievePDF(`pdfId${activePageIndex}`);
+		}
+		if (!modFile) {
+			try {
+				modFile = await retrievePDF(`original${activePageIndex}`);
+			} catch (err) {
+
+			}
 		}
 		const loadingTask = pdfjs.getDocument(modFile || files[activePageIndex]?.url);
 
