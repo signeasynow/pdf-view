@@ -233,7 +233,7 @@ const App = () => {
 	const [fileLoadFailError, setFileLoadFailError] = useState('');
 
 	const [searchText, setSearchText] = useState('');
-	const [isSplitting, setIsSplitting] = useState(true);
+	const [isSplitting, setIsSplitting] = useState(false);
 	const eventBusRef = useRef(null);
 
 	const [pdfProxyObj, setPdfProxyObj] = useState(null);
@@ -706,7 +706,7 @@ const App = () => {
 	}
 
 	const showSubheader = () => {
-		return !!tools?.editing?.length
+		return !!tools?.editing?.length || tools?.general?.includes("thumbnails")
 	}
 
 	const onAddOperation = (operation) => {

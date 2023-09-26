@@ -69,6 +69,10 @@ const Subheader = ({
 		return length;
 	}
 
+	const showUndoRedo = () => {
+		return !!tools?.editing?.length;
+	}
+
 	return (
 		<Wrapper>
 			<div css={contentLeftStyle}>
@@ -114,23 +118,29 @@ const Subheader = ({
 			}
 			<div css={contentLeftStyle}>
 				<>
-					<AccessibleButton
-						onClick={undoLastAction} 
-						ariaLabel={t("undo")}
-					>
-						<HeaderBtn
-							style={{opacity: undoStackLength ? 1 : 0.5}}
-							title={t("undo")} iconAlt={t("undo")} icon={Undo} />
-					</AccessibleButton>
-					<AccessibleButton
-						onClick={redoLastAction} 
-						ariaLabel={t("redo")}
-					>
-						<HeaderBtn
-							style={{opacity: redoStackLength ? 1 : 0.5}}
-							title={t("redo")} iconAlt={t("redo")} icon={Redo} />
-					</AccessibleButton>
-					<VerticalDivider />
+					{
+						showUndoRedo() && (
+							<>
+								<AccessibleButton
+									onClick={undoLastAction} 
+									ariaLabel={t("undo")}
+								>
+									<HeaderBtn
+										style={{opacity: undoStackLength ? 1 : 0.5}}
+										title={t("undo")} iconAlt={t("undo")} icon={Undo} />
+								</AccessibleButton>
+								<AccessibleButton
+									onClick={redoLastAction} 
+									ariaLabel={t("redo")}
+								>
+									<HeaderBtn
+										style={{opacity: redoStackLength ? 1 : 0.5}}
+										title={t("redo")} iconAlt={t("redo")} icon={Redo} />
+								</AccessibleButton>
+								<VerticalDivider />
+							</>
+						)
+					}
 					{
 						tools?.editing?.includes("extract") && (
 							<div style={{position: "relative"}}>
