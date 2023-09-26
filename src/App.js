@@ -883,7 +883,7 @@ const App = () => {
 			return;
 		}
 		const operation = { action: "rotate", pages: pagesToRotate, clockwise};
-		setMultiPageSelections([]);
+		// setMultiPageSelections([]);
 		const bufferResult = await applyOperation(operation, buffer);
 		await savePDF(bufferResult, pdfId);
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
@@ -903,7 +903,7 @@ const App = () => {
 		const numPages = pdfProxyObj?.numPages;
 		const pagesToRotate = Array.from({length: numPages}).map((_, i) => i + 1);
 		const operation = { action: "rotate", pages: pagesToRotate, clockwise};
-		setMultiPageSelections([]);
+		// setMultiPageSelections([]);
 		const bufferResult = await applyOperation(operation, buffer);
 		await savePDF(bufferResult, pdfId);
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
