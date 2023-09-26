@@ -364,6 +364,9 @@ const App = () => {
 			if (typeof event.data === 'object' && event.data.licenseKey) {
 				setInputtedLicenseKey(event.data.licenseKey);
 			}
+			if (typeof event.data === 'object' && !!event.data.mode) {
+				setIsSplitting(event.data.mode === "split");
+			}
 			if (event.data?.type === 'fromCore') {
 				const id = event.data.id;
 				if (pendingRequests[id]) {
@@ -434,7 +437,7 @@ const App = () => {
 		}
 		// setModifiedFiles(newModifiedPayload);
 		// setFileNames([fileNames[0].replace('.pdf', '-split.pdf')]);
-		
+		setSplitMarkers([]);
 		window.parent.postMessage({ type: "split-pages-completed"});
 
 	}

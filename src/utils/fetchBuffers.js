@@ -25,10 +25,11 @@ async function fetchBuffers(files) {
   const successfulBuffers = [];
   const processingTasks = results.map(async (result, idx) => {
     if (result.status === "fulfilled") {
+      console.log("fulfilled here")
       successfulBuffers.push(result.value);
     } else {
       try {
-        const buffer = await blobUrlToArrayBuffer(files[idx]);
+        const buffer = await blobUrlToArrayBuffer(files[idx].url);
         successfulBuffers.push(buffer);
       } catch (err) {
         console.error(`Error converting blob to array buffer for pdfId${idx}:`, err);

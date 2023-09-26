@@ -31,7 +31,6 @@ function useDownload(files, fileName, isSandbox) {
 		}
 		console.log(files, 'files bro here')
     const successfulBuffers = await fetchBuffers(files);
-		console.log(successfulBuffers, 'successfulBuffers');
 		if (!successfulBuffers.length) {
 			return alert("Nothing to download.");
 		}
