@@ -296,9 +296,9 @@ const App = () => {
 	const [inputtedLicenseKey, setInputtedLicenseKey] = useState(null);
 	const [files, setFiles] = useState([]);
 
-	const { triggerDownload: onDownload } = useDownload(files, fileName, isSandbox);
-
 	const [fileNames, setFileNames] = useState([]);
+	const { triggerDownload: onDownload } = useDownload(files, fileName, isSandbox, fileNames);
+
 
 	const initialRedoUndoObject = () => {
 		const result = {};
@@ -497,7 +497,7 @@ const App = () => {
 		const errors = [];
 	
 		const successfulBuffers = await fetchBuffers(files);
-		console.log(successfulBuffers.length, 'success', successfulBuffers)
+		// console.log(successfulBuffers.length, 'success', successfulBuffers)
 		if (successfulBuffers.length > 0) {
 			const modifiedPdfArray = await combinePDFs(successfulBuffers);
 			await savePDF(modifiedPdfArray.buffer, pdfId);
@@ -505,8 +505,22 @@ const App = () => {
 			newModifiedPayload[activePageIndex] = new Date().toISOString();
 			setModifiedFiles(newModifiedPayload);
 			setFileNames([fileNames[0].replace('.pdf', '-merged.pdf')]);
-			// setFiles(files.slice(0, 1))
-			// window.parent.postMessage({ type: "combine-files-completed", message: modifiedPdfArray });
+			const update = [
+				{
+					name: fileNames[0].replace('.pdf', '-merged.pdf'),
+					url: modifiedPdfArray.slice(0)
+				}
+			]
+			// setFiles(update);
+			/*
+			for (let i = 1; i < files.length; i ++) {
+				await Promise.all([
+					deletePDF(`pdfId${i}`),
+					deletePDF(`original${i}`)
+				]);
+			}
+			*/
+			window.parent.postMessage({ type: "combine-files-completed", message: modifiedPdfArray });
 		} else {
 			// Handle case where no PDFs were successfully retrieved
 		}

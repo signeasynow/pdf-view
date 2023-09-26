@@ -24,13 +24,12 @@ const downloadAll = async (pdfBuffers) => {
   URL.revokeObjectURL(url);
 };
 
-function useDownload(files, fileName, isSandbox) {
+function useDownload(files, fileName, isSandbox, fileNames) {
 	const triggerDownload = async () => {
 		if (isSandbox) {
 			// return alert("Download is not enabled in Sandbox mode.");
 		}
-		console.log(files, 'files bro here')
-    const successfulBuffers = await fetchBuffers(files);
+    const successfulBuffers = await fetchBuffers(files.slice(0, fileNames.length));
 		if (!successfulBuffers.length) {
 			return alert("Nothing to download.");
 		}
