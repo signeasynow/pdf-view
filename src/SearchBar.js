@@ -15,6 +15,7 @@ const visibleSearchWrapper = css`
   font-family: Lato;
   font-size: 14px;
   color: #5b5b5b;
+	z-index: 4;
 `;
 
 const invisibleSearchWrapper = css`

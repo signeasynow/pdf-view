@@ -270,7 +270,7 @@ const App = () => {
 	const [tools, setTools] = useState([]);
 
 	const onSearchBtnClick = () => {
-		setShowSearch(() => !showSearch);
+		setShowSearch((prev) => !prev);
 	};
 
 	const onPanelBtnClick = () => {
