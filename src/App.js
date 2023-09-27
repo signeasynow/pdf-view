@@ -6,7 +6,7 @@ import Header from './Header/Header';
 import Subheader from './Subheader';
 import Tabs from './components/Tabs';
 import { useDebounce } from './utils/useDebounce';
-import SearchBar from './SearchBar';
+import SearchBar from './components/Searchbar';
 import { PdfViewer } from './PdfViewer';
 import Panel from './components/Panel';
 import { heightOffset0, heightOffset1, heightOffset3, heightOffsetTabs } from "./constants";
@@ -724,6 +724,8 @@ const App = () => {
 		|| tools?.editing?.includes("rotation")
 	}
 
+	const [searchBarView, setSearchBarView] = useState("ai");
+
 	const showSubheader = () => {
 		return !!tools?.editing?.length || tools?.general?.includes("thumbnails")
 	}
@@ -1302,6 +1304,8 @@ const App = () => {
 						/>
 					</div>
 					<SearchBar
+						searchBarView={searchBarView}
+						setSearchBarView={setSearchBarView}
 						onClear={onClearSearch}
 						onToggleWholeWord={onToggleWholeWord}
 						searchText={searchText}
