@@ -6,7 +6,7 @@ import { EventBus, PDFLinkService, PDFViewer, PDFFindController, PDFScriptingMan
 import 'pdfjs-dist/web/pdf_viewer.css';
 import { heightOffset0, heightOffset1, heightOffset3, heightOffsetTabs } from "./constants";
 import { retrievePDF, savePDF } from './utils/indexDbUtils';
-import { invokePlugin } from './utils/pluginUtils';
+import { extractAllTextFromPDF } from './utils/extractAllTextFromPdf';
 import { addSandboxWatermark } from './utils/addSandboxWatermark';
 const SANDBOX_BUNDLE_SRC = 'pdfjs-dist/build/pdf.sandbox.js';
 
@@ -28,6 +28,7 @@ const containerStyle = css`
 
 export const PdfViewer = ({
 	activePageIndex,
+	setPdfText,
 	activePage,
 	modifiedFiles,
 	showHeader,
@@ -79,7 +80,6 @@ export const PdfViewer = ({
 	}
 
 	const applyDocument = async (viewerContainer) => {
-		console.log("applying bro")
 		await cleanupDocument();
 
 		const eventBus = new EventBus();
@@ -149,7 +149,6 @@ export const PdfViewer = ({
 		});
 		let modFile;
 		if (modifiedFiles[activePageIndex]) {
-			console.log("files here man")
 			modFile = await retrievePDF(`pdfId${activePageIndex}`);
 		}
 		if (!modFile) {
@@ -177,6 +176,8 @@ export const PdfViewer = ({
 				if (!modifiedFiles[activePageIndex]) {
 					savePDF(new Uint8Array(await loadedPdfDocument.getData()).slice(0), `original${activePageIndex}`);
 				}
+				const text = await extractAllTextFromPDF(loadedPdfDocument);
+				setPdfText(text);
 			},
 			reason => {
 				setFileLoadFailError(reason?.message);

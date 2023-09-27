@@ -38,6 +38,7 @@ const Panel = ({
 	splitMarkers,
 	showPanel,
 	tools,
+	showSearch,
 	isSplitting,
 	fileName,
 	setActivePage,
@@ -76,6 +77,7 @@ const Panel = ({
 
 	if (showFullScreenThumbnails) {
 		return <FullScreenThumbnails
+		showSearch={showSearch}
 		fileName={fileName}
 		splitMarkers={splitMarkers}
 		onClickSplit={onClickSplit}

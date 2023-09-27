@@ -243,6 +243,8 @@ const App = () => {
 	const viewerContainerRef1 = useRef(null);
 	const viewerContainerRef2 = useRef(null);
 
+	const [pdfText, setPdfText] = useState("");
+
 	const [expandedViewThumbnailScale, setExpandedViewThumbnailScale] = useState(2);
 	const [thumbnailScale, setThumbnailScale] = useState(2);
 
@@ -1241,6 +1243,7 @@ const App = () => {
 					{
 						tools?.general?.includes('thumbnails') && (
 							<Panel
+								showSearch={showSearch}
 								splitMarkers={splitMarkers}
 								onClickSplit={onClickSplit}
 								isSplitting={isSplitting}
@@ -1268,6 +1271,7 @@ const App = () => {
 					}
 					<div css={pdfViewerWrapper}>
 						<PdfViewer
+							setPdfText={setPdfText}
 							onPagesLoaded={() => {}}
 							setDocumentLoading={setDocumentLoading}
 							setModifiedFiles={setModifiedFiles}

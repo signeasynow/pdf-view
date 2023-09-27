@@ -15,7 +15,6 @@ const wrapperStyle = css`
 
 const fullScreenWrapper = css`
   position: absolute;
-	width: 100vw;
 	height: 100%;
 	z-index: 4;
 	background: #282828;
@@ -54,6 +53,7 @@ const thumbnailStyle = css`
 
 const FullScreenThumbnails = ({
   onDragEnd,
+  showSearch,
   splitMarkers,
   fileName,
   documentLoading,
@@ -138,6 +138,13 @@ const FullScreenThumbnails = ({
     setDragRect(null);
     setMouseUp(new Date().toISOString());
   };
+
+  const getWidth = () => {
+    if (showSearch) {
+      return "calc(100vw - 300px)";
+    }
+    return "100vw";
+  }
   
   useEffect(() => {
     if (dragStart) {
@@ -262,7 +269,7 @@ const FullScreenThumbnails = ({
   if (documentLoading) {
     return (
       <div css={wrapperStyle}>
-        <div css={fullScreenWrapper}>
+        <div style={{width: getWidth()}} css={fullScreenWrapper}>
           <div style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
             <div style={{marginTop: 20, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column"}}>
               <LoadingSpinner />
@@ -293,7 +300,7 @@ const FullScreenThumbnails = ({
           border: '2px solid blue',
         }} />
       )}
-      <div css={fullScreenWrapper}>
+      <div style={{width: getWidth()}} css={fullScreenWrapper}>
         {thumbnails}
         {
           dragOverIndex === numPages + 1 && (
