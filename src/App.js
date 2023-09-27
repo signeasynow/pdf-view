@@ -31,6 +31,7 @@ import useListenForMergeFilesRequest from './hooks/useListenForMergeFilesRequest
 import useListenForCombineFilesRequest from './hooks/useListForCombineFilesRequest';
 import useListenForSplitPagesRequest from './hooks/useListenForSplitPagesRequest';
 import { PDFDocument, degrees } from 'pdf-lib';
+import { extractAllTextFromPDF } from './utils/extractAllTextFromPdf';
 
 async function splitPdfPages(pdfBytes, splitIndices) {
 	console.log(splitIndices, 'splitIndices')
@@ -349,6 +350,8 @@ const App = () => {
 		setFileNames(event.data.files.map((each) => each.name))
 	}
 
+	const [inputtedUuid, setInputtedUuid] = useState("");
+
 	useEffect(() => {
 		window.addEventListener('message', (event) => {
 			if (typeof event.data === 'object' && event.data.files?.length) {
@@ -368,6 +371,9 @@ const App = () => {
 			}
 			if (typeof event.data === 'object' && !!event.data.mode) {
 				setIsSplitting(event.data.mode === "split");
+			}
+			if (typeof event.data === 'object' && !!event.data.uuid) {
+				setInputtedUuid(event.data.uuid);
 			}
 			if (event.data?.type === 'fromCore') {
 				const id = event.data.id;
@@ -1142,6 +1148,13 @@ const App = () => {
 	const forceFullThumbnailsView = () => {
 		return isSmallScreen && showPanel;
 	}
+	console.log(pdfText, 'pdfText', inputtedUuid)
+
+	const onEmbed = async () => {
+		const { data, error } = await supabase.functions.invoke('embed', {
+      body: { user_id: inputtedUuid, paragraphs: pdfText },
+    });
+	}
 
 	const onMinimize = () => {
 		setShowFullScreenThumbnails(false);
@@ -1304,6 +1317,7 @@ const App = () => {
 						/>
 					</div>
 					<SearchBar
+						onEmbed={onEmbed}
 						searchBarView={searchBarView}
 						setSearchBarView={setSearchBarView}
 						onClear={onClearSearch}

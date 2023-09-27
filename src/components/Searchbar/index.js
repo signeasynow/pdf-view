@@ -7,6 +7,7 @@ import ChevronLeft from '../../../assets/chevron-left-svgrepo-com.svg';
 import ChevronRight from '../../../assets/chevron-right-svgrepo-com.svg';
 import { useTranslation } from 'react-i18next';
 import SearchbarTools from './SearchbarTools';
+import ConversationSection from './ConversationSection';
 
 const visibleSearchWrapper = css`
   background: #f1f3f5;
@@ -17,6 +18,7 @@ const visibleSearchWrapper = css`
   font-size: 14px;
   color: #5b5b5b;
 	z-index: 4;
+	position: relative;
 `;
 
 const invisibleSearchWrapper = css`
@@ -43,6 +45,14 @@ const inputCloseStyle = css`
 
 const innerWrapperStyle = css`
   padding: 8px;
+`;
+
+const aiWrapperStyle = css`
+  padding: 8px;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
 `;
 
 const belowInputStyle = css`
@@ -99,6 +109,7 @@ const SearchBar = ({
 	setSearchBarView,
 	searchBarView,
 	searchText,
+	onEmbed,
 	onChange,
 	matchesCount,
 	onNext,
@@ -130,42 +141,7 @@ const SearchBar = ({
 								}} />
 							</div>
 						</div>
-						<div css={innerWrapperStyle}>
-							<div>
-								<div css={inputWrapperStyle}>
-									<input css={inputStyle} ref={searchTextRef} onChange={onChange} placeholder={t("searchDocument")} />
-									{
-										!!searchText && <button css={inputCloseStyle} onClick={onClickClear}>✖</button>
-									}
-								</div>
-							</div>
-							<div css={belowInputStyle}>
-								<input value={caseSensitive} onClick={onToggleCaseSensitive} type="checkbox" id="caseSensitive" />
-								<label css={checkboxLabelStyle} htmlFor="caseSensitive">{t("caseSensitive")}</label>
-								<input value={matchWholeWord} onClick={onToggleWholeWord} type="checkbox" id="wholeWord" />
-								<label css={checkboxLabelStyle} htmlFor="wholeWord">{t("wholeWord")}</label>
-								{
-									!!searchText && (
-										<>
-											<hr css={hrStyle} />
-											<div css={resultsCountSectionStyle}>
-												<div>
-												{t('resultsFound', { count: matchesCount })}
-												</div>
-												<div css={arrowsStyle}>
-													<div onClick={onPrev}>
-														<Icon src={ChevronLeft} alt={t("arrowLeft")} />
-													</div>
-													<div onClick={onNext}>
-														<Icon src={ChevronRight} alt={t("arrowRight")} />
-													</div>
-												</div>
-											</div>
-										</>
-									)
-								}
-							</div>
-						</div>
+						<ConversationSection onEmbed={onEmbed} />
 					</>
 				)
 			}

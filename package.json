@@ -53,7 +53,7 @@
     "i18next": "^23.4.6",
     "jszip": "^3.10.1",
     "pdf-lib": "^1.17.1",
-    "pdf_editor_aleon35_react_plugin": "^1.0.62",
+    "pdf_editor_aleon35_react_plugin": "^1.0.72",
     "pdfjs-dist": "^3.7.107",
     "preact": "^10.15.1",
     "preact-compat": "^3.19.0",
