@@ -137,7 +137,7 @@ const ConversationSection = ({
           </div>
         </div>
 				<button onClick={onEmbed}>Embed</button>
-
+        
         <div css={inputContainerStyle}>
           {/* Input area */}
           <div ref={inputRef} css={inputWrapperStyle}>
@@ -148,7 +148,7 @@ const ConversationSection = ({
               onChange={handleChange}
               placeholder={"Ask your document a question"}
             />
-            <button onClick={handleSendQuestion}>Send</button>
+            <button style={{fontSize: 16}} onClick={handleSendQuestion}>⮕</button>
           </div>
         </div>
       </div>
