@@ -10,6 +10,16 @@ import SearchbarTools from './SearchbarTools';
 import ConversationSection from './ConversationSection';
 import { extractLastThreeQA } from '../../utils/extractLastQaQuestions';
 
+const confirmBtnStyle = css`
+  background: #3183c8;
+  color: white;
+  border: 1px solid transparent;
+  font-size: 16px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+`
+
 const visibleSearchWrapper = css`
   background: #f1f3f5;
   width: 300px;
@@ -99,6 +109,7 @@ const thumbnailTopActionsWrapper = css`
 `;
 
 const SearchBar = ({
+	aiDocId,
 	showSearch,
 	setSearchBarView,
 	searchBarView,
@@ -162,23 +173,44 @@ const SearchBar = ({
 						<div css={topSectionStyle}>
 							<div css={thumbnailTopActionsWrapper}>
 								<SearchbarTools
+									aiDocId={aiDocId}
 									onRemoveChatHistory={handleRemoveChatHistory}
 									searchBarView={searchBarView} onToggle={() => {
 									setSearchBarView("search")
 								}} />
 							</div>
 						</div>
-						<ConversationSection
-							conversation={conversation}
-							conversationContainerRef={conversationContainerRef}
-							loading={loading}
-							rows={rows}
-							setRows={setRows}
-							handleSendQuestion={handleSendQuestion}
-							onFindCitation={onChange}
-							onAskQuestion={onAskQuestion}
-							onEmbed={onEmbed}
-						/>
+						{
+							!aiDocId && (
+								<div style={{margin: 8, display: "flex", flexDirection: "column"}}>
+									<button disabled={loading} onClick={() => {
+										setLoading(true);
+										onEmbed().then(() => {
+											setLoading(false);
+										}).catch((err) => {
+											alert("Something went wrong. Please try again later.")
+											setLoading(false);
+										})
+									}} css={confirmBtnStyle}>{loading ? "Please wait..." : "Enable AI Discussions"}</button>
+									<p>Activate to let AI answer queries about this document.</p>
+								</div>
+							)
+						}
+						{
+							!!aiDocId && (
+								<ConversationSection
+									conversation={conversation}
+									conversationContainerRef={conversationContainerRef}
+									loading={loading}
+									rows={rows}
+									setRows={setRows}
+									handleSendQuestion={handleSendQuestion}
+									onFindCitation={onChange}
+									onAskQuestion={onAskQuestion}
+									onEmbed={onEmbed}
+								/>
+							)
+						}
 					</>
 				)
 			}

@@ -10,7 +10,8 @@ import { useModal } from '../../Contexts/ModalProvider';
 const SearchbarTools = ({
   onToggle,
   searchBarView,
-  onRemoveChatHistory
+  onRemoveChatHistory,
+  aiDocId
 }) => {
 
   const { t } = useTranslation();
@@ -29,18 +30,22 @@ const SearchbarTools = ({
             <Icon src={SearchIcon} alt={t("expand")} />
           </AccessibleButton>
         </Tooltip>
-        <div style={{marginLeft: 8}}>
-          <Tooltip title={"Delete chat"}>
-            <AccessibleButton
-              onClick={() => showModal("Proceeding will delete your chat history and remove the PDF from our records. Are you sure?", () => {
-                onRemoveChatHistory();
-              })} 
-              ariaLabel={"Delete chat"}
-            >
-              <Icon src={ChatDelete} alt={"Delete chat"} />
-            </AccessibleButton>
-          </Tooltip>
-        </div>
+        {
+          !!aiDocId && (
+            <div style={{marginLeft: 8}}>
+              <Tooltip title={"Delete chat"}>
+                <AccessibleButton
+                  onClick={() => showModal("Proceeding will delete your chat history and remove the PDF from our records. Are you sure?", () => {
+                    onRemoveChatHistory();
+                  })} 
+                  ariaLabel={"Delete chat"}
+                >
+                  <Icon src={ChatDelete} alt={"Delete chat"} />
+                </AccessibleButton>
+              </Tooltip>
+            </div>
+          )
+        }
       </>
     );
   }

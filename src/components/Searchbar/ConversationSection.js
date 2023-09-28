@@ -32,6 +32,7 @@ cursor: pointer;
 
 const inputWrapperStyle = css`
   display: flex;
+  margin: 0 2px;
 `;
 
 const conversationContentStyle = css`
@@ -166,7 +167,7 @@ const ConversationSection = ({
               onChange={handleChange}
               placeholder={"Ask your document a question"}
             />
-            <button disabled={loading} style={{fontSize: 16}} onClick={handleSubmit}>{loading ? <LoadingSpinner size="sm" /> : "⮕"}</button>
+            <button disabled={loading} style={{cursor: "pointer", fontSize: 16, border: "none", borderBottomRightRadius: "2px", borderTopRightRadius: "2px", color: "white", background: "#3183c8"}} onClick={handleSubmit}>{loading ? <LoadingSpinner size="sm" /> : "⮕"}</button>
           </div>
           <p css={disclaimerStyle}>AI may produce inaccurate information and citations.</p>
         </div>

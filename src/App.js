@@ -1164,6 +1164,7 @@ const App = () => {
 		const docId = data?.docId || "";
 		setAiDocId(docId);
 		localStorage.setItem("aiDocId", docId);
+		return;
 	}
 
 	const onRemoveChatHistory = async () => {
@@ -1354,6 +1355,7 @@ const App = () => {
 							/>
 						</div>
 						<SearchBar
+							aiDocId={aiDocId}
 							onRemoveChatHistory={onRemoveChatHistory}
 							onAskQuestion={onAskQuestion}
 							onEmbed={onEmbed}
