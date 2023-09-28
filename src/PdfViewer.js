@@ -177,7 +177,6 @@ export const PdfViewer = ({
 					savePDF(new Uint8Array(await loadedPdfDocument.getData()).slice(0), `original${activePageIndex}`);
 				}
 				const text = await extractAllTextFromPDF(loadedPdfDocument);
-				console.log(text, 'extr3')
 				setPdfText(text);
 			},
 			reason => {

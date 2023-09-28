@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { useRef } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import { Icon } from 'aleon_35_pdf_ui_lib';
 import ChevronLeft from '../../../assets/chevron-left-svgrepo-com.svg';
@@ -8,6 +8,7 @@ import ChevronRight from '../../../assets/chevron-right-svgrepo-com.svg';
 import { useTranslation } from 'react-i18next';
 import SearchbarTools from './SearchbarTools';
 import ConversationSection from './ConversationSection';
+import { extractLastThreeQA } from '../../utils/extractLastQaQuestions';
 
 const visibleSearchWrapper = css`
   background: #f1f3f5;
@@ -46,14 +47,6 @@ const inputCloseStyle = css`
 
 const innerWrapperStyle = css`
   padding: 8px;
-`;
-
-const aiWrapperStyle = css`
-  padding: 8px;
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	right: 0;
 `;
 
 const belowInputStyle = css`
@@ -123,6 +116,29 @@ const SearchBar = ({
 	onRemoveChatHistory,
 	onClear
 }) => {
+	const [conversation, setConversation] = useState(JSON.parse(localStorage.getItem('conversation')) || []);
+
+	const conversationContainerRef = useRef(null); // New ref for the conversation container
+
+	const [loading, setLoading] = useState(false);
+  const [rows, setRows] = useState(1);
+
+	const handleSendQuestion = (questionText) => {
+		console.log("triggeringgg")
+    setRows(1);
+    setLoading(true);
+    onAskQuestion(questionText, extractLastThreeQA(conversation)).then((answerText) => {
+      setConversation([
+        ...conversation,
+        { type: 'question', text: questionText },
+        { type: 'answer', text: answerText.answer }
+      ]);
+      setLoading(false);
+    }).catch((err) => {
+      alert("Something went wrong. Please reload the page and try again.")
+      setLoading(false);
+    });
+  };
 
 	const { t } = useTranslation();
 	const searchTextRef = useRef('');
@@ -132,6 +148,12 @@ const SearchBar = ({
 		onClear();
 	};
 
+	const handleRemoveChatHistory = () => {
+		setConversation([]);
+		localStorage.setItem('conversation', '[]');
+		onRemoveChatHistory();
+	}
+
 	return (
 		<div css={showSearch ? visibleSearchWrapper : invisibleSearchWrapper}>
 			{
@@ -139,12 +161,24 @@ const SearchBar = ({
 					<>
 						<div css={topSectionStyle}>
 							<div css={thumbnailTopActionsWrapper}>
-								<SearchbarTools searchBarView={searchBarView} onToggle={() => {
+								<SearchbarTools
+									onRemoveChatHistory={handleRemoveChatHistory}
+									searchBarView={searchBarView} onToggle={() => {
 									setSearchBarView("search")
 								}} />
 							</div>
 						</div>
-						<ConversationSection onFindCitation={onChange} onAskQuestion={onAskQuestion} onEmbed={onEmbed} />
+						<ConversationSection
+							conversation={conversation}
+							conversationContainerRef={conversationContainerRef}
+							loading={loading}
+							rows={rows}
+							setRows={setRows}
+							handleSendQuestion={handleSendQuestion}
+							onFindCitation={onChange}
+							onAskQuestion={onAskQuestion}
+							onEmbed={onEmbed}
+						/>
 					</>
 				)
 			}

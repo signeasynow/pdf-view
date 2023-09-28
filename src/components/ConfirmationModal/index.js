@@ -67,7 +67,7 @@ export const ConfirmationModal = ({ onConfirm, message }) => {
         <button css={confirmBtnStyle} variant="primary" size="sm" onClick={() => {
           // Handle confirm action here
           onConfirm?.();
-          hideModal();
+          handleClose?.();
         }}>
           Confirm
         </button>
