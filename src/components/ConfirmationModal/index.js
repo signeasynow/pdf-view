@@ -51,7 +51,7 @@ const closeBtnStyle = css`
   cursor: pointer;
 `
 
-export const ConfirmationModal = ({ message, onClose }) => {
+export const ConfirmationModal = ({ onConfirm, message }) => {
 
   const { hideModal } = useModal();
 
@@ -66,7 +66,7 @@ export const ConfirmationModal = ({ message, onClose }) => {
         <p>{message}</p>
         <button css={confirmBtnStyle} variant="primary" size="sm" onClick={() => {
           // Handle confirm action here
-          onClose?.();
+          onConfirm?.();
           hideModal();
         }}>
           Confirm

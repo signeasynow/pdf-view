@@ -31,7 +31,9 @@ const SearchbarTools = ({
         <div style={{marginLeft: 8}}>
           <Tooltip title={"Delete chat"}>
             <AccessibleButton
-              onClick={() => showModal("Proceeding will delete your chat history and delete the PDF from our records. Are you sure?")} 
+              onClick={() => showModal("Proceeding will delete your chat history and remove the PDF from our records. Are you sure?", () => {
+                console.log("FINAL DONE")
+              })} 
               ariaLabel={"Delete chat"}
             >
               <Icon src={ChatDelete} alt={"Delete chat"} />

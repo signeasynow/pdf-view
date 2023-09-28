@@ -9,10 +9,13 @@ export const useModal = () => useContext(ModalContext);
 export const ModalProvider = ({ children }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [message, setMessage] = useState('');
+  const [onConfirmCallback, setOnConfirmCallback] = useState(null);
 
-  const showModal = (msg) => {
+  const showModal = (msg, onConfirm) => {
     setMessage(msg);
     setIsVisible(true);
+    console.log(onConfirm, 'onConfirm')
+    setOnConfirmCallback(() => onConfirm); // Storing the callback
   };
 
   const hideModal = () => {
@@ -22,7 +25,7 @@ export const ModalProvider = ({ children }) => {
 
   return (
     <ModalContext.Provider value={{ showModal, hideModal }}>
-      {isVisible && <ConfirmationModal message={message} onClose={hideModal} />}
+      {isVisible && <ConfirmationModal onConfirm={onConfirmCallback} message={message} onClose={hideModal} />}
       {children}
     </ModalContext.Provider>
   );
