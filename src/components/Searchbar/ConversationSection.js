@@ -6,6 +6,18 @@ import UserIcon from '../../../assets/user-svgrepo-com.svg';
 import { Icon } from "aleon_35_pdf_ui_lib";
 import { LoadingSpinner } from '../LoadingSpinner';
 
+const separateCitation = (text) => {
+  const citationRegex = /{"citation":\s*"(.*?)"}\s*/;
+  const match = text.match(citationRegex);
+  if (match) {
+    return {
+      main: text.replace(citationRegex, '').trim(),
+      citation: match[1].trim(),
+    };
+  }
+  return { main: text };
+};
+
 const inputWrapperStyle = css`
   display: flex;
 `;
@@ -48,6 +60,7 @@ const aiWrapperStyle = css`
 
 const ConversationSection = ({
   onChange,
+  onFindCitation,
 	onEmbed,
   onAskQuestion,
   onSendQuestion, // Assuming this function handles sending the question to AI for answers
@@ -128,6 +141,12 @@ const ConversationSection = ({
     margin-top: 60px;
   `;
 
+  const citationStyle = css`
+    color: #0b6fcc;
+    font-style: italic;
+    cursor: pointer;
+  `
+
   return (
     <div css={aiWrapperStyle}>
       <div>
@@ -137,7 +156,16 @@ const ConversationSection = ({
             {conversation.map((entry, index) => (
               <div css={conversationEntryStyle} key={index}>
                 {entry.type === "question" ? <Icon src={UserIcon}/> : <Icon src={RobotIcon}/>}
-                {entry.text}
+                <div>{separateCitation(entry.text).main}</div>
+                {
+                  !!separateCitation(entry.text).citation && (
+                    <div onClick={() => onFindCitation({
+                      target: {
+                        value: separateCitation(entry.text).citation
+                      }
+                    })} css={citationStyle}>‟{separateCitation(entry.text).citation}”</div>
+                  )
+                }
               </div>
             ))}
           </div>

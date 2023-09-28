@@ -143,7 +143,7 @@ const SearchBar = ({
 								}} />
 							</div>
 						</div>
-						<ConversationSection onAskQuestion={onAskQuestion} onEmbed={onEmbed} />
+						<ConversationSection onFindCitation={onChange} onAskQuestion={onAskQuestion} onEmbed={onEmbed} />
 					</>
 				)
 			}

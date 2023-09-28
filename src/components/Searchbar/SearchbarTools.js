@@ -14,7 +14,7 @@ const SearchbarTools = ({
 
   const { t } = useTranslation();
   
-  const { showModal, hideModal } = useModal();
+  const { showModal } = useModal();
 
 
   if (searchBarView === "ai") {
