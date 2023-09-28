@@ -9,7 +9,8 @@ import { useModal } from '../../Contexts/ModalProvider';
 
 const SearchbarTools = ({
   onToggle,
-  searchBarView
+  searchBarView,
+  onRemoveChatHistory
 }) => {
 
   const { t } = useTranslation();
@@ -32,7 +33,7 @@ const SearchbarTools = ({
           <Tooltip title={"Delete chat"}>
             <AccessibleButton
               onClick={() => showModal("Proceeding will delete your chat history and remove the PDF from our records. Are you sure?", () => {
-                console.log("FINAL DONE")
+                onRemoveChatHistory();
               })} 
               ariaLabel={"Delete chat"}
             >

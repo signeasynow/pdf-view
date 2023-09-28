@@ -1167,6 +1167,21 @@ const App = () => {
 		localStorage.setItem("aiDocId", docId);
 	}
 
+	const onRemoveChatHistory = async () => {
+
+		return;
+		const { data, error } = await supabase.functions.invoke('remove_ai_from_doc', {
+      body: { doc_id: aiDocId },
+    });
+		if (error) {
+			alert("Something went wrong. Please try again later.");
+			console.error(`Error embedding: ${error}`);
+			return;
+		}
+		setAiDocId("");
+		localStorage.setItem("aiDocId", "");
+	}
+
 	const onAskQuestion = async (question, prevQuestions) => {
 		const { data, error } = await supabase.functions.invoke('ask_ai', {
       body: { doc_id: aiDocId, question_text: question, last_questions: prevQuestions },
@@ -1342,6 +1357,7 @@ const App = () => {
 							/>
 						</div>
 						<SearchBar
+							onRemoveChatHistory={onRemoveChatHistory}
 							onAskQuestion={onAskQuestion}
 							onEmbed={onEmbed}
 							searchBarView={searchBarView}

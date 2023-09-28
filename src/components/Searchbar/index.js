@@ -120,6 +120,7 @@ const SearchBar = ({
 	matchWholeWord,
 	onToggleCaseSensitive,
 	caseSensitive,
+	onRemoveChatHistory,
 	onClear
 }) => {
 
