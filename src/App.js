@@ -1167,9 +1167,9 @@ const App = () => {
 		localStorage.setItem("aiDocId", docId);
 	}
 
-	const onAskQuestion = async (question) => {
+	const onAskQuestion = async (question, prevQuestions) => {
 		const { data, error } = await supabase.functions.invoke('ask_ai', {
-      body: { doc_id: aiDocId, question_text: question },
+      body: { doc_id: aiDocId, question_text: question, last_questions: prevQuestions },
     });
 		if (error) {
 			alert("Something went wrong. Please try again later.");

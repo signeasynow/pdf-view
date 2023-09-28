@@ -7,15 +7,42 @@ import { Icon } from "aleon_35_pdf_ui_lib";
 import { LoadingSpinner } from '../LoadingSpinner';
 
 const separateCitation = (text) => {
-  const citationRegex = /{"citation":\s*"(.*?)"}\s*/;
-  const match = text.match(citationRegex);
-  if (match) {
-    return {
-      main: text.replace(citationRegex, '').trim(),
-      citation: match[1].trim(),
-    };
+  const citationRegex = /{"citation":\s*"(.*?)"}\s*/g; // Add 'g' flag for global matching
+  let match;
+  const citations = [];
+
+  while ((match = citationRegex.exec(text)) !== null) {
+    const citationText = match[1].trim();
+    const splittedCitations = citationText.split('```').map(c => c.trim()).filter(Boolean);
+    citations.push(...splittedCitations);
   }
-  return { main: text };
+
+  const mainText = text.replace(citationRegex, '').trim();
+  
+  return { main: mainText, citations };
+};
+
+const extractLastThreeQA = (conversation) => {
+  const lastThreeQA = [];
+  let questionCount = 0;
+
+  // Iterating in reverse to get the latest Q&As
+  for (let i = conversation.length - 1; i >= 0; i--) {
+    const entry = conversation[i];
+    if (entry.type === 'question') {
+      questionCount++;
+    }
+    lastThreeQA.unshift({
+      role: entry.type === "question" ? "user" : "assistant",
+      content: separateCitation(entry.text).main
+    });
+
+    if (questionCount === 3) {
+      break;
+    }
+  }
+
+  return lastThreeQA;
 };
 
 const inputWrapperStyle = css`
@@ -63,7 +90,6 @@ const ConversationSection = ({
   onFindCitation,
 	onEmbed,
   onAskQuestion,
-  onSendQuestion, // Assuming this function handles sending the question to AI for answers
 }) => {
 
   const [loading, setLoading] = useState(false);
@@ -87,13 +113,15 @@ const ConversationSection = ({
       conversationContainerRef.current.scrollTop = conversationContainerRef.current.scrollHeight;
     }
   }, [conversation]);
+  
+  console.log(extractLastThreeQA(conversation), 'last 3')
 
   const handleSendQuestion = () => {
     const questionText = searchTextRef.current.value;
     searchTextRef.current.value = '';
     setRows(1);
     setLoading(true);
-    onAskQuestion(questionText).then((answerText) => {
+    onAskQuestion(questionText, extractLastThreeQA(conversation)).then((answerText) => {
       setConversation([
         ...conversation,
         { type: 'question', text: questionText },
@@ -155,16 +183,17 @@ const ConversationSection = ({
           <div css={conversationContentStyle}>
             {conversation.map((entry, index) => (
               <div css={conversationEntryStyle} key={index}>
-                {entry.type === "question" ? <Icon src={UserIcon}/> : <Icon src={RobotIcon}/>}
+                {entry.type === "question" ? <Icon clickable={false} src={UserIcon}/> : <Icon src={RobotIcon}/>}
                 <div>{separateCitation(entry.text).main}</div>
+                {console.log(separateCitation(entry.text), 'ttt')}
                 {
-                  !!separateCitation(entry.text).citation && (
+                  !!separateCitation(entry.text).citations?.length && separateCitation(entry.text).citations.map((citation) => (
                     <div onClick={() => onFindCitation({
                       target: {
-                        value: separateCitation(entry.text).citation
+                        value: citation
                       }
-                    })} css={citationStyle}>‟{separateCitation(entry.text).citation}”</div>
-                  )
+                    })} css={citationStyle}>‟{citation}”</div>
+                  ))
                 }
               </div>
             ))}
