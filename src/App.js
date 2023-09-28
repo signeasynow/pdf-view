@@ -545,7 +545,6 @@ const App = () => {
 	useListenForMergeFilesRequest(onMergeFiles);
 	useListenForSplitPagesRequest(onSplitPages);
 	useListenForCombineFilesRequest(onCombinePdfs);
-	console.log(files, 'files333')
 	useEffect(() => {
 		if (!files[activePageIndex]?.url) {
 			return;
