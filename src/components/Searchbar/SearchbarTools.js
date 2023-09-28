@@ -2,8 +2,10 @@
 import { Icon, Tooltip } from 'aleon_35_pdf_ui_lib';
 import AiIcon from "../../../assets/ai-file-svgrepo-com.svg";
 import SearchIcon from "../../../assets/search-svgrepo-com.svg";
+import ChatDelete from "../../../assets/chat-delete-svgrepo-com.svg";
 import { useTranslation } from 'react-i18next';
 import AccessibleButton from '../AccessibleButton';
+import { useModal } from '../../Contexts/ModalProvider';
 
 const SearchbarTools = ({
   onToggle,
@@ -11,17 +13,32 @@ const SearchbarTools = ({
 }) => {
 
   const { t } = useTranslation();
+  
+  const { showModal, hideModal } = useModal();
+
 
   if (searchBarView === "ai") {
     return (
-      <Tooltip title={"Search text"}>
-        <AccessibleButton
-          onClick={onToggle} 
-          ariaLabel={"Search text"}
-        >
-          <Icon src={SearchIcon} alt={t("expand")} />
-        </AccessibleButton>
-      </Tooltip>
+      <>
+        <Tooltip title={"Search text"}>
+          <AccessibleButton
+            onClick={onToggle} 
+            ariaLabel={"Search text"}
+          >
+            <Icon src={SearchIcon} alt={t("expand")} />
+          </AccessibleButton>
+        </Tooltip>
+        <div style={{marginLeft: 8}}>
+          <Tooltip title={"Delete chat"}>
+            <AccessibleButton
+              onClick={() => showModal("Proceeding will delete your chat history and delete the PDF from our records. Are you sure?")} 
+              ariaLabel={"Delete chat"}
+            >
+              <Icon src={ChatDelete} alt={"Delete chat"} />
+            </AccessibleButton>
+          </Tooltip>
+        </div>
+      </>
     );
   }
 

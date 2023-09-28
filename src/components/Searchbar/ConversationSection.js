@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import RobotIcon from '../../../assets/zap-svgrepo-com.svg';
 import UserIcon from '../../../assets/user-svgrepo-com.svg';
 import { Icon } from "aleon_35_pdf_ui_lib";
+import { LoadingSpinner } from '../LoadingSpinner';
 
 const inputWrapperStyle = css`
   display: flex;
@@ -52,6 +53,7 @@ const ConversationSection = ({
   onSendQuestion, // Assuming this function handles sending the question to AI for answers
 }) => {
 
+  const [loading, setLoading] = useState(false);
   const [conversation, setConversation] = useState(JSON.parse(localStorage.getItem('conversation')) || []);
   const [rows, setRows] = useState(1);
   const searchTextRef = useRef('');
@@ -75,15 +77,19 @@ const ConversationSection = ({
 
   const handleSendQuestion = () => {
     const questionText = searchTextRef.current.value;
+    searchTextRef.current.value = '';
+    setRows(1);
+    setLoading(true);
     onAskQuestion(questionText).then((answerText) => {
-      console.log(answerText, 'answer text down here')
       setConversation([
         ...conversation,
         { type: 'question', text: questionText },
         { type: 'answer', text: answerText.answer }
       ]);
-      searchTextRef.current.value = '';
-      setRows(1);
+      setLoading(false);
+    }).catch((err) => {
+      alert("Something went wrong. Please reload the page and try again.")
+      setLoading(false);
     });
   };
 
@@ -136,8 +142,7 @@ const ConversationSection = ({
             ))}
           </div>
         </div>
-				<button onClick={onEmbed}>Embed</button>
-        
+				{/*<button onClick={onEmbed}>Embed</button>*/}
         <div css={inputContainerStyle}>
           {/* Input area */}
           <div ref={inputRef} css={inputWrapperStyle}>
@@ -148,7 +153,7 @@ const ConversationSection = ({
               onChange={handleChange}
               placeholder={"Ask your document a question"}
             />
-            <button style={{fontSize: 16}} onClick={handleSendQuestion}>⮕</button>
+            <button disabled={loading} style={{fontSize: 16}} onClick={handleSendQuestion}>{loading ? <LoadingSpinner size="sm" /> : "⮕"}</button>
           </div>
         </div>
       </div>

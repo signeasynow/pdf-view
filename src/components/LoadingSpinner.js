@@ -19,9 +19,11 @@ const spinnerStyle = css`
   }
 `;
 
-export function LoadingSpinner() {
+export function LoadingSpinner({
+  size = "md"
+}) {
 
   return (
-    <div css={spinnerStyle}></div>
+    <div style={{height: size === "sm" ? 12: "", width: size === "sm" ? 12: ""}} css={spinnerStyle}></div>
   );
 };

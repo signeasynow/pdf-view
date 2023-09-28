@@ -32,6 +32,7 @@ import useListenForCombineFilesRequest from './hooks/useListForCombineFilesReque
 import useListenForSplitPagesRequest from './hooks/useListenForSplitPagesRequest';
 import { PDFDocument, degrees } from 'pdf-lib';
 import { extractAllTextFromPDF } from './utils/extractAllTextFromPdf';
+import { ModalProvider } from './Contexts/ModalProvider';
 
 async function splitPdfPages(pdfBytes, splitIndices) {
 	console.log(splitIndices, 'splitIndices')
@@ -1230,134 +1231,136 @@ const App = () => {
 
 	return (
 		<I18nextProvider i18n={i18n}>
-			{/*<button onClick={onClickTestHandler}>Crazy btn</button>*/}
-			<div style={{height: mainHeight()}}>
-				{
-					showHeader() && (
-						<Header
-							showFullScreenThumbnails={showFullScreenThumbnails}
-							defaultZoom={defaultZoom}
-							tools={tools}
-							onDownload={onDownload}
-							pdfProxyObj={pdfProxyObj}
-							onRotate={onRotate}
-							viewerContainerRef={getTargetContainer()}
-							pdfViewerObj={pdfViewerObj}
-							onSearch={onSearchBtnClick}
-							onPanel={onPanelBtnClick}
-							leftPanelEnabled={showPanel}
-						/>
-					)
-				}
-				{
-					showSubheader() && (
-						<Subheader
-							canExtract={canExtract()}
-							onExtract={onExtract}
-							tools={tools}
-							canDelete={canDelete()}
-							undoStackLength={operations[activePageIndex]?.length}
-							redoStackLength={redoStack[activePageIndex]?.length}
-							setExpandedViewThumbnailScale={setExpandedViewThumbnailScale}
-							expandedViewThumbnailScale={expandedViewThumbnailScale}
-							setMultiPageSelections={setMultiPageSelections}
-							multiPageSelections={multiPageSelections}
-						  showFullScreenThumbnails={showFullScreenThumbnails || forceFullThumbnailsView()}
-						  onMinimize={onMinimize}
-							undoLastAction={undoLastAction}
-							redoLastAction={redoLastAction}
-							onDownload={onDownload}
-							onDelete={onDelete}
-							onRotate={onRotateFullScreenThumbnails}
-						/>
-					)
-				}
-				<Tabs
-					onClick={onChangeActivePageIndex}
-					activePageIndex={activePageIndex}
-					fileNames={fileNames}
-				/>
-				<div css={Flex}>
+			<ModalProvider>
+				{/*<button onClick={onClickTestHandler}>Crazy btn</button>*/}
+				<div style={{height: mainHeight()}}>
 					{
-						tools?.general?.includes('thumbnails') && (
-							<Panel
-								showSearch={showSearch}
-								splitMarkers={splitMarkers}
-								onClickSplit={onClickSplit}
-								isSplitting={isSplitting}
-								documentLoading={documentLoading}
-								fileName={fileNames[activePageIndex]}
-								thumbnailScale={thumbnailScale}
-								setThumbnailScale={setThumbnailScale}
-								expandedViewThumbnailScale={expandedViewThumbnailScale}
-								onRotate={onRotateThumbnail}
-								onDeleteThumbnail={onDeleteThumbnail}
-								onExtractThumbnail={onExtractThumbnail}
-								multiPageSelections={multiPageSelections}
-								setMultiPageSelections={setMultiPageSelections}
-								onExpand={onExpand}
-								onDragEnd={onDragEnd}
+						showHeader() && (
+							<Header
+								showFullScreenThumbnails={showFullScreenThumbnails}
+								defaultZoom={defaultZoom}
 								tools={tools}
-								setActivePage={setActivePage}
-								activePage={activePage}
+								onDownload={onDownload}
 								pdfProxyObj={pdfProxyObj}
-								pdf={pdfViewerObj}
-								showPanel={showPanel}
-								showFullScreenThumbnails={showFullScreenThumbnails || forceFullThumbnailsView()}
+								onRotate={onRotate}
+								viewerContainerRef={getTargetContainer()}
+								pdfViewerObj={pdfViewerObj}
+								onSearch={onSearchBtnClick}
+								onPanel={onPanelBtnClick}
+								leftPanelEnabled={showPanel}
 							/>
 						)
 					}
-					<div css={pdfViewerWrapper}>
-						<PdfViewer
-							setPdfText={setPdfText}
-							onPagesLoaded={() => {}}
-							setDocumentLoading={setDocumentLoading}
-							setModifiedFiles={setModifiedFiles}
-							modifiedFiles={modifiedFiles}
-							activePageIndex={activePageIndex}
-							isSandbox={inputtedLicenseKey?.toLowerCase() === "sandbox"}
-							addWatermark={addWatermark}
-							updateCurrentScale={updateCurrentScale}
-							buffer={buffer}
-							switchBuffer={switchBuffer}
-							activePage={activePage}
-							modifiedFile={modifiedFile}
-							showHeader={showHeader()}
-							showSubheader={showSubheader()}
-							tools={tools}
-							fileLoadFailError={fileLoadFailError}
-							setFileLoadFailError={setFileLoadFailError}
-							rightPanelEnabled={showSearch}
-							leftPanelEnabled={showPanel}
-							setActivePage={setActivePage}
-							setPdfProxyObj={setPdfProxyObj}
-							setMatchesCount={setMatchesCount}
-							eventBusRef={eventBusRef}
-							viewerContainerRef1={viewerContainerRef1}
-							viewerContainerRef2={viewerContainerRef2}
-							setPdfViewerObj={setPdfViewerObj}
-							files={files}
+					{
+						showSubheader() && (
+							<Subheader
+								canExtract={canExtract()}
+								onExtract={onExtract}
+								tools={tools}
+								canDelete={canDelete()}
+								undoStackLength={operations[activePageIndex]?.length}
+								redoStackLength={redoStack[activePageIndex]?.length}
+								setExpandedViewThumbnailScale={setExpandedViewThumbnailScale}
+								expandedViewThumbnailScale={expandedViewThumbnailScale}
+								setMultiPageSelections={setMultiPageSelections}
+								multiPageSelections={multiPageSelections}
+								showFullScreenThumbnails={showFullScreenThumbnails || forceFullThumbnailsView()}
+								onMinimize={onMinimize}
+								undoLastAction={undoLastAction}
+								redoLastAction={redoLastAction}
+								onDownload={onDownload}
+								onDelete={onDelete}
+								onRotate={onRotateFullScreenThumbnails}
+							/>
+						)
+					}
+					<Tabs
+						onClick={onChangeActivePageIndex}
+						activePageIndex={activePageIndex}
+						fileNames={fileNames}
+					/>
+					<div css={Flex}>
+						{
+							tools?.general?.includes('thumbnails') && (
+								<Panel
+									showSearch={showSearch}
+									splitMarkers={splitMarkers}
+									onClickSplit={onClickSplit}
+									isSplitting={isSplitting}
+									documentLoading={documentLoading}
+									fileName={fileNames[activePageIndex]}
+									thumbnailScale={thumbnailScale}
+									setThumbnailScale={setThumbnailScale}
+									expandedViewThumbnailScale={expandedViewThumbnailScale}
+									onRotate={onRotateThumbnail}
+									onDeleteThumbnail={onDeleteThumbnail}
+									onExtractThumbnail={onExtractThumbnail}
+									multiPageSelections={multiPageSelections}
+									setMultiPageSelections={setMultiPageSelections}
+									onExpand={onExpand}
+									onDragEnd={onDragEnd}
+									tools={tools}
+									setActivePage={setActivePage}
+									activePage={activePage}
+									pdfProxyObj={pdfProxyObj}
+									pdf={pdfViewerObj}
+									showPanel={showPanel}
+									showFullScreenThumbnails={showFullScreenThumbnails || forceFullThumbnailsView()}
+								/>
+							)
+						}
+						<div css={pdfViewerWrapper}>
+							<PdfViewer
+								setPdfText={setPdfText}
+								onPagesLoaded={() => {}}
+								setDocumentLoading={setDocumentLoading}
+								setModifiedFiles={setModifiedFiles}
+								modifiedFiles={modifiedFiles}
+								activePageIndex={activePageIndex}
+								isSandbox={inputtedLicenseKey?.toLowerCase() === "sandbox"}
+								addWatermark={addWatermark}
+								updateCurrentScale={updateCurrentScale}
+								buffer={buffer}
+								switchBuffer={switchBuffer}
+								activePage={activePage}
+								modifiedFile={modifiedFile}
+								showHeader={showHeader()}
+								showSubheader={showSubheader()}
+								tools={tools}
+								fileLoadFailError={fileLoadFailError}
+								setFileLoadFailError={setFileLoadFailError}
+								rightPanelEnabled={showSearch}
+								leftPanelEnabled={showPanel}
+								setActivePage={setActivePage}
+								setPdfProxyObj={setPdfProxyObj}
+								setMatchesCount={setMatchesCount}
+								eventBusRef={eventBusRef}
+								viewerContainerRef1={viewerContainerRef1}
+								viewerContainerRef2={viewerContainerRef2}
+								setPdfViewerObj={setPdfViewerObj}
+								files={files}
+							/>
+						</div>
+						<SearchBar
+							onAskQuestion={onAskQuestion}
+							onEmbed={onEmbed}
+							searchBarView={searchBarView}
+							setSearchBarView={setSearchBarView}
+							onClear={onClearSearch}
+							onToggleWholeWord={onToggleWholeWord}
+							searchText={searchText}
+							onNext={onNext}
+							onPrev={onPrev}
+							matchesCount={matchesCount}
+							matchWholeWord={matchWholeWord}
+							onChange={onSearchText}
+							showSearch={showSearch}
+							caseSensitive={caseSensitive}
+							onToggleCaseSensitive={onToggleCaseSensitive}
 						/>
 					</div>
-					<SearchBar
-						onAskQuestion={onAskQuestion}
-						onEmbed={onEmbed}
-						searchBarView={searchBarView}
-						setSearchBarView={setSearchBarView}
-						onClear={onClearSearch}
-						onToggleWholeWord={onToggleWholeWord}
-						searchText={searchText}
-						onNext={onNext}
-						onPrev={onPrev}
-						matchesCount={matchesCount}
-						matchWholeWord={matchWholeWord}
-						onChange={onSearchText}
-						showSearch={showSearch}
-						caseSensitive={caseSensitive}
-						onToggleCaseSensitive={onToggleCaseSensitive}
-					/>
 				</div>
-			</div>
+			</ModalProvider>
 		</I18nextProvider>
 	);
 };
