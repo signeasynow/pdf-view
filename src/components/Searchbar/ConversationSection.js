@@ -1,42 +1,74 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { useRef, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
+import RobotIcon from '../../../assets/zap-svgrepo-com.svg';
+import UserIcon from '../../../assets/user-svgrepo-com.svg';
+import { Icon } from "aleon_35_pdf_ui_lib";
 
 const inputWrapperStyle = css`
   display: flex;
+`;
+
+const conversationContentStyle = css`
+  flex-grow: 1;
+  overflow-y: auto;  // Enable vertical scrolling
+`;
+
+const conversationEntryStyle = css`
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  margin-bottom: 20px;
+`;
+
+const inputContainerStyle = css`
+  flex-shrink: 0; /* Prevents the input from shrinking */
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
 `;
 
 const inputStyle = css`
   width: 100%;
   padding: 4px;
 	font-family: Lato;
+  font-size: 16px;
+  resize: none; // disable resizing
 `;
 
 const aiWrapperStyle = css`
   padding: 8px;
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	right: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  font-size: 16px;
 `;
+
 
 const ConversationSection = ({
   onChange,
 	onEmbed,
+  onAskQuestion,
   onSendQuestion, // Assuming this function handles sending the question to AI for answers
 }) => {
 
-  const [conversation, setConversation] = useState([]);
+  const [conversation, setConversation] = useState(JSON.parse(localStorage.getItem('conversation')) || []);
   const [rows, setRows] = useState(1);
   const searchTextRef = useRef('');
 
+
+  useEffect(() => {
+    localStorage.setItem('conversation', JSON.stringify(conversation));
+  }, [conversation]);
+
   const handleSendQuestion = () => {
     const questionText = searchTextRef.current.value;
-    onSendQuestion(questionText).then((answerText) => {
+    onAskQuestion(questionText).then((answerText) => {
+      console.log(answerText, 'answer text down here')
       setConversation([
         ...conversation,
         { type: 'question', text: questionText },
-        { type: 'answer', text: answerText }
+        { type: 'answer', text: answerText.answer }
       ]);
       searchTextRef.current.value = '';
       setRows(1);
@@ -44,36 +76,53 @@ const ConversationSection = ({
   };
 
   const handleChange = (e) => {
-    setRows(e.target.value.split('\n').length);
+    setRows(Math.min(e.target.value.split('\n').length, 5));
     if (onChange) {
       onChange(e);
     }
   };
 
+  const inputRef = useRef(null); // New Ref to track input container
+
+  const conversationContainerStyle = css`
+    padding: 8px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    overflow-y: auto;
+    left: 0;
+    right: 0;
+    margin-top: 60px;
+  `;
+
   return (
     <div css={aiWrapperStyle}>
       <div>
         {/* Display the conversation history */}
-        <div>
-          {conversation.map((entry, index) => (
-            <div key={index}>
-              <strong>{entry.type === 'question' ? 'You: ' : 'AI: '}</strong>
-              {entry.text}
-            </div>
-          ))}
+        <div style={{marginBottom: 30 * rows}} css={conversationContainerStyle}>
+          <div css={conversationContentStyle}>
+            {conversation.map((entry, index) => (
+              <div css={conversationEntryStyle} key={index}>
+                {entry.type === "question" ? <Icon src={UserIcon}/> : <Icon src={RobotIcon}/>}
+                {entry.text}
+              </div>
+            ))}
+          </div>
         </div>
 				<button onClick={onEmbed}>Embed</button>
 
-        {/* Input area */}
-        <div css={inputWrapperStyle}>
-          <textarea
-            css={inputStyle}
-            ref={searchTextRef}
-            rows={rows}
-            onChange={handleChange}
-            placeholder={"Ask your document a question"}
-          />
-          <button onClick={handleSendQuestion}>Send</button>
+        <div css={inputContainerStyle}>
+          {/* Input area */}
+          <div ref={inputRef} css={inputWrapperStyle}>
+            <textarea
+              css={inputStyle}
+              ref={searchTextRef}
+              rows={rows}
+              onChange={handleChange}
+              placeholder={"Ask your document a question"}
+            />
+            <button onClick={handleSendQuestion}>Send</button>
+          </div>
         </div>
       </div>
     </div>

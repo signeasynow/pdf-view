@@ -1148,12 +1148,35 @@ const App = () => {
 	const forceFullThumbnailsView = () => {
 		return isSmallScreen && showPanel;
 	}
-	console.log(pdfText, 'pdfText', inputtedUuid)
+	// console.log(pdfText, 'pdfText', inputtedUuid)
+	const [aiDocId, setAiDocId] = useState(localStorage.getItem("aiDocId") || "");
 
 	const onEmbed = async () => {
 		const { data, error } = await supabase.functions.invoke('embed', {
       body: { user_id: inputtedUuid, paragraphs: pdfText },
     });
+		if (error) {
+			alert("Something went wrong. Please try again later.");
+			console.error(`Error embedding: ${error}`);
+			return;
+		}
+		
+		const docId = data?.docId || "";
+		setAiDocId(docId);
+		localStorage.setItem("aiDocId", docId);
+	}
+
+	const onAskQuestion = async (question) => {
+		const { data, error } = await supabase.functions.invoke('ask_ai', {
+      body: { doc_id: aiDocId, question_text: question },
+    });
+		if (error) {
+			alert("Something went wrong. Please try again later.");
+			console.error(`Error embedding: ${error}`);
+			return;
+		}
+		console.log(data, 'data on ask q')
+		return data;
 	}
 
 	const onMinimize = () => {
@@ -1317,6 +1340,7 @@ const App = () => {
 						/>
 					</div>
 					<SearchBar
+						onAskQuestion={onAskQuestion}
 						onEmbed={onEmbed}
 						searchBarView={searchBarView}
 						setSearchBarView={setSearchBarView}

@@ -13,6 +13,7 @@ const visibleSearchWrapper = css`
   background: #f1f3f5;
   width: 300px;
   flex-shrink: 0;
+	overflow: hidden;
   flex-grow: 0;
   font-family: Lato;
   font-size: 14px;
@@ -108,6 +109,7 @@ const SearchBar = ({
 	showSearch,
 	setSearchBarView,
 	searchBarView,
+	onAskQuestion,
 	searchText,
 	onEmbed,
 	onChange,
@@ -141,7 +143,7 @@ const SearchBar = ({
 								}} />
 							</div>
 						</div>
-						<ConversationSection onEmbed={onEmbed} />
+						<ConversationSection onAskQuestion={onAskQuestion} onEmbed={onEmbed} />
 					</>
 				)
 			}
