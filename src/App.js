@@ -1168,7 +1168,7 @@ const App = () => {
 
 	const onRemoveChatHistory = async () => {
 		const { data, error } = await supabase.functions.invoke('remove_ai_from_doc', {
-      body: { doc_id: aiDocId },
+      body: { docId: aiDocId },
     });
 		if (error) {
 			alert("Something went wrong. Please try again later.");
