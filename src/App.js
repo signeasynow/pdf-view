@@ -250,6 +250,8 @@ const App = () => {
 	const [expandedViewThumbnailScale, setExpandedViewThumbnailScale] = useState(2);
 	const [thumbnailScale, setThumbnailScale] = useState(2);
 
+	const [conversation, setConversation] = useState(JSON.parse(localStorage.getItem('conversation')) || []);
+
 	const switchBuffer = () => setBuffer(buffer === 1 ? 2 : 1);
 
 	const getTargetContainer = () => {
@@ -1168,6 +1170,8 @@ const App = () => {
 	}
 
 	const onRemoveChatHistory = async () => {
+		setConversation([]);
+		localStorage.setItem('conversation', '[]');
 		const { data, error } = await supabase.functions.invoke('remove_ai_from_doc', {
       body: { docId: aiDocId },
     });
@@ -1355,6 +1359,8 @@ const App = () => {
 							/>
 						</div>
 						<SearchBar
+							conversation={conversation}
+							setConversation={setConversation}
 							aiDocId={aiDocId}
 							onRemoveChatHistory={onRemoveChatHistory}
 							onAskQuestion={onAskQuestion}

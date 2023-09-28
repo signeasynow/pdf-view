@@ -125,9 +125,10 @@ const SearchBar = ({
 	onToggleCaseSensitive,
 	caseSensitive,
 	onRemoveChatHistory,
-	onClear
+	onClear,
+	conversation,
+	setConversation
 }) => {
-	const [conversation, setConversation] = useState(JSON.parse(localStorage.getItem('conversation')) || []);
 
 	const conversationContainerRef = useRef(null); // New ref for the conversation container
 
@@ -160,8 +161,6 @@ const SearchBar = ({
 	};
 
 	const handleRemoveChatHistory = () => {
-		setConversation([]);
-		localStorage.setItem('conversation', '[]');
 		onRemoveChatHistory();
 	}
 
