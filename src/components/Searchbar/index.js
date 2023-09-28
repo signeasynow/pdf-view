@@ -134,7 +134,7 @@ const SearchBar = ({
 	return (
 		<div css={showSearch ? visibleSearchWrapper : invisibleSearchWrapper}>
 			{
-				searchBarView === "ai" && (
+				searchBarView === "ai" && showSearch && (
 					<>
 						<div css={topSectionStyle}>
 							<div css={thumbnailTopActionsWrapper}>

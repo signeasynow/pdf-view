@@ -11,13 +11,13 @@ const inputWrapperStyle = css`
 
 const conversationContentStyle = css`
   flex-grow: 1;
-  overflow-y: auto;  // Enable vertical scrolling
 `;
 
 const conversationEntryStyle = css`
   word-wrap: break-word;
   white-space: pre-wrap;
   margin-bottom: 20px;
+  line-height: 1.8;
 `;
 
 const inputContainerStyle = css`
@@ -56,9 +56,21 @@ const ConversationSection = ({
   const [rows, setRows] = useState(1);
   const searchTextRef = useRef('');
 
+  const conversationContainerRef = useRef(null); // New ref for the conversation container
+
+  useEffect(() => {
+    // Scroll to the bottom when the component mounts
+    if (conversationContainerRef.current) {
+      conversationContainerRef.current.scrollTop = conversationContainerRef.current.scrollHeight;
+    }
+  }, []); // Empty dependency array means this runs once when the component mounts
 
   useEffect(() => {
     localStorage.setItem('conversation', JSON.stringify(conversation));
+
+    if (conversationContainerRef.current) {
+      conversationContainerRef.current.scrollTop = conversationContainerRef.current.scrollHeight;
+    }
   }, [conversation]);
 
   const handleSendQuestion = () => {
@@ -76,7 +88,22 @@ const ConversationSection = ({
   };
 
   const handleChange = (e) => {
-    setRows(Math.min(e.target.value.split('\n').length, 5));
+    const text = e.target.value;
+    const lines = text.split('\n');
+    let totalVisualLines = 0;
+    const maxCharsPerLine = 27;
+  
+    for (const line of lines) {
+      const lineLength = line.length;
+      if (lineLength === 0) {
+        totalVisualLines += 1; // For empty lines
+      } else {
+        totalVisualLines += Math.ceil(lineLength / maxCharsPerLine);
+      }
+    }
+  
+    setRows(Math.min(totalVisualLines, 5));
+  
     if (onChange) {
       onChange(e);
     }
@@ -99,7 +126,7 @@ const ConversationSection = ({
     <div css={aiWrapperStyle}>
       <div>
         {/* Display the conversation history */}
-        <div style={{marginBottom: 30 * rows}} css={conversationContainerStyle}>
+        <div ref={conversationContainerRef} style={{marginBottom: 30 * rows}} css={conversationContainerStyle}>
           <div css={conversationContentStyle}>
             {conversation.map((entry, index) => (
               <div css={conversationEntryStyle} key={index}>
