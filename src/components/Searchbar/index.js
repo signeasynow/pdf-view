@@ -109,6 +109,8 @@ const thumbnailTopActionsWrapper = css`
 `;
 
 const SearchBar = ({
+	aiDocHash,
+	currentAiDocHash,
 	aiDocId,
 	showSearch,
 	setSearchBarView,
@@ -126,6 +128,7 @@ const SearchBar = ({
 	caseSensitive,
 	onRemoveChatHistory,
 	onClear,
+	onNoToAiWarning,
 	conversation,
 	setConversation
 }) => {
@@ -136,7 +139,6 @@ const SearchBar = ({
   const [rows, setRows] = useState(1);
 
 	const handleSendQuestion = (questionText) => {
-		console.log("triggeringgg")
     setRows(1);
     setLoading(true);
     onAskQuestion(questionText, extractLastThreeQA(conversation)).then((answerText) => {
@@ -164,6 +166,16 @@ const SearchBar = ({
 		onRemoveChatHistory();
 	}
 
+	const handleEmbed = () => {
+		setLoading(true);
+		onEmbed().then(() => {
+			setLoading(false);
+		}).catch((err) => {
+			alert("Something went wrong. Please try again later.")
+			setLoading(false);
+		})
+	}
+
 	return (
 		<div css={showSearch ? visibleSearchWrapper : invisibleSearchWrapper}>
 			{
@@ -182,15 +194,7 @@ const SearchBar = ({
 						{
 							!aiDocId && (
 								<div style={{margin: 8, display: "flex", flexDirection: "column"}}>
-									<button disabled={loading} onClick={() => {
-										setLoading(true);
-										onEmbed().then(() => {
-											setLoading(false);
-										}).catch((err) => {
-											alert("Something went wrong. Please try again later.")
-											setLoading(false);
-										})
-									}} css={confirmBtnStyle}>{loading ? "Please wait..." : "Enable AI Discussions"}</button>
+									<button disabled={loading} onClick={handleEmbed} css={confirmBtnStyle}>{loading ? "Please wait..." : "Enable AI Discussions"}</button>
 									<p>Activate to let AI answer queries about this document.</p>
 								</div>
 							)
@@ -198,6 +202,10 @@ const SearchBar = ({
 						{
 							!!aiDocId && (
 								<ConversationSection
+									onYesToWarning={handleEmbed}
+									onNoToAiWarning={onNoToAiWarning}
+									aiDocHash={aiDocHash}
+									currentAiDocHash={currentAiDocHash}
 									conversation={conversation}
 									conversationContainerRef={conversationContainerRef}
 									loading={loading}

@@ -8,6 +8,7 @@ import { heightOffset0, heightOffset1, heightOffset3, heightOffsetTabs } from ".
 import { retrievePDF, savePDF } from './utils/indexDbUtils';
 import { extractAllTextFromPDF } from './utils/extractAllTextFromPdf';
 import { addSandboxWatermark } from './utils/addSandboxWatermark';
+import simpleHash from './utils/simpleHash';
 const SANDBOX_BUNDLE_SRC = 'pdfjs-dist/build/pdf.sandbox.js';
 
 const containerStyle = css`
@@ -34,6 +35,7 @@ export const PdfViewer = ({
 	showHeader,
 	showSubheader,
 	setPdfProxyObj,
+	setCurrentAiDocHash,
 	tools,
 	setPdfViewerObj,
 	files,
@@ -178,6 +180,7 @@ export const PdfViewer = ({
 				}
 				const text = await extractAllTextFromPDF(loadedPdfDocument);
 				setPdfText(text);
+				setCurrentAiDocHash(simpleHash(JSON.stringify(text)));
 			},
 			reason => {
 				setFileLoadFailError(reason?.message);

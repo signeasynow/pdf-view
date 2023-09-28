@@ -23,6 +23,7 @@ import useDownload from './hooks/useDownload';
 import useListenForDownloadRequest from './hooks/useListenForDownloadRequest';
 import usePropageClickEvents from './hooks/usePropagateClickEvents';
 import {supabase} from './utils/supabase';
+import simpleHash from './utils/simpleHash';
 import * as amplitude from '@amplitude/analytics-browser';
 import useListenForThumbnailFullScreenRequest from './hooks/useListenForThumbnailFullScreenRequest';
 import useListenForThumbnailZoomRequest from './hooks/useListenForThumbnailZoomRequest';
@@ -820,7 +821,8 @@ const App = () => {
 
 	const [watermarkQueue, setWatermarkQueue] = useState(false);
   const appliedSandbox = useRef(false);
-
+	const [aiDocHash, setAiDocHash] = useState(localStorage.getItem("aiDocHash") || "");
+	const [currentAiDocHash, setCurrentAiDocHash] = useState("");
 	async function addWatermark(pdfBytes) {
 		// Load a PDFDocument from the existing PDF bytes
 		const pdfDoc = await PDFDocument.load(pdfBytes);
@@ -1166,7 +1168,17 @@ const App = () => {
 		const docId = data?.docId || "";
 		setAiDocId(docId);
 		localStorage.setItem("aiDocId", docId);
+		const hash = simpleHash(JSON.stringify(pdfText));
+		setAiDocHash(hash);
+		window.localStorage.setItem("aiDocHash", hash);
 		return;
+	}
+
+	const onNoToAiWarning = () => {
+		const hash = simpleHash(JSON.stringify(pdfText));
+		setAiDocHash(hash);
+		setCurrentAiDocHash(hash);
+		window.localStorage.setItem("aiDocHash", hash);
 	}
 
 	const onRemoveChatHistory = async () => {
@@ -1328,6 +1340,7 @@ const App = () => {
 						}
 						<div css={pdfViewerWrapper}>
 							<PdfViewer
+								setCurrentAiDocHash={setCurrentAiDocHash}
 								setPdfText={setPdfText}
 								onPagesLoaded={() => {}}
 								setDocumentLoading={setDocumentLoading}
@@ -1359,6 +1372,9 @@ const App = () => {
 							/>
 						</div>
 						<SearchBar
+							onNoToAiWarning={onNoToAiWarning}
+							aiDocHash={aiDocHash}
+							currentAiDocHash={currentAiDocHash}
 							conversation={conversation}
 							setConversation={setConversation}
 							aiDocId={aiDocId}

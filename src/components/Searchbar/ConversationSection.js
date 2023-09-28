@@ -18,6 +18,15 @@ right: 0;
 margin-top: 60px;
 `;
 
+const closeBtnStyle = css`
+  border: 1px solid lightgrey;
+  font-size: 16px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  margin-left: 8px;
+  cursor: pointer;
+`
+
 const disclaimerStyle = css`
   margin: 4px 2px;
   font-size: 10px;
@@ -74,16 +83,28 @@ const aiWrapperStyle = css`
 const ConversationSection = ({
   onChange,
   onFindCitation,
-	onEmbed,
-  onAskQuestion,
   handleSendQuestion,
   loading,
   rows,
   conversationContainerRef,
   setRows,
-  conversation
+  conversation,
+  aiDocHash,
+  currentAiDocHash,
+  onNoToAiWarning,
+  onYesToWarning
 }) => {
 
+  const [showWrongDocWarning, setShowWrongDocWarning] = useState(true);
+
+  useEffect(() => {
+    if (!aiDocHash || !currentAiDocHash) {
+      return;
+    }
+    if (aiDocHash !== currentAiDocHash) {
+      setShowWrongDocWarning(true);
+    }
+  }, [aiDocHash, currentAiDocHash])
   const searchTextRef = useRef('');
 
   const handleChange = (e) => {
@@ -123,15 +144,30 @@ const ConversationSection = ({
     }
   }, []); // Empty dependency array means this runs once when the component mounts
   
-
   const handleSubmit = () => {
     const qText = searchTextRef.current.value;
     handleSendQuestion(qText);
     searchTextRef.current.value = "";
   }
+  
+  const onNoToWarning = () => {
+    setShowWrongDocWarning(false);
+    onNoToAiWarning();
+  }
 
   const inputRef = useRef(null); // New Ref to track input container
 
+  if (showWrongDocWarning) {
+    return (
+      <div style={{margin: 4, alignItems: "center", display: "flex", flexDirection: "column"}}>
+        <div>Document updated. Answers may refer to the previous version. Regenerate AI for current document?</div>
+        <div>
+          <button onClick={onYesToWarning} css={closeBtnStyle}>Yes</button>
+          <button onClick={onNoToWarning} css={closeBtnStyle}>No</button>
+        </div>
+      </div>
+    )
+  }
   return (
     <div css={aiWrapperStyle}>
       <div>
