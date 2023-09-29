@@ -32,6 +32,7 @@ import useListenForExtractPagesRequest from './hooks/useListenForExtractPagesReq
 import useListenForMergeFilesRequest from './hooks/useListenForMergeFilesRequest';
 import useListenForCombineFilesRequest from './hooks/useListForCombineFilesRequest';
 import useListenForSplitPagesRequest from './hooks/useListenForSplitPagesRequest';
+import useListenForRemoveChatHistoryRequest from './hooks/useListenForRemoveChatHistoryRequest';
 import { PDFDocument, degrees } from 'pdf-lib';
 import { extractAllTextFromPDF } from './utils/extractAllTextFromPdf';
 import { ModalProvider } from './Contexts/ModalProvider';
@@ -549,6 +550,7 @@ const App = () => {
 	useListenForMergeFilesRequest(onMergeFiles);
 	useListenForSplitPagesRequest(onSplitPages);
 	useListenForCombineFilesRequest(onCombinePdfs);
+	
 	useEffect(() => {
 		if (!files[activePageIndex]?.url) {
 			return;
@@ -1192,6 +1194,7 @@ const App = () => {
 	}
 
 	const onRemoveChatHistory = async () => {
+		console.log("removing chat history")
 		setConversation([]);
 		localStorage.setItem('conversation', '[]');
 		const { data, error } = await supabase.functions.invoke('remove_ai_from_doc', {
@@ -1205,6 +1208,8 @@ const App = () => {
 		setAiDocId("");
 		localStorage.setItem("aiDocId", "");
 	}
+
+	useListenForRemoveChatHistoryRequest(onRemoveChatHistory)
 
 	const onAskQuestion = async (question, prevQuestions) => {
 		const { data, error } = await supabase.functions.invoke('ask_ai', {

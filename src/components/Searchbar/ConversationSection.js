@@ -94,15 +94,13 @@ const ConversationSection = ({
   onYesToWarning
 }) => {
 
-  const [showWrongDocWarning, setShowWrongDocWarning] = useState(true);
+  const [showWrongDocWarning, setShowWrongDocWarning] = useState(false);
 
   useEffect(() => {
     if (!aiDocHash || !currentAiDocHash) {
       return;
     }
-    if (aiDocHash !== currentAiDocHash) {
-      setShowWrongDocWarning(true);
-    }
+    setShowWrongDocWarning(aiDocHash !== currentAiDocHash)
   }, [aiDocHash, currentAiDocHash])
   const searchTextRef = useRef('');
 
@@ -161,8 +159,10 @@ const ConversationSection = ({
       <div style={{margin: 4, alignItems: "center", display: "flex", flexDirection: "column"}}>
         <div>Document updated. Answers may refer to the previous version. Regenerate AI for current document?</div>
         <div>
-          <button onClick={onYesToWarning} css={closeBtnStyle}>Yes</button>
-          <button onClick={onNoToWarning} css={closeBtnStyle}>No</button>
+          <button disabled={loading} onClick={onYesToWarning} css={closeBtnStyle}>{loading ? <LoadingSpinner size="sm" /> : "Yes"}</button>
+          {
+            !loading && <button disabled={loading} onClick={onNoToWarning} css={closeBtnStyle}>No</button>
+          }
         </div>
       </div>
     )
@@ -202,7 +202,7 @@ const ConversationSection = ({
               onChange={handleChange}
               placeholder={"Ask your document a question"}
             />
-            <button disabled={loading} style={{cursor: "pointer", fontSize: 16, border: "none", borderBottomRightRadius: "2px", borderTopRightRadius: "2px", color: "white", background: "#3183c8"}} onClick={handleSubmit}>{loading ? <LoadingSpinner size="sm" /> : "⮕"}</button>
+            <button disabled={loading} style={{cursor: "pointer", fontSize: 16, border: "none", borderBottomRightRadius: "2px", borderTopRightRadius: "2px", color: "white", background: loading ? "white" : "#3183c8"}} onClick={handleSubmit}>{loading ? <LoadingSpinner size="sm" /> : "⮕"}</button>
           </div>
           <p css={disclaimerStyle}>AI may produce inaccurate information and citations.</p>
         </div>

@@ -142,40 +142,6 @@ const Subheader = ({
 						)
 					}
 					{
-						tools?.editing?.includes("extract") && (
-							<div style={{position: "relative"}}>
-								<AccessibleButton
-									onClick={onExtract} 
-									ariaLabel={t("redo")}
-								>
-									<HeaderBtn
-										style={{opacity: canExtract ? 1 : 0.3}}
-										title={"Extract"} iconAlt={t("redo")} icon={Extract} />
-										{
-											!!multiPageSelections?.length && (
-												<div style={{
-													position: "absolute",
-													bottom: 0,
-													color: "white",
-													left: 0,
-													pointerEvents: "none",
-													height: 12,
-													minWidth: 12,
-													background: "#f96804",
-													fontSize: 12,
-													padding: 2,
-													display: "flex",
-													alignItems: "center",
-													justifyContent: "center",
-													borderRadius: "8px"
-												}}>{getSelectionsCount()}</div>
-											)
-										}
-								</AccessibleButton>
-							</div>
-						)
-					}
-					{
 						tools?.editing?.includes("rotation") && (
 							<div style={{
 								display: "flex",
@@ -223,6 +189,40 @@ const Subheader = ({
 						)
 					}
 					{
+						tools?.editing?.includes("extract") && (
+							<div style={{position: "relative"}}>
+								<AccessibleButton
+									onClick={onExtract} 
+									ariaLabel={t("redo")}
+								>
+									<HeaderBtn
+										style={{opacity: canExtract ? 1 : 0.3}}
+										title={"Extract"} iconAlt={t("redo")} icon={Extract} />
+										{
+											!!multiPageSelections?.length && (
+												<div style={{
+													position: "absolute",
+													bottom: 0,
+													color: "white",
+													left: 0,
+													pointerEvents: "none",
+													height: 12,
+													minWidth: 12,
+													background: "#f96804",
+													fontSize: 12,
+													padding: 2,
+													display: "flex",
+													alignItems: "center",
+													justifyContent: "center",
+													borderRadius: "8px"
+												}}>{getSelectionsCount()}</div>
+											)
+										}
+								</AccessibleButton>
+							</div>
+						)
+					}
+					{
 						tools?.editing?.includes("remove") && (
 							<div style={{position: "relative"}}>
 								<AccessibleButton
@@ -234,7 +234,7 @@ const Subheader = ({
 										!!multiPageSelections?.length && (
 											<div style={{
 												position: "absolute",
-												bottom: 4,
+												bottom: 0,
 												color: "white",
 												left: 0,
 												pointerEvents: "none",
