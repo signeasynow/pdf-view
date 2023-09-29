@@ -55,47 +55,52 @@ const ThumbnailsContainer = ({
 	const [draggingIndex, setDraggingIndex] = useState(null);
 	const [dragOverIndex, setDragOverIndex] = useState(null);
 
-	const thumbnails = Array.from({ length: numPages }, (_, i) => {
-    return (
-      <>
-				{dragOverIndex === i + 1 && <div css={lineIndicatorStyle}></div>}
-				<Thumbnail
-					onExtract={onExtract}
-					onRotate={onRotate}
-					onDelete={onDelete}
-					multiPageSelections={multiPageSelections}
-					setMultiPageSelections={setMultiPageSelections}
-					onDragStart={(e, pageNum) => {
-						e.dataTransfer.setData("text/plain", pageNum);
-						setDraggingIndex(pageNum);
-					}}
-					onDragOver={(e, pageNum) => {
-						e.preventDefault();
-						setDragOverIndex(pageNum);
-					}}
-					onDragEnd={async () => {
-						if (dragOverIndex > i) {
-							onDragEnd(i, dragOverIndex - 2);
-						} else {
-							onDragEnd(i, dragOverIndex - 1);
-						}
-						setDraggingIndex(null);
-						setDragOverIndex(null);
-					}}
-					hidden={false}  // pass the hidden state
-					activePage={activePage}
-					key={i}
-					pdf={pdf}
-					pdfProxyObj={pdfProxyObj}
-					pageNum={i + 1}
-					displayPageNum={i + 1}
-					scale={scale}
-					onThumbnailClick={onThumbnailClick}
-					tools={tools}
-				/>
-			</>
-    );
-  });
+	const thumbnails = Array.from({ length: numPages }).flatMap((_, i) => {
+		let elements = [];
+		
+		// Handle line indicator
+		if (dragOverIndex === i + 1) {
+			elements = [...elements, <div css={lineIndicatorStyle}></div>];
+		}
+	
+		// Thumbnail component
+		const thumbnailElement = (
+			<Thumbnail
+				onExtract={onExtract}
+				onRotate={onRotate}
+				onDelete={onDelete}
+				multiPageSelections={multiPageSelections}
+				setMultiPageSelections={setMultiPageSelections}
+				onDragStart={(e, pageNum) => {
+					e.dataTransfer.setData("text/plain", pageNum);
+					setDraggingIndex(pageNum);
+				}}
+				onDragOver={(e, pageNum) => {
+					e.preventDefault();
+					setDragOverIndex(pageNum);
+				}}
+				onDragEnd={async () => {
+					const targetIndex = dragOverIndex > i ? dragOverIndex - 2 : dragOverIndex - 1;
+					onDragEnd(i, targetIndex);
+					setDraggingIndex(null);
+					setDragOverIndex(null);
+				}}
+				hidden={false}
+				activePage={activePage}
+				key={i}
+				pdf={pdf}
+				pdfProxyObj={pdfProxyObj}
+				pageNum={i + 1}
+				displayPageNum={i + 1}
+				scale={scale}
+				onThumbnailClick={onThumbnailClick}
+				tools={tools}
+			/>
+		);
+	
+		elements = [...elements, thumbnailElement];
+		return elements;
+	});
 
 	if (documentLoading) return (
 		<div style={{display: "flex", flexDirection: "column", alignItems: "center", marginTop: 20}}>
