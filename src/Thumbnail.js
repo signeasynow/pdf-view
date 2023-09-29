@@ -79,6 +79,7 @@ export const Thumbnail = ({
 	selectedIndexes,
 	setMultiPageSelections,
 	onDragStart,
+	isLeftPanel,
 	isFullScreen,
 	tools,
 	onDragOver,
@@ -115,6 +116,9 @@ export const Thumbnail = ({
 	}
 
 	const isMultiSelected = () => {
+		if (isLeftPanel) {
+			return multiPageSelections?.includes(pageNum);
+		}
 		return multiPageSelections?.includes(pageNum) || isTargetedByDragRect();
 	}
 

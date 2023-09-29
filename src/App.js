@@ -35,6 +35,7 @@ import useListenForSplitPagesRequest from './hooks/useListenForSplitPagesRequest
 import { PDFDocument, degrees } from 'pdf-lib';
 import { extractAllTextFromPDF } from './utils/extractAllTextFromPdf';
 import { ModalProvider } from './Contexts/ModalProvider';
+import useListenForSearchbarRequest from './hooks/useListenForSearchbarRequest';
 
 async function splitPdfPages(pdfBytes, splitIndices) {
 	console.log(splitIndices, 'splitIndices')
@@ -567,6 +568,15 @@ const App = () => {
 			onExpand();
 		}
 	});
+	useListenForSearchbarRequest((enable) => {
+		if (enable === true) {
+			setShowSearch(true);
+		} else if (enable === false) {
+			setShowSearch(false);
+		} else {
+			setShowSearch((prev) => !prev);
+		}
+	})
 	useListenForThumbnailZoomRequest((v) => {
 		setExpandedViewThumbnailScale(v);
 		setThumbnailScale(v);

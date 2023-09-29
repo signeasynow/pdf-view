@@ -66,6 +66,7 @@ const ThumbnailsContainer = ({
 		// Thumbnail component
 		const thumbnailElement = (
 			<Thumbnail
+				isLeftPanel
 				onExtract={onExtract}
 				onRotate={onRotate}
 				onDelete={onDelete}
