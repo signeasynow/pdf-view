@@ -26,7 +26,6 @@ const visibleSearchWrapper = css`
   flex-shrink: 0;
 	overflow: hidden;
   flex-grow: 0;
-  font-family: Lato;
   font-size: 14px;
   color: #5b5b5b;
 	z-index: 4;

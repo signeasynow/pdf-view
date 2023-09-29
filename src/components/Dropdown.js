@@ -16,7 +16,6 @@ const styleRefresh = css`
   border: none;
   box-sizing: border-box;
   display: flex;
-  font-family: Lato;
 `;
 
 const dropdownVisible = css`

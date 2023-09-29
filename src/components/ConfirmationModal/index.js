@@ -14,7 +14,6 @@ const overlayStyle = css`
   justify-content: center;
   align-items: center;
   z-index: 1000; /* Ensure it's on top */
-  font-family: Lato;
 `;
 
 const modalContentStyle = css`

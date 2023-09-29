@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
+import './index.css';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import Header from './Header/Header';
@@ -220,7 +221,6 @@ const pdfViewerWrapper = css`
 `;
 
 const failWrap = css`
-	font-family: Lato;
 	margin: 0 8px;
 	text-align: center;
 `;
@@ -1227,7 +1227,7 @@ const App = () => {
 
 	if (!isOnline) {
 		return (
-			<div style={{fontFamily: "Lato", margin: 4}}>
+			<div style={{fontFamily: "Inconsolata", margin: 4}}>
 				<h1>Connection Issue Detected</h1>
 				<p>We couldn't find an active internet connection. Please ensure you're connected to the internet to continue.</p>
 			</div>
@@ -1236,7 +1236,7 @@ const App = () => {
 
 	if (hasValidLicense === false) {
 		return (
-			<div style={{fontFamily: "Lato", margin: 4}}>
+			<div style={{fontFamily: "Inconsolata", margin: 4}}>
 				<h1>License Key Invalid</h1>
 				<p>Your provided license key appears to be invalid. To resolve this issue, please reach out to your account administrator.</p>
 			</div>
@@ -1245,7 +1245,7 @@ const App = () => {
 
 	if (isInValidDomain === false) {
 		return (
-			<div style={{fontFamily: "Lato", margin: 4}}>
+			<div style={{fontFamily: "Inconsolata", margin: 4}}>
 				<h1>Invalid domain</h1>
 				<p>This domain ({window.origin}) is not permitted to render the PDF Web SDK. If this is a mistake, please update the Authorized Domains list in your Account portal.</p>
 			</div>

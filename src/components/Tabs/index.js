@@ -6,7 +6,6 @@ const tabStyle = css`
   margin-right: 16px;
 	padding-left: 4px;
 	padding-right: 4px;
-	font-family: Lato;
 `;
 
 const Wrapper = ({ children }) => (

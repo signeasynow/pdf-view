@@ -217,7 +217,6 @@ const FullScreenThumbnails = ({
     const thumbnailElement = (
       <div data-type="regular-full-screen-thumbnail" css={thumbnailStyle}>
         <Thumbnail
-          canvasKey={fileName}
           draggingIndex={draggingIndex}
           onExtract={onExtractThumbnail}
           isFullScreen
@@ -273,7 +272,7 @@ const FullScreenThumbnails = ({
           <div style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
             <div style={{marginTop: 20, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column"}}>
               <LoadingSpinner />
-              <div style={{fontFamily: "Lato", color: "white"}}>Loading...</div>
+              <div style={{fontFamily: "Onest", color: "white"}}>Loading...</div>
             </div>
           </div>
         </div>

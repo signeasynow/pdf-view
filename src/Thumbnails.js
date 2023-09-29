@@ -80,7 +80,7 @@ const ThumbnailsContainer = ({
 	if (!numPages) return (
 		<div style={{display: "flex", flexDirection: "column", alignItems: "center", marginTop: 20}}>
 			<LoadingSpinner />
-			<div style={{fontFamily: "Lato"}}>Loading...</div>
+			<div style={{fontFamily: "Inconsolata"}}>Loading...</div>
 		</div>
 	);
 

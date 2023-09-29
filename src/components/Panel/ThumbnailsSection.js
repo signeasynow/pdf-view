@@ -61,20 +61,32 @@ const ThumbnailsSection = ({
 		});
 		onThumbnailClick(num, e);
 	};
+
+	const shouldShowTopBar = () => {
+		return tools?.thumbnails?.includes('zoom') || tools?.thumbnails?.includes('expand')
+	}
 	
 
 	return (
 		<>
 			{
-				tools?.thumbnails?.includes('zoom') && (
+				shouldShowTopBar() && (
 					<div css={topSectionStyle}>
-						<div css={thumbnailTopActionsWrapper}>
-							<PanelTools onToggle={() => onExpand()} />
-						</div>
-						<Slider
-							value={thumbnailScale}
-							onChange={handleInputChange}
-						/>
+						{
+							tools?.thumbnails?.includes('expand') && (
+								<div css={thumbnailTopActionsWrapper}>
+									<PanelTools onToggle={() => onExpand()} />
+								</div>
+							)
+						}
+						{
+							tools?.thumbnails?.includes('zoom') && (
+								<Slider
+									value={thumbnailScale}
+									onChange={handleInputChange}
+								/>
+							)
+						}
 					</div>
 				)
 			}

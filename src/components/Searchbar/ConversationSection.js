@@ -66,7 +66,6 @@ const inputContainerStyle = css`
 const inputStyle = css`
   width: 100%;
   padding: 4px;
-	font-family: Lato;
   font-size: 16px;
   resize: none; // disable resizing
 `;

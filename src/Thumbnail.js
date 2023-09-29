@@ -13,7 +13,6 @@ const thumbnailWrapper = css`
   display: flex;
   flex-direction: column;
   align-items: center;
-	font-family: Lato;
 	color: #8b8b8b;
 	position: relative;
 	margin-top: 20px;
@@ -32,7 +31,6 @@ const activeThumbnailWrapper = css`
 	margin-top: 20px;
   flex-direction: column;
   align-items: center;
-	font-family: Lato;
 	color: #3183c8;
 	position: relative;
 `;
@@ -79,7 +77,6 @@ const contextMenuItemText = css`
 export const Thumbnail = ({
 	multiPageSelections,
 	selectedIndexes,
-	canvasKey,
 	setMultiPageSelections,
 	onDragStart,
 	isFullScreen,
