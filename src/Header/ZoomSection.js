@@ -228,10 +228,13 @@ const ZoomSection = ({
 		};
 
 		const container = viewerContainerRef.current;
+		if (!container) {
+			return;
+		}
 		container.addEventListener('wheel', handleWheel, { passive: false });
     
 		return () => {
-			container.removeEventListener('wheel', handleWheel);
+			container?.removeEventListener('wheel', handleWheel);
 		};
 	}, [pdfViewerObj, setZoomValue]);
 
