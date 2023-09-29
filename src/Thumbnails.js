@@ -15,6 +15,25 @@ const lineIndicatorStyle = css`
   width: 100%;
 `;
 
+const fullScreenWrapper = css`
+  position: absolute;
+	height: 100%;
+	z-index: 4;
+	background: #282828;
+  overflow: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: flex-start;  // Add this line
+
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+`
+
 const ThumbnailsContainer = ({
 	onDragEnd,
 	activePage,
@@ -27,7 +46,8 @@ const ThumbnailsContainer = ({
 	multiPageSelections,
 	setMultiPageSelections,
 	onDelete,
-	onRotate
+	onRotate,
+	documentLoading
 }) => {
 	
 	const numPages = pdfProxyObj?.numPages;
@@ -77,10 +97,10 @@ const ThumbnailsContainer = ({
     );
   });
 
-	if (!numPages) return (
+	if (documentLoading) return (
 		<div style={{display: "flex", flexDirection: "column", alignItems: "center", marginTop: 20}}>
 			<LoadingSpinner />
-			<div style={{fontFamily: "Inconsolata"}}>Loading...</div>
+			<div>Loading...</div>
 		</div>
 	);
 

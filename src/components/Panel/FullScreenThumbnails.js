@@ -272,7 +272,7 @@ const FullScreenThumbnails = ({
           <div style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
             <div style={{marginTop: 20, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column"}}>
               <LoadingSpinner />
-              <div style={{fontFamily: "Onest", color: "white"}}>Loading...</div>
+              <div style={{color: "white"}}>Loading...</div>
             </div>
           </div>
         </div>

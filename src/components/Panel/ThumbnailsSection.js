@@ -35,6 +35,7 @@ const ThumbnailsSection = ({
 	activePage,
 	pdf,
 	tools,
+	documentLoading,
 	pdfProxyObj,
 	onDragEnd,
 	multiPageSelections,
@@ -91,6 +92,7 @@ const ThumbnailsSection = ({
 				)
 			}
 			<ThumbnailsContainer
+				documentLoading={documentLoading}
 				onRotate={onRotate}
 				onExtract={onExtractThumbnail}
 				onDelete={onDeleteThumbnail}

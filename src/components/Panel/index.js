@@ -103,6 +103,7 @@ const Panel = ({
 			{
 				activeTab === 0 && tools?.general?.includes('thumbnails') && (
 					<ThumbnailsSection
+						documentLoading={documentLoading}
 						onThumbnailClick={onThumbnailClick}
 						onRotate={onRotate}
 						onDeleteThumbnail={onDeleteThumbnail}
