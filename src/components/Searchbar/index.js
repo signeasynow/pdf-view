@@ -109,6 +109,7 @@ const thumbnailTopActionsWrapper = css`
 
 const SearchBar = ({
 	aiDocHash,
+	aiLimitReached,
 	currentAiDocHash,
 	aiDocId,
 	showSearch,
@@ -201,6 +202,7 @@ const SearchBar = ({
 						{
 							!!aiDocId && (
 								<ConversationSection
+									aiLimitReached={aiLimitReached}
 									onYesToWarning={handleEmbed}
 									onNoToAiWarning={onNoToAiWarning}
 									aiDocHash={aiDocHash}

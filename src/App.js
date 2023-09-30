@@ -24,6 +24,7 @@ import useDownload from './hooks/useDownload';
 import useListenForDownloadRequest from './hooks/useListenForDownloadRequest';
 import usePropageClickEvents from './hooks/usePropagateClickEvents';
 import {supabase} from './utils/supabase';
+import generateRandomKey from './utils/generateRandomKey';
 import simpleHash from './utils/simpleHash';
 import * as amplitude from '@amplitude/analytics-browser';
 import useListenForThumbnailFullScreenRequest from './hooks/useListenForThumbnailFullScreenRequest';
@@ -255,6 +256,58 @@ const App = () => {
 
 	const [conversation, setConversation] = useState(JSON.parse(localStorage.getItem('conversation')) || []);
 
+	const [aiLimitReached, setAiLimitReached] = useState(false);
+		
+	const hasConsumerSubscription = async () => {
+		if (!inputtedUuid) {
+			return false; // weird state. won't allow it.
+		}
+		const { data, error } = await supabase.functions.invoke('verify-consumer-subscription', {
+      body: { user_id: inputtedUuid },
+    });
+		if (error) {
+			return true; // we'll take the heat
+		}
+		return data === "Active subscription found";
+	}
+
+	const isThrottled = useRef(false);
+
+	const checkConsumerSubscription = async () => {
+		if (isThrottled.current) {
+			return;
+		}
+		isThrottled.current = true;
+	
+		const result = await hasConsumerSubscription();
+		setAiLimitReached(!result);
+	
+		setTimeout(() => {
+			isThrottled.current = false;
+		}, 1000);
+	};
+	
+	useEffect(() => {
+		const currentTime = new Date().getTime();
+		let timestamps = JSON.parse(window.localStorage.getItem("timestamps") || "[]");
+	
+		// Filter out timestamps older than 24 hours
+		timestamps = timestamps.filter(ts => currentTime - ts < 24 * 60 * 60 * 1000);
+	
+		// Save the filtered timestamps back to localStorage
+		window.localStorage.setItem("timestamps", JSON.stringify(timestamps));
+	
+		// Check if more than 10 questions have been asked in the past 24 hours
+		if (timestamps.length > 10) {
+			checkConsumerSubscription();
+		}
+	
+		// Add a new timestamp for the current question
+		timestamps.push(currentTime);
+		window.localStorage.setItem("timestamps", JSON.stringify(timestamps));
+		
+	}, [conversation]);
+	
 	const switchBuffer = () => setBuffer(buffer === 1 ? 2 : 1);
 
 	const getTargetContainer = () => {
@@ -1167,6 +1220,7 @@ const App = () => {
 	// console.log(pdfText, 'pdfText', inputtedUuid)
 	const [aiDocId, setAiDocId] = useState(localStorage.getItem("aiDocId") || "");
 
+	const [embeddingKey, setEmbeddingKey] = useState(localStorage.getItem("embeddingKey") || "");
 	const onEmbed = async () => {
 		const { data, error } = await supabase.functions.invoke('embed', {
       body: { user_id: inputtedUuid, paragraphs: pdfText },
@@ -1176,13 +1230,15 @@ const App = () => {
 			console.error(`Error embedding: ${error}`);
 			return;
 		}
-		
+		const newEmbeddingKey = data?.embeddingKey || "";
+		setEmbeddingKey(newEmbeddingKey);
+		localStorage.setItem("embeddingKey", newEmbeddingKey);
 		const docId = data?.docId || "";
 		setAiDocId(docId);
 		localStorage.setItem("aiDocId", docId);
 		const hash = simpleHash(JSON.stringify(pdfText));
 		setAiDocHash(hash);
-		window.localStorage.setItem("aiDocHash", hash);
+		localStorage.setItem("aiDocHash", hash);
 		return;
 	}
 
@@ -1197,6 +1253,9 @@ const App = () => {
 		console.log("removing chat history")
 		setConversation([]);
 		localStorage.setItem('conversation', '[]');
+		if (!aiDocId) {
+			return;
+		}
 		const { data, error } = await supabase.functions.invoke('remove_ai_from_doc', {
       body: { docId: aiDocId },
     });
@@ -1213,7 +1272,7 @@ const App = () => {
 
 	const onAskQuestion = async (question, prevQuestions) => {
 		const { data, error } = await supabase.functions.invoke('ask_ai', {
-      body: { doc_id: aiDocId, question_text: question, last_questions: prevQuestions },
+      body: { doc_id: aiDocId, question_text: question, last_questions: prevQuestions, embedding_key: embeddingKey},
     });
 		if (error) {
 			alert("Something went wrong. Please try again later.");
@@ -1387,6 +1446,7 @@ const App = () => {
 							/>
 						</div>
 						<SearchBar
+							aiLimitReached={aiLimitReached}
 							onNoToAiWarning={onNoToAiWarning}
 							aiDocHash={aiDocHash}
 							currentAiDocHash={currentAiDocHash}
