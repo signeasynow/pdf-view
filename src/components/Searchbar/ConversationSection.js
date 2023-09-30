@@ -205,7 +205,7 @@ const ConversationSection = ({
               onChange={handleChange}
               placeholder={aiLimitReached ? "Daily limit reached. Subscribe to continue." : "Ask your document a question"}
             />
-            <button disabled={loading || aiLimitReached} style={{cursor: "pointer", fontSize: 16, border: "none", borderBottomRightRadius: "2px", borderTopRightRadius: "2px", color: "white", background: loading ? "white" : "#3183c8"}} onClick={handleSubmit}>{loading ? <LoadingSpinner size="sm" /> : "⮕"}</button>
+            <button disabled={loading || aiLimitReached} style={{cursor: aiLimitReached ? "not-allowed" : "pointer", fontSize: 16, border: "none", borderBottomRightRadius: "2px", borderTopRightRadius: "2px", color: "white", background: (loading || aiLimitReached) ? "white" : "#3183c8"}} onClick={handleSubmit}>{loading ? <LoadingSpinner size="sm" /> : "⮕"}</button>
           </div>
           <p css={disclaimerStyle}>AI may produce inaccurate information and citations.</p>
         </div>

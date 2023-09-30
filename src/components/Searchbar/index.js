@@ -19,6 +19,15 @@ const confirmBtnStyle = css`
   border-radius: 4px;
   cursor: pointer;
 `
+const disabledConfirmBtnStyle = css`
+background: grey;
+color: white;
+border: 1px solid transparent;
+font-size: 16px;
+padding: 8px 16px;
+border-radius: 4px;
+cursor: not-allowed;
+`
 
 const visibleSearchWrapper = css`
   background: #f1f3f5;
@@ -194,8 +203,8 @@ const SearchBar = ({
 						{
 							!aiDocId && (
 								<div style={{margin: 8, display: "flex", flexDirection: "column"}}>
-									<button disabled={loading} onClick={handleEmbed} css={confirmBtnStyle}>{loading ? "Please wait..." : "Enable AI Discussions"}</button>
-									<p>Activate to let AI answer queries about this document.</p>
+									<button disabled={loading || aiLimitReached} onClick={handleEmbed} css={aiLimitReached ? disabledConfirmBtnStyle : confirmBtnStyle}>{loading ? "Please wait..." : "Enable AI Discussions"}</button>
+									<p>{aiLimitReached ? "Daily limit reached. Subscribe to continue." : "Activate to let AI answer queries about this document."}</p>
 								</div>
 							)
 						}
