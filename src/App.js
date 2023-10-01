@@ -258,9 +258,10 @@ const App = () => {
 
 	const [aiLimitReached, setAiLimitReached] = useState(false);
 		
+	console.log(inputtedUuid, 'inputtedUuid')
 	const hasConsumerSubscription = async () => {
 		if (!inputtedUuid) {
-			return false; // weird state. won't allow it.
+			return true; // weird state. will allow it.
 		}
 		const { data, error } = await supabase.functions.invoke('verify-consumer-subscription', {
       body: { user_id: inputtedUuid },
@@ -268,7 +269,7 @@ const App = () => {
 		if (error) {
 			return true; // we'll take the heat
 		}
-		return data === "Active subscription found";
+		return data.message === "Active subscription found";
 	}
 
 	const isThrottled = useRef(false);
@@ -280,8 +281,11 @@ const App = () => {
 		isThrottled.current = true;
 	
 		const result = await hasConsumerSubscription();
+		console.log(result, 'result AI limit')
 		setAiLimitReached(!result);
-	
+		if (result) {
+			window.localStorage.setItem("timestamps", "[]");
+		}
 		setTimeout(() => {
 			isThrottled.current = false;
 		}, 1000);
@@ -475,7 +479,6 @@ const App = () => {
 	async function doSplit(buffer, splits) {
 		try {
 			const modifiedPdfArrays = await splitPdfPages(new Uint8Array(buffer), splits);
-			console.log(modifiedPdfArrays, 'result end');
 			const result = modifiedPdfArrays.map((each, idx) => {
 				return {
 					name: `document-${idx + 1}.pdf`,
