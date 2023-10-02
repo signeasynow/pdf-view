@@ -151,6 +151,11 @@ const SearchBar = ({
     setRows(1);
     setLoading(true);
     onAskQuestion(questionText, extractLastThreeQA(conversation)).then((answerText) => {
+			if (answerText?.error === "document purged") {
+				alert("This document's metadata has been removed from our servers and we can't answer any more questions about it. Please re-upload the document to proceed.")
+				return;
+			}
+			console.log(answerText, 'answerText called here')
       setConversation([
         ...conversation,
         { type: 'question', text: questionText },
@@ -158,6 +163,7 @@ const SearchBar = ({
       ]);
       setLoading(false);
     }).catch((err) => {
+			console.log(err, 'err dow2', err?.message)
       alert("Something went wrong. Please reload the page and try again.")
       setLoading(false);
     });
