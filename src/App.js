@@ -40,13 +40,10 @@ import { ModalProvider } from './Contexts/ModalProvider';
 import useListenForSearchbarRequest from './hooks/useListenForSearchbarRequest';
 
 async function splitPdfPages(pdfBytes, splitIndices) {
-	console.log(splitIndices, 'splitIndices')
   const originalPdfDoc = await PDFDocument.load(pdfBytes);
   const numPages = originalPdfDoc.getPageCount();
-	console.log(numPages, 'numPages1')
   // Sort the split indices in ascending order
   const sortedIndices = [...splitIndices, numPages].sort((a, b) => a - b);
-	console.log(sortedIndices, 'sortedIndices2')
   const allPdfBuffers = [];
   let start = 0;
 
@@ -56,7 +53,6 @@ async function splitPdfPages(pdfBytes, splitIndices) {
 
     // Copy and add pages from the original PDF document
 		const copiedPages = await newPdfDoc.copyPages(originalPdfDoc, Array.from({ length: end - start }, (_, i) => i + start));
-		console.log(copiedPages, 'copiedPages2')
     for (const page of copiedPages) {
       newPdfDoc.addPage(page);
     }
@@ -258,7 +254,6 @@ const App = () => {
 
 	const [aiLimitReached, setAiLimitReached] = useState(false);
 		
-	console.log(inputtedUuid, 'inputtedUuid')
 	const hasConsumerSubscription = async () => {
 		if (!inputtedUuid) {
 			return true; // weird state. will allow it.
@@ -281,7 +276,6 @@ const App = () => {
 		isThrottled.current = true;
 	
 		const result = await hasConsumerSubscription();
-		console.log(result, 'result AI limit')
 		setAiLimitReached(!result);
 		if (result) {
 			window.localStorage.setItem("timestamps", "[]");
@@ -567,7 +561,6 @@ const App = () => {
 		const errors = [];
 	
 		const successfulBuffers = await fetchBuffers(files);
-		// console.log(successfulBuffers.length, 'success', successfulBuffers)
 		if (successfulBuffers.length > 0) {
 			const modifiedPdfArray = await combinePDFs(successfulBuffers);
 			await savePDF(modifiedPdfArray.buffer, pdfId);
@@ -1282,7 +1275,6 @@ const App = () => {
 			console.error(`Error embedding: ${error}`);
 			return;
 		}
-		console.log(data, 'data on ask q')
 		return data;
 	}
 
