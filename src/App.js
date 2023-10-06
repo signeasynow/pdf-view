@@ -568,21 +568,7 @@ const App = () => {
 			newModifiedPayload[activePageIndex] = new Date().toISOString();
 			setModifiedFiles(newModifiedPayload);
 			setFileNames([fileNames[0].replace('.pdf', '-merged.pdf')]);
-			const update = [
-				{
-					name: fileNames[0].replace('.pdf', '-merged.pdf'),
-					url: modifiedPdfArray.slice(0)
-				}
-			]
-			// setFiles(update);
-			/*
-			for (let i = 1; i < files.length; i ++) {
-				await Promise.all([
-					deletePDF(`pdfId${i}`),
-					deletePDF(`original${i}`)
-				]);
-			}
-			*/
+
 			window.parent.postMessage({ type: "combine-files-completed", message: modifiedPdfArray });
 		} else {
 			// Handle case where no PDFs were successfully retrieved
@@ -707,20 +693,6 @@ const App = () => {
 		});
 	};
 
-	const onClickTestHandler = async () => {
-		try {
-			const result = await invokePlugin({
-				pluginName: "myPlugin",
-				funcName: "sayHello",
-				args: []
-			});
-			console.log('Received data:', result);
-		} catch (err) {
-			console.log('Error:', err);
-		}
-	};
-
-	
 	const [isOnline, setIsOnline] = useState(navigator.onLine);
 
 	const [hasValidLicense, setHasValidLicense] = useState(null);
@@ -1441,6 +1413,7 @@ const App = () => {
 							/>
 						</div>
 						<SearchBar
+							tools={tools}
 							aiLimitReached={aiLimitReached}
 							onNoToAiWarning={onNoToAiWarning}
 							aiDocHash={aiDocHash}

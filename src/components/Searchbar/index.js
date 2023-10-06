@@ -118,6 +118,7 @@ const thumbnailTopActionsWrapper = css`
 
 const SearchBar = ({
 	aiDocHash,
+	tools,
 	aiLimitReached,
 	currentAiDocHash,
 	aiDocId,
@@ -239,11 +240,15 @@ const SearchBar = ({
 				searchBarView === "search" && (
 					<>
 						<div css={topSectionStyle}>
-							<div css={thumbnailTopActionsWrapper}>
-								<SearchbarTools onToggle={() => {
-									setSearchBarView("ai")
-								}} />
-							</div>
+							{
+								tools?.general?.includes("chat") && (
+									<div css={thumbnailTopActionsWrapper}>
+										<SearchbarTools onToggle={() => {
+											setSearchBarView("ai")
+										}} />
+									</div>
+								)
+							}
 						</div>
 						<div css={innerWrapperStyle}>
 							<div>
