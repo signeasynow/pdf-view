@@ -33,6 +33,7 @@ const Header = ({
 	showSearch,
 	pdfProxyObj,
 	pdfViewerObj,
+	showFullScreenSearch,
 	onSearch,
 	onPanel,
 	onDownload,
@@ -55,14 +56,16 @@ const Header = ({
 					)
 				}
 				{
-					(tools?.general?.includes('panel-toggle') && !showFullScreenThumbnails) && (
-						<HeaderBtn onClick={onPanel} title={t("panel")} iconAlt={t("panel")} icon={Panel} />
+					(tools?.general?.includes('panel-toggle') && !showFullScreenThumbnails && !showFullScreenSearch) && (
+						<>
+							<HeaderBtn onClick={onPanel} title={t("panel")} iconAlt={t("panel")} icon={Panel} />
+							<VerticalDivider />
+						</>
 					)
 				}
 				{
-					tools?.general.includes('zoom') && !showFullScreenThumbnails && (
+					tools?.general.includes('zoom') && !showFullScreenThumbnails && !showFullScreenSearch && (
 						<>
-							<VerticalDivider />
 							<ZoomSection
 								defaultZoom={defaultZoom}
 								leftPanelEnabled={leftPanelEnabled}
@@ -86,7 +89,7 @@ const Header = ({
 			}
 			{
 				tools?.general?.includes('search') && (
-					<HeaderBtn onClick={onSearch} title={t("search")} iconAlt={t("search")} icon={showSearch ? File : Search} />
+					<HeaderBtn offsetX="-20px" onClick={onSearch} title={t("search")} iconAlt={t("search")} icon={showSearch ? File : Search} />
 				)
 			}
 			{

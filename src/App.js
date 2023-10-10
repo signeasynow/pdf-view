@@ -781,7 +781,7 @@ const App = () => {
 	const [searchBarView, setSearchBarView] = useState("ai");
 
 	const showSubheader = () => {
-		return !!tools?.editing?.length || tools?.general?.includes("thumbnails")
+		return (!!tools?.editing?.length || tools?.general?.includes("thumbnails")) && !showFullScreenSearch()
 	}
 
 	const onAddOperation = (operation) => {

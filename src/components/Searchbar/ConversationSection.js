@@ -157,7 +157,7 @@ const ConversationSection = ({
 
   if (showWrongDocWarning) {
     return (
-      <div style={{margin: 4, alignItems: "center", display: "flex", flexDirection: "column"}}>
+      <div style={{margin: "4px 12px 8px", alignItems: "center", display: "flex", flexDirection: "column"}}>
         <div>Document updated. Answers may refer to the previous version. Regenerate AI for current document?</div>
         <div>
           <button disabled={loading} onClick={onYesToWarning} css={closeBtnStyle}>{loading ? <LoadingSpinner size="sm" /> : "Yes"}</button>
