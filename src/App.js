@@ -319,6 +319,18 @@ const App = () => {
 	const [showSearch, setShowSearch] = useState(false);
 	const [showPanel, setShowPanel] = useState(true);
 
+	const isSmallScreen = useMediaQuery('(max-width: 550px)');
+
+	const showFullScreenSearch = () => {
+		return isSmallScreen && showSearch;
+	}
+	
+	const shouldShowPanel = () => {
+		return showPanel && !showFullScreenSearch();
+	}
+
+	console.log(shouldShowPanel(), 'shouldShowPanel')
+
 	const [multiPageSelections, setMultiPageSelections] = useState([]);
 
 	useEffect(() => {
@@ -334,7 +346,7 @@ const App = () => {
 	};
 
 	const onPanelBtnClick = () => {
-		setShowPanel(() => !showPanel);
+		setShowPanel(() => !shouldShowPanel());
 	};
 
 	const initAnalytics = () => {
@@ -599,7 +611,7 @@ const App = () => {
 			onExpand();
 		} else if (enable === false) {
 			onMinimize();
-		} else if (showFullScreenThumbnails) {
+		} else if (shouldShowFullScreenThumbnails()) {
 			onMinimize();
 		} else {
 			onExpand();
@@ -979,7 +991,7 @@ const App = () => {
 	}
 
 	const canDelete = () => {
-		if (showFullScreenThumbnails) {
+		if (shouldShowFullScreenThumbnails()) {
 			return !!multiPageSelections?.length
 		}
 		return !!multiPageSelections?.length || !!activePage
@@ -989,7 +1001,7 @@ const App = () => {
 		if (Array.isArray(override)) {
 			return !!override?.length;
 		}
-		if (showFullScreenThumbnails) {
+		if (shouldShowFullScreenThumbnails()) {
 			return !!multiPageSelections?.length
 		}
 		return !!multiPageSelections?.length || !!activePage
@@ -1166,6 +1178,10 @@ const App = () => {
 
 	const [showFullScreenThumbnails, setShowFullScreenThumbnails] = useState(false);
 
+	const shouldShowFullScreenThumbnails = () => {
+		return showFullScreenThumbnails && !showFullScreenSearch();
+	}
+
 	const onExpand = () => {
 		setShowFullScreenThumbnails(true);
 	}
@@ -1176,14 +1192,12 @@ const App = () => {
 		setDefaultZoom(num);
 	}
 
-	const isSmallScreen = useMediaQuery('(max-width: 550px)');
-
 	const onChangeActivePageIndex = (idx) => {
 		setActivePageIndex(idx);
 	}
 
 	const forceFullThumbnailsView = () => {
-		return isSmallScreen && showPanel;
+		return isSmallScreen && shouldShowPanel() && !showSearch && !showFullScreenSearch();
 	}
 	// console.log(pdfText, 'pdfText', inputtedUuid)
 	const [aiDocId, setAiDocId] = useState(localStorage.getItem("aiDocId") || "");
@@ -1256,7 +1270,7 @@ const App = () => {
 			setShowPanel(false);
 		}
 	}
-	
+
 	if (fileLoadFailError) {
 		return (
 			<div css={failWrap}>
@@ -1307,8 +1321,9 @@ const App = () => {
 					{
 						showHeader() && (
 							<Header
+								showFullScreenSearch={showFullScreenSearch()}
 								showSearch={showSearch}
-								showFullScreenThumbnails={showFullScreenThumbnails || forceFullThumbnailsView()}
+								showFullScreenThumbnails={shouldShowFullScreenThumbnails() || forceFullThumbnailsView()}
 								defaultZoom={defaultZoom}
 								tools={tools}
 								onDownload={onDownload}
@@ -1318,7 +1333,7 @@ const App = () => {
 								pdfViewerObj={pdfViewerObj}
 								onSearch={onSearchBtnClick}
 								onPanel={onPanelBtnClick}
-								leftPanelEnabled={showPanel}
+								leftPanelEnabled={shouldShowPanel()}
 							/>
 						)
 					}
@@ -1335,7 +1350,7 @@ const App = () => {
 								expandedViewThumbnailScale={expandedViewThumbnailScale}
 								setMultiPageSelections={setMultiPageSelections}
 								multiPageSelections={multiPageSelections}
-								showFullScreenThumbnails={showFullScreenThumbnails || forceFullThumbnailsView()}
+								showFullScreenThumbnails={shouldShowFullScreenThumbnails() || forceFullThumbnailsView()}
 								onMinimize={onMinimize}
 								undoLastAction={undoLastAction}
 								redoLastAction={redoLastAction}
@@ -1375,8 +1390,8 @@ const App = () => {
 									activePage={activePage}
 									pdfProxyObj={pdfProxyObj}
 									pdf={pdfViewerObj}
-									showPanel={showPanel}
-									showFullScreenThumbnails={showFullScreenThumbnails || forceFullThumbnailsView()}
+									showPanel={shouldShowPanel()}
+									showFullScreenThumbnails={shouldShowFullScreenThumbnails() || forceFullThumbnailsView()}
 								/>
 							)
 						}
@@ -1402,7 +1417,7 @@ const App = () => {
 								fileLoadFailError={fileLoadFailError}
 								setFileLoadFailError={setFileLoadFailError}
 								rightPanelEnabled={showSearch}
-								leftPanelEnabled={showPanel}
+								leftPanelEnabled={shouldShowPanel()}
 								setActivePage={setActivePage}
 								setPdfProxyObj={setPdfProxyObj}
 								setMatchesCount={setMatchesCount}
@@ -1414,6 +1429,7 @@ const App = () => {
 							/>
 						</div>
 						<SearchBar
+							showFullScreenSearch={showFullScreenSearch()}
 							tools={tools}
 							aiLimitReached={aiLimitReached}
 							onNoToAiWarning={onNoToAiWarning}

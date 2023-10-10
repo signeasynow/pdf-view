@@ -40,6 +40,18 @@ const visibleSearchWrapper = css`
 	position: relative;
 `;
 
+const fullSearchWrapper = css`
+  background: #f1f3f5;
+  width: 100%;
+  flex-shrink: 0;
+	overflow: hidden;
+  flex-grow: 0;
+  font-size: 14px;
+  color: #5b5b5b;
+	z-index: 4;
+	position: relative;
+`;
+
 const invisibleSearchWrapper = css`
   display: none;
 `;
@@ -120,6 +132,7 @@ const SearchBar = ({
 	tools,
 	aiLimitReached,
 	currentAiDocHash,
+	showFullScreenSearch,
 	aiDocId,
 	showSearch,
 	setSearchBarView,
@@ -189,8 +202,15 @@ const SearchBar = ({
 		})
 	}
 
+	const getWrapperClass = () => {
+		if (showFullScreenSearch) {
+			return fullSearchWrapper;
+		}
+		return showSearch ? visibleSearchWrapper : invisibleSearchWrapper;
+	}
+
 	return (
-		<div css={showSearch ? visibleSearchWrapper : invisibleSearchWrapper}>
+		<div css={getWrapperClass()}>
 			{
 				searchBarView === "ai" && showSearch && (
 					<>
