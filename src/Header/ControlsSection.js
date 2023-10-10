@@ -1,7 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 
-import 'pdfjs-dist/web/pdf_viewer.css';
 import Gear from '../../assets/gear-svgrepo-com.svg';
 import RotateRight from '../../assets/rotate-right-svgrepo-com.svg';
 import RotateLeft from '../../assets/rotate-left-svgrepo-com.svg';

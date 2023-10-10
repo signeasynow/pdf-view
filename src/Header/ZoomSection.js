@@ -1,7 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 
-import 'pdfjs-dist/web/pdf_viewer.css';
 import ZoomIn from '../../assets/minus-circle-svgrepo-com.svg';
 import ZoomOut from '../../assets/add-circle-svgrepo-com.svg';
 import ChevronDown from '../../assets/chevron-down-svgrepo-com.svg';

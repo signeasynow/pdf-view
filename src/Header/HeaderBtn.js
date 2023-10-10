@@ -1,7 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 
-import 'pdfjs-dist/web/pdf_viewer.css';
 import { Icon, Tooltip } from 'aleon_35_pdf_ui_lib';
 
 const wrapper = css`

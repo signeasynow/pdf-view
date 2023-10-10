@@ -1,15 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-
-import 'pdfjs-dist/web/pdf_viewer.css';
-import Hand from '../../assets/hand-svgrepo-com.svg';
-import Search from '../../assets/search-svgrepo-com.svg';
-import Hamburger from '../../assets/hamburger-md-svgrepo-com.svg';
-import Comment from '../../assets/comment-svgrepo-com.svg';
+import Search from '../../assets/file-search-svgrepo-com.svg';
+import File from '../../assets/file-svgrepo-com.svg';
 import Panel from '../../assets/panel-left-svgrepo-com.svg';
 import Download from '../../assets/download-svgrepo-com.svg';
 import ZoomSection from './ZoomSection';
-import ControlsSection from './ControlsSection';
 import HeaderBtn from './HeaderBtn';
 import { useTranslation } from 'react-i18next';
 import VerticalDivider from '../components/VerticalDivider';
@@ -35,6 +30,7 @@ const contentLeftStyle = css`
 
 const Header = ({
 	tools,
+	showSearch,
 	pdfProxyObj,
 	pdfViewerObj,
 	onSearch,
@@ -78,8 +74,6 @@ const Header = ({
 					)
 				}
 			</div>
-			
-
 			{
 
 				/*
@@ -92,7 +86,7 @@ const Header = ({
 			}
 			{
 				tools?.general?.includes('search') && (
-					<HeaderBtn onClick={onSearch} title={t("search")} iconAlt={t("search")} icon={Search} />
+					<HeaderBtn onClick={onSearch} title={t("search")} iconAlt={t("search")} icon={showSearch ? File : Search} />
 				)
 			}
 			{

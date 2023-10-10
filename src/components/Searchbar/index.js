@@ -1,7 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { useEffect, useRef, useState } from 'preact/hooks';
-import 'pdfjs-dist/web/pdf_viewer.css';
+import { useRef, useState } from 'preact/hooks';
 import { Icon } from 'aleon_35_pdf_ui_lib';
 import ChevronLeft from '../../../assets/chevron-left-svgrepo-com.svg';
 import ChevronRight from '../../../assets/chevron-right-svgrepo-com.svg';

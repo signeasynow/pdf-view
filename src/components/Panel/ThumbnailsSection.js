@@ -1,7 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 
-import 'pdfjs-dist/web/pdf_viewer.css';
 import ThumbnailsContainer from '../../Thumbnails';
 import PanelTools from './PanelTools';
 import Slider from '../Slider';

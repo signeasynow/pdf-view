@@ -1,7 +1,5 @@
 /** @jsxImportSource @emotion/react */
 import {  css } from '@emotion/react';
-import { Button } from 'aleon_35_pdf_ui_lib';
-import { useModal } from '../../Contexts/ModalProvider';
 
 const overlayStyle = css`
   position: fixed;
@@ -50,27 +48,21 @@ const closeBtnStyle = css`
   cursor: pointer;
 `
 
-export const ConfirmationModal = ({ onConfirm, message }) => {
-
-  const { hideModal } = useModal();
-
-  const handleClose = () => {
-    hideModal();
-  }
+export const ConfirmationModal = ({ onConfirm, message, onClose }) => {
 
   return (
     <div css={overlayStyle}>
       <div css={modalContentStyle}>
-        <span css={topCloseBtnStyle} onClick={handleClose}>&times;</span>
+        <span css={topCloseBtnStyle} onClick={onClose}>&times;</span>
         <p>{message}</p>
         <button css={confirmBtnStyle} variant="primary" size="sm" onClick={() => {
           // Handle confirm action here
           onConfirm?.();
-          handleClose?.();
+          onClose?.();
         }}>
           Confirm
         </button>
-        <button css={closeBtnStyle} variant="secondary" size="md" onClick={handleClose}>Cancel</button>
+        <button css={closeBtnStyle} variant="secondary" size="md" onClick={onClose}>Cancel</button>
       </div>
     </div>
   );

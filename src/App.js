@@ -1307,7 +1307,8 @@ const App = () => {
 					{
 						showHeader() && (
 							<Header
-								showFullScreenThumbnails={showFullScreenThumbnails}
+								showSearch={showSearch}
+								showFullScreenThumbnails={showFullScreenThumbnails || forceFullThumbnailsView()}
 								defaultZoom={defaultZoom}
 								tools={tools}
 								onDownload={onDownload}

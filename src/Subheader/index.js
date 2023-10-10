@@ -15,6 +15,7 @@ import Slider from '../components/Slider';
 import { useState } from 'preact/hooks';
 import AccessibleButton from '../components/AccessibleButton';
 import VerticalDivider from '../components/VerticalDivider';
+import { useModal } from '../Contexts/ModalProvider';
 
 const Wrapper = ({ children }) => (
 	<div css={css({
@@ -73,6 +74,8 @@ const Subheader = ({
 		return !!tools?.editing?.length;
 	}
 
+	const { showSignatureModal } = useModal();
+
 	return (
 		<Wrapper>
 			<div css={contentLeftStyle}>
@@ -113,6 +116,13 @@ const Subheader = ({
 								onChange={handleInputChange}
 							/>
 						</div>
+					</div>
+				)
+			}
+			{
+				tools?.editing?.includes("signature") && (
+					<div>
+						<button onClick={() => showSignatureModal("Test", () => {})}>Add signature</button>
 					</div>
 				)
 			}
