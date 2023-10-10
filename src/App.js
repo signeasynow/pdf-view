@@ -329,8 +329,6 @@ const App = () => {
 		return showPanel && !showFullScreenSearch();
 	}
 
-	console.log(shouldShowPanel(), 'shouldShowPanel')
-
 	const [multiPageSelections, setMultiPageSelections] = useState([]);
 
 	useEffect(() => {
@@ -1168,7 +1166,6 @@ const App = () => {
 	const [splitMarkers, setSplitMarkers] = useState([]);
 
 	const onClickSplit = (idx) => {
-		console.log("split", idx)
 		if (splitMarkers.includes(idx)) {
 			setSplitMarkers(splitMarkers.filter((each) => each !== idx));
 		} else {
@@ -1232,7 +1229,6 @@ const App = () => {
 	}
 
 	const onRemoveChatHistory = async () => {
-		console.log("removing chat history")
 		setConversation([]);
 		localStorage.setItem('conversation', '[]');
 		if (!aiDocId) {
