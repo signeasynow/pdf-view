@@ -244,6 +244,7 @@ const App = () => {
 	const [buffer, setBuffer] = useState(1); // 1 for primary, 2 for secondary
 	const viewerContainerRef1 = useRef(null);
 	const viewerContainerRef2 = useRef(null);
+	const [searchBarView, setSearchBarView] = useState("ai");
 
 	const [pdfText, setPdfText] = useState("");
 
@@ -338,6 +339,14 @@ const App = () => {
 	const [activePage, setActivePage] = useState(1);
 
 	const [tools, setTools] = useState([]);
+
+
+	useEffect(() => {
+		if (!tools) {
+			return;
+		}
+		setSearchBarView(tools?.general?.includes("ai") ? "ai" : "search");
+	}, [tools]);
 
 	const onSearchBtnClick = () => {
 		setShowSearch((prev) => !prev);
@@ -775,8 +784,6 @@ const App = () => {
 		|| tools?.general?.includes("zoom") || tools?.general?.includes("search")
 		|| tools?.editing?.includes("rotation")
 	}
-
-	const [searchBarView, setSearchBarView] = useState("ai");
 
 	const showSubheader = () => {
 		return (!!tools?.editing?.length || tools?.general?.includes("thumbnails")) && !showFullScreenSearch()
