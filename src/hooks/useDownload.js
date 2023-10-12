@@ -24,7 +24,7 @@ const downloadAll = async (pdfBuffers) => {
   URL.revokeObjectURL(url);
 };
 
-function useDownload(files, fileName, isSandbox, fileNames) {
+function useDownload(files, isSandbox, fileNames) {
 	const triggerDownload = async () => {
 		if (isSandbox) {
 			// return alert("Download is not enabled in Sandbox mode.");
@@ -39,7 +39,7 @@ function useDownload(files, fileName, isSandbox, fileNames) {
 				const url = URL.createObjectURL(blob);
 				const link = document.createElement('a');
 				link.href = url;
-				link.download = fileName;
+				link.download = fileNames[0];
 				link.click();
 			} catch (error) {
 				console.error('Error modifying PDF:', error);

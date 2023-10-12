@@ -314,9 +314,6 @@ const App = () => {
 	};
 	const [isSandbox, setIsSandbox] = useState(false);
 
-	const [file, setFile] = useState(null);
-	const [fileName, setFileName] = useState('file.pdf');
-
 	const [showSearch, setShowSearch] = useState(false);
 	const [showPanel, setShowPanel] = useState(true);
 
@@ -376,7 +373,7 @@ const App = () => {
 	const [files, setFiles] = useState([]);
 
 	const [fileNames, setFileNames] = useState([]);
-	const { triggerDownload: onDownload } = useDownload(files, fileName, isSandbox, fileNames);
+	const { triggerDownload: onDownload } = useDownload(files, isSandbox, fileNames);
 
 
 	const initialRedoUndoObject = () => {
@@ -432,9 +429,6 @@ const App = () => {
 		window.addEventListener('message', (event) => {
 			if (typeof event.data === 'object' && event.data.files?.length) {
 				addInitialFiles(event);
-			}
-			if (typeof event.data === 'object' && event.data.fileName) {
-				setFileName(event.data.fileName);
 			}
 			if (typeof event.data === 'object' && event.data.tools) {
 				setTools(event.data.tools);
@@ -604,14 +598,6 @@ const App = () => {
 	useListenForMergeFilesRequest(onMergeFiles);
 	useListenForSplitPagesRequest(onSplitPages);
 	useListenForCombineFilesRequest(onCombinePdfs);
-	
-	useEffect(() => {
-		if (!files[activePageIndex]?.url) {
-			return;
-		}
-		setFile(files[activePageIndex].url);
-	}, [activePageIndex]);
-
 	
 	useListenForThumbnailFullScreenRequest((enable) => {
 		if (enable === true) {
