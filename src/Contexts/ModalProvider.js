@@ -1,6 +1,7 @@
 import { useContext, useState } from 'preact/hooks';
 import { createContext } from 'preact';
 import ConfirmationModal from '../components/ConfirmationModal';
+import SignatureModal from '../components/SignatureModal';
 
 const ModalContext = createContext();
 
@@ -36,7 +37,7 @@ export const ModalProvider = ({ children }) => {
   return (
     <ModalContext.Provider value={{ showModal, showSignatureModal, hideModal }}>
       {isVisible && <ConfirmationModal onConfirm={onConfirmCallback} message={message} onClose={hideModal} />}
-      {isSignatureVisible && <ConfirmationModal onConfirm={onConfirmCallback} message={message} onClose={hideSignatureModal} />}
+      {isSignatureVisible && <SignatureModal onConfirm={onConfirmCallback} message={message} onClose={hideSignatureModal} />}
       {children}
     </ModalContext.Provider>
   );
