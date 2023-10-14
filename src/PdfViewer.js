@@ -9,6 +9,8 @@ import { retrievePDF, savePDF } from './utils/indexDbUtils';
 import { extractAllTextFromPDF } from './utils/extractAllTextFromPdf';
 import { addSandboxWatermark } from './utils/addSandboxWatermark';
 import simpleHash from './utils/simpleHash';
+import PDFJSAnnotate from 'pdf-annotate.js';
+
 const SANDBOX_BUNDLE_SRC = 'pdfjs-dist/build/pdf.sandbox.js';
 
 const containerStyle = css`

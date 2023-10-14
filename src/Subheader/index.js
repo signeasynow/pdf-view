@@ -119,6 +119,7 @@ const Subheader = ({
 					</div>
 				)
 			}
+			<button onClick={() => {}}>Free Text</button>
 			{
 				tools?.editing?.includes("signature") && (
 					<div>
