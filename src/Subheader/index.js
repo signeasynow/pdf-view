@@ -16,6 +16,9 @@ import { useState } from 'preact/hooks';
 import AccessibleButton from '../components/AccessibleButton';
 import VerticalDivider from '../components/VerticalDivider';
 import { useModal } from '../Contexts/ModalProvider';
+import PDFJSAnnotate from 'pdf-annotate.js';
+
+const { UI } = PDFJSAnnotate;
 
 const Wrapper = ({ children }) => (
 	<div css={css({
@@ -76,6 +79,54 @@ const Subheader = ({
 
 	const { showSignatureModal } = useModal();
 
+	const [activeToolbarItem, setActiveToolbarItem] = useState("");
+
+	const onChangeActiveToolbarItem = ({
+		tooltype
+	}) => {
+		console.log(UI, 'ui bro', tooltype)
+		switch (activeToolbarItem) {
+			case 'cursor':
+				UI.disableEdit();
+				break;
+			case 'draw':
+				UI.disablePen();
+				break;
+			case 'text':
+				UI.disableText();
+				break;
+			case 'point':
+				UI.disablePoint();
+				break;
+			case 'area':
+			case 'highlight':
+			case 'strikeout':
+				UI.disableRect();
+				break;
+		}
+		setActiveToolbarItem(tooltype);
+		switch (tooltype) {
+      case 'cursor':
+        UI.enableEdit();
+        break;
+      case 'draw':
+        UI.enablePen();
+        break;
+      case 'text':
+				console.log("ENABLE TEXT")
+        UI.enableText();
+        break;
+      case 'point':
+        UI.enablePoint();
+        break;
+      case 'area':
+      case 'highlight':
+      case 'strikeout':
+        UI.enableRect(tooltype);
+        break;
+    }
+	}
+
 	return (
 		<Wrapper>
 			<div css={contentLeftStyle}>
@@ -119,7 +170,12 @@ const Subheader = ({
 					</div>
 				)
 			}
-			<button onClick={() => {}}>Free Text</button>
+			<button
+				style={{background: activeToolbarItem === "cursor" ? "blue" : ""}}
+				onClick={() => onChangeActiveToolbarItem({tooltype: "cursor"})} class="cursor" type="button" title="Cursor" data-tooltype="cursor">➚</button>
+			<button
+				style={{background: activeToolbarItem === "text" ? "blue" : ""}}
+				onClick={() => onChangeActiveToolbarItem({tooltype: "text"})} class="text" type="button" title="Text Tool" data-tooltype="text">free text</button>
 			{
 				tools?.editing?.includes("signature") && (
 					<div>

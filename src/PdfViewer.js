@@ -9,7 +9,7 @@ import { retrievePDF, savePDF } from './utils/indexDbUtils';
 import { extractAllTextFromPDF } from './utils/extractAllTextFromPdf';
 import { addSandboxWatermark } from './utils/addSandboxWatermark';
 import simpleHash from './utils/simpleHash';
-import PDFJSAnnotate from 'pdf-annotate.js';
+
 
 const SANDBOX_BUNDLE_SRC = 'pdfjs-dist/build/pdf.sandbox.js';
 
@@ -72,6 +72,7 @@ export const PdfViewer = ({
 	const pdfViewerRef = useRef(null);
 	const pdfFindControllerRef = useRef(null);
 	const pdfScriptingManagerRef = useRef(null);
+	const annotationEditorUIManagerRef = useRef(null);
 
 	const cleanupDocument = async () => {
 		pdfViewerRef.current?.setDocument(null);
@@ -92,17 +93,16 @@ export const PdfViewer = ({
 		pdfFindControllerRef.current = new PDFFindController({ eventBus: eventBusRef.current, linkService: pdfLinkServiceRef.current });
 		pdfScriptingManagerRef.current = new PDFScriptingManager({ eventBus: eventBusRef.current, sandboxBundleSrc: SANDBOX_BUNDLE_SRC });
 		pdfViewerRef.current = new PDFViewer({ container: viewerContainer, eventBus: eventBusRef.current, linkService: pdfLinkServiceRef.current, findController: pdfFindControllerRef.current, scriptingManager: pdfScriptingManagerRef.current });
+
 		// pdfViewerRef.current.currentScale = 0.2 // WIP
 		setPdfViewerObj(pdfViewerRef.current);
-    
+
 		pdfLinkServiceRef.current.setViewer(pdfViewerRef.current);
 		pdfScriptingManagerRef.current.setViewer(pdfViewerRef.current);
 
 		eventBus.on('pagesinit', () => {
 			pdfViewerRef.current.currentScaleValue = "page-height";
 			updateCurrentScale(Math.round(pdfViewerRef.current.currentScale * 100));
-			
-			// pdfViewerRef.current.currentScaleValue = 'page-width';
 		});
 
 		eventBus.on('pagesloaded', () => {
@@ -174,6 +174,18 @@ export const PdfViewer = ({
 				}
 				// If no modifiedFile, continue to set the loaded PDF document.
 				setPdfProxyObj(loadedPdfDocument);
+				console.log(eventBus, 'eventBus', eventBus.on, 'onn')
+
+				annotationEditorUIManagerRef.current = new pdfjs.AnnotationEditorUIManager(
+					viewerContainerRef1.current,
+					pdfViewerRef.current,
+					eventBus,
+					loadedPdfDocument.annotationStorage
+				);
+				console.log(pdfjs.AnnotationEditorType.FREETEXT, 'pdfjs.AnnotationEditorType.FREETEXT')
+				annotationEditorUIManagerRef.current.updateMode(pdfjs.AnnotationEditorType.FREETEXT);
+				annotationEditorUIManagerRef.current.setEditingState(true);
+
 				pdfViewerRef.current.setDocument(loadedPdfDocument);
 				pdfLinkServiceRef.current.setDocument(loadedPdfDocument, null);
 				
@@ -183,6 +195,8 @@ export const PdfViewer = ({
 				const text = await extractAllTextFromPDF(loadedPdfDocument);
 				setPdfText(text);
 				setCurrentAiDocHash(simpleHash(JSON.stringify(text)));
+
+		
 			},
 			reason => {
 				setFileLoadFailError(reason?.message);
