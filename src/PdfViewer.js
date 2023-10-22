@@ -37,6 +37,8 @@ export const PdfViewer = ({
 	showHeader,
 	showSubheader,
 	setPdfProxyObj,
+	pdfProxyObj,
+	annotationEditorUIManagerRef,
 	setCurrentAiDocHash,
 	tools,
 	setPdfViewerObj,
@@ -72,7 +74,6 @@ export const PdfViewer = ({
 	const pdfViewerRef = useRef(null);
 	const pdfFindControllerRef = useRef(null);
 	const pdfScriptingManagerRef = useRef(null);
-	const annotationEditorUIManagerRef = useRef(null);
 
 	const cleanupDocument = async () => {
 		pdfViewerRef.current?.setDocument(null);
@@ -92,7 +93,15 @@ export const PdfViewer = ({
 		pdfLinkServiceRef.current = new PDFLinkService({ eventBus: eventBusRef.current, externalLinkTarget: 2 });
 		pdfFindControllerRef.current = new PDFFindController({ eventBus: eventBusRef.current, linkService: pdfLinkServiceRef.current });
 		pdfScriptingManagerRef.current = new PDFScriptingManager({ eventBus: eventBusRef.current, sandboxBundleSrc: SANDBOX_BUNDLE_SRC });
-		pdfViewerRef.current = new PDFViewer({ container: viewerContainer, eventBus: eventBusRef.current, linkService: pdfLinkServiceRef.current, findController: pdfFindControllerRef.current, scriptingManager: pdfScriptingManagerRef.current });
+		pdfViewerRef.current = new PDFViewer({
+			container: viewerContainer,
+			viewer: document.getElementById("viewer"),
+			eventBus: eventBusRef.current,
+			linkService: pdfLinkServiceRef.current,
+			findController: pdfFindControllerRef.current,
+			scriptingManager: pdfScriptingManagerRef.current,
+			annotationEditorMode: 3
+		});
 
 		// pdfViewerRef.current.currentScale = 0.2 // WIP
 		setPdfViewerObj(pdfViewerRef.current);
@@ -115,6 +124,7 @@ export const PdfViewer = ({
 				message: new Date().toISOString()
 			})
 			onPagesLoaded();
+
 		});
 
 		eventBus.on('updatefindmatchescount', ({ matchesCount }) => {
@@ -174,18 +184,7 @@ export const PdfViewer = ({
 				}
 				// If no modifiedFile, continue to set the loaded PDF document.
 				setPdfProxyObj(loadedPdfDocument);
-				console.log(eventBus, 'eventBus', eventBus.on, 'onn')
-
-				annotationEditorUIManagerRef.current = new pdfjs.AnnotationEditorUIManager(
-					viewerContainerRef1.current,
-					pdfViewerRef.current,
-					eventBus,
-					loadedPdfDocument.annotationStorage
-				);
-				console.log(pdfjs.AnnotationEditorType.FREETEXT, 'pdfjs.AnnotationEditorType.FREETEXT')
-				annotationEditorUIManagerRef.current.updateMode(pdfjs.AnnotationEditorType.FREETEXT);
-				annotationEditorUIManagerRef.current.setEditingState(true);
-
+	
 				pdfViewerRef.current.setDocument(loadedPdfDocument);
 				pdfLinkServiceRef.current.setDocument(loadedPdfDocument, null);
 				
@@ -196,6 +195,23 @@ export const PdfViewer = ({
 				setPdfText(text);
 				setCurrentAiDocHash(simpleHash(JSON.stringify(text)));
 
+				console.log(eventBus, 'eventBus', eventBus.on, 'onn', viewerContainerRef1.current)
+
+				const pdfViewerElem = document.getElementById("viewer");
+				annotationEditorUIManagerRef.current = new pdfjs.AnnotationEditorUIManager(
+					viewerContainerRef1.current,
+					pdfViewerElem,
+					// null,
+					eventBus,
+					loadedPdfDocument
+				);
+				console.log("vieweee", pdfViewerElem, eventBus, 'dog', loadedPdfDocument)
+				console.log(annotationEditorUIManagerRef.current, 'cccc3')
+				setTimeout(() => {
+					console.log(pdfjs.AnnotationEditorType.FREETEXT, 'pdfjs.AnnotationEditorType.FREETEXT', annotationEditorUIManagerRef.current, 'comp', loadedPdfDocument.annotationStorage, 'dd')
+					annotationEditorUIManagerRef.current.updateMode(3);
+					// annotationEditorUIManagerRef.current.setEditingState(true);
+				}, 1000)
 		
 			},
 			reason => {

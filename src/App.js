@@ -734,6 +734,8 @@ const App = () => {
 		}
 	}
 
+	const annotationEditorUIManagerRef = useRef(null);
+
 	useEffect(() => {
 		if (!isOnline) {
 			return;
@@ -1329,6 +1331,7 @@ const App = () => {
 					{
 						showSubheader() && (
 							<Subheader
+								pdfProxyObj={pdfProxyObj}
 								canExtract={canExtract()}
 								onExtract={onExtract}
 								tools={tools}
@@ -1386,6 +1389,7 @@ const App = () => {
 						}
 						<div css={pdfViewerWrapper}>
 							<PdfViewer
+								annotationEditorUIManagerRef={annotationEditorUIManagerRef}
 								setCurrentAiDocHash={setCurrentAiDocHash}
 								setPdfText={setPdfText}
 								onPagesLoaded={() => {}}
@@ -1409,6 +1413,7 @@ const App = () => {
 								leftPanelEnabled={shouldShowPanel()}
 								setActivePage={setActivePage}
 								setPdfProxyObj={setPdfProxyObj}
+								pdfProxyObj={pdfProxyObj}
 								setMatchesCount={setMatchesCount}
 								eventBusRef={eventBusRef}
 								viewerContainerRef1={viewerContainerRef1}

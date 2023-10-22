@@ -42,6 +42,7 @@ const contentLeftStyle = css`
 const Subheader = ({
 	canDelete,
 	undoStackLength,
+	pdfProxyObj,
 	redoStackLength,
 	canExtract,
 	onDelete,
