@@ -41,6 +41,7 @@ const contentLeftStyle = css`
 
 const Subheader = ({
 	canDelete,
+	onEnableFreeTextMode,
 	undoStackLength,
 	pdfProxyObj,
 	redoStackLength,
@@ -85,6 +86,13 @@ const Subheader = ({
 	const onChangeActiveToolbarItem = ({
 		tooltype
 	}) => {
+		if (tooltype === "text") {
+			onEnableFreeTextMode();
+		}
+		if (activeToolbarItem === tooltype) {
+			setActiveToolbarItem("");
+			return;
+		}
 		console.log(UI, 'ui bro', tooltype)
 		switch (activeToolbarItem) {
 			case 'cursor':

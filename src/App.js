@@ -38,6 +38,8 @@ import { PDFDocument, degrees } from 'pdf-lib';
 import { extractAllTextFromPDF } from './utils/extractAllTextFromPdf';
 import { ModalProvider } from './Contexts/ModalProvider';
 import useListenForSearchbarRequest from './hooks/useListenForSearchbarRequest';
+import { PDFViewer } from 'pdfjs-dist/web/pdf_viewer';
+import * as pdfjs from 'pdfjs-dist';
 
 async function splitPdfPages(pdfBytes, splitIndices) {
   const originalPdfDoc = await PDFDocument.load(pdfBytes);
@@ -237,6 +239,10 @@ const App = () => {
 	const [searchText, setSearchText] = useState('');
 	const [isSplitting, setIsSplitting] = useState(false);
 	const eventBusRef = useRef(null);
+	const pdfLinkServiceRef = useRef(null);
+	const pdfFindControllerRef = useRef(null);
+	const pdfScriptingManagerRef = useRef(null);
+	const pdfViewerRef = useRef(null);
 
 	const [pdfProxyObj, setPdfProxyObj] = useState(null);
 	const [pdfViewerObj, setPdfViewerObj] = useState(null);
@@ -1099,6 +1105,26 @@ const App = () => {
 		onAddOperation(operation);
 	}
 
+	const onEnableFreeTextMode = () => {
+		pdfViewerRef.current = new PDFViewer({
+			container: viewerContainerRef1.current,
+			viewer: document.getElementById("viewer"),
+			eventBus: eventBusRef.current,
+			linkService: pdfLinkServiceRef.current,
+			findController: pdfFindControllerRef.current,
+			scriptingManager: pdfScriptingManagerRef.current,
+			annotationEditorMode: pdfjs.AnnotationEditorType.FREETEXT
+		});
+
+		// pdfViewerRef.current.currentScale = 0.2 // WIP
+		setPdfViewerObj(pdfViewerRef.current);
+		pdfViewerRef.current.setDocument(pdfProxyObj);
+
+		pdfLinkServiceRef.current.setViewer(pdfViewerRef.current);
+		pdfScriptingManagerRef.current.setViewer(pdfViewerRef.current);
+
+	}
+
 	const mainHeight = () => {
 		let myHeight;
 		if (!showHeader() && !showSubheader()) {
@@ -1331,6 +1357,7 @@ const App = () => {
 					{
 						showSubheader() && (
 							<Subheader
+								onEnableFreeTextMode={onEnableFreeTextMode}
 								pdfProxyObj={pdfProxyObj}
 								canExtract={canExtract()}
 								onExtract={onExtract}
@@ -1389,6 +1416,10 @@ const App = () => {
 						}
 						<div css={pdfViewerWrapper}>
 							<PdfViewer
+								pdfViewerRef={pdfViewerRef}
+								pdfScriptingManagerRef={pdfScriptingManagerRef}
+								pdfFindControllerRef={pdfFindControllerRef}
+								pdfLinkServiceRef={pdfLinkServiceRef}
 								annotationEditorUIManagerRef={annotationEditorUIManagerRef}
 								setCurrentAiDocHash={setCurrentAiDocHash}
 								setPdfText={setPdfText}

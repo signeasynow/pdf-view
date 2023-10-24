@@ -38,6 +38,9 @@ export const PdfViewer = ({
 	showSubheader,
 	setPdfProxyObj,
 	pdfProxyObj,
+	pdfLinkServiceRef,
+	pdfFindControllerRef,
+	pdfScriptingManagerRef,
 	annotationEditorUIManagerRef,
 	setCurrentAiDocHash,
 	tools,
@@ -45,6 +48,7 @@ export const PdfViewer = ({
 	files,
 	viewerContainerRef1,
 	eventBusRef,
+	pdfViewerRef,
 	setMatchesCount,
 	setActivePage,
 	onPagesLoaded,
@@ -53,7 +57,7 @@ export const PdfViewer = ({
 	setFileLoadFailError,
 	setDocumentLoading,
 	isSandbox,
-	updateCurrentScale
+	updateCurrentScale,
 }) => {
 
 	const panelSpaceUsed = () => {
@@ -68,12 +72,6 @@ export const PdfViewer = ({
 	};
 
 	const hasWatermarkAdded = useRef(false);
-
-
-	const pdfLinkServiceRef = useRef(null);
-	const pdfViewerRef = useRef(null);
-	const pdfFindControllerRef = useRef(null);
-	const pdfScriptingManagerRef = useRef(null);
 
 	const cleanupDocument = async () => {
 		pdfViewerRef.current?.setDocument(null);
@@ -100,7 +98,7 @@ export const PdfViewer = ({
 			linkService: pdfLinkServiceRef.current,
 			findController: pdfFindControllerRef.current,
 			scriptingManager: pdfScriptingManagerRef.current,
-			annotationEditorMode: 3
+			annotationEditorMode: 0
 		});
 
 		// pdfViewerRef.current.currentScale = 0.2 // WIP
@@ -194,10 +192,12 @@ export const PdfViewer = ({
 				const text = await extractAllTextFromPDF(loadedPdfDocument);
 				setPdfText(text);
 				setCurrentAiDocHash(simpleHash(JSON.stringify(text)));
-
+				
 				console.log(eventBus, 'eventBus', eventBus.on, 'onn', viewerContainerRef1.current)
-
+				/*
 				const pdfViewerElem = document.getElementById("viewer");
+				console.log(pdfViewerRef.current, 'pdfViewerRef.current')
+				// @ts-ignore
 				annotationEditorUIManagerRef.current = new pdfjs.AnnotationEditorUIManager(
 					viewerContainerRef1.current,
 					pdfViewerElem,
@@ -212,6 +212,8 @@ export const PdfViewer = ({
 					annotationEditorUIManagerRef.current.updateMode(3);
 					// annotationEditorUIManagerRef.current.setEditingState(true);
 				}, 1000)
+				*/
+				// enableFreeTextMode();
 		
 			},
 			reason => {
@@ -220,6 +222,26 @@ export const PdfViewer = ({
 				window.parent.postMessage({ type: 'file-failed', message: reason?.message }, '*');
 			}
 		);
+	}
+
+	const enableFreeTextMode = () => {
+		pdfViewerRef.current = new PDFViewer({
+			container: viewerContainerRef1.current,
+			viewer: document.getElementById("viewer"),
+			eventBus: eventBusRef.current,
+			linkService: pdfLinkServiceRef.current,
+			findController: pdfFindControllerRef.current,
+			scriptingManager: pdfScriptingManagerRef.current,
+			annotationEditorMode: pdfjs.AnnotationEditorType.FREETEXT
+		});
+
+		// pdfViewerRef.current.currentScale = 0.2 // WIP
+		setPdfViewerObj(pdfViewerRef.current);
+		pdfViewerRef.current.setDocument(pdfProxyObj);
+
+		pdfLinkServiceRef.current.setViewer(pdfViewerRef.current);
+		pdfScriptingManagerRef.current.setViewer(pdfViewerRef.current);
+
 	}
 
 	useEffect(() => {

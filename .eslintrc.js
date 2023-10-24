@@ -27,6 +27,7 @@ module.exports = {
 	rules: {
 		'react/react-in-jsx-scope': 'off',
 		'react/jsx-uses-react': 'off',
-		'react/jsx-uses-vars': 'error'
+		'react/jsx-uses-vars': 'error',
+		"no-undef": "off"
 	}
 };
