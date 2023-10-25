@@ -9,16 +9,12 @@ import RotateRight from '../../assets/rotate-right-svgrepo-com.svg';
 import RotateLeft from '../../assets/rotate-left-svgrepo-com.svg';
 import Extract from '../../assets/gradebook-export-svgrepo-com.svg';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'aleon_35_pdf_ui_lib';
 import HeaderBtn from '../Header/HeaderBtn';
 import Slider from '../components/Slider';
 import { useState } from 'preact/hooks';
 import AccessibleButton from '../components/AccessibleButton';
 import VerticalDivider from '../components/VerticalDivider';
 import { useModal } from '../Contexts/ModalProvider';
-import PDFJSAnnotate from 'pdf-annotate.js';
-
-const { UI } = PDFJSAnnotate;
 
 const Wrapper = ({ children }) => (
 	<div css={css({
@@ -42,6 +38,7 @@ const contentLeftStyle = css`
 const Subheader = ({
 	canDelete,
 	onEnableFreeTextMode,
+	onDisableEditorMode,
 	undoStackLength,
 	pdfProxyObj,
 	redoStackLength,
@@ -86,52 +83,15 @@ const Subheader = ({
 	const onChangeActiveToolbarItem = ({
 		tooltype
 	}) => {
-		if (tooltype === "text") {
-			onEnableFreeTextMode();
-		}
 		if (activeToolbarItem === tooltype) {
 			setActiveToolbarItem("");
+			onDisableEditorMode();
 			return;
-		}
-		console.log(UI, 'ui bro', tooltype)
-		switch (activeToolbarItem) {
-			case 'cursor':
-				UI.disableEdit();
-				break;
-			case 'draw':
-				UI.disablePen();
-				break;
-			case 'text':
-				UI.disableText();
-				break;
-			case 'point':
-				UI.disablePoint();
-				break;
-			case 'area':
-			case 'highlight':
-			case 'strikeout':
-				UI.disableRect();
-				break;
 		}
 		setActiveToolbarItem(tooltype);
 		switch (tooltype) {
-      case 'cursor':
-        UI.enableEdit();
-        break;
-      case 'draw':
-        UI.enablePen();
-        break;
       case 'text':
-				console.log("ENABLE TEXT")
-        UI.enableText();
-        break;
-      case 'point':
-        UI.enablePoint();
-        break;
-      case 'area':
-      case 'highlight':
-      case 'strikeout':
-        UI.enableRect(tooltype);
+				onEnableFreeTextMode();
         break;
     }
 	}

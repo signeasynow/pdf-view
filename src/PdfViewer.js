@@ -10,6 +10,24 @@ import { extractAllTextFromPDF } from './utils/extractAllTextFromPdf';
 import { addSandboxWatermark } from './utils/addSandboxWatermark';
 import simpleHash from './utils/simpleHash';
 
+class CustomPDFViewer extends PDFViewer {
+  addAnnotation(pageNumber, annotationData) {
+		console.log("ADDINGG ANN")
+    // Get the page view for the specified page number
+    const pageView = this.getPageView(pageNumber - 1);
+
+    // Create a new annotation object
+    const annotation = new pdfjsAnnotation.AnnotationFactory.create(
+      annotationData
+    );
+
+    // Add the annotation to the page view's annotations array
+    pageView.annotations.push(annotation);
+
+    // Force the page to render again, which should now include the new annotation
+    pageView.draw();
+  }
+}
 
 const SANDBOX_BUNDLE_SRC = 'pdfjs-dist/build/pdf.sandbox.js';
 
@@ -91,7 +109,7 @@ export const PdfViewer = ({
 		pdfLinkServiceRef.current = new PDFLinkService({ eventBus: eventBusRef.current, externalLinkTarget: 2 });
 		pdfFindControllerRef.current = new PDFFindController({ eventBus: eventBusRef.current, linkService: pdfLinkServiceRef.current });
 		pdfScriptingManagerRef.current = new PDFScriptingManager({ eventBus: eventBusRef.current, sandboxBundleSrc: SANDBOX_BUNDLE_SRC });
-		pdfViewerRef.current = new PDFViewer({
+		pdfViewerRef.current = new CustomPDFViewer({
 			container: viewerContainer,
 			viewer: document.getElementById("viewer"),
 			eventBus: eventBusRef.current,
@@ -222,26 +240,6 @@ export const PdfViewer = ({
 				window.parent.postMessage({ type: 'file-failed', message: reason?.message }, '*');
 			}
 		);
-	}
-
-	const enableFreeTextMode = () => {
-		pdfViewerRef.current = new PDFViewer({
-			container: viewerContainerRef1.current,
-			viewer: document.getElementById("viewer"),
-			eventBus: eventBusRef.current,
-			linkService: pdfLinkServiceRef.current,
-			findController: pdfFindControllerRef.current,
-			scriptingManager: pdfScriptingManagerRef.current,
-			annotationEditorMode: pdfjs.AnnotationEditorType.FREETEXT
-		});
-
-		// pdfViewerRef.current.currentScale = 0.2 // WIP
-		setPdfViewerObj(pdfViewerRef.current);
-		pdfViewerRef.current.setDocument(pdfProxyObj);
-
-		pdfLinkServiceRef.current.setViewer(pdfViewerRef.current);
-		pdfScriptingManagerRef.current.setViewer(pdfViewerRef.current);
-
 	}
 
 	useEffect(() => {

@@ -1105,24 +1105,64 @@ const App = () => {
 		onAddOperation(operation);
 	}
 
-	const onEnableFreeTextMode = () => {
-		pdfViewerRef.current = new PDFViewer({
-			container: viewerContainerRef1.current,
-			viewer: document.getElementById("viewer"),
-			eventBus: eventBusRef.current,
-			linkService: pdfLinkServiceRef.current,
-			findController: pdfFindControllerRef.current,
-			scriptingManager: pdfScriptingManagerRef.current,
-			annotationEditorMode: pdfjs.AnnotationEditorType.FREETEXT
+	const onEnableFreeTextMode = async () => {
+		pdfViewerRef.current.annotationEditorMode = {
+			isFromKeyboard: false,
+			mode: pdfjs.AnnotationEditorType.FREETEXT,
+			source: null
+		};
+		const manifesto = `
+      The Mozilla Manifesto Addendum
+      Pledge for a Healthy Internet
+      
+      The open, global internet is the most powerful communication and collaboration resource we have ever seen.
+      It embodies some of our deepest hopes for human progress.
+      It enables new opportunities for learning, building a sense of shared humanity, and solving the pressing problems
+      facing people everywhere.
+      
+      Over the last decade we have seen this promise fulfilled in many ways.
+      We have also seen the power of the internet used to magnify divisiveness,
+      incite violence, promote hatred, and intentionally manipulate fact and reality.
+      We have learned that we should more explicitly set out our aspirations for the human experience of the internet.
+      We do so now.
+      `
+		console.log(pdfViewerRef.current, 'pdfViewerRef.current')
+		console.log(pdfProxyObj?.annotationStorage, 'annotationStorage2')
+		// const dog = new pdfjs.FreeTextEd();
+		pdfProxyObj.annotationStorage.setValue("pdfjs_internal_editor_c", {
+			annotationType: pdfjs.AnnotationEditorType.FREETEXT,
+			rect: [10, 10, 500, 500],
+			rotation: 0,
+			fontSize: 1,
+			color: [0, 0, 0],
+			value: manifesto,
+			pageIndex: 0,
 		});
+		pdfViewerRef.current.addAnnotation(1, {
+			annotationType: pdfjs.AnnotationEditorType.FREETEXT,
+			rect: [10, 10, 500, 500],
+			rotation: 0,
+			fontSize: 1,
+			color: [0, 0, 0],
+			value: manifesto,
+			pageIndex: 0,
+		});
+		console.log(pdfProxyObj, 'pdfProxyObj22', pdfViewerRef.current)
+		// pdfProxyObj.forceRendering(1)
+		console.log(Object.keys(pdfProxyObj), 'getann22', pdfProxyObj.annotationStorage)
+		console.log(pdfViewerRef.current?.annotationEditorUIManager, 'tt33')
 
-		// pdfViewerRef.current.currentScale = 0.2 // WIP
-		setPdfViewerObj(pdfViewerRef.current);
-		pdfViewerRef.current.setDocument(pdfProxyObj);
+	}
 
-		pdfLinkServiceRef.current.setViewer(pdfViewerRef.current);
-		pdfScriptingManagerRef.current.setViewer(pdfViewerRef.current);
-
+	const onDisableEditorMode = async () => {
+		pdfViewerRef.current.annotationEditorMode = {
+			isFromKeyboard: false,
+			mode: pdfjs.AnnotationEditorType.NONE,
+			source: null
+		};
+		// const bufferResult = await pdfProxyObj.getData();
+		// await savePDF(bufferResult, pdfId);
+		// setModifiedFiles(new Date().toISOString());
 	}
 
 	const mainHeight = () => {
@@ -1357,6 +1397,7 @@ const App = () => {
 					{
 						showSubheader() && (
 							<Subheader
+								onDisableEditorMode={onDisableEditorMode}
 								onEnableFreeTextMode={onEnableFreeTextMode}
 								pdfProxyObj={pdfProxyObj}
 								canExtract={canExtract()}
