@@ -2,7 +2,7 @@
 import { css } from '@emotion/react';
 import { useEffect, useRef } from 'preact/hooks';
 import * as pdfjs from 'pdfjs-dist';
-import { EventBus, PDFLinkService, PDFViewer, PDFFindController, PDFScriptingManager } from 'pdfjs-dist/web/pdf_viewer.mjs';
+import { EventBus, PDFLinkService, PDFViewer, PDFFindController, PDFScriptingManager } from 'pdfjs-dist/web/pdf_viewer';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import { heightOffset0, heightOffset1, heightOffset3, heightOffsetTabs } from "./constants";
 import { retrievePDF, savePDF } from './utils/indexDbUtils';
