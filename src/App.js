@@ -38,7 +38,6 @@ import { PDFDocument, degrees } from 'pdf-lib';
 import { extractAllTextFromPDF } from './utils/extractAllTextFromPdf';
 import { ModalProvider } from './Contexts/ModalProvider';
 import useListenForSearchbarRequest from './hooks/useListenForSearchbarRequest';
-import { PDFViewer } from 'pdfjs-dist/web/pdf_viewer';
 import * as pdfjs from 'pdfjs-dist';
 
 async function splitPdfPages(pdfBytes, splitIndices) {
@@ -1138,20 +1137,22 @@ const App = () => {
 			value: manifesto,
 			pageIndex: 0,
 		});
-		pdfViewerRef.current.addAnnotation(1, {
-			annotationType: pdfjs.AnnotationEditorType.FREETEXT,
-			rect: [10, 10, 500, 500],
-			rotation: 0,
-			fontSize: 1,
-			color: [0, 0, 0],
-			value: manifesto,
-			pageIndex: 0,
-		});
-		console.log(pdfProxyObj, 'pdfProxyObj22', pdfViewerRef.current)
-		// pdfProxyObj.forceRendering(1)
-		console.log(Object.keys(pdfProxyObj), 'getann22', pdfProxyObj.annotationStorage)
-		console.log(pdfViewerRef.current?.annotationEditorUIManager, 'tt33')
-
+		setTimeout(() => {
+			pdfViewerRef.current.addAnnotation(1, {
+				annotationType: pdfjs.AnnotationEditorType.FREETEXT,
+				rect: [10, 10, 500, 500],
+				rotation: 0,
+				fontSize: 1,
+				color: [0, 0, 0],
+				value: manifesto,
+				pageIndex: 0,
+			});
+			console.log(pdfProxyObj, 'pdfProxyObj22', pdfViewerRef.current)
+			// pdfProxyObj.forceRendering(1)
+			console.log(Object.keys(pdfProxyObj), 'getann22', pdfProxyObj.annotationStorage)
+			console.log(pdfViewerRef.current?.annotationEditorUIManager, 'tt33')
+	
+		}, 3000)
 	}
 
 	const onDisableEditorMode = async () => {

@@ -2,7 +2,7 @@
 import { css } from '@emotion/react';
 import { useEffect, useRef } from 'preact/hooks';
 import * as pdfjs from 'pdfjs-dist';
-import { EventBus, PDFLinkService, PDFViewer, PDFFindController, PDFScriptingManager } from 'pdfjs-dist/web/pdf_viewer';
+import { EventBus, PDFLinkService, PDFViewer, PDFFindController, PDFScriptingManager } from 'pdfjs-dist/web/pdf_viewer.mjs';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import { heightOffset0, heightOffset1, heightOffset3, heightOffsetTabs } from "./constants";
 import { retrievePDF, savePDF } from './utils/indexDbUtils';
@@ -10,22 +10,24 @@ import { extractAllTextFromPDF } from './utils/extractAllTextFromPdf';
 import { addSandboxWatermark } from './utils/addSandboxWatermark';
 import simpleHash from './utils/simpleHash';
 
+function simulateClick(x, y, element) {
+  const event = new MouseEvent('click', {
+    'view': window,
+    'bubbles': true,
+    'cancelable': true,
+    'clientX': x,
+    'clientY': y
+  });
+  element.dispatchEvent(event);
+}
+
 class CustomPDFViewer extends PDFViewer {
   addAnnotation(pageNumber, annotationData) {
 		console.log("ADDINGG ANN")
+		const pdfElement = document.querySelector('.annotationEditorLayer');
+
     // Get the page view for the specified page number
-    const pageView = this.getPageView(pageNumber - 1);
-
-    // Create a new annotation object
-    const annotation = new pdfjsAnnotation.AnnotationFactory.create(
-      annotationData
-    );
-
-    // Add the annotation to the page view's annotations array
-    pageView.annotations.push(annotation);
-
-    // Force the page to render again, which should now include the new annotation
-    pageView.draw();
+    simulateClick(10, 10, pdfElement);
   }
 }
 
@@ -109,7 +111,7 @@ export const PdfViewer = ({
 		pdfLinkServiceRef.current = new PDFLinkService({ eventBus: eventBusRef.current, externalLinkTarget: 2 });
 		pdfFindControllerRef.current = new PDFFindController({ eventBus: eventBusRef.current, linkService: pdfLinkServiceRef.current });
 		pdfScriptingManagerRef.current = new PDFScriptingManager({ eventBus: eventBusRef.current, sandboxBundleSrc: SANDBOX_BUNDLE_SRC });
-		pdfViewerRef.current = new CustomPDFViewer({
+		pdfViewerRef.current = new PDFViewer({
 			container: viewerContainer,
 			viewer: document.getElementById("viewer"),
 			eventBus: eventBusRef.current,
