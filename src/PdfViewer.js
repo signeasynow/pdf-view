@@ -2,7 +2,7 @@
 import { css } from '@emotion/react';
 import { useEffect, useRef } from 'preact/hooks';
 import * as pdfjs from 'pdfjs-dist';
-import { EventBus, PDFLinkService, PDFViewer, PDFFindController, PDFScriptingManager } from 'pdfjs-dist/web/pdf_viewer';
+import { EventBus, PDFLinkService, PDFViewer, PDFFindController, PDFScriptingManager } from 'pdfjs-dist/web/pdf_viewer.mjs';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import { heightOffset0, heightOffset1, heightOffset3, heightOffsetTabs } from "./constants";
 import { retrievePDF, savePDF } from './utils/indexDbUtils';
@@ -111,10 +111,12 @@ export const PdfViewer = ({
 		pdfLinkServiceRef.current = new PDFLinkService({ eventBus: eventBusRef.current, externalLinkTarget: 2 });
 		pdfFindControllerRef.current = new PDFFindController({ eventBus: eventBusRef.current, linkService: pdfLinkServiceRef.current });
 		pdfScriptingManagerRef.current = new PDFScriptingManager({ eventBus: eventBusRef.current, sandboxBundleSrc: SANDBOX_BUNDLE_SRC });
-		pdfViewerRef.current = new CustomPDFViewer({
+		const pdfRenderingQueue = new PDFRenderingQueue();
+		pdfViewerRef.current = new PDFViewer({
 			container: viewerContainer,
 			viewer: document.getElementById("viewer"),
 			eventBus: eventBusRef.current,
+			pdfRenderingQueue,
 			linkService: pdfLinkServiceRef.current,
 			findController: pdfFindControllerRef.current,
 			scriptingManager: pdfScriptingManagerRef.current,
