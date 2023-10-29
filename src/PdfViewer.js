@@ -27,7 +27,7 @@ class CustomPDFViewer extends PDFViewer {
 		const pdfElement = document.querySelector('.annotationEditorLayer');
 
     // Get the page view for the specified page number
-    simulateClick(10, 10, pdfElement);
+    console.log(pdfjs.AnnotationEditorLayer, 'pdfjs.AnnotationEditorLayer')
   }
 }
 
@@ -111,7 +111,7 @@ export const PdfViewer = ({
 		pdfLinkServiceRef.current = new PDFLinkService({ eventBus: eventBusRef.current, externalLinkTarget: 2 });
 		pdfFindControllerRef.current = new PDFFindController({ eventBus: eventBusRef.current, linkService: pdfLinkServiceRef.current });
 		pdfScriptingManagerRef.current = new PDFScriptingManager({ eventBus: eventBusRef.current, sandboxBundleSrc: SANDBOX_BUNDLE_SRC });
-		pdfViewerRef.current = new PDFViewer({
+		pdfViewerRef.current = new CustomPDFViewer({
 			container: viewerContainer,
 			viewer: document.getElementById("viewer"),
 			eventBus: eventBusRef.current,

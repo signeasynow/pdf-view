@@ -1128,31 +1128,7 @@ const App = () => {
 		console.log(pdfViewerRef.current, 'pdfViewerRef.current')
 		console.log(pdfProxyObj?.annotationStorage, 'annotationStorage2')
 		// const dog = new pdfjs.FreeTextEd();
-		pdfProxyObj.annotationStorage.setValue("pdfjs_internal_editor_c", {
-			annotationType: pdfjs.AnnotationEditorType.FREETEXT,
-			rect: [10, 10, 500, 500],
-			rotation: 0,
-			fontSize: 1,
-			color: [0, 0, 0],
-			value: manifesto,
-			pageIndex: 0,
-		});
-		setTimeout(() => {
-			pdfViewerRef.current.addAnnotation(1, {
-				annotationType: pdfjs.AnnotationEditorType.FREETEXT,
-				rect: [10, 10, 500, 500],
-				rotation: 0,
-				fontSize: 1,
-				color: [0, 0, 0],
-				value: manifesto,
-				pageIndex: 0,
-			});
-			console.log(pdfProxyObj, 'pdfProxyObj22', pdfViewerRef.current)
-			// pdfProxyObj.forceRendering(1)
-			console.log(Object.keys(pdfProxyObj), 'getann22', pdfProxyObj.annotationStorage)
-			console.log(pdfViewerRef.current?.annotationEditorUIManager, 'tt33')
-	
-		}, 3000)
+		pdfViewerRef.current?.applyAnnotations();
 	}
 
 	const onDisableEditorMode = async () => {
