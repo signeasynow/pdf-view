@@ -61,7 +61,7 @@
     "pdf_editor_aleon35_react_plugin": "^1.0.72",
     "pdf-annotate.js": "file:../pdf-annotate.js",
     "pdf-lib": "^1.17.1",
-    "pdfjs-dist": "3.11",
+    "pdfjs-dist": "3.10",
     "preact": "^10.15.1",
     "preact-compat": "^3.19.0",
     "react-i18next": "^13.2.1",

@@ -39,6 +39,7 @@ import { extractAllTextFromPDF } from './utils/extractAllTextFromPdf';
 import { ModalProvider } from './Contexts/ModalProvider';
 import useListenForSearchbarRequest from './hooks/useListenForSearchbarRequest';
 import * as pdfjs from 'pdfjs-dist';
+import { useAnnotations } from './hooks/useAnnotations';
 
 async function splitPdfPages(pdfBytes, splitIndices) {
   const originalPdfDoc = await PDFDocument.load(pdfBytes);
@@ -950,6 +951,8 @@ const App = () => {
 		onAddOperation(operation);
 	}
 
+	const annotations = useAnnotations();
+
 	const onRotate = async (clockwise) => {
 		if (!pdfProxyObj) {
 			console.log('No PDF loaded to download');
@@ -1128,7 +1131,7 @@ const App = () => {
 		console.log(pdfViewerRef.current, 'pdfViewerRef.current')
 		console.log(pdfProxyObj?.annotationStorage, 'annotationStorage2')
 		// const dog = new pdfjs.FreeTextEd();
-		pdfViewerRef.current?.applyAnnotations();
+		// pdfViewerRef.current?.applyAnnotations();
 	}
 
 	const onDisableEditorMode = async () => {
@@ -1434,6 +1437,7 @@ const App = () => {
 						}
 						<div css={pdfViewerWrapper}>
 							<PdfViewer
+								annotations={annotations}
 								pdfViewerRef={pdfViewerRef}
 								pdfScriptingManagerRef={pdfScriptingManagerRef}
 								pdfFindControllerRef={pdfFindControllerRef}

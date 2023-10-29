@@ -2,7 +2,7 @@
 import { css } from '@emotion/react';
 import { useEffect, useRef } from 'preact/hooks';
 import * as pdfjs from 'pdfjs-dist';
-import { EventBus, PDFLinkService, PDFViewer, PDFFindController, PDFScriptingManager } from 'pdfjs-dist/web/pdf_viewer.mjs';
+import { EventBus, PDFLinkService, PDFViewer, PDFFindController, PDFScriptingManager } from 'pdfjs-dist/web/pdf_viewer';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import { heightOffset0, heightOffset1, heightOffset3, heightOffsetTabs } from "./constants";
 import { retrievePDF, savePDF } from './utils/indexDbUtils';
@@ -34,23 +34,15 @@ class CustomPDFViewer extends PDFViewer {
 const SANDBOX_BUNDLE_SRC = 'pdfjs-dist/build/pdf.sandbox.js';
 
 const containerStyle = css`
-  overflow-y: scroll;
-  position: absolute;
-  border-right: 1px solid #c6c6c6;
-  border-left: 1px solid #c6c6c6;
-  background: #282828;
-
-  /* Custom scrollbar styles */
-  &::-webkit-scrollbar {
-    width: 10px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: #888;
-  }
+	overflow: auto;
+	position: absolute;
+	width: 100%;
+	height: 100%;
 `;
 
 export const PdfViewer = ({
 	activePageIndex,
+	annotations,
 	setPdfText,
 	activePage,
 	modifiedFiles,
@@ -111,12 +103,11 @@ export const PdfViewer = ({
 		pdfLinkServiceRef.current = new PDFLinkService({ eventBus: eventBusRef.current, externalLinkTarget: 2 });
 		pdfFindControllerRef.current = new PDFFindController({ eventBus: eventBusRef.current, linkService: pdfLinkServiceRef.current });
 		pdfScriptingManagerRef.current = new PDFScriptingManager({ eventBus: eventBusRef.current, sandboxBundleSrc: SANDBOX_BUNDLE_SRC });
-		const pdfRenderingQueue = new PDFRenderingQueue();
+		// const pdfRenderingQueue = new pdfjs.PDFRenderingQueue();
 		pdfViewerRef.current = new PDFViewer({
 			container: viewerContainer,
 			viewer: document.getElementById("viewer"),
 			eventBus: eventBusRef.current,
-			pdfRenderingQueue,
 			linkService: pdfLinkServiceRef.current,
 			findController: pdfFindControllerRef.current,
 			scriptingManager: pdfScriptingManagerRef.current,
@@ -205,7 +196,7 @@ export const PdfViewer = ({
 				// If no modifiedFile, continue to set the loaded PDF document.
 				setPdfProxyObj(loadedPdfDocument);
 	
-				pdfViewerRef.current.setDocument(loadedPdfDocument);
+				pdfViewerRef.current.setDocument(loadedPdfDocument, annotations);
 				pdfLinkServiceRef.current.setDocument(loadedPdfDocument, null);
 				
 				if (!modifiedFiles[activePageIndex]) {
