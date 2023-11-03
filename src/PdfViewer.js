@@ -43,6 +43,8 @@ const containerStyle = css`
 export const PdfViewer = ({
 	activePageIndex,
 	annotations,
+	updateAnnotation,
+	moveAnnotation,
 	setPdfText,
 	activePage,
 	modifiedFiles,
@@ -82,6 +84,13 @@ export const PdfViewer = ({
 		}
 		return result;
 	};
+
+	const annotationsRef = useRef(null);
+
+	useEffect(() => {
+		annotationsRef.current = annotations;
+	}, [annotations])
+
 
 	const hasWatermarkAdded = useRef(false);
 
@@ -136,6 +145,16 @@ export const PdfViewer = ({
 			})
 			onPagesLoaded();
 
+		});
+
+		eventBus.on('annotationchanged', ({ details }) => {
+			console.log(details, 'details r44')
+			updateAnnotation(details.current, details.text)
+		});
+
+		eventBus.on('annotationeditormoved', (details) => {
+			console.log(details, 'details r455')
+			moveAnnotation(details);
 		});
 
 		eventBus.on('updatefindmatchescount', ({ matchesCount }) => {
@@ -195,8 +214,7 @@ export const PdfViewer = ({
 				}
 				// If no modifiedFile, continue to set the loaded PDF document.
 				setPdfProxyObj(loadedPdfDocument);
-	
-				pdfViewerRef.current.setDocument(loadedPdfDocument, annotations);
+				pdfViewerRef.current.setDocument(loadedPdfDocument, annotationsRef.current);
 				pdfLinkServiceRef.current.setDocument(loadedPdfDocument, null);
 				
 				if (!modifiedFiles[activePageIndex]) {

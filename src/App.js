@@ -951,8 +951,8 @@ const App = () => {
 		onAddOperation(operation);
 	}
 
-	const annotations = useAnnotations();
-
+	const {annotations, updateAnnotation, moveAnnotation} = useAnnotations();
+	console.log(annotations, 'old annot')
 	const onRotate = async (clockwise) => {
 		if (!pdfProxyObj) {
 			console.log('No PDF loaded to download');
@@ -1437,6 +1437,8 @@ const App = () => {
 						}
 						<div css={pdfViewerWrapper}>
 							<PdfViewer
+								moveAnnotation={moveAnnotation}
+								updateAnnotation={updateAnnotation}
 								annotations={annotations}
 								pdfViewerRef={pdfViewerRef}
 								pdfScriptingManagerRef={pdfScriptingManagerRef}
