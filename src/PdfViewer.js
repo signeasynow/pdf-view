@@ -9,6 +9,7 @@ import { retrievePDF, savePDF } from './utils/indexDbUtils';
 import { extractAllTextFromPDF } from './utils/extractAllTextFromPdf';
 import { addSandboxWatermark } from './utils/addSandboxWatermark';
 import simpleHash from './utils/simpleHash';
+import { AnnotationEditorParamsType } from 'pdfjs-dist/build/pdf';
 
 function simulateClick(x, y, element) {
   const event = new MouseEvent('click', {
@@ -43,6 +44,7 @@ const containerStyle = css`
 export const PdfViewer = ({
 	activePageIndex,
 	annotations,
+	annotationColor,
 	updateAnnotation,
 	moveAnnotation,
 	setPdfText,
@@ -101,8 +103,18 @@ export const PdfViewer = ({
 			await pdfScriptingManagerRef.current?.destroyPromise();
 		} catch (err) {}
 		pdfViewerRef.current?.cleanup();
-
 	}
+
+	useEffect(() => {
+		if (!eventBusRef.current) {
+			return;
+		}
+		console.log(annotationColor, 'annotationColor')
+		eventBusRef.current.dispatch("switchannotationeditorparams", {
+			type: AnnotationEditorParamsType.FREETEXT_COLOR,
+			value: annotationColor
+		})
+	}, [annotationColor]);
 
 	const applyDocument = async (viewerContainer) => {
 		await cleanupDocument();

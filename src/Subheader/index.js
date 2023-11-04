@@ -15,6 +15,7 @@ import { useState } from 'preact/hooks';
 import AccessibleButton from '../components/AccessibleButton';
 import VerticalDivider from '../components/VerticalDivider';
 import { useModal } from '../Contexts/ModalProvider';
+import FontSizeInput from '../Header/FontSizeInput';
 
 const Wrapper = ({ children }) => (
 	<div css={css({
@@ -38,6 +39,7 @@ const contentLeftStyle = css`
 const Subheader = ({
 	canDelete,
 	onEnableFreeTextMode,
+	handleChooseColor,
 	onDisableEditorMode,
 	undoStackLength,
 	pdfProxyObj,
@@ -54,7 +56,9 @@ const Subheader = ({
 	multiPageSelections,
 	expandedViewThumbnailScale,
 	setExpandedViewThumbnailScale,
-	onExtract
+	onExtract,
+	pdfViewerRef,
+	setAnnotationColor
 }) => {
 	
 	const { t } = useTranslation();
@@ -80,6 +84,11 @@ const Subheader = ({
 
 	const [activeToolbarItem, setActiveToolbarItem] = useState("");
 
+	const onChooseColor = (e, d) => {
+		// console.log(e, 'd', e.value, 'd', d, 'r', e.target, 'rr', e.target.value);
+		// setAnnotationColor(e.target.value);
+		handleChooseColor(e.target.value);
+	}
 	const onChangeActiveToolbarItem = ({
 		tooltype
 	}) => {
@@ -145,6 +154,8 @@ const Subheader = ({
 			<button
 				style={{background: activeToolbarItem === "text" ? "blue" : ""}}
 				onClick={() => onChangeActiveToolbarItem({tooltype: "text"})} class="text" type="button" title="Text Tool" data-tooltype="text">free text</button>
+			<input name="colorpicker" id="color1" type="color" onchange={onChooseColor} />  
+			<FontSizeInput pdfViewerRef={pdfViewerRef} />
 			{
 				tools?.editing?.includes("signature") && (
 					<div>

@@ -40,6 +40,7 @@ import { ModalProvider } from './Contexts/ModalProvider';
 import useListenForSearchbarRequest from './hooks/useListenForSearchbarRequest';
 import * as pdfjs from 'pdfjs-dist';
 import { useAnnotations } from './hooks/useAnnotations';
+import { AnnotationEditorParamsType } from 'pdfjs-dist/build/pdf';
 
 async function splitPdfPages(pdfBytes, splitIndices) {
   const originalPdfDoc = await PDFDocument.load(pdfBytes);
@@ -1107,6 +1108,13 @@ const App = () => {
 		onAddOperation(operation);
 	}
 
+	const handleChooseColor = (color) => {
+		pdfViewerRef.current.annotationEditorParams = {
+			type: AnnotationEditorParamsType.FREETEXT_COLOR,
+			value: color
+		}
+	}
+
 	const onEnableFreeTextMode = async () => {
 		pdfViewerRef.current.annotationEditorMode = {
 			isFromKeyboard: false,
@@ -1287,6 +1295,8 @@ const App = () => {
 		localStorage.setItem("aiDocId", "");
 	}
 
+	const [annotationColor, setAnnotationColor] = useState("#FFF");
+
 	useListenForRemoveChatHistoryRequest(onRemoveChatHistory)
 
 	const onAskQuestion = async (question, prevQuestions) => {
@@ -1377,6 +1387,9 @@ const App = () => {
 					{
 						showSubheader() && (
 							<Subheader
+								pdfViewerRef={pdfViewerRef}
+								handleChooseColor={handleChooseColor}
+								setAnnotationColor={setAnnotationColor}
 								onDisableEditorMode={onDisableEditorMode}
 								onEnableFreeTextMode={onEnableFreeTextMode}
 								pdfProxyObj={pdfProxyObj}
@@ -1437,6 +1450,7 @@ const App = () => {
 						}
 						<div css={pdfViewerWrapper}>
 							<PdfViewer
+								annotationColor={annotationColor}
 								moveAnnotation={moveAnnotation}
 								updateAnnotation={updateAnnotation}
 								annotations={annotations}

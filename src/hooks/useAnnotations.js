@@ -22,7 +22,9 @@ export const useAnnotations = () => {
       pageNumber: 1,
       content: "dFruityy5",
       x: 0.1,
-      y: 0.1
+      y: 0.1,
+      color: "#008000",
+      fontSize: 28
     }];
     // allAnnotations = [];
     setAnnotations(allAnnotations)
@@ -61,7 +63,7 @@ export const useAnnotations = () => {
     if (!data) {
       return;
     }
-
+    console.log(data, 'data br3')
     let newData = JSON.parse(JSON.stringify(annotationsRef.current));
     const existingAnnotation = newData.find((e) => e.id === data.id);
     console.log(existingAnnotation, 'existingAnnotation2')
@@ -74,6 +76,8 @@ export const useAnnotations = () => {
         x: existingAnnotation ? existingAnnotation.x : data.x,
         y: existingAnnotation ? existingAnnotation.y : data.y,
         content: text,
+        color: data.color,
+        fontSize: data.fontSize
       },
     ];
 
