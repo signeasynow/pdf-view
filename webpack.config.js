@@ -22,6 +22,17 @@ module.exports = {
         use: ['style-loader', 'css-loader'],
       },
       {
+        test: /\.(png|jpe?g|gif)$/i,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[path][name].[ext]', // This will retain the original file path and name
+            },
+          },
+        ],
+      },
+      {
         test: /\.(js)$/,
         exclude: /node_modules/,
         use: 'babel-loader',

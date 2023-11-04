@@ -16,6 +16,7 @@ const wrapper = css`
 
 const HeaderBtn = ({
   icon,
+  active,
   title,
   iconAlt,
   onClick,
@@ -25,7 +26,7 @@ const HeaderBtn = ({
 
   return (
     <Tooltip offsetX={offsetX} title={title}>
-      <div onClick={onClick} css={wrapper} style={style}>
+      <div onClick={onClick} css={wrapper} style={{...style, background: active ? "#e7e7e7" : ""}}>
           <Icon src={icon} alt={iconAlt} />
       </div>
     </Tooltip>

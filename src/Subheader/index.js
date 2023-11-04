@@ -4,6 +4,7 @@ import Redo from '../../assets/arrow-undo-down-right-svgrepo-com.svg';
 import Undo from '../../assets/arrow-undo-up-left-svgrepo-com.svg';
 import Minimize from '../../assets/minimize-svgrepo-com.svg';
 import RemoveSelection from '../../assets/notification-remove-svgrepo-com.svg';
+import TextIcon from '../../assets/text-svgrepo-com.svg';
 import Trash from '../../assets/trash-svgrepo-com.svg';
 import RotateRight from '../../assets/rotate-right-svgrepo-com.svg';
 import RotateLeft from '../../assets/rotate-left-svgrepo-com.svg';
@@ -16,6 +17,7 @@ import AccessibleButton from '../components/AccessibleButton';
 import VerticalDivider from '../components/VerticalDivider';
 import { useModal } from '../Contexts/ModalProvider';
 import FontSizeInput from '../Header/FontSizeInput';
+import { ColorWheel } from '../components/ColorWheel';
 
 const Wrapper = ({ children }) => (
 	<div css={css({
@@ -152,6 +154,9 @@ const Subheader = ({
 			<button
 				style={{background: activeToolbarItem === "cursor" ? "blue" : ""}}
 				onClick={() => onChangeActiveToolbarItem({tooltype: "cursor"})} class="cursor" type="button" title="Cursor" data-tooltype="cursor">➚</button>
+			<HeaderBtn active={activeToolbarItem === "text"} offsetX="10px" onClick={() => onChangeActiveToolbarItem({tooltype: "text"})} title={t("text")} iconAlt={t("text")}  icon={TextIcon} />
+
+			<ColorWheel />
 			<button
 				style={{background: activeToolbarItem === "text" ? "blue" : ""}}
 				onClick={() => onChangeActiveToolbarItem({tooltype: "text"})} class="text" type="button" title="Text Tool" data-tooltype="text">free text</button>
