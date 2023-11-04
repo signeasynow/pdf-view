@@ -261,7 +261,8 @@ const App = () => {
 	const [conversation, setConversation] = useState(JSON.parse(localStorage.getItem('conversation')) || []);
 
 	const [aiLimitReached, setAiLimitReached] = useState(false);
-		
+	const activeAnnotationRef = useRef(null);
+
 	const hasConsumerSubscription = async () => {
 		if (!inputtedUuid) {
 			return true; // weird state. will allow it.
@@ -952,7 +953,7 @@ const App = () => {
 		onAddOperation(operation);
 	}
 
-	const {annotations, updateAnnotation, moveAnnotation} = useAnnotations();
+	const {annotations, updateAnnotation, moveAnnotation, updateAnnotationParam} = useAnnotations(activeAnnotationRef);
 	console.log(annotations, 'old annot')
 	const onRotate = async (clockwise) => {
 		if (!pdfProxyObj) {
@@ -1113,6 +1114,9 @@ const App = () => {
 			type: AnnotationEditorParamsType.FREETEXT_COLOR,
 			value: color
 		}
+		updateAnnotationParam(activeAnnotationRef.current, {
+			color
+		})
 	}
 
 	const onEnableFreeTextMode = async () => {
@@ -1277,6 +1281,10 @@ const App = () => {
 		window.localStorage.setItem("aiDocHash", hash);
 	}
 
+	const onAnnotationFocus = (id) => {
+		activeAnnotationRef.current = id;
+	}
+
 	const onRemoveChatHistory = async () => {
 		setConversation([]);
 		localStorage.setItem('conversation', '[]');
@@ -1316,6 +1324,12 @@ const App = () => {
 		if (isSmallScreen) {
 			setShowPanel(false);
 		}
+	}
+
+	const onUpdateFontSize = (v) => {
+		updateAnnotationParam(activeAnnotationRef.current, {
+			fontSize: v
+		})
 	}
 
 	if (fileLoadFailError) {
@@ -1387,6 +1401,7 @@ const App = () => {
 					{
 						showSubheader() && (
 							<Subheader
+								onUpdateFontSize={onUpdateFontSize}
 								pdfViewerRef={pdfViewerRef}
 								handleChooseColor={handleChooseColor}
 								setAnnotationColor={setAnnotationColor}
@@ -1450,6 +1465,7 @@ const App = () => {
 						}
 						<div css={pdfViewerWrapper}>
 							<PdfViewer
+								onAnnotationFocus={onAnnotationFocus}
 								annotationColor={annotationColor}
 								moveAnnotation={moveAnnotation}
 								updateAnnotation={updateAnnotation}

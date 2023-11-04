@@ -10,6 +10,7 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import { Icon, Tooltip } from 'aleon_35_pdf_ui_lib';
 import { useTranslation } from 'react-i18next';
 import { AnnotationEditorParamsType } from 'pdfjs-dist/build/pdf';
+import { useAnnotations } from '../hooks/useAnnotations';
 
 const inputStyles = css`
   font-size: 16px;
@@ -67,19 +68,12 @@ const zoomOptionStyle = css`
   }
 `;
 
-const MAX_ZOOM = 9999;
-
-const MIN_ZOOM = 0.1;
-
-const ZOOM_FACTOR = 0.1;
-
-const SLOW_ZOOM_FACTOR = 0.05;
-
-const RoundZoomValue = (v) => Math.floor(v * 100);
-
 const FontSizeInput = ({
-  pdfViewerRef
+  pdfViewerRef,
+  onUpdateFontSize
 }) => {
+
+  const {updateAnnotationParam} = useAnnotations();
 
 	const { t } = useTranslation();
 
@@ -121,6 +115,7 @@ const FontSizeInput = ({
 			type: AnnotationEditorParamsType.FREETEXT_SIZE,
 			value: v
 		}
+    onUpdateFontSize(v);
   }
 
 	return (

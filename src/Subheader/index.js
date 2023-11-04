@@ -38,6 +38,7 @@ const contentLeftStyle = css`
 
 const Subheader = ({
 	canDelete,
+	onUpdateFontSize,
 	onEnableFreeTextMode,
 	handleChooseColor,
 	onDisableEditorMode,
@@ -155,7 +156,8 @@ const Subheader = ({
 				style={{background: activeToolbarItem === "text" ? "blue" : ""}}
 				onClick={() => onChangeActiveToolbarItem({tooltype: "text"})} class="text" type="button" title="Text Tool" data-tooltype="text">free text</button>
 			<input name="colorpicker" id="color1" type="color" onchange={onChooseColor} />  
-			<FontSizeInput pdfViewerRef={pdfViewerRef} />
+			<FontSizeInput
+				onUpdateFontSize={onUpdateFontSize} pdfViewerRef={pdfViewerRef} />
 			{
 				tools?.editing?.includes("signature") && (
 					<div>

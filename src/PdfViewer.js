@@ -43,6 +43,7 @@ const containerStyle = css`
 
 export const PdfViewer = ({
 	activePageIndex,
+	onAnnotationFocus,
 	annotations,
 	annotationColor,
 	updateAnnotation,
@@ -157,6 +158,11 @@ export const PdfViewer = ({
 			})
 			onPagesLoaded();
 
+		});
+
+		eventBus.on("annotationfocused", ({ details }) => {
+			console.log(details, 'details r48')
+			onAnnotationFocus(details.current.id);
 		});
 
 		eventBus.on('annotationchanged', ({ details }) => {
