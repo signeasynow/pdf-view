@@ -31,7 +31,6 @@ export const useAnnotations = (activeAnnotationRef) => {
   }, []);
 
   useEffect(() => {
-    console.log(annotations, 'annotations3357')
     annotationsRef.current = annotations;
   }, [annotations])
 
@@ -39,12 +38,12 @@ export const useAnnotations = (activeAnnotationRef) => {
     if (!data) {
       return;
     }
-    console.log(annotations, 'annot33', data);
     let newData = JSON.parse(JSON.stringify(annotationsRef.current));
     const existingAnnotation = newData.find((e) => e.id === data.id);
     if (!existingAnnotation) {
       return;
     }
+    activeAnnotationRef.current = data.id;
     newData = newData.filter((e) => e.id !== data.id);
     newData = [
       ...newData,
@@ -65,14 +64,12 @@ export const useAnnotations = (activeAnnotationRef) => {
     if (!data) {
       return;
     }
-    console.log(data, 'data br3')
     let newData = JSON.parse(JSON.stringify(annotationsRef.current));
     const existingAnnotation = newData.find((e) => e.id === data.id);
-    // Add back if needed. Not seeing a need. activeAnnotationRef.current = data.id
+    activeAnnotationRef.current = data.id;
     if (!existingAnnotation) {
       // TOTALLY FINE FOR THERE TO BE NONE. return;
     }
-    console.log(existingAnnotation, 'existingAnnotation2')
     newData = newData.filter((e) => e.id !== data.id);
     newData = [
       ...newData,
@@ -92,9 +89,7 @@ export const useAnnotations = (activeAnnotationRef) => {
 
   const updateAnnotationParam = (id, param) => {
     let newData = JSON.parse(JSON.stringify(annotationsRef.current));
-    console.log(id, 'para', param, newData)
     const existingAnnotation = newData.find((e) => e.id === id);
-    console.log(existingAnnotation, 'existingAnnotation')
     if (!existingAnnotation) {
       return;
     }
@@ -106,11 +101,8 @@ export const useAnnotations = (activeAnnotationRef) => {
         ...param
       },
     ];
-    console.log(newData, 'newData333')
     setAnnotations(newData);
   }
-
-  console.log(annotations, 'annot335')
 
   return {
     annotations,
