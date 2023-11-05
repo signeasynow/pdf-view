@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import './index.css';
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import Header from './Header/Header';
 import Subheader from './Subheader';
@@ -37,7 +37,7 @@ import useListenForRemoveChatHistoryRequest from './hooks/useListenForRemoveChat
 import { PDFDocument, degrees } from 'pdf-lib';
 import { extractAllTextFromPDF } from './utils/extractAllTextFromPdf';
 import { ModalProvider } from './Contexts/ModalProvider';
-import { AnnotationsProvider } from './Contexts/AnnotationsContext';
+import { AnnotationsContext, AnnotationsProvider } from './Contexts/AnnotationsContext';
 import useListenForSearchbarRequest from './hooks/useListenForSearchbarRequest';
 import * as pdfjs from 'pdfjs-dist';
 import { useAnnotations } from './hooks/useAnnotations';
@@ -955,7 +955,23 @@ const App = () => {
 		onAddOperation(operation);
 	}
 
-	const {annotations, updateAnnotation, moveAnnotation, updateAnnotationParam} = useAnnotations(activeAnnotationRef);
+	const {updateAnnotation, moveAnnotation, updateAnnotationParam} = useAnnotations(activeAnnotationRef);
+	const { annotations, setAnnotations } = useContext(AnnotationsContext);
+	useEffect(() => {
+    let allAnnotations = [{
+      id: "abc",
+      pageNumber: 1,
+      content: "dFruityy5",
+      x: 0.1,
+      y: 0.1,
+      color: "#008000",
+      fontSize: 28
+    }];
+    // allAnnotations = [];
+    setAnnotations(allAnnotations)
+    console.log("SETTINGGG")
+  }, []);
+
 	console.log(annotations, 'old annot')
 	const onRotate = async (clockwise) => {
 		if (!pdfProxyObj) {

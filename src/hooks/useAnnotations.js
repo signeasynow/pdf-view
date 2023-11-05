@@ -16,21 +16,6 @@ const debounce = (func, delay) => {
 export const useAnnotations = (activeAnnotationRef) => {
   const { annotations, setAnnotations, annotationsRef } = useContext(AnnotationsContext);
 
-  useEffect(() => {
-    let allAnnotations = [{
-      id: "abc",
-      pageNumber: 1,
-      content: "dFruityy5",
-      x: 0.1,
-      y: 0.1,
-      color: "#008000",
-      fontSize: 28
-    }];
-    // allAnnotations = [];
-    setAnnotations(allAnnotations)
-    console.log("SETTINGGG")
-  }, []);
-
   // not used
   const getActiveAnnotation = (id) => {
     console.log(annotationsRef.current, 'annotationsRef.current2')

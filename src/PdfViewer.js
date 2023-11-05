@@ -39,6 +39,7 @@ const containerStyle = css`
 	position: absolute;
 	width: 100%;
 	height: 100%;
+	background: #141414;
 `;
 
 export const PdfViewer = ({
