@@ -7,13 +7,15 @@ import { AnnotationsProvider } from './Contexts/AnnotationsContext';
 import ModalProvider from './Contexts/ModalProvider';
 
 const AppRoot = () => {
-	return (<I18nextProvider i18n={i18n}>
-    <AnnotationsProvider>
-      <ModalProvider>
-        <App />
-      </ModalProvider>
-    </AnnotationsProvider>
-  </I18nextProvider>);
+	return (
+    <I18nextProvider i18n={i18n}>
+      <AnnotationsProvider>
+        <ModalProvider>
+          <App />
+        </ModalProvider>
+      </AnnotationsProvider>
+    </I18nextProvider>
+  );
 };
 
 export default AppRoot;
