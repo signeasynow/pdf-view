@@ -6,11 +6,32 @@ import ZoomOut from '../../assets/add-circle-svgrepo-com.svg';
 import ChevronDown from '../../assets/chevron-down-svgrepo-com.svg';
 import Dropdown from '../components/Dropdown';
 import { useDebounce } from '../utils/useDebounce';
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { Icon, Tooltip } from 'aleon_35_pdf_ui_lib';
 import { useTranslation } from 'react-i18next';
 import { AnnotationEditorParamsType } from 'pdfjs-dist/build/pdf';
 import { useAnnotations } from '../hooks/useAnnotations';
+
+function generateNumbers() {
+  let numbers = [];
+
+  // Numbers from 1 to 20
+  for (let i = 1; i <= 20; i++) {
+    numbers.push(i);
+  }
+
+  // Every second number from 20 to 48
+  for (let i = 22; i <= 48; i += 2) {
+    numbers.push(i);
+  }
+
+  // Every fourth number from 48 to 128
+  for (let i = 52; i <= 128; i += 4) {
+    numbers.push(i);
+  }
+
+  return numbers;
+}
 
 const inputStyles = css`
   font-size: 16px;
@@ -73,43 +94,20 @@ const FontSizeInput = ({
   onUpdateFontSize
 }) => {
 
-  const {updateAnnotationParam} = useAnnotations();
-
 	const { t } = useTranslation();
 
-	const zoomTextRef = useRef('100');
+	const fontSizeTextRef = useRef('12');
 
-	const [zoomValue, setZoomValue] = useState(100);
+	const [fontSizeValue, setFontSizeValue] = useState(12);
 
-	
-	const _onZoomOut = () => {
-
-	};
-
-	const _onZoomIn = () => {
+	const _onChangeFontSizeByText = (e) => {
 
 	};
 
-	const onZoomIn = useDebounce(_onZoomIn, 5);
-	const onZoomOut = useDebounce(_onZoomOut, 5);
-
-	const _onChangeZoomByText = (e) => {
-
-	};
-
-	const onChangeZoomByText = useDebounce(_onChangeZoomByText, 5);
-
-	const setZoom = (value) => {
-	};
-
-	const onFitWidth = () => {
-	}
-
-	const onFitHeight = () => {
-	}
+	const onChangeFontSizeByText = useDebounce(_onChangeFontSizeByText, 5);
 
   const onSelectValue = (v) => {
-    setZoomValue(v);
+    setFontSizeValue(v);
     // console.log(pdfViewerRef.current, 'pdfViewerRef.current')
     pdfViewerRef.current.annotationEditorParams = {
 			type: AnnotationEditorParamsType.FREETEXT_SIZE,
@@ -118,44 +116,29 @@ const FontSizeInput = ({
     onUpdateFontSize(v);
   }
 
+  const getNumbers = useMemo(generateNumbers, [])
+
 	return (
 		<div css={wrapper}>
 			<div css={innerWrapper}>
-				<input value={zoomValue} css={inputStyles} ref={zoomTextRef} onChange={onChangeZoomByText} type="text" />
+				<input value={fontSizeValue} css={inputStyles} ref={fontSizeTextRef} onChange={onChangeFontSizeByText} type="text" />
 				<Dropdown
 					width={100}
 					marginTop={28}
 					title={
 						<div css={dropdownTitle}>
-							<div css={percentStyle}>%</div>
+							<div css={percentStyle}>pt</div>
 							<Icon size="sm" src={ChevronDown} alt={t("arrowDown")} />
 						</div>
 					}
 					child={<div css={childStyle}>
-						<div css={zoomOptionStyle} onClick={onFitWidth}>Fit to width</div>
-						<div css={zoomOptionStyle} onClick={onFitHeight}>Fit to page</div>
-						<hr />
-						<div css={zoomOptionStyle} onClick={() => onSelectValue(12)}>12</div>
-						<div css={zoomOptionStyle} onClick={() => onSelectValue(20)}>20</div>
-						<div css={zoomOptionStyle} onClick={() => setZoom(0.5)}>50%</div>
-						<div css={zoomOptionStyle} onClick={() => setZoom(1)}>100%</div>
-						<div css={zoomOptionStyle} onClick={() => setZoom(1.25)}>125%</div>
-						<div css={zoomOptionStyle} onClick={() => setZoom(1.5)}>150%</div>
-						<div css={zoomOptionStyle} onClick={() => setZoom(2)}>200%</div>
-						<div css={zoomOptionStyle} onClick={() => setZoom(4)}>400%</div>
-						<div css={zoomOptionStyle} onClick={() => setZoom(8)}>800%</div>
-						<div css={zoomOptionStyle} onClick={() => setZoom(16)}>1600%</div>
-						<div css={zoomOptionStyle} onClick={() => setZoom(64)}>6400%</div>
+            {
+              getNumbers.map((e) => (
+                <div key={e} css={zoomOptionStyle} onClick={() => onSelectValue(e)}>{e}pt</div>
+              ))
+            }
 					</div>}
 				/>
-				<div css={zoomLeft}>
-					<Tooltip title={t("zoomIn")}>
-						<Icon onClick={onZoomIn} src={ZoomOut} alt={t("zoomIn")} />
-					</Tooltip>
-				</div>
-				<Tooltip title={t("zoomOut")}>
-					<Icon onClick={onZoomOut} src={ZoomIn} alt={t("zoomOut")} />
-				</Tooltip>
 			</div>
 		</div>
 	);

@@ -6,8 +6,21 @@ const dropdownContent = css`
   display: none;
   position: absolute;
   background-color: #f9f9f9;
+  max-height: 200px; /* Set max-height to 200px */
+  overflow-y: scroll; /* Force scrollbar */
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
+
+	&::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 7px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0,0,0,.5);
+    box-shadow: 0 0 1px rgba(255,255,255,.5);
+  }
 `;
 
 const styleRefresh = css`

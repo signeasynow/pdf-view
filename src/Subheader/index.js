@@ -10,7 +10,7 @@ import RotateRight from '../../assets/rotate-right-svgrepo-com.svg';
 import RotateLeft from '../../assets/rotate-left-svgrepo-com.svg';
 import Extract from '../../assets/gradebook-export-svgrepo-com.svg';
 import { useTranslation } from 'react-i18next';
-import HeaderBtn from '../Header/HeaderBtn';
+import HeaderBtn, { MySVGIcon } from '../Header/HeaderBtn';
 import Slider from '../components/Slider';
 import { useState } from 'preact/hooks';
 import AccessibleButton from '../components/AccessibleButton';
@@ -45,7 +45,6 @@ const Subheader = ({
 	handleChooseColor,
 	onDisableEditorMode,
 	undoStackLength,
-	pdfProxyObj,
 	redoStackLength,
 	canExtract,
 	onDelete,
@@ -61,7 +60,6 @@ const Subheader = ({
 	setExpandedViewThumbnailScale,
 	onExtract,
 	pdfViewerRef,
-	setAnnotationColor
 }) => {
 	
 	const { t } = useTranslation();
@@ -87,11 +85,6 @@ const Subheader = ({
 
 	const [activeToolbarItem, setActiveToolbarItem] = useState("");
 
-	const onChooseColor = (e, d) => {
-		// console.log(e, 'd', e.value, 'd', d, 'r', e.target, 'rr', e.target.value);
-		// setAnnotationColor(e.target.value);
-		handleChooseColor(e.target.value);
-	}
 	const onChangeActiveToolbarItem = ({
 		tooltype
 	}) => {
@@ -151,25 +144,24 @@ const Subheader = ({
 					</div>
 				)
 			}
-			<button
-				style={{background: activeToolbarItem === "cursor" ? "blue" : ""}}
-				onClick={() => onChangeActiveToolbarItem({tooltype: "cursor"})} class="cursor" type="button" title="Cursor" data-tooltype="cursor">➚</button>
-			<HeaderBtn active={activeToolbarItem === "text"} offsetX="10px" onClick={() => onChangeActiveToolbarItem({tooltype: "text"})} title={t("text")} iconAlt={t("text")}  icon={TextIcon} />
+			<div style={{display: "flex", alignItems: "center"}}>
+				{
+					tools?.editing?.includes("signature") && (
+						<div>
+							<button onClick={() => showSignatureModal("Test", () => {})}>Add signature</button>
+						</div>
+					)
+				}
+				<HeaderBtn active={activeToolbarItem === "text"} offsetX="10px" onClick={() => onChangeActiveToolbarItem({tooltype: "text"})} title={t("text")} iconAlt={t("text")}  iconComponent={() => <MySVGIcon strokeColor={activeToolbarItem === "text" ? "#3083c8" : "#000"} />} />
 
-			<ColorWheel />
-			<button
-				style={{background: activeToolbarItem === "text" ? "blue" : ""}}
-				onClick={() => onChangeActiveToolbarItem({tooltype: "text"})} class="text" type="button" title="Text Tool" data-tooltype="text">free text</button>
-			<input name="colorpicker" id="color1" type="color" onchange={onChooseColor} />  
-			<FontSizeInput
-				onUpdateFontSize={onUpdateFontSize} pdfViewerRef={pdfViewerRef} />
-			{
-				tools?.editing?.includes("signature") && (
-					<div>
-						<button onClick={() => showSignatureModal("Test", () => {})}>Add signature</button>
-					</div>
-				)
-			}
+				{activeToolbarItem === "text" && (
+					<>
+						<ColorWheel onChooseColor={handleChooseColor} />
+						<FontSizeInput
+							onUpdateFontSize={onUpdateFontSize} pdfViewerRef={pdfViewerRef} />
+					</>
+				)}
+			</div>
 			<div css={contentLeftStyle}>
 				<>
 					{
