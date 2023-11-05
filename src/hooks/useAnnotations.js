@@ -27,6 +27,7 @@ export const useAnnotations = (activeAnnotationRef) => {
   }, [annotations])
 
   const moveAnnotation = (data) => {
+    console.log(data, 'data moveannot')
     if (!data) {
       return;
     }
@@ -42,7 +43,7 @@ export const useAnnotations = (activeAnnotationRef) => {
       {
         ...existingAnnotation,
         id: existingAnnotation.id,
-        pageNumber: 1, // TODO: Add pageNumber/index
+        pageNumber: data.source.pageIndex + 1, // TODO: Add pageNumber/index
         x: data.x,
         y: data.y,
         content: existingAnnotation.content,

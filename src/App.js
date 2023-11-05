@@ -960,7 +960,7 @@ const App = () => {
 	useEffect(() => {
     let allAnnotations = [{
       id: "abc",
-      pageNumber: 1,
+      pageNumber: 2,
       content: "dFruityy5",
       x: 0.1,
       y: 0.1,
