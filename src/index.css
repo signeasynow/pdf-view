@@ -1,3 +1,7 @@
 * {
   font-family: Onest;
 }
+
+.internal {
+  font-family: inherit; /* This makes .internal elements use the font family of their parent */
+}

@@ -1,16 +1,14 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 
-import ZoomIn from '../../assets/minus-circle-svgrepo-com.svg';
-import ZoomOut from '../../assets/add-circle-svgrepo-com.svg';
-import ChevronDown from '../../assets/chevron-down-svgrepo-com.svg';
-import Dropdown from '../components/Dropdown';
-import { useDebounce } from '../utils/useDebounce';
+import ChevronDown from '../../../assets/chevron-down-svgrepo-com.svg';
+import Dropdown from '../../components/Dropdown';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { Icon, Tooltip } from 'aleon_35_pdf_ui_lib';
 import { useTranslation } from 'react-i18next';
 import { AnnotationEditorParamsType } from 'pdfjs-dist/build/pdf';
-import { useAnnotations } from '../hooks/useAnnotations';
+import { useAnnotations } from '../../hooks/useAnnotations';
+import { useDebounce } from '../../utils/useDebounce';
 
 function generateNumbers() {
   let numbers = [];
@@ -73,10 +71,6 @@ const percentStyle = css`
   color: #5b5b5b;
 `;
 
-const zoomLeft = css`
-  margin-right: 4px;
-`;
-
 const childStyle = css`
   margin: 8px 0;
 `; // padding: 12px 16px;
@@ -89,7 +83,18 @@ const zoomOptionStyle = css`
   }
 `;
 
-const FontSizeInput = ({
+const families = [
+  {
+    value: "courier",
+    label: "Courier"
+  },
+  {
+    value: "helvetica",
+    label: "Helvetica"
+  }
+]
+
+const FontFamilyInput = ({
   pdfViewerRef,
   onUpdateFontSize,
   editableAnnotationId
@@ -97,23 +102,13 @@ const FontSizeInput = ({
 
 	const { t } = useTranslation();
   
-  // const { annotations } = useAnnotations();
+	const fontSizeTextRef = useRef(families[1]);
 
-	const fontSizeTextRef = useRef('12');
-
-	const [fontSizeValue, setFontSizeValue] = useState(12);
+	const [fontSizeValue, setFontSizeValue] = useState(families[1]);
 
 	const _onChangeFontSizeByText = (e) => {
 
 	};
-
- /*
-  useEffect(() => {
-    const existingAnnotation = annotations.find((e) => e.id === editableAnnotationId);
-    console.log(existingAnnotation, 'existingAnnotation2', editableAnnotationId, 'ann', annotations)
-  }, [editableAnnotationId, annotations]);
-
-  */
 
 	const onChangeFontSizeByText = useDebounce(_onChangeFontSizeByText, 5);
 
@@ -127,25 +122,22 @@ const FontSizeInput = ({
     onUpdateFontSize(v);
   }
 
-  const getNumbers = useMemo(generateNumbers, [])
-
 	return (
 		<div css={wrapper}>
 			<div css={innerWrapper}>
-				<input value={fontSizeValue} css={inputStyles} ref={fontSizeTextRef} onChange={onChangeFontSizeByText} type="text" />
+				<input value={fontSizeValue.label} css={inputStyles} ref={fontSizeTextRef} onChange={onChangeFontSizeByText} type="text" />
 				<Dropdown
 					width={100}
 					marginTop={28}
 					title={
 						<div css={dropdownTitle}>
-							<div css={percentStyle}>pt</div>
 							<Icon size="sm" src={ChevronDown} alt={t("arrowDown")} />
 						</div>
 					}
 					child={<div css={childStyle}>
             {
-              getNumbers.map((e) => (
-                <div key={e} css={zoomOptionStyle} onClick={() => onSelectValue(e)}>{e}pt</div>
+              families.map((e) => (
+                <div key={e.value} css={zoomOptionStyle} onClick={() => onSelectValue(e)}>{e.label}</div>
               ))
             }
 					</div>}
@@ -155,4 +147,4 @@ const FontSizeInput = ({
 	);
 };
 
-export default FontSizeInput;
+export default FontFamilyInput;

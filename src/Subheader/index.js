@@ -18,6 +18,7 @@ import VerticalDivider from '../components/VerticalDivider';
 import { useModal } from '../Contexts/ModalProvider';
 import FontSizeInput from '../Header/FontSizeInput';
 import { ColorWheel } from '../components/ColorWheel';
+import FontFamilyInput from '../Header/FontFamilyInput';
 
 const Wrapper = ({ children }) => (
 	<div css={css({
@@ -160,7 +161,12 @@ const Subheader = ({
 						<ColorWheel onChooseColor={handleChooseColor} />
 						<FontSizeInput
 							editableAnnotationId={editableAnnotationId}
-							onUpdateFontSize={onUpdateFontSize} pdfViewerRef={pdfViewerRef} />
+							onUpdateFontSize={onUpdateFontSize} pdfViewerRef={pdfViewerRef}
+						/>
+						<FontFamilyInput
+							editableAnnotationId={editableAnnotationId}
+							onUpdateFontSize={onUpdateFontSize} pdfViewerRef={pdfViewerRef}
+						/>
 					</>
 				)}
 			</div>
