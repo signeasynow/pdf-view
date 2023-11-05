@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useContext, useEffect, useRef, useState } from 'preact/hooks';
+import { AnnotationsContext } from '../Contexts/AnnotationsContext';
 
 const debounce = (func, delay) => {
   let timerId;
@@ -13,8 +14,7 @@ const debounce = (func, delay) => {
 };
 
 export const useAnnotations = (activeAnnotationRef) => {
-  const [annotations, setAnnotations] = useState([]);
-  const annotationsRef = useRef([]);
+  const { annotations, setAnnotations, annotationsRef } = useContext(AnnotationsContext);
 
   useEffect(() => {
     let allAnnotations = [{
@@ -28,10 +28,17 @@ export const useAnnotations = (activeAnnotationRef) => {
     }];
     // allAnnotations = [];
     setAnnotations(allAnnotations)
+    console.log("SETTINGGG")
   }, []);
 
+  // not used
+  const getActiveAnnotation = (id) => {
+    console.log(annotationsRef.current, 'annotationsRef.current2')
+    return annotationsRef.current.find((e) => e.id === id);
+  }
+
   useEffect(() => {
-    annotationsRef.current = annotations;
+    console.log(annotations, 'anot change')
   }, [annotations])
 
   const moveAnnotation = (data) => {
@@ -108,6 +115,7 @@ export const useAnnotations = (activeAnnotationRef) => {
     annotations,
     updateAnnotation: throttledUpdateAnnotation,
     moveAnnotation,
-    updateAnnotationParam
+    updateAnnotationParam,
+    getActiveAnnotation
   }
 };

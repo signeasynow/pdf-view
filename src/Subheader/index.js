@@ -40,6 +40,7 @@ const contentLeftStyle = css`
 
 const Subheader = ({
 	canDelete,
+	editableAnnotationId,
 	onUpdateFontSize,
 	onEnableFreeTextMode,
 	handleChooseColor,
@@ -158,6 +159,7 @@ const Subheader = ({
 					<>
 						<ColorWheel onChooseColor={handleChooseColor} />
 						<FontSizeInput
+							editableAnnotationId={editableAnnotationId}
 							onUpdateFontSize={onUpdateFontSize} pdfViewerRef={pdfViewerRef} />
 					</>
 				)}

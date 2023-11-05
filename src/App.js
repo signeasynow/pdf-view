@@ -37,6 +37,7 @@ import useListenForRemoveChatHistoryRequest from './hooks/useListenForRemoveChat
 import { PDFDocument, degrees } from 'pdf-lib';
 import { extractAllTextFromPDF } from './utils/extractAllTextFromPdf';
 import { ModalProvider } from './Contexts/ModalProvider';
+import { AnnotationsProvider } from './Contexts/AnnotationsContext';
 import useListenForSearchbarRequest from './hooks/useListenForSearchbarRequest';
 import * as pdfjs from 'pdfjs-dist';
 import { useAnnotations } from './hooks/useAnnotations';
@@ -262,6 +263,7 @@ const App = () => {
 
 	const [aiLimitReached, setAiLimitReached] = useState(false);
 	const activeAnnotationRef = useRef(null);
+	const [editableAnnotationId, setEditableAnnotationId] = useState(null);
 
 	const hasConsumerSubscription = async () => {
 		if (!inputtedUuid) {
@@ -1268,6 +1270,7 @@ const App = () => {
 
 	const onAnnotationFocus = (id) => {
 		activeAnnotationRef.current = id;
+		setEditableAnnotationId(id);
 	}
 
 	const onRemoveChatHistory = async () => {
@@ -1360,170 +1363,169 @@ const App = () => {
 	}
 
 	return (
-		<I18nextProvider i18n={i18n}>
-			<ModalProvider>
-				{/*<button onClick={onClickTestHandler}>Crazy btn</button>*/}
-				<div style={{height: mainHeight()}}>
-					{
-						showHeader() && (
-							<Header
-								showFullScreenSearch={showFullScreenSearch()}
-								showSearch={showSearch}
-								showFullScreenThumbnails={shouldShowFullScreenThumbnails() || forceFullThumbnailsView()}
-								defaultZoom={defaultZoom}
-								tools={tools}
-								onDownload={onDownload}
-								pdfProxyObj={pdfProxyObj}
-								onRotate={onRotate}
-								viewerContainerRef={getTargetContainer()}
-								pdfViewerObj={pdfViewerObj}
-								onSearch={onSearchBtnClick}
-								onPanel={onPanelBtnClick}
-								leftPanelEnabled={shouldShowPanel()}
-							/>
-						)
-					}
-					{
-						showSubheader() && (
-							<Subheader
-								activeAnnotationRef={activeAnnotationRef}
-								onUpdateFontSize={onUpdateFontSize}
-								pdfViewerRef={pdfViewerRef}
-								handleChooseColor={handleChooseColor}
-								setAnnotationColor={setAnnotationColor}
-								onDisableEditorMode={onDisableEditorMode}
-								onEnableFreeTextMode={onEnableFreeTextMode}
-								pdfProxyObj={pdfProxyObj}
-								canExtract={canExtract()}
-								onExtract={onExtract}
-								tools={tools}
-								canDelete={canDelete()}
-								undoStackLength={operations[activePageIndex]?.length}
-								redoStackLength={redoStack[activePageIndex]?.length}
-								setExpandedViewThumbnailScale={setExpandedViewThumbnailScale}
-								expandedViewThumbnailScale={expandedViewThumbnailScale}
-								setMultiPageSelections={setMultiPageSelections}
-								multiPageSelections={multiPageSelections}
-								showFullScreenThumbnails={shouldShowFullScreenThumbnails() || forceFullThumbnailsView()}
-								onMinimize={onMinimize}
-								undoLastAction={undoLastAction}
-								redoLastAction={redoLastAction}
-								onDownload={onDownload}
-								onDelete={onDelete}
-								onRotate={onRotateFullScreenThumbnails}
-							/>
-						)
-					}
-					<Tabs
-						onClick={onChangeActivePageIndex}
-						activePageIndex={activePageIndex}
-						fileNames={fileNames}
-					/>
-					<div css={Flex}>
-						{
-							tools?.general?.includes('thumbnails') && (
-								<Panel
-									showSearch={showSearch}
-									splitMarkers={splitMarkers}
-									onClickSplit={onClickSplit}
-									isSplitting={isSplitting}
-									documentLoading={documentLoading}
-									fileName={fileNames[activePageIndex]}
-									thumbnailScale={thumbnailScale}
-									setThumbnailScale={setThumbnailScale}
-									expandedViewThumbnailScale={expandedViewThumbnailScale}
-									onRotate={onRotateThumbnail}
-									onDeleteThumbnail={onDeleteThumbnail}
-									onExtractThumbnail={onExtractThumbnail}
-									multiPageSelections={multiPageSelections}
-									setMultiPageSelections={setMultiPageSelections}
-									onExpand={onExpand}
-									onDragEnd={onDragEnd}
-									tools={tools}
-									setActivePage={setActivePage}
-									activePage={activePage}
-									pdfProxyObj={pdfProxyObj}
-									pdf={pdfViewerObj}
-									showPanel={shouldShowPanel()}
-									showFullScreenThumbnails={shouldShowFullScreenThumbnails() || forceFullThumbnailsView()}
-								/>
-							)
-						}
-						<div css={pdfViewerWrapper}>
-							<PdfViewer
-								onAnnotationFocus={onAnnotationFocus}
-								annotationColor={annotationColor}
-								moveAnnotation={moveAnnotation}
-								updateAnnotation={updateAnnotation}
-								annotations={annotations}
-								pdfViewerRef={pdfViewerRef}
-								pdfScriptingManagerRef={pdfScriptingManagerRef}
-								pdfFindControllerRef={pdfFindControllerRef}
-								pdfLinkServiceRef={pdfLinkServiceRef}
-								annotationEditorUIManagerRef={annotationEditorUIManagerRef}
-								setCurrentAiDocHash={setCurrentAiDocHash}
-								setPdfText={setPdfText}
-								onPagesLoaded={() => {}}
-								setDocumentLoading={setDocumentLoading}
-								setModifiedFiles={setModifiedFiles}
-								modifiedFiles={modifiedFiles}
-								activePageIndex={activePageIndex}
-								isSandbox={inputtedLicenseKey?.toLowerCase() === "sandbox"}
-								addWatermark={addWatermark}
-								updateCurrentScale={updateCurrentScale}
-								buffer={buffer}
-								switchBuffer={switchBuffer}
-								activePage={activePage}
-								modifiedFile={modifiedFile}
-								showHeader={showHeader()}
-								showSubheader={showSubheader()}
-								tools={tools}
-								fileLoadFailError={fileLoadFailError}
-								setFileLoadFailError={setFileLoadFailError}
-								rightPanelEnabled={showSearch}
-								leftPanelEnabled={shouldShowPanel()}
-								setActivePage={setActivePage}
-								setPdfProxyObj={setPdfProxyObj}
-								pdfProxyObj={pdfProxyObj}
-								setMatchesCount={setMatchesCount}
-								eventBusRef={eventBusRef}
-								viewerContainerRef1={viewerContainerRef1}
-								viewerContainerRef2={viewerContainerRef2}
-								setPdfViewerObj={setPdfViewerObj}
-								files={files}
-							/>
-						</div>
-						<SearchBar
+		<>
+			{/*<button onClick={onClickTestHandler}>Crazy btn</button>*/}
+			<div style={{height: mainHeight()}}>
+				{
+					showHeader() && (
+						<Header
 							showFullScreenSearch={showFullScreenSearch()}
-							tools={tools}
-							aiLimitReached={aiLimitReached}
-							onNoToAiWarning={onNoToAiWarning}
-							aiDocHash={aiDocHash}
-							currentAiDocHash={currentAiDocHash}
-							conversation={conversation}
-							setConversation={setConversation}
-							aiDocId={aiDocId}
-							onRemoveChatHistory={onRemoveChatHistory}
-							onAskQuestion={onAskQuestion}
-							onEmbed={onEmbed}
-							searchBarView={searchBarView}
-							setSearchBarView={setSearchBarView}
-							onClear={onClearSearch}
-							onToggleWholeWord={onToggleWholeWord}
-							searchText={searchText}
-							onNext={onNext}
-							onPrev={onPrev}
-							matchesCount={matchesCount}
-							matchWholeWord={matchWholeWord}
-							onChange={onSearchText}
 							showSearch={showSearch}
-							caseSensitive={caseSensitive}
-							onToggleCaseSensitive={onToggleCaseSensitive}
+							showFullScreenThumbnails={shouldShowFullScreenThumbnails() || forceFullThumbnailsView()}
+							defaultZoom={defaultZoom}
+							tools={tools}
+							onDownload={onDownload}
+							pdfProxyObj={pdfProxyObj}
+							onRotate={onRotate}
+							viewerContainerRef={getTargetContainer()}
+							pdfViewerObj={pdfViewerObj}
+							onSearch={onSearchBtnClick}
+							onPanel={onPanelBtnClick}
+							leftPanelEnabled={shouldShowPanel()}
+						/>
+					)
+				}
+				{
+					showSubheader() && (
+						<Subheader
+							editableAnnotationId={editableAnnotationId}
+							activeAnnotationRef={activeAnnotationRef}
+							onUpdateFontSize={onUpdateFontSize}
+							pdfViewerRef={pdfViewerRef}
+							handleChooseColor={handleChooseColor}
+							setAnnotationColor={setAnnotationColor}
+							onDisableEditorMode={onDisableEditorMode}
+							onEnableFreeTextMode={onEnableFreeTextMode}
+							pdfProxyObj={pdfProxyObj}
+							canExtract={canExtract()}
+							onExtract={onExtract}
+							tools={tools}
+							canDelete={canDelete()}
+							undoStackLength={operations[activePageIndex]?.length}
+							redoStackLength={redoStack[activePageIndex]?.length}
+							setExpandedViewThumbnailScale={setExpandedViewThumbnailScale}
+							expandedViewThumbnailScale={expandedViewThumbnailScale}
+							setMultiPageSelections={setMultiPageSelections}
+							multiPageSelections={multiPageSelections}
+							showFullScreenThumbnails={shouldShowFullScreenThumbnails() || forceFullThumbnailsView()}
+							onMinimize={onMinimize}
+							undoLastAction={undoLastAction}
+							redoLastAction={redoLastAction}
+							onDownload={onDownload}
+							onDelete={onDelete}
+							onRotate={onRotateFullScreenThumbnails}
+						/>
+					)
+				}
+				<Tabs
+					onClick={onChangeActivePageIndex}
+					activePageIndex={activePageIndex}
+					fileNames={fileNames}
+				/>
+				<div css={Flex}>
+					{
+						tools?.general?.includes('thumbnails') && (
+							<Panel
+								showSearch={showSearch}
+								splitMarkers={splitMarkers}
+								onClickSplit={onClickSplit}
+								isSplitting={isSplitting}
+								documentLoading={documentLoading}
+								fileName={fileNames[activePageIndex]}
+								thumbnailScale={thumbnailScale}
+								setThumbnailScale={setThumbnailScale}
+								expandedViewThumbnailScale={expandedViewThumbnailScale}
+								onRotate={onRotateThumbnail}
+								onDeleteThumbnail={onDeleteThumbnail}
+								onExtractThumbnail={onExtractThumbnail}
+								multiPageSelections={multiPageSelections}
+								setMultiPageSelections={setMultiPageSelections}
+								onExpand={onExpand}
+								onDragEnd={onDragEnd}
+								tools={tools}
+								setActivePage={setActivePage}
+								activePage={activePage}
+								pdfProxyObj={pdfProxyObj}
+								pdf={pdfViewerObj}
+								showPanel={shouldShowPanel()}
+								showFullScreenThumbnails={shouldShowFullScreenThumbnails() || forceFullThumbnailsView()}
+							/>
+						)
+					}
+					<div css={pdfViewerWrapper}>
+						<PdfViewer
+							onAnnotationFocus={onAnnotationFocus}
+							annotationColor={annotationColor}
+							moveAnnotation={moveAnnotation}
+							updateAnnotation={updateAnnotation}
+							annotations={annotations}
+							pdfViewerRef={pdfViewerRef}
+							pdfScriptingManagerRef={pdfScriptingManagerRef}
+							pdfFindControllerRef={pdfFindControllerRef}
+							pdfLinkServiceRef={pdfLinkServiceRef}
+							annotationEditorUIManagerRef={annotationEditorUIManagerRef}
+							setCurrentAiDocHash={setCurrentAiDocHash}
+							setPdfText={setPdfText}
+							onPagesLoaded={() => {}}
+							setDocumentLoading={setDocumentLoading}
+							setModifiedFiles={setModifiedFiles}
+							modifiedFiles={modifiedFiles}
+							activePageIndex={activePageIndex}
+							isSandbox={inputtedLicenseKey?.toLowerCase() === "sandbox"}
+							addWatermark={addWatermark}
+							updateCurrentScale={updateCurrentScale}
+							buffer={buffer}
+							switchBuffer={switchBuffer}
+							activePage={activePage}
+							modifiedFile={modifiedFile}
+							showHeader={showHeader()}
+							showSubheader={showSubheader()}
+							tools={tools}
+							fileLoadFailError={fileLoadFailError}
+							setFileLoadFailError={setFileLoadFailError}
+							rightPanelEnabled={showSearch}
+							leftPanelEnabled={shouldShowPanel()}
+							setActivePage={setActivePage}
+							setPdfProxyObj={setPdfProxyObj}
+							pdfProxyObj={pdfProxyObj}
+							setMatchesCount={setMatchesCount}
+							eventBusRef={eventBusRef}
+							viewerContainerRef1={viewerContainerRef1}
+							viewerContainerRef2={viewerContainerRef2}
+							setPdfViewerObj={setPdfViewerObj}
+							files={files}
 						/>
 					</div>
+					<SearchBar
+						showFullScreenSearch={showFullScreenSearch()}
+						tools={tools}
+						aiLimitReached={aiLimitReached}
+						onNoToAiWarning={onNoToAiWarning}
+						aiDocHash={aiDocHash}
+						currentAiDocHash={currentAiDocHash}
+						conversation={conversation}
+						setConversation={setConversation}
+						aiDocId={aiDocId}
+						onRemoveChatHistory={onRemoveChatHistory}
+						onAskQuestion={onAskQuestion}
+						onEmbed={onEmbed}
+						searchBarView={searchBarView}
+						setSearchBarView={setSearchBarView}
+						onClear={onClearSearch}
+						onToggleWholeWord={onToggleWholeWord}
+						searchText={searchText}
+						onNext={onNext}
+						onPrev={onPrev}
+						matchesCount={matchesCount}
+						matchWholeWord={matchWholeWord}
+						onChange={onSearchText}
+						showSearch={showSearch}
+						caseSensitive={caseSensitive}
+						onToggleCaseSensitive={onToggleCaseSensitive}
+					/>
 				</div>
-			</ModalProvider>
-		</I18nextProvider>
+			</div>
+		</>
 	);
 };
 

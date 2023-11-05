@@ -91,10 +91,13 @@ const zoomOptionStyle = css`
 
 const FontSizeInput = ({
   pdfViewerRef,
-  onUpdateFontSize
+  onUpdateFontSize,
+  editableAnnotationId
 }) => {
 
 	const { t } = useTranslation();
+  
+  const { annotations } = useAnnotations();
 
 	const fontSizeTextRef = useRef('12');
 
@@ -103,6 +106,11 @@ const FontSizeInput = ({
 	const _onChangeFontSizeByText = (e) => {
 
 	};
+
+  useEffect(() => {
+    const existingAnnotation = annotations.find((e) => e.id === editableAnnotationId);
+    console.log(existingAnnotation, 'existingAnnotation2', editableAnnotationId, 'ann', annotations)
+  }, [editableAnnotationId, annotations]);
 
 	const onChangeFontSizeByText = useDebounce(_onChangeFontSizeByText, 5);
 

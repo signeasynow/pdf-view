@@ -3,7 +3,7 @@ import * as pdfjs from 'pdfjs-dist';
 import 'pdfjs-dist/web/pdf_viewer.css';
 
 import { render } from 'preact';
-import App from './src/App';
+import AppRoot from './src/AppRoot';
 pdfjs.GlobalWorkerOptions.workerSrc = "lib/pdf.worker.js" // || `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-render(<App />, document.getElementById('app'));
+render(<AppRoot />, document.getElementById('app'));
