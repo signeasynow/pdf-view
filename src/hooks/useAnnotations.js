@@ -68,7 +68,7 @@ export const useAnnotations = (activeAnnotationRef) => {
     console.log(data, 'data br3')
     let newData = JSON.parse(JSON.stringify(annotationsRef.current));
     const existingAnnotation = newData.find((e) => e.id === data.id);
-    activeAnnotationRef.current = data.id
+    // Add back if needed. Not seeing a need. activeAnnotationRef.current = data.id
     if (!existingAnnotation) {
       // TOTALLY FINE FOR THERE TO BE NONE. return;
     }
