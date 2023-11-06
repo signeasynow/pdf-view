@@ -45,6 +45,7 @@ const containerStyle = css`
 export const PdfViewer = ({
 	activePageIndex,
 	onAnnotationFocus,
+	activeToolbarItemRef,
 	annotations,
 	annotationColor,
 	updateAnnotation,
@@ -136,13 +137,13 @@ export const PdfViewer = ({
 			scriptingManager: pdfScriptingManagerRef.current,
 			annotationEditorMode: 0
 		});
-
+		
 		// pdfViewerRef.current.currentScale = 0.2 // WIP
 		setPdfViewerObj(pdfViewerRef.current);
 
 		pdfLinkServiceRef.current.setViewer(pdfViewerRef.current);
 		pdfScriptingManagerRef.current.setViewer(pdfViewerRef.current);
-
+		
 		eventBus.on('pagesinit', () => {
 			pdfViewerRef.current.currentScaleValue = "page-height";
 			updateCurrentScale(Math.round(pdfViewerRef.current.currentScale * 100));
@@ -157,6 +158,13 @@ export const PdfViewer = ({
 				type: "pages-loaded",
 				message: new Date().toISOString()
 			})
+			if (activeToolbarItemRef.current === "text") {
+				pdfViewerRef.current.annotationEditorMode = {
+					isFromKeyboard: false,
+					mode: pdfjs.AnnotationEditorType.FREETEXT,
+					source: null
+				};
+			}
 			onPagesLoaded();
 
 		});

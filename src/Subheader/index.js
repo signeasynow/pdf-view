@@ -40,6 +40,8 @@ const contentLeftStyle = css`
 `;
 
 const Subheader = ({
+	handleChangeActiveToolbarItem,
+	activeToolbarItem,
 	canDelete,
 	editableAnnotationId,
 	onUpdateFontSize,
@@ -86,17 +88,16 @@ const Subheader = ({
 
 	const { showSignatureModal } = useModal();
 
-	const [activeToolbarItem, setActiveToolbarItem] = useState("");
 
 	const onChangeActiveToolbarItem = ({
 		tooltype
 	}) => {
 		if (activeToolbarItem === tooltype) {
-			setActiveToolbarItem("");
+			handleChangeActiveToolbarItem("");
 			onDisableEditorMode();
 			return;
 		}
-		setActiveToolbarItem(tooltype);
+		handleChangeActiveToolbarItem(tooltype);
 		switch (tooltype) {
       case 'text':
 				onEnableFreeTextMode();

@@ -399,6 +399,13 @@ const App = () => {
 	const [operations, setOperations] = useState(initialRedoUndoObject());
 	const [redoStack, setRedoStack] = useState(initialRedoUndoObject());
 
+	const [activeToolbarItem, setActiveToolbarItem] = useState("");
+	const activeToolbarItemRef = useRef(null);
+
+	useEffect(() => {
+		activeToolbarItemRef.current = activeToolbarItem;
+	}, [activeToolbarItem])
+	console.log(activeToolbarItem, 'activeToolbarItem11')
 	useEffect(() => {
 		try {
 			setOperations(initialRedoUndoObject());
@@ -1308,6 +1315,10 @@ const App = () => {
 		localStorage.setItem("aiDocId", "");
 	}
 
+	const handleChangeActiveToolbarItem = (v) => {
+		setActiveToolbarItem(v);
+	}
+
 	const [annotationColor, setAnnotationColor] = useState("#FFF");
 
 	useListenForRemoveChatHistoryRequest(onRemoveChatHistory)
@@ -1411,6 +1422,8 @@ const App = () => {
 				{
 					showSubheader() && (
 						<Subheader
+							activeToolbarItem={activeToolbarItem}
+							handleChangeActiveToolbarItem={handleChangeActiveToolbarItem}
 							editableAnnotationId={editableAnnotationId}
 							activeAnnotationRef={activeAnnotationRef}
 							onUpdateFontSize={onUpdateFontSize}
@@ -1478,6 +1491,7 @@ const App = () => {
 					}
 					<div css={pdfViewerWrapper}>
 						<PdfViewer
+							activeToolbarItemRef={activeToolbarItemRef}
 							onAnnotationFocus={onAnnotationFocus}
 							annotationColor={annotationColor}
 							moveAnnotation={moveAnnotation}
