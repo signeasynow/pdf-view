@@ -1,7 +1,8 @@
-* {
+*:not(.internal) {
   font-family: Onest;
 }
 
-.internal {
+.internal,
+.internal div {
   font-family: inherit; /* This makes .internal elements use the font family of their parent */
 }

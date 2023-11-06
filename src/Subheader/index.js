@@ -43,6 +43,7 @@ const Subheader = ({
 	canDelete,
 	editableAnnotationId,
 	onUpdateFontSize,
+	onUpdateFontFamily,
 	onEnableFreeTextMode,
 	handleChooseColor,
 	onDisableEditorMode,
@@ -165,7 +166,7 @@ const Subheader = ({
 						/>
 						<FontFamilyInput
 							editableAnnotationId={editableAnnotationId}
-							onUpdateFontSize={onUpdateFontSize} pdfViewerRef={pdfViewerRef}
+							onUpdateFontFamily={onUpdateFontFamily} pdfViewerRef={pdfViewerRef}
 						/>
 					</>
 				)}

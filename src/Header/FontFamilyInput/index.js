@@ -96,8 +96,7 @@ const families = [
 
 const FontFamilyInput = ({
   pdfViewerRef,
-  onUpdateFontSize,
-  editableAnnotationId
+  onUpdateFontFamily,
 }) => {
 
 	const { t } = useTranslation();
@@ -113,13 +112,14 @@ const FontFamilyInput = ({
 	const onChangeFontSizeByText = useDebounce(_onChangeFontSizeByText, 5);
 
   const onSelectValue = (v) => {
+    console.log(v, 'v bro')
     setFontSizeValue(v);
     // console.log(pdfViewerRef.current, 'pdfViewerRef.current')
     pdfViewerRef.current.annotationEditorParams = {
-			type: AnnotationEditorParamsType.FREETEXT_SIZE,
-			value: v
+			type: AnnotationEditorParamsType.FREETEXT_FONT,
+			value: v.value
 		}
-    onUpdateFontSize(v);
+    onUpdateFontFamily(v.value);
   }
 
 	return (

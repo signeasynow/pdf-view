@@ -960,12 +960,13 @@ const App = () => {
 	useEffect(() => {
     let allAnnotations = [{
       id: "abc",
-      pageNumber: 2,
+      pageNumber: 1,
       content: "dFruityy5",
       x: 0.1,
       y: 0.1,
       color: "#008000",
-      fontSize: 28
+      fontSize: 28,
+			fontFamily: "courier"
     }];
     // allAnnotations = [];
     setAnnotations(allAnnotations)
@@ -1336,6 +1337,12 @@ const App = () => {
 		})
 	}
 
+	const onUpdateFontFamily = (v) => {
+		updateAnnotationParam(activeAnnotationRef.current, {
+			fontFamily: v
+		})
+	}
+
 	if (fileLoadFailError) {
 		return (
 			<div css={failWrap}>
@@ -1407,6 +1414,7 @@ const App = () => {
 							editableAnnotationId={editableAnnotationId}
 							activeAnnotationRef={activeAnnotationRef}
 							onUpdateFontSize={onUpdateFontSize}
+							onUpdateFontFamily={onUpdateFontFamily}
 							pdfViewerRef={pdfViewerRef}
 							handleChooseColor={handleChooseColor}
 							setAnnotationColor={setAnnotationColor}

@@ -92,7 +92,6 @@ const zoomOptionStyle = css`
 const FontSizeInput = ({
   pdfViewerRef,
   onUpdateFontSize,
-  editableAnnotationId
 }) => {
 
 	const { t } = useTranslation();
