@@ -264,6 +264,13 @@ const App = () => {
 	const [aiLimitReached, setAiLimitReached] = useState(false);
 	const activeAnnotationRef = useRef(null);
 	const [editableAnnotationId, setEditableAnnotationId] = useState(null);
+	const [fontSizeValue, setFontSizeValue] = useState(12);
+	const [fontFamilyValue, setFontFamilyValue] = useState({
+    value: "helvetica",
+    label: "Helvetica"
+  });
+	const [annotationColor, setAnnotationColor] = useState('#fff');
+
 
 	const hasConsumerSubscription = async () => {
 		if (!inputtedUuid) {
@@ -1151,10 +1158,6 @@ const App = () => {
 			mode: pdfjs.AnnotationEditorType.FREETEXT,
 			source: null
 		};
-		console.log(pdfViewerRef.current, 'pdfViewerRef.current')
-		console.log(pdfProxyObj?.annotationStorage, 'annotationStorage2')
-		// const dog = new pdfjs.FreeTextEd();
-		// pdfViewerRef.current?.applyAnnotations();
 	}
 
 	const onDisableEditorMode = async () => {
@@ -1292,9 +1295,26 @@ const App = () => {
 		window.localStorage.setItem("aiDocHash", hash);
 	}
 
-	const onAnnotationFocus = (id) => {
+	const onAnnotationFocus = (id, data) => {
 		activeAnnotationRef.current = id;
 		setEditableAnnotationId(id);
+		console.log(data, 'data4442')
+		setFontSizeValue(data.fontSize)
+		const map = {
+			courier: {
+				value: "courier",
+				label: "Courier"
+			},
+			helvetica: {
+				value: "helvetica",
+				label: "Helvetica"
+			},
+		}
+		setAnnotationColor(data.color)
+		if (!map[data.fontFamily]) {
+			return;
+		}
+		setFontFamilyValue(map[data.fontFamily])
 	}
 
 	const onRemoveChatHistory = async () => {
@@ -1318,8 +1338,6 @@ const App = () => {
 	const handleChangeActiveToolbarItem = (v) => {
 		setActiveToolbarItem(v);
 	}
-
-	const [annotationColor, setAnnotationColor] = useState("#FFF");
 
 	useListenForRemoveChatHistoryRequest(onRemoveChatHistory)
 
@@ -1422,6 +1440,11 @@ const App = () => {
 				{
 					showSubheader() && (
 						<Subheader
+							annotationColor={annotationColor}
+							fontSizeValue={fontSizeValue}
+							setFontSizeValue={setFontSizeValue}
+							fontFamilyValue={fontFamilyValue}
+							setFontFamilyValue={setFontFamilyValue}
 							activeToolbarItem={activeToolbarItem}
 							handleChangeActiveToolbarItem={handleChangeActiveToolbarItem}
 							editableAnnotationId={editableAnnotationId}

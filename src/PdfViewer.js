@@ -171,7 +171,7 @@ export const PdfViewer = ({
 
 		eventBus.on("annotationfocused", ({ details }) => {
 			console.log(details, 'details r48')
-			onAnnotationFocus(details.current.id);
+			onAnnotationFocus(details.current.id, details.current);
 		});
 
 		eventBus.on('annotationchanged', ({ details }) => {

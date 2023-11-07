@@ -40,6 +40,12 @@ const contentLeftStyle = css`
 `;
 
 const Subheader = ({
+	fontFamilyValue,
+	annotationColor,
+	setAnnotationColor,
+	setFontFamilyValue,
+	fontSizeValue,
+	setFontSizeValue,
 	handleChangeActiveToolbarItem,
 	activeToolbarItem,
 	canDelete,
@@ -156,16 +162,25 @@ const Subheader = ({
 						</div>
 					)
 				}
+			 <button onClick={() => onChangeActiveToolbarItem({tooltype: "text"})}>Add image</button>
 				<HeaderBtn active={activeToolbarItem === "text"} offsetX="10px" onClick={() => onChangeActiveToolbarItem({tooltype: "text"})} title={t("text")} iconAlt={t("text")}  iconComponent={() => <MySVGIcon strokeColor={activeToolbarItem === "text" ? "#3083c8" : "#000"} />} />
 
 				{activeToolbarItem === "text" && (
 					<>
-						<ColorWheel onChooseColor={handleChooseColor} />
+						<ColorWheel
+							annotationColor={annotationColor}
+							setAnnotationColor={setAnnotationColor}
+							onChooseColor={handleChooseColor}
+						/>
 						<FontSizeInput
+							fontSizeValue={fontSizeValue}
+							setFontSizeValue={setFontSizeValue}							
 							editableAnnotationId={editableAnnotationId}
 							onUpdateFontSize={onUpdateFontSize} pdfViewerRef={pdfViewerRef}
 						/>
 						<FontFamilyInput
+							fontFamilyValue={fontFamilyValue}
+							setFontFamilyValue={setFontFamilyValue}
 							editableAnnotationId={editableAnnotationId}
 							onUpdateFontFamily={onUpdateFontFamily} pdfViewerRef={pdfViewerRef}
 						/>

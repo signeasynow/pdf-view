@@ -92,15 +92,15 @@ const zoomOptionStyle = css`
 const FontSizeInput = ({
   pdfViewerRef,
   onUpdateFontSize,
+  fontSizeValue,
+  setFontSizeValue
 }) => {
 
 	const { t } = useTranslation();
   
   // const { annotations } = useAnnotations();
 
-	const fontSizeTextRef = useRef('12');
-
-	const [fontSizeValue, setFontSizeValue] = useState(12);
+	const fontSizeTextRef = useRef(fontSizeValue);
 
 	const _onChangeFontSizeByText = (e) => {
 

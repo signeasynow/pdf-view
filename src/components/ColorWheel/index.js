@@ -15,12 +15,15 @@ const wrapper = css`
   }
 `;
 
-export const ColorWheel = ({ onChooseColor }) => {
+export const ColorWheel = ({
+  onChooseColor,
+  annotationColor,
+	setAnnotationColor
+}) => {
   const [showPicker, setShowPicker] = useState(false);
-  const [color, setColor] = useState('#fff');
 
   const handleColorChange = (color) => {
-    setColor(color.hex);
+    setAnnotationColor(color.hex);
     if (onChooseColor) {
       onChooseColor(color.hex);
     }
@@ -52,7 +55,7 @@ export const ColorWheel = ({ onChooseColor }) => {
             onClick={togglePicker}
           />
           <SketchPicker
-            color={color}
+            color={annotationColor}
             disableAlpha={true} // This will remove the opacity slider
             onChangeComplete={handleColorChange}
             presetColors={[]} // Pass an empty array to remove preset colors
