@@ -19,6 +19,7 @@ import { useModal } from '../Contexts/ModalProvider';
 import FontSizeInput from '../Header/FontSizeInput';
 import { ColorWheel } from '../components/ColorWheel';
 import FontFamilyInput from '../Header/FontFamilyInput';
+import { AnnotationEditorParamsType } from 'pdfjs-dist/build/pdf';
 
 const Wrapper = ({ children }) => (
 	<div css={css({
@@ -60,6 +61,7 @@ const Subheader = ({
 	canExtract,
 	onDelete,
 	tools,
+	onAddImage,
 	onRotate,
 	undoLastAction,
 	redoLastAction,
@@ -154,6 +156,7 @@ const Subheader = ({
 					</div>
 				)
 			}
+			<button onClick={onAddImage}>Add image</button>
 			<div style={{display: "flex", alignItems: "center"}}>
 				{
 					tools?.editing?.includes("signature") && (

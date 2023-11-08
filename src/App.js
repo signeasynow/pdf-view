@@ -1372,6 +1372,18 @@ const App = () => {
 		})
 	}
 
+	const onAddImage = () => {
+		console.log(AnnotationEditorParamsType.CREATE, 'AnnotationEditorParamsType.CREATE');
+		pdfViewerRef.current.annotationEditorMode = {
+			isFromKeyboard: false,
+			mode: pdfjs.AnnotationEditorType.STAMP,
+			source: null
+		};
+		pdfViewerRef.current.annotationEditorParams = {
+			type: AnnotationEditorParamsType.CREATE
+		}
+	}
+
 	if (fileLoadFailError) {
 		return (
 			<div css={failWrap}>
@@ -1440,6 +1452,7 @@ const App = () => {
 				{
 					showSubheader() && (
 						<Subheader
+							onAddImage={onAddImage}
 							annotationColor={annotationColor}
 							fontSizeValue={fontSizeValue}
 							setFontSizeValue={setFontSizeValue}
