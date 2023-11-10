@@ -13,7 +13,6 @@ export const AnnotationsProvider = ({ children }) => {
 
   useEffect(() => {
     annotationsRef.current = annotations;
-    console.log(annotations, 'annot433')
   }, [annotations]);
 
   return (

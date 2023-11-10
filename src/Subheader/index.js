@@ -19,7 +19,9 @@ import { useModal } from '../Contexts/ModalProvider';
 import FontSizeInput from '../Header/FontSizeInput';
 import { ColorWheel } from '../components/ColorWheel';
 import FontFamilyInput from '../Header/FontFamilyInput';
-import { AnnotationEditorParamsType } from 'pdfjs-dist/build/pdf';
+import AnnotationSelectionDropdown from './AnnotationSelectionDropdown';
+import Signatures from './Signatures';
+import AnnotationTextSettings from './AnnotationTextSettings';
 
 const Wrapper = ({ children }) => (
 	<div css={css({
@@ -110,6 +112,13 @@ const Subheader = ({
       case 'text':
 				onEnableFreeTextMode();
         break;
+			case 'signature':
+				onEnableFreeTextMode();
+				break;
+			case 'none':
+				handleChangeActiveToolbarItem("");
+				onDisableEditorMode();
+				break;
     }
 	}
 
@@ -156,39 +165,31 @@ const Subheader = ({
 					</div>
 				)
 			}
-			<button onClick={onAddImage}>Add image</button>
 			<div style={{display: "flex", alignItems: "center"}}>
-				{
-					tools?.editing?.includes("signature") && (
-						<div>
-							<button onClick={() => showSignatureModal("Test", () => {})}>Add signature</button>
-						</div>
-					)
-				}
-			 <button onClick={() => onChangeActiveToolbarItem({tooltype: "text"})}>Add image</button>
-				<HeaderBtn active={activeToolbarItem === "text"} offsetX="10px" onClick={() => onChangeActiveToolbarItem({tooltype: "text"})} title={t("text")} iconAlt={t("text")}  iconComponent={() => <MySVGIcon strokeColor={activeToolbarItem === "text" ? "#3083c8" : "#000"} />} />
-
-				{activeToolbarItem === "text" && (
-					<>
-						<ColorWheel
-							annotationColor={annotationColor}
-							setAnnotationColor={setAnnotationColor}
-							onChooseColor={handleChooseColor}
-						/>
-						<FontSizeInput
-							fontSizeValue={fontSizeValue}
-							setFontSizeValue={setFontSizeValue}							
-							editableAnnotationId={editableAnnotationId}
-							onUpdateFontSize={onUpdateFontSize} pdfViewerRef={pdfViewerRef}
-						/>
-						<FontFamilyInput
-							fontFamilyValue={fontFamilyValue}
-							setFontFamilyValue={setFontFamilyValue}
-							editableAnnotationId={editableAnnotationId}
-							onUpdateFontFamily={onUpdateFontFamily} pdfViewerRef={pdfViewerRef}
-						/>
-					</>
-				)}
+				<AnnotationSelectionDropdown
+					onClickSignature={onAddImage}
+					onChangeActiveToolbarItem={onChangeActiveToolbarItem}
+				/>
+			  <Signatures
+					onClickSignature={onAddImage}
+					onChangeActiveToolbarItem={onChangeActiveToolbarItem}
+					tools={tools}
+					activeToolbarItem={activeToolbarItem}
+				/>
+				<AnnotationTextSettings
+					activeToolbarItem={activeToolbarItem}
+					annotationColor={annotationColor}
+					setAnnotationColor={setAnnotationColor}
+					handleChooseColor={handleChooseColor}
+					fontSizeValue={fontSizeValue}
+					setFontSizeValue={setFontSizeValue}
+					editableAnnotationId={editableAnnotationId}
+					onUpdateFontSize={onUpdateFontSize}
+					pdfViewerRef={pdfViewerRef}
+					fontFamilyValue={fontFamilyValue}
+					setFontFamilyValue={setFontFamilyValue}
+					onUpdateFontFamily={onUpdateFontFamily}
+				/>
 			</div>
 			<div css={contentLeftStyle}>
 				<>

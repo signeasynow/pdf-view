@@ -1372,7 +1372,7 @@ const App = () => {
 		})
 	}
 
-	const onAddImage = () => {
+	const onAddImage = (localStorageName) => {
 		console.log(AnnotationEditorParamsType.CREATE, 'AnnotationEditorParamsType.CREATE');
 		pdfViewerRef.current.annotationEditorMode = {
 			isFromKeyboard: false,
@@ -1380,7 +1380,10 @@ const App = () => {
 			source: null
 		};
 		pdfViewerRef.current.annotationEditorParams = {
-			type: AnnotationEditorParamsType.CREATE
+			type: AnnotationEditorParamsType.CREATE,
+			value: {
+				bitmapUrl: localStorage.getItem(localStorageName)
+			}
 		}
 	}
 

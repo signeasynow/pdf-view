@@ -1,7 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import {  css } from '@emotion/react';
-import { useRef } from 'preact/hooks';
+import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import SignatureCanvas from 'react-signature-canvas';
+import { SignaturesContext } from '../../Contexts/SignaturesContext';
+import { ColorButton } from './ColorButton';
 
 const overlayStyle = css`
   position: fixed;
@@ -55,6 +57,82 @@ export const SignatureModal = ({ onConfirm, message, onClose }) => {
 
   const signatureRef = useRef();
   const initialRef = useRef();
+  const [penColor, setPenColor] = useState('black'); // Default pen color
+
+  const { setInitialsSignature, setFullSignature } = useContext(SignaturesContext);
+
+  const handleSaveSignature = () => {
+    // Convert canvas to data URL (base64 image) only if the canvas is not empty
+    const signatureImage = !signatureRef.current.isEmpty()
+      ? signatureRef.current.getTrimmedCanvas().toDataURL('image/png')
+      : null;
+    const initialsImage = !initialRef.current.isEmpty()
+      ? initialRef.current.getTrimmedCanvas().toDataURL('image/png')
+      : null;
+  
+    // Only update localStorage and context if there's a new signature/initials
+    if (signatureImage) {
+      localStorage.setItem('signatureImage', signatureImage);
+      setFullSignature(signatureImage);
+    } else {
+      localStorage.removeItem('signatureImage');
+      setFullSignature("");
+    }
+  
+    if (initialsImage) {
+      localStorage.setItem('initialsImage', initialsImage);
+      setInitialsSignature(initialsImage);
+    } else {
+      localStorage.removeItem('initialsImage');
+      setInitialsSignature("");
+    }
+  
+    // Call the onConfirm callback if provided
+    onConfirm?.(signatureImage, initialsImage);
+    onClose?.();
+  };
+
+  useEffect(() => {
+    const loadImageData = (canvasRef, imageDataUrl) => {
+      if (imageDataUrl && canvasRef.current) {
+        const image = new Image();
+        image.onload = () => {
+          const canvas = canvasRef.current.getCanvas();
+          const ctx = canvas.getContext('2d');
+          const x = (canvas.width - image.width) / 2;
+          const y = (canvas.height - image.height) / 2;
+
+          ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas first
+          ctx.drawImage(image, x, y); // Draw the image centered
+        };
+        image.src = imageDataUrl;
+      }
+    };
+
+    const storedSignatureImage = localStorage.getItem('signatureImage');
+    const storedInitialsImage = localStorage.getItem('initialsImage');
+
+    loadImageData(signatureRef, storedSignatureImage);
+    loadImageData(initialRef, storedInitialsImage);
+  }, []);
+
+  const onClearInitials = () => {
+    initialRef.current?.clear();
+    // localStorage.removeItem('initialsImage');
+    // setInitialsSignature("");
+  }
+
+  const onClearFullSignature = () => {
+    signatureRef.current?.clear();
+    //localStorage.removeItem('signatureImage');
+    //setFullSignature("");
+  }
+
+  const changeColor = (color) => {
+    setPenColor(color);
+    onClearInitials();
+    onClearFullSignature();
+  };
 
   return (
     <div css={overlayStyle}>
@@ -63,7 +141,7 @@ export const SignatureModal = ({ onConfirm, message, onClose }) => {
         <div style={{display: "flex", flexFlow: "wrap"}}>
           <div style={{marginRight: 8, background: "#efefef", border: "1px solid #d3d3d3", width: 400, borderRadius: "4px"}}>
             <div style={{cursor: "crosshair"}}>
-              <SignatureCanvas ref={signatureRef} penColor='green'
+              <SignatureCanvas ref={signatureRef} penColor={penColor}
                 canvasProps={{width: 400, height: 160, className: 'sigCanvas'}} />
             </div>
             <div style={{
@@ -79,12 +157,12 @@ export const SignatureModal = ({ onConfirm, message, onClose }) => {
               }}>Draw signature</div>
               <div style={{
                 cursor: "pointer",
-                color: "#3083c8", fontSize: "14px"}} onClick={() => signatureRef.current?.clear()}>Clear</div>
+                color: "#3083c8", fontSize: "14px"}} onClick={onClearFullSignature}>Clear</div>
             </div>
           </div>
           <div style={{background: "#efefef", border: "1px solid #d3d3d3", width: 280, borderRadius: "4px"}}>
             <div style={{cursor: "crosshair"}}>
-              <SignatureCanvas ref={initialRef} penColor='green'
+              <SignatureCanvas ref={initialRef} penColor={penColor}
                 canvasProps={{width: 280, height: 160, className: 'sigCanvas'}} />
             </div>
             <div style={{
@@ -100,13 +178,20 @@ export const SignatureModal = ({ onConfirm, message, onClose }) => {
               }}>Draw initials</div>
               <div style={{
                 cursor: "pointer",
-                color: "#3083c8", fontSize: "14px"}} onClick={() => initialRef.current?.clear()}>Clear</div>
+                color: "#3083c8", fontSize: "14px"}} onClick={onClearInitials}>Clear</div>
             </div>
           </div>
         </div>
+        <div style={{ marginBottom: '8px', marginTop: '8px' }}>
+          {/* Color selection buttons */}
+          <ColorButton color="black" onChangeColor={changeColor} />
+          <ColorButton color="red" onChangeColor={changeColor} />
+          <ColorButton color="blue" onChangeColor={changeColor} />
+          <ColorButton color="green" onChangeColor={changeColor} />
+        </div>
         <button css={confirmBtnStyle} variant="primary" size="sm" onClick={() => {
           // Handle confirm action here
-          onConfirm?.();
+          handleSaveSignature();
           onClose?.();
         }}>
           Confirm

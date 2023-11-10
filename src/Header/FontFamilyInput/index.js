@@ -33,12 +33,12 @@ function generateNumbers() {
 
 const inputStyles = css`
   font-size: 16px;
-  height: 12px;
+  height: 32px;
   border: none;
   font-weight: 600;
   color: #5b5b5b;
   background: transparent;
-  width: 28px;
+  width: 72px;
   text-align: right; // This line was added
   &:focus {
     outline: none;
@@ -125,12 +125,12 @@ const FontFamilyInput = ({
 	return (
 		<div css={wrapper}>
 			<div css={innerWrapper}>
-				<input value={fontFamilyValue.label} css={inputStyles} ref={fontSizeTextRef} onChange={onChangeFontSizeByText} type="text" />
 				<Dropdown
 					width={100}
 					marginTop={28}
 					title={
 						<div css={dropdownTitle}>
+              <input disabled value={fontFamilyValue.label} css={inputStyles} ref={fontSizeTextRef} onChange={onChangeFontSizeByText} type="text" />
 							<Icon size="sm" src={ChevronDown} alt={t("arrowDown")} />
 						</div>
 					}

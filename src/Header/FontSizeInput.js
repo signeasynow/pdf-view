@@ -35,7 +35,7 @@ function generateNumbers() {
 
 const inputStyles = css`
   font-size: 16px;
-  height: 12px;
+  height: 32px;
   border: none;
   font-weight: 600;
   color: #5b5b5b;
@@ -51,6 +51,7 @@ const wrapper = css`
   display: flex;
   align-items: center;
   font-weight: 600;
+  margin-right: 8px;
 `;
 
 const innerWrapper = css`
@@ -71,10 +72,6 @@ const dropdownTitle = css`
 const percentStyle = css`
   margin-right: 8px;
   color: #5b5b5b;
-`;
-
-const zoomLeft = css`
-  margin-right: 4px;
 `;
 
 const childStyle = css`
@@ -131,12 +128,12 @@ const FontSizeInput = ({
 	return (
 		<div css={wrapper}>
 			<div css={innerWrapper}>
-				<input value={fontSizeValue} css={inputStyles} ref={fontSizeTextRef} onChange={onChangeFontSizeByText} type="text" />
 				<Dropdown
 					width={100}
 					marginTop={28}
 					title={
 						<div css={dropdownTitle}>
+              <input disabled value={fontSizeValue} css={inputStyles} ref={fontSizeTextRef} onChange={onChangeFontSizeByText} type="text" />
 							<div css={percentStyle}>pt</div>
 							<Icon size="sm" src={ChevronDown} alt={t("arrowDown")} />
 						</div>

@@ -5,10 +5,10 @@ import { SketchPicker } from 'react-color';
 import { useState } from 'preact/hooks';
 
 const wrapper = css`
-  padding: 4px;
   cursor: pointer;
-  display: inline-block;
+  display: flex;
   border-radius: 8px;
+  margin-right: 8px;
   position: relative;
   &:hover {
     background-color: #e7e7e7;
@@ -35,15 +35,14 @@ export const ColorWheel = ({
 
   return (
     <div css={wrapper}>
-      <div onClick={togglePicker}>
-        <img
-          style={{ borderRadius: '4px', width: 28, height: 28 }}
-          src={ColorWheelIcon}
-          alt="Color Wheel"
-        />
-      </div>
+      <img
+        onClick={togglePicker}
+        style={{ borderRadius: '4px', width: 32, height: 32 }}
+        src={ColorWheelIcon}
+        alt="Color Wheel"
+      />
       {showPicker && (
-        <div style={{ position: 'absolute', zIndex: 999 }}>
+        <div style={{ position: 'absolute', zIndex: 99999, top: 40 }}>
           <div
             style={{
               position: 'fixed',
