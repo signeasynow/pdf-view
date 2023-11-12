@@ -42,6 +42,8 @@ import useListenForSearchbarRequest from './hooks/useListenForSearchbarRequest';
 import * as pdfjs from 'pdfjs-dist';
 import { useAnnotations } from './hooks/useAnnotations';
 import { AnnotationEditorParamsType } from 'pdfjs-dist/build/pdf';
+import { FilesContext } from './Contexts/FilesContext';
+import { UndoRedoContext } from './Contexts/UndoRedoContext';
 
 async function splitPdfPages(pdfBytes, splitIndices) {
   const originalPdfDoc = await PDFDocument.load(pdfBytes);
@@ -387,7 +389,7 @@ const App = () => {
 	const [modifiedFiles, setModifiedFiles] = useState([]);
 
 	const [inputtedLicenseKey, setInputtedLicenseKey] = useState(null);
-	const [files, setFiles] = useState([]);
+	const {files, setFiles} = useContext(FilesContext)
 
 	const [fileNames, setFileNames] = useState([]);
 	const { triggerDownload: onDownload } = useDownload(files, isSandbox, fileNames);
@@ -403,8 +405,7 @@ const App = () => {
 	
 	const [documentLoading, setDocumentLoading] = useState(true);
 
-	const [operations, setOperations] = useState(initialRedoUndoObject());
-	const [redoStack, setRedoStack] = useState(initialRedoUndoObject());
+	const {operations, setOperations, redoStack, setRedoStack} = useContext(UndoRedoContext)
 
 	const [activeToolbarItem, setActiveToolbarItem] = useState("");
 	const activeToolbarItemRef = useRef(null);
