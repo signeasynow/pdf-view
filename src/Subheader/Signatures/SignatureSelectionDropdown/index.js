@@ -43,8 +43,9 @@ const dropdownTitle = css`
   display: flex;
   align-items: center;
   cursor: pointer;
-  padding-left: 4px;
-  padding-right: 4px;
+  padding-left: 12px;
+  padding-right: 8px;
+  height: 24px;
 `;
 
 const percentStyle = css`

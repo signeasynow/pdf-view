@@ -10,8 +10,11 @@ import HeaderBtn from '../../Header/HeaderBtn';
 import WriteIcon from '../../../assets/write-svgrepo-com.svg';
 import SignatureIcon from '../../../assets/signature-solid-svgrepo-com.svg';
 import TextIcon from '../../../assets/text-svgrepo-com.svg';
+import EditTextIcon from '../../../assets/edit-text-bar-svgrepo-com.svg';
+import SignatureRemoveIcon from '../../../assets/signature-svgrepo-com.svg';
 
 import { SignaturesContext } from '../../Contexts/SignaturesContext';
+import { AnnotationsContext } from '../../Contexts/AnnotationsContext';
 
 const wrapper = css`
   display: flex;
@@ -50,7 +53,8 @@ const zoomOptionStyle = css`
 
 const AnnotationSelectionDropdown = ({
   onClickSignature,
-  onChangeActiveToolbarItem
+  onChangeActiveToolbarItem,
+  annotationMode
 }) => {
 
 	const { t } = useTranslation();
@@ -58,6 +62,15 @@ const AnnotationSelectionDropdown = ({
   const { showSignatureModal } = useModal();
 
   const { fullSignature, initialsSignature } = useContext(SignaturesContext);
+	const { annotations } = useContext(AnnotationsContext);
+
+  const onSelectEditSignature = () => {
+    onChangeActiveToolbarItem({tooltype: "signature"})
+  }
+
+  const onSelectEditText = () => {
+    onChangeActiveToolbarItem({tooltype: "text"})
+  }
 
   const onSelectSignature = () => {
     if (!fullSignature && !initialsSignature) {
@@ -86,6 +99,18 @@ const AnnotationSelectionDropdown = ({
     onChangeActiveToolbarItem({tooltype: "none"})
   }
 
+  const annotationsEnabled = () => {
+    return annotationMode === "freetext" || annotationMode === "signature"
+  }
+
+  const hasSignature = () => {
+    return annotations?.some((ann) => ann.name === "stampEditor")
+  }
+
+  const hasText = () => {
+    return annotations?.some((ann) => ann.name === "freeTextEditor")
+  }
+
 	return (
 		<div css={wrapper}>
 			<div css={innerWrapper}>
@@ -94,14 +119,28 @@ const AnnotationSelectionDropdown = ({
 					marginTop={28}
 					title={
 						<div css={dropdownTitle}>
-              <HeaderBtn offsetX="-20px" title={"Add text"} iconAlt={t("search")} icon={WriteIcon} />
+              <HeaderBtn offsetX="12px" title={"Add text"} iconAlt={t("search")} icon={WriteIcon} />
 							<Icon size="sm" src={ChevronDown} alt={t("arrowDown")} />
 						</div>
 					}
 					child={<div css={childStyle}>
             <div css={zoomOptionStyle} onClick={onSelectSignature}><img height={24} width={24} src={SignatureIcon}/>Add signature</div>
-            <div css={zoomOptionStyle} onClick={onSelectFreeText}><img height={24} width={24} src={TextIcon}/>Edit free text</div>
-            <div css={zoomOptionStyle} onClick={onSelectNone}><img height={24} width={24} src={WriteIcon}/>End edit mode</div>
+            <div css={zoomOptionStyle} onClick={onSelectFreeText}><img height={24} width={24} src={TextIcon}/>Add text</div>
+            {
+              hasSignature() && (
+                <div css={zoomOptionStyle} onClick={onSelectEditSignature}><img height={24} width={24} src={SignatureRemoveIcon}/>Edit signature</div>
+              )
+            }
+            {
+              hasText() && (
+                <div css={zoomOptionStyle} onClick={onSelectEditText}><img height={24} width={24} src={EditTextIcon}/>Edit text</div>
+              )
+            }
+            {
+              annotationsEnabled() && (
+                <div css={zoomOptionStyle} onClick={onSelectNone}><img height={24} width={24} src={WriteIcon}/>End edit mode</div>
+              )
+            }
 					</div>}
 				/>
 			</div>

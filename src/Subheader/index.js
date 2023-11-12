@@ -47,6 +47,7 @@ const Subheader = ({
 	annotationColor,
 	setAnnotationColor,
 	setFontFamilyValue,
+	annotationMode,
 	fontSizeValue,
 	setFontSizeValue,
 	handleChangeActiveToolbarItem,
@@ -102,11 +103,6 @@ const Subheader = ({
 	const onChangeActiveToolbarItem = ({
 		tooltype
 	}) => {
-		if (activeToolbarItem === tooltype) {
-			handleChangeActiveToolbarItem("");
-			onDisableEditorMode();
-			return;
-		}
 		handleChangeActiveToolbarItem(tooltype);
 		switch (tooltype) {
       case 'text':
@@ -125,6 +121,33 @@ const Subheader = ({
 	return (
 		<Wrapper>
 			<div css={contentLeftStyle}>
+			  <div style={{display: "flex", alignItems: "center"}}>
+					<AnnotationSelectionDropdown
+						annotationMode={annotationMode}
+						onClickSignature={onAddImage}
+						onChangeActiveToolbarItem={onChangeActiveToolbarItem}
+					/>
+					<Signatures
+						onClickSignature={onAddImage}
+						onChangeActiveToolbarItem={onChangeActiveToolbarItem}
+						tools={tools}
+						activeToolbarItem={activeToolbarItem}
+					/>
+					<AnnotationTextSettings
+						activeToolbarItem={activeToolbarItem}
+						annotationColor={annotationColor}
+						setAnnotationColor={setAnnotationColor}
+						handleChooseColor={handleChooseColor}
+						fontSizeValue={fontSizeValue}
+						setFontSizeValue={setFontSizeValue}
+						editableAnnotationId={editableAnnotationId}
+						onUpdateFontSize={onUpdateFontSize}
+						pdfViewerRef={pdfViewerRef}
+						fontFamilyValue={fontFamilyValue}
+						setFontFamilyValue={setFontFamilyValue}
+						onUpdateFontFamily={onUpdateFontFamily}
+					/>
+				</div>
 				{
 					showFullScreenThumbnails && (
 						<AccessibleButton
@@ -165,32 +188,6 @@ const Subheader = ({
 					</div>
 				)
 			}
-			<div style={{display: "flex", alignItems: "center"}}>
-				<AnnotationSelectionDropdown
-					onClickSignature={onAddImage}
-					onChangeActiveToolbarItem={onChangeActiveToolbarItem}
-				/>
-			  <Signatures
-					onClickSignature={onAddImage}
-					onChangeActiveToolbarItem={onChangeActiveToolbarItem}
-					tools={tools}
-					activeToolbarItem={activeToolbarItem}
-				/>
-				<AnnotationTextSettings
-					activeToolbarItem={activeToolbarItem}
-					annotationColor={annotationColor}
-					setAnnotationColor={setAnnotationColor}
-					handleChooseColor={handleChooseColor}
-					fontSizeValue={fontSizeValue}
-					setFontSizeValue={setFontSizeValue}
-					editableAnnotationId={editableAnnotationId}
-					onUpdateFontSize={onUpdateFontSize}
-					pdfViewerRef={pdfViewerRef}
-					fontFamilyValue={fontFamilyValue}
-					setFontFamilyValue={setFontFamilyValue}
-					onUpdateFontFamily={onUpdateFontFamily}
-				/>
-			</div>
 			<div css={contentLeftStyle}>
 				<>
 					{

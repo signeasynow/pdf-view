@@ -49,6 +49,7 @@ export const PdfViewer = ({
 	annotations,
 	annotationColor,
 	updateAnnotation,
+	resizeAnnotation,
 	moveAnnotation,
 	setPdfText,
 	activePage,
@@ -179,6 +180,12 @@ export const PdfViewer = ({
 			updateAnnotation(details.current, details.text)
 		});
 
+		eventBus.on('annotationeditorresized', (details) => {
+			console.log(details, 'details annotationeditorresized')
+		  resizeAnnotation(details);
+			// first, need initial width set.
+		});
+
 		eventBus.on('annotationeditormoved', (details) => {
 			console.log(details, 'details r455')
 			moveAnnotation(details);
@@ -251,28 +258,6 @@ export const PdfViewer = ({
 				setPdfText(text);
 				setCurrentAiDocHash(simpleHash(JSON.stringify(text)));
 				
-				console.log(eventBus, 'eventBus', eventBus.on, 'onn', viewerContainerRef1.current)
-				/*
-				const pdfViewerElem = document.getElementById("viewer");
-				console.log(pdfViewerRef.current, 'pdfViewerRef.current')
-				// @ts-ignore
-				annotationEditorUIManagerRef.current = new pdfjs.AnnotationEditorUIManager(
-					viewerContainerRef1.current,
-					pdfViewerElem,
-					// null,
-					eventBus,
-					loadedPdfDocument
-				);
-				console.log("vieweee", pdfViewerElem, eventBus, 'dog', loadedPdfDocument)
-				console.log(annotationEditorUIManagerRef.current, 'cccc3')
-				setTimeout(() => {
-					console.log(pdfjs.AnnotationEditorType.FREETEXT, 'pdfjs.AnnotationEditorType.FREETEXT', annotationEditorUIManagerRef.current, 'comp', loadedPdfDocument.annotationStorage, 'dd')
-					annotationEditorUIManagerRef.current.updateMode(3);
-					// annotationEditorUIManagerRef.current.setEditingState(true);
-				}, 1000)
-				*/
-				// enableFreeTextMode();
-		
 			},
 			reason => {
 				setFileLoadFailError(reason?.message);

@@ -969,7 +969,7 @@ const App = () => {
 		onAddOperation(operation);
 	}
 
-	const {updateAnnotation, moveAnnotation, updateAnnotationParam} = useAnnotations(activeAnnotationRef);
+	const {updateAnnotation, moveAnnotation, updateAnnotationParam, resizeAnnotation} = useAnnotations(activeAnnotationRef);
 	const { annotations, setAnnotations } = useContext(AnnotationsContext);
 	useEffect(() => {
     let allAnnotations = [{
@@ -980,14 +980,13 @@ const App = () => {
       y: 0.1,
       color: "#008000",
       fontSize: 28,
-			fontFamily: "courier"
+			fontFamily: "courier",
+			name: "freeTextEditor"
     }];
     // allAnnotations = [];
-    setAnnotations(allAnnotations)
-    console.log("SETTINGGG")
+    setAnnotations(allAnnotations);
   }, []);
 
-	console.log(annotations, 'old annot')
 	const onRotate = async (clockwise) => {
 		if (!pdfProxyObj) {
 			console.log('No PDF loaded to download');
@@ -1152,12 +1151,15 @@ const App = () => {
 		})
 	}
 
+	const [annotationMode, setAnnotationMode] = useState("none");
+
 	const onEnableFreeTextMode = async () => {
 		pdfViewerRef.current.annotationEditorMode = {
 			isFromKeyboard: false,
 			mode: pdfjs.AnnotationEditorType.FREETEXT,
 			source: null
 		};
+		setAnnotationMode("freetext");
 	}
 
 	const onDisableEditorMode = async () => {
@@ -1166,6 +1168,7 @@ const App = () => {
 			mode: pdfjs.AnnotationEditorType.NONE,
 			source: null
 		};
+		setAnnotationMode("none");
 		// const bufferResult = await pdfProxyObj.getData();
 		// await savePDF(bufferResult, pdfId);
 		// setModifiedFiles(new Date().toISOString());
@@ -1295,7 +1298,7 @@ const App = () => {
 		window.localStorage.setItem("aiDocHash", hash);
 	}
 
-	const onAnnotationFocus = (id, data) => {
+	const onFreeTextAnnotationFocus = (id, data) => {
 		activeAnnotationRef.current = id;
 		setEditableAnnotationId(id);
 		console.log(data, 'data4442')
@@ -1315,6 +1318,27 @@ const App = () => {
 			return;
 		}
 		setFontFamilyValue(map[data.fontFamily])
+	}
+
+	const onSignatureAnnotationFocus = (id, data) => {
+		console.log(id, data, 'id, data')
+		activeAnnotationRef.current = id;
+		setEditableAnnotationId(id);
+		updateAnnotation(data);
+	}
+
+	const onAnnotationFocus = (id, data) => {
+		switch (data.name) {
+			case "freeTextEditor": {
+				onFreeTextAnnotationFocus(id, data);
+				break;
+			}
+			case "stampEditor": {
+				onSignatureAnnotationFocus(id, data);
+				break;
+			}
+		}
+		
 	}
 
 	const onRemoveChatHistory = async () => {
@@ -1373,7 +1397,6 @@ const App = () => {
 	}
 
 	const onAddImage = (localStorageName) => {
-		console.log(AnnotationEditorParamsType.CREATE, 'AnnotationEditorParamsType.CREATE');
 		pdfViewerRef.current.annotationEditorMode = {
 			isFromKeyboard: false,
 			mode: pdfjs.AnnotationEditorType.STAMP,
@@ -1382,9 +1405,11 @@ const App = () => {
 		pdfViewerRef.current.annotationEditorParams = {
 			type: AnnotationEditorParamsType.CREATE,
 			value: {
-				bitmapUrl: localStorage.getItem(localStorageName)
+				bitmapUrl: localStorage.getItem(localStorageName),
+				initialWidth: 0.1
 			}
 		}
+		setAnnotationMode("signature");
 	}
 
 	if (fileLoadFailError) {
@@ -1455,6 +1480,7 @@ const App = () => {
 				{
 					showSubheader() && (
 						<Subheader
+							annotationMode={annotationMode}
 							onAddImage={onAddImage}
 							annotationColor={annotationColor}
 							fontSizeValue={fontSizeValue}
@@ -1535,6 +1561,7 @@ const App = () => {
 							annotationColor={annotationColor}
 							moveAnnotation={moveAnnotation}
 							updateAnnotation={updateAnnotation}
+							resizeAnnotation={resizeAnnotation}
 							annotations={annotations}
 							pdfViewerRef={pdfViewerRef}
 							pdfScriptingManagerRef={pdfScriptingManagerRef}

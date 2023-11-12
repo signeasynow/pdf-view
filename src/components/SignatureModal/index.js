@@ -59,32 +59,26 @@ export const SignatureModal = ({ onConfirm, message, onClose }) => {
   const initialRef = useRef();
   const [penColor, setPenColor] = useState('black'); // Default pen color
 
-  const { setInitialsSignature, setFullSignature } = useContext(SignaturesContext);
+  const { setInitialsSignature, setFullSignature, fullSignature, initialsSignature } = useContext(SignaturesContext);
 
   const handleSaveSignature = () => {
     // Convert canvas to data URL (base64 image) only if the canvas is not empty
     const signatureImage = !signatureRef.current.isEmpty()
       ? signatureRef.current.getTrimmedCanvas().toDataURL('image/png')
-      : null;
+      : fullSignature;
     const initialsImage = !initialRef.current.isEmpty()
       ? initialRef.current.getTrimmedCanvas().toDataURL('image/png')
-      : null;
+      : initialsSignature;
   
     // Only update localStorage and context if there's a new signature/initials
     if (signatureImage) {
       localStorage.setItem('signatureImage', signatureImage);
       setFullSignature(signatureImage);
-    } else {
-      localStorage.removeItem('signatureImage');
-      setFullSignature("");
     }
   
     if (initialsImage) {
       localStorage.setItem('initialsImage', initialsImage);
       setInitialsSignature(initialsImage);
-    } else {
-      localStorage.removeItem('initialsImage');
-      setInitialsSignature("");
     }
   
     // Call the onConfirm callback if provided
