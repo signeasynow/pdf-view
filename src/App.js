@@ -44,6 +44,7 @@ import { useAnnotations } from './hooks/useAnnotations';
 import { AnnotationEditorParamsType } from 'pdfjs-dist/build/pdf';
 import { FilesContext } from './Contexts/FilesContext';
 import { UndoRedoContext } from './Contexts/UndoRedoContext';
+import { ActivePageContext } from './Contexts/ActivePageContext';
 
 async function splitPdfPages(pdfBytes, splitIndices) {
   const originalPdfDoc = await PDFDocument.load(pdfBytes);
@@ -232,7 +233,7 @@ const failWrap = css`
 
 const App = () => {
 
-	const [activePageIndex, setActivePageIndex] = useState(0);
+	const {activePageIndex, setActivePageIndex} = useContext(ActivePageContext)
 	const [matchesCount, setMatchesCount] = useState(0);
 
 	const pdfId = `pdfId${activePageIndex}`;
@@ -405,7 +406,7 @@ const App = () => {
 	
 	const [documentLoading, setDocumentLoading] = useState(true);
 
-	const {operations, setOperations, redoStack, setRedoStack} = useContext(UndoRedoContext)
+	const {operations, setOperations, redoStack, setRedoStack, addOperation} = useContext(UndoRedoContext)
 
 	const [activeToolbarItem, setActiveToolbarItem] = useState("");
 	const activeToolbarItemRef = useRef(null);
@@ -802,13 +803,6 @@ const App = () => {
 		return (!!tools?.editing?.length || tools?.general?.includes("thumbnails")) && !showFullScreenSearch()
 	}
 
-	const onAddOperation = (operation) => {
-		setOperations({
-			...operations,
-			[activePageIndex]: [...operations[activePageIndex], operation]
-		});
-		setRedoStack(initialRedoUndoObject());
-	}
 
 	const undoLastAction = async () => {
 		if (operations[activePageIndex]?.length === 0) return;
@@ -967,7 +961,7 @@ const App = () => {
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
 	
-		onAddOperation(operation);
+		addOperation(operation);
 	}
 
 	const {updateAnnotation, moveAnnotation, updateAnnotationParam, resizeAnnotation} = useAnnotations(activeAnnotationRef);
@@ -1005,7 +999,7 @@ const App = () => {
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
 	
-		onAddOperation(operation);
+		addOperation(operation);
 	}
 
 	const onRotateThumbnail = async (clockwise, pageNum) => {
@@ -1023,7 +1017,7 @@ const App = () => {
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
 	
-		onAddOperation(operation);
+		addOperation(operation);
 	}
 
 	const canDelete = () => {
@@ -1070,7 +1064,7 @@ const App = () => {
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
 
-		onAddOperation(operation);
+		addOperation(operation);
 	};
 
 	useListenForExtractPagesRequest((v) => {
@@ -1096,7 +1090,7 @@ const App = () => {
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
 	
-		onAddOperation(operation);
+		addOperation(operation);
 	}
 
 	const onExtractThumbnail = async (page) => {
@@ -1120,7 +1114,7 @@ const App = () => {
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
 
-		onAddOperation(operation);
+		addOperation(operation);
 	}
 
 	const onDeleteThumbnail = async (page) => {
@@ -1139,7 +1133,7 @@ const App = () => {
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
 	
-		onAddOperation(operation);
+		addOperation(operation);
 	}
 
 	const handleChooseColor = (color) => {
@@ -1231,7 +1225,7 @@ const App = () => {
 		setModifiedFiles(newModifiedPayload);
 		
 		// Update undo and redo stacks
-		onAddOperation(operation);
+		addOperation(operation);
 	}
 
 	const [splitMarkers, setSplitMarkers] = useState([]);

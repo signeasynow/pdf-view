@@ -8,20 +8,23 @@ import ModalProvider from './Contexts/ModalProvider';
 import { SignaturesProvider } from './Contexts/SignaturesContext';
 import { FilesProvider } from './Contexts/FilesContext';
 import { UndoRedoProvider } from './Contexts/UndoRedoContext';
+import { ActivePageProvider } from './Contexts/ActivePageContext';
 
 const AppRoot = () => {
 	return (
     <I18nextProvider i18n={i18n}>
       <FilesProvider>
-        <UndoRedoProvider>
-          <SignaturesProvider>
-            <AnnotationsProvider>
-              <ModalProvider>
-                <App />
-              </ModalProvider>
-            </AnnotationsProvider>
-          </SignaturesProvider>
-        </UndoRedoProvider>
+        <ActivePageProvider>
+          <UndoRedoProvider>
+            <SignaturesProvider>
+              <AnnotationsProvider>
+                <ModalProvider>
+                  <App />
+                </ModalProvider>
+              </AnnotationsProvider>
+            </SignaturesProvider>
+          </UndoRedoProvider>
+        </ActivePageProvider>
       </FilesProvider>
     </I18nextProvider>
   );

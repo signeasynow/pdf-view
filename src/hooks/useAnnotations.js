@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'preact/hooks';
+import { useContext } from 'preact/hooks';
 import { AnnotationsContext } from '../Contexts/AnnotationsContext';
 
 const debounce = (func, delay) => {
@@ -18,16 +18,10 @@ export const useAnnotations = (activeAnnotationRef) => {
 
   // not used
   const getActiveAnnotation = (id) => {
-    console.log(annotationsRef.current, 'annotationsRef.current2')
     return annotationsRef.current.find((e) => e.id === id);
   }
 
-  useEffect(() => {
-    console.log(annotations, 'anot change')
-  }, [annotations])
-
   const moveAnnotation = (data) => {
-    console.log(data, 'data moveannot')
     if (!data) {
       return;
     }
@@ -79,7 +73,6 @@ export const useAnnotations = (activeAnnotationRef) => {
   }
 
   const updateSignatureAnnotation = (data) => {
-    console.log(data, 'data updateSignatureAnnotation')
     let newData = JSON.parse(JSON.stringify(annotationsRef.current));
     const existingAnnotation = newData.find((e) => e.id === data.id);
     activeAnnotationRef.current = data.id;
@@ -100,12 +93,10 @@ export const useAnnotations = (activeAnnotationRef) => {
         name: "stampEditor"
       },
     ];
-    console.log(newData, 'newData33')
     setAnnotations(newData);
   }
 
   const throttledUpdateAnnotation = debounce((data, text) => {
-    console.log(data, 'data man22')
     if (!data) {
       return;
     }
@@ -135,12 +126,10 @@ export const useAnnotations = (activeAnnotationRef) => {
     newData = newData.map(annotation => 
       annotation.id === id ? { ...annotation, ...updatedParams } : annotation
     );
-    console.log(newData, 'newData432')
     setAnnotations(newData);
   };
 
   const throttledResizeAnnotation = debounce((data) => {
-    console.log(data, 'data man22res')
     updateAnnotationParam(data.id, {
       width: data.width,
       height: data.height,
