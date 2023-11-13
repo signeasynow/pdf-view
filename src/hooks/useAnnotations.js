@@ -44,9 +44,6 @@ export const useAnnotations = (activeAnnotationRef) => {
         content: existingAnnotation.content,
       },
     ];
-    // const operation = { action: "update-annotation", data: newData};
-    // console.log(operation, 'operation33')
-   // addOperation(operation);
     setAnnotations(newData);
     cb(newData);
   }

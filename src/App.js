@@ -407,7 +407,7 @@ const App = () => {
 	const [documentLoading, setDocumentLoading] = useState(true);
 
 	const {operations, setOperations, redoStack, setRedoStack, addOperation} = useContext(UndoRedoContext)
-
+	// console.log(redoStack, 'redoStack', operations)
 	const [activeToolbarItem, setActiveToolbarItem] = useState("");
 	const activeToolbarItemRef = useRef(null);
 
@@ -823,7 +823,7 @@ const App = () => {
 		setModifiedFiles(newModifiedPayload);
 		// Update undo and redo stacks
 		const newUndoStack = operations[activePageIndex]?.slice(0, -1);
-		console.log(newUndoStack, 'newUndoStack', activePageIndex)
+		console.log(newUndoStack, 'setOperationscalled22', activePageIndex)
 		// setRedoStack(prevRedoStack => [...prevRedoStack, lastOperation]);
 		setRedoStack({
 			...redoStack,
@@ -837,7 +837,7 @@ const App = () => {
 	
 	const redoLastAction = async () => {
 		if (redoStack[activePageIndex]?.length === 0) return;
-	
+		console.log(operations, 'operations432')
 		const lastRedoOperation = redoStack[activePageIndex]?.[redoStack[activePageIndex].length - 1];
 		// Start with the original PDF
 		let buffer = await retrievePDF(originalPdfId);
@@ -852,7 +852,7 @@ const App = () => {
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
-	
+		console.log([...operations[activePageIndex], lastRedoOperation], 'setOperationscalled333')
 		// Update undo and redo stacks
 		setOperations({
 			...operations,
@@ -926,7 +926,8 @@ const App = () => {
 	}
 
 	const doUpdateAnnotations = async (data) => {
-		updateAnnotation(data.source);
+		console.log('doUpdateAnnotations')
+		updateAnnotation(data);
 		return await pdfProxyObj.getData();
 	}
 
@@ -1322,10 +1323,18 @@ const App = () => {
 	}
 
 	const onSignatureAnnotationFocus = (id, data) => {
-		console.log(id, data, 'id, data')
+		// console.log(id, data, 'id, data', isManuallyAddingImageRef)
 		activeAnnotationRef.current = id;
 		setEditableAnnotationId(id);
 		updateAnnotation(data);
+		const operation = { action: "update-annotation", data };
+		// we are adding an excessive operation here when it's due to a redo
+		
+		if (isManuallyAddingImageRef.current) {
+			addOperation(operation);
+			isManuallyAddingImageRef.current = false;
+		}
+		// addOperation(operation);
 	}
 
 	const onAnnotationFocus = (id, data) => {
@@ -1397,7 +1406,10 @@ const App = () => {
 		})
 	}
 
+	const isManuallyAddingImageRef = useRef(false);
+
 	const onAddImage = (localStorageName) => {
+		isManuallyAddingImageRef.current = true;
 		pdfViewerRef.current.annotationEditorMode = {
 			isFromKeyboard: false,
 			mode: pdfjs.AnnotationEditorType.STAMP,
@@ -1414,11 +1426,17 @@ const App = () => {
 	}
 
 	const onMoveAnnotation = (data) => {
-		console.log(operations, 'operations532')
-		moveAnnotation(data, (newData) => {
-			const operation = { action: "update-annotation", data: data};
+		console.log(operations, 'operations532', data)
+		moveAnnotation(data, () => {
+			const operation = { action: "update-annotation", data: data.source };
 			addOperation(operation);
 		});
+	}
+
+	const onUpdateAnnotation = (data) => {
+		// console.log(data, 'data643')
+		updateAnnotation(data);
+
 	}
 
 	if (fileLoadFailError) {
@@ -1569,7 +1587,7 @@ const App = () => {
 							onAnnotationFocus={onAnnotationFocus}
 							annotationColor={annotationColor}
 							moveAnnotation={onMoveAnnotation}
-							updateAnnotation={updateAnnotation}
+							updateAnnotation={onUpdateAnnotation}
 							resizeAnnotation={resizeAnnotation}
 							annotations={annotations}
 							pdfViewerRef={pdfViewerRef}
