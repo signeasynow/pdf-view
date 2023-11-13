@@ -945,7 +945,7 @@ const App = () => {
 				return await doRotate(operation.pages, buffer, operation.clockwise);
 			}
 			case "update-annotation": {
-				// return await doUpdateAnnotations(operation.data);
+				return await doUpdateAnnotations(operation.data);
 			}
 		}
 	}

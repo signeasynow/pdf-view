@@ -27,6 +27,8 @@ export const UndoRedoProvider = ({ children }) => {
 	const [operations, setOperations] = useState(initialRedoUndoObject(files));
 	const [redoStack, setRedoStack] = useState(initialRedoUndoObject(files));
 
+  // todo: add effect for files change.
+  
   const addOperation = (operation) => {
 		const activePageOps = operations?.[activePageIndex] || [];
 		setOperations({
