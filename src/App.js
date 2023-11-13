@@ -809,7 +809,7 @@ const App = () => {
 		const lastOperation = operations[activePageIndex]?.[operations[activePageIndex].length - 1];
 		// Start with the original PDF
 		let buffer = await retrievePDF(originalPdfId);
-		setAnnotations([]);
+		// TODO: setAnnotations([]);
 		// Replay all operations except for the last one
 		for (let i = 0; i < operations[activePageIndex]?.length - 1; i++) {
 			const operation = operations[activePageIndex][i];
@@ -823,6 +823,7 @@ const App = () => {
 		setModifiedFiles(newModifiedPayload);
 		// Update undo and redo stacks
 		const newUndoStack = operations[activePageIndex]?.slice(0, -1);
+		console.log(newUndoStack, 'newUndoStack', activePageIndex)
 		// setRedoStack(prevRedoStack => [...prevRedoStack, lastOperation]);
 		setRedoStack({
 			...redoStack,
@@ -926,9 +927,13 @@ const App = () => {
 
 	const doUpdateAnnotations = (data) => {
 		updateAnnotation(data.source);
+		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
+		newModifiedPayload[activePageIndex] = new Date().toISOString();
+		setModifiedFiles(newModifiedPayload);
 	}
 
 	const applyOperation = async (operation, buffer) => {
+		console.log(operation, 'operation22')
 		switch (operation.action) {
 			case "delete": {
 				return await doDelete(operation.pages, buffer);
@@ -940,7 +945,7 @@ const App = () => {
 				return await doRotate(operation.pages, buffer, operation.clockwise);
 			}
 			case "update-annotation": {
-				return await doUpdateAnnotations(operation.data);
+				// return await doUpdateAnnotations(operation.data);
 			}
 		}
 	}
@@ -1414,7 +1419,7 @@ const App = () => {
 		console.log(operations, 'operations532')
 		moveAnnotation(data, (newData) => {
 			const operation = { action: "update-annotation", data: data};
-			addOperation(operation);	
+			addOperation(operation);
 		});
 	}
 
