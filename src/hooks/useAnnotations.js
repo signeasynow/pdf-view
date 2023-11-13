@@ -1,5 +1,6 @@
 import { useContext } from 'preact/hooks';
 import { AnnotationsContext } from '../Contexts/AnnotationsContext';
+import { UndoRedoContext } from '../Contexts/UndoRedoContext';
 
 const debounce = (func, delay) => {
   let timerId;
@@ -15,13 +16,13 @@ const debounce = (func, delay) => {
 
 export const useAnnotations = (activeAnnotationRef) => {
   const { annotations, setAnnotations, annotationsRef } = useContext(AnnotationsContext);
-
+  const { addOperation } = useContext(UndoRedoContext);
   // not used
   const getActiveAnnotation = (id) => {
     return annotationsRef.current.find((e) => e.id === id);
   }
 
-  const moveAnnotation = (data) => {
+  const moveAnnotation = (data, cb) => {
     if (!data) {
       return;
     }
@@ -43,8 +44,11 @@ export const useAnnotations = (activeAnnotationRef) => {
         content: existingAnnotation.content,
       },
     ];
-
+    // const operation = { action: "update-annotation", data: newData};
+    // console.log(operation, 'operation33')
+   // addOperation(operation);
     setAnnotations(newData);
+    cb(newData);
   }
 
   const updateFreeTextAnnotation = (data, text) => {

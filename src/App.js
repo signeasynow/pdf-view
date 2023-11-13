@@ -809,7 +809,7 @@ const App = () => {
 		const lastOperation = operations[activePageIndex]?.[operations[activePageIndex].length - 1];
 		// Start with the original PDF
 		let buffer = await retrievePDF(originalPdfId);
-	
+		setAnnotations([]);
 		// Replay all operations except for the last one
 		for (let i = 0; i < operations[activePageIndex]?.length - 1; i++) {
 			const operation = operations[activePageIndex][i];
@@ -874,10 +874,6 @@ const App = () => {
 		setDocumentLoading(true);
 	}, [activePageIndex]);
 
-	const appliedSandox = useRef(false);
-
-	const [watermarkQueue, setWatermarkQueue] = useState(false);
-  const appliedSandbox = useRef(false);
 	const [aiDocHash, setAiDocHash] = useState(localStorage.getItem("aiDocHash") || "");
 	const [currentAiDocHash, setCurrentAiDocHash] = useState("");
 	async function addWatermark(pdfBytes) {
@@ -928,6 +924,10 @@ const App = () => {
 		return;
 	}
 
+	const doUpdateAnnotations = (data) => {
+		updateAnnotation(data.source);
+	}
+
 	const applyOperation = async (operation, buffer) => {
 		switch (operation.action) {
 			case "delete": {
@@ -938,6 +938,9 @@ const App = () => {
 			}
 			case "rotate": {
 				return await doRotate(operation.pages, buffer, operation.clockwise);
+			}
+			case "update-annotation": {
+				return await doUpdateAnnotations(operation.data);
 			}
 		}
 	}
@@ -1407,6 +1410,14 @@ const App = () => {
 		setAnnotationMode("signature");
 	}
 
+	const onMoveAnnotation = (data) => {
+		console.log(operations, 'operations532')
+		moveAnnotation(data, (newData) => {
+			const operation = { action: "update-annotation", data: data};
+			addOperation(operation);	
+		});
+	}
+
 	if (fileLoadFailError) {
 		return (
 			<div css={failWrap}>
@@ -1554,7 +1565,7 @@ const App = () => {
 							activeToolbarItemRef={activeToolbarItemRef}
 							onAnnotationFocus={onAnnotationFocus}
 							annotationColor={annotationColor}
-							moveAnnotation={moveAnnotation}
+							moveAnnotation={onMoveAnnotation}
 							updateAnnotation={updateAnnotation}
 							resizeAnnotation={resizeAnnotation}
 							annotations={annotations}

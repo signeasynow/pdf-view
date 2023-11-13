@@ -4,6 +4,9 @@ import { FilesContext } from "./FilesContext";
 import { ActivePageContext } from "./ActivePageContext";
 
 const initialRedoUndoObject = (files) => {
+  if (!files) {
+    return {};
+  }
   const result = {};
   for (let i = 0; i < files.length; i ++) {
     result[i] = [];
@@ -12,9 +15,10 @@ const initialRedoUndoObject = (files) => {
 };
 
 export const UndoRedoContext = createContext({
-  annotations: [],
-  setAnnotations: () => {},
-  annotationsRef: { current: [] },
+  operations: {},
+  redoStack: {},
+  setOperations: () => {},
+  setRedoStack: () => {},
 });
 
 export const UndoRedoProvider = ({ children }) => {
@@ -23,11 +27,13 @@ export const UndoRedoProvider = ({ children }) => {
   
 	const [operations, setOperations] = useState(initialRedoUndoObject(files));
 	const [redoStack, setRedoStack] = useState(initialRedoUndoObject(files));
-
+  console.log(operations, 'operations99')
   const addOperation = (operation) => {
+    console.log(operation, 'opera3', operations, 'act', activePageIndex);
+    const activePageOps = operations?.[activePageIndex] || [];
 		setOperations({
 			...operations,
-			[activePageIndex]: [...operations[activePageIndex], operation]
+			[activePageIndex]: [...activePageOps, operation]
 		});
 		setRedoStack(initialRedoUndoObject());
 	}
