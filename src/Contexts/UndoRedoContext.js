@@ -5,6 +5,9 @@ import { ActivePageContext } from "./ActivePageContext";
 
 const initialRedoUndoObject = (files) => {
   const result = {};
+  if (!files?.length) {
+    return {[0]: []};
+  }
   for (let i = 0; i < files.length; i ++) {
     result[i] = [];
   }
