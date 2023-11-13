@@ -926,11 +926,7 @@ const App = () => {
 	}
 
 	const doUpdateAnnotations = async (data) => {
-		console.log(data, 'data 3332')
 		updateAnnotation(data.source);
-		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
-		newModifiedPayload[activePageIndex] = new Date().toISOString();
-		setModifiedFiles(newModifiedPayload);
 		return await pdfProxyObj.getData();
 	}
 
