@@ -960,7 +960,7 @@ const App = () => {
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
-	
+		console.log("test")
 		addOperation(operation);
 	}
 
