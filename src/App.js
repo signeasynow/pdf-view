@@ -809,7 +809,7 @@ const App = () => {
 		const lastOperation = operations[activePageIndex]?.[operations[activePageIndex].length - 1];
 		// Start with the original PDF
 		let buffer = await retrievePDF(originalPdfId);
-		// TODO: setAnnotations([]);
+		setAnnotations([]);
 		// Replay all operations except for the last one
 		for (let i = 0; i < operations[activePageIndex]?.length - 1; i++) {
 			const operation = operations[activePageIndex][i];
