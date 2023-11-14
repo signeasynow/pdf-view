@@ -413,8 +413,8 @@ const App = () => {
 
 	useEffect(() => {
 		activeToolbarItemRef.current = activeToolbarItem;
-	}, [activeToolbarItem])
-	console.log(activeToolbarItem, 'activeToolbarItem11')
+	}, [activeToolbarItem]);
+
 	useEffect(() => {
 		try {
 			setOperations(initialRedoUndoObject());
@@ -823,7 +823,6 @@ const App = () => {
 		setModifiedFiles(newModifiedPayload);
 		// Update undo and redo stacks
 		const newUndoStack = operations[activePageIndex]?.slice(0, -1);
-		console.log(newUndoStack, 'setOperationscalled22', activePageIndex)
 		// setRedoStack(prevRedoStack => [...prevRedoStack, lastOperation]);
 		setRedoStack({
 			...redoStack,
@@ -837,7 +836,6 @@ const App = () => {
 	
 	const redoLastAction = async () => {
 		if (redoStack[activePageIndex]?.length === 0) return;
-		console.log(operations, 'operations432')
 		const lastRedoOperation = redoStack[activePageIndex]?.[redoStack[activePageIndex].length - 1];
 		// Start with the original PDF
 		let buffer = await retrievePDF(originalPdfId);
@@ -852,7 +850,6 @@ const App = () => {
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
-		console.log([...operations[activePageIndex], lastRedoOperation], 'setOperationscalled333')
 		// Update undo and redo stacks
 		setOperations({
 			...operations,
@@ -926,7 +923,6 @@ const App = () => {
 	}
 
 	const doUpdateAnnotations = async (data) => {
-		console.log('doUpdateAnnotations')
 		updateAnnotation(data);
 		return await pdfProxyObj.getData();
 	}
@@ -938,7 +934,6 @@ const App = () => {
 	}
 
 	const applyOperation = async (operation, buffer) => {
-		console.log(operation, 'operation22')
 		switch (operation.action) {
 			case "delete": {
 				return await doDelete(operation.pages, buffer);
@@ -1312,7 +1307,6 @@ const App = () => {
 	const onFreeTextAnnotationFocus = (id, data) => {
 		activeAnnotationRef.current = id;
 		setEditableAnnotationId(id);
-		console.log(data, 'data4442')
 		setFontSizeValue(data.fontSize)
 		const map = {
 			courier: {
@@ -1336,7 +1330,6 @@ const App = () => {
 		activeAnnotationRef.current = id;
 		setEditableAnnotationId(id);
 		updateAnnotation(data);
-		console.log(data, 'data33', data.pageIndex, 'ff', data.height, 'ee', data.width)
 		const payload = {
 			height: data.height,
 			width: data.width,
@@ -1450,7 +1443,6 @@ const App = () => {
 	}
 
 	const onMoveAnnotation = (data) => {
-		console.log(operations, 'operations532', data)
 		moveAnnotation(data, () => {
 			const payload = {
 				// ...data.source,
@@ -1474,7 +1466,6 @@ const App = () => {
 				}
 			}
 			const operation = { action: "move-annotation", data: payload };
-			console.log("adding operation33")
 			addOperation(operation);
 		});
 	}

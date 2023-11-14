@@ -38,12 +38,10 @@ export const UndoRedoProvider = ({ children }) => {
     redoStackRef.current = redoStack;
   }, [redoStack]);
 
-  console.log(operations, 'operai3', redoStack)
   // todo: add effect for files change.
   
   const addOperation = (operation) => {
 		const activePageOps = operationsRef.current?.[activePageIndex] || [];
-    console.log("setOperationscalled594", [...activePageOps, operation]);
     // console.log(`activepageops`)
 		setOperations({
 			...operations,
