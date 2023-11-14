@@ -27,12 +27,23 @@ export const UndoRedoProvider = ({ children }) => {
 	const [operations, setOperations] = useState(initialRedoUndoObject(files));
 	const [redoStack, setRedoStack] = useState(initialRedoUndoObject(files));
 
+  const operationsRef = useRef(operations);
+  const redoStackRef = useRef(redoStack);
+
+  useEffect(() => {
+    operationsRef.current = operations;
+  }, [operations]);
+
+  useEffect(() => {
+    redoStackRef.current = redoStack;
+  }, [redoStack]);
+
   console.log(operations, 'operai3', redoStack)
   // todo: add effect for files change.
   
   const addOperation = (operation) => {
-		const activePageOps = operations?.[activePageIndex] || [];
-    console.log("setOperationscalled594");
+		const activePageOps = operationsRef.current?.[activePageIndex] || [];
+    console.log("setOperationscalled594", [...activePageOps, operation]);
     // console.log(`activepageops`)
 		setOperations({
 			...operations,

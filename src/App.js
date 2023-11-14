@@ -931,6 +931,12 @@ const App = () => {
 		return await pdfProxyObj.getData();
 	}
 
+	const doMoveAnnotations = async (data) => {
+		moveAnnotation(data, () => {});
+		return await pdfProxyObj.getData();
+
+	}
+
 	const applyOperation = async (operation, buffer) => {
 		console.log(operation, 'operation22')
 		switch (operation.action) {
@@ -945,6 +951,9 @@ const App = () => {
 			}
 			case "update-annotation": {
 				return await doUpdateAnnotations(operation.data);
+			}
+			case "move-annotation": {
+				return await doMoveAnnotations(operation.data);
 			}
 		}
 	}
@@ -1327,7 +1336,22 @@ const App = () => {
 		activeAnnotationRef.current = id;
 		setEditableAnnotationId(id);
 		updateAnnotation(data);
-		const operation = { action: "update-annotation", data };
+		console.log(data, 'data33', data.pageIndex, 'ff', data.height, 'ee', data.width)
+		const payload = {
+			height: data.height,
+			width: data.width,
+			id: data.id,
+			pageIndex: data.pageIndex,
+			pageNumber: data.pageIndex + 1,
+			x: data.x,
+			y: data.y,
+			urlPath: data.urlPath,
+			name: data.name,
+			content: data.content,
+			color: data.color,
+			fontSize: data.fontSize
+		}
+		const operation = { action: "update-annotation", data: payload };
 		// we are adding an excessive operation here when it's due to a redo
 		
 		if (isManuallyAddingImageRef.current) {
@@ -1428,7 +1452,29 @@ const App = () => {
 	const onMoveAnnotation = (data) => {
 		console.log(operations, 'operations532', data)
 		moveAnnotation(data, () => {
-			const operation = { action: "update-annotation", data: data.source };
+			const payload = {
+				// ...data.source,
+				height: data.source.height,
+				width: data.source.width,
+				id: data.source.id,
+				pageIndex: data.source.pageIndex,
+				pageNumber: data.source.pageIndex + 1,
+				x: data.source.x,
+				y: data.source.y,
+				urlPath: data.source.urlPath,
+				name: data.source.name,
+				content: data.source.content,
+				color: data.source.color,
+				fontSize: data.source.fontSize,
+				source: {
+					pageIndex: data.source.pageIndex
+					// TODO Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'pageIndex')
+//      pageNumber: data.source.pageIndex + 1,
+
+				}
+			}
+			const operation = { action: "move-annotation", data: payload };
+			console.log("adding operation33")
 			addOperation(operation);
 		});
 	}
