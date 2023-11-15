@@ -3,6 +3,7 @@ import fetchBuffers from '../utils/fetchBuffers';
 import { useContext } from 'preact/hooks';
 import { AnnotationsContext } from '../Contexts/AnnotationsContext';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
+import { PixelsPerInch } from 'pdfjs-dist';
 
 const parseColor = (colorStr) => {
 	const red = parseInt(colorStr.substr(1, 2), 16) / 255;
@@ -45,11 +46,14 @@ const modifyPdfBuffer = async (buffer, annotations) => {
 					case 'freeTextEditor':
 							const font = await pdfDoc.embedFont(StandardFonts.Courier);
 							const color = parseColor(annotation.color);
-							console.log(page.getWidth(), 'pagewidth2')
+							console.log(page.getWidth(), 'pagewidth2', PixelsPerInch.PDF)
 							const textHeight = annotation.fontSize; // Approximate text height
+							const dpi = 66;
+							const pointsPerInch = PixelsPerInch.PDF;
+							const fontSizeInPoints = (annotation.fontSize / dpi) * pointsPerInch;
 							page.drawText(annotation.content, {
 								x: annotation.x * page.getWidth(),
-								y: (1 - annotation.y) * page.getHeight() - textHeight,
+								y: (1 - annotation.y) * page.getHeight() - fontSizeInPoints,
 								size: annotation.fontSize,
 								font: font,
 								color: rgb(color.red, color.green, color.blue),
