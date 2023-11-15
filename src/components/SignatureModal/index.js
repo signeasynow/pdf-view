@@ -62,6 +62,26 @@ export const SignatureModal = ({ onConfirm, message, onClose }) => {
   const { setInitialsSignature, setFullSignature, fullSignature, initialsSignature } = useContext(SignaturesContext);
 
   const handleSaveSignature = () => {
+
+    const createHighResImage = (canvasRef) => {
+      if (canvasRef.current && !canvasRef.current.isEmpty()) {
+        const originalCanvas = canvasRef.current.getCanvas();
+        const ratio = window.devicePixelRatio || 1;
+  
+        // Create a temporary canvas with higher resolution
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = originalCanvas.width * ratio;
+        tempCanvas.height = originalCanvas.height * ratio;
+  
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCtx.scale(ratio, ratio);
+        tempCtx.drawImage(originalCanvas, 0, 0);
+  
+        // Convert high-resolution canvas to data URL
+        return tempCanvas.toDataURL('image/png');
+      }
+      return null;
+    };
     // Convert canvas to data URL (base64 image) only if the canvas is not empty
     const signatureImage = !signatureRef.current.isEmpty()
       ? signatureRef.current.getTrimmedCanvas().toDataURL('image/png')

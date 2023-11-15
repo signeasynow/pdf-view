@@ -48,6 +48,15 @@ export const useAnnotations = (activeAnnotationRef) => {
     cb(newData);
   }
 
+  const removeAnnotation = (id) => {
+    if (!id) {
+      return;
+    }
+    let newData = JSON.parse(JSON.stringify(annotationsRef.current));
+    newData = newData.filter((e) => e.id !== id);
+    setAnnotations(newData);
+  }
+
   const updateFreeTextAnnotation = (data, text) => {
     let newData = JSON.parse(JSON.stringify(annotationsRef.current));
     const existingAnnotation = newData.find((e) => e.id === data.id);
@@ -144,6 +153,7 @@ export const useAnnotations = (activeAnnotationRef) => {
     annotations,
     updateAnnotation: throttledUpdateAnnotation,
     moveAnnotation,
+    removeAnnotation,
     updateAnnotationParam,
     getActiveAnnotation,
     resizeAnnotation: throttledResizeAnnotation

@@ -51,6 +51,7 @@ export const PdfViewer = ({
 	updateAnnotation,
 	resizeAnnotation,
 	moveAnnotation,
+	removeAnnotation,
 	setPdfText,
 	activePage,
 	modifiedFiles,
@@ -189,6 +190,11 @@ export const PdfViewer = ({
 		eventBus.on('annotationeditormoved', (details) => {
 			console.log(details, 'details r455')
 			moveAnnotation(details);
+		});
+
+		eventBus.on('annotationremoved', (details) => {
+			console.log(details, 'details r422')
+			removeAnnotation(details.details);
 		});
 
 		eventBus.on('updatefindmatchescount', ({ matchesCount }) => {

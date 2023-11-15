@@ -930,7 +930,11 @@ const App = () => {
 	const doMoveAnnotations = async (data) => {
 		moveAnnotation(data, () => {});
 		return await pdfProxyObj.getData();
+	}
 
+	const doRemoveAnnotations = async (data) => {
+		removeAnnotation(data);
+		return await pdfProxyObj.getData();
 	}
 
 	const applyOperation = async (operation, buffer) => {
@@ -949,6 +953,9 @@ const App = () => {
 			}
 			case "move-annotation": {
 				return await doMoveAnnotations(operation.data);
+			}
+			case "remove-annotation": {
+				return await doRemoveAnnotations(operation.data);
 			}
 		}
 	}
@@ -975,7 +982,7 @@ const App = () => {
 		addOperation(operation);
 	}
 
-	const {updateAnnotation, moveAnnotation, updateAnnotationParam, resizeAnnotation} = useAnnotations(activeAnnotationRef);
+	const {updateAnnotation, moveAnnotation, updateAnnotationParam, resizeAnnotation, removeAnnotation} = useAnnotations(activeAnnotationRef);
 	const { annotations, setAnnotations } = useContext(AnnotationsContext);
 	useEffect(() => {
     let allAnnotations = [{
@@ -1470,6 +1477,14 @@ const App = () => {
 		});
 	}
 
+	const onRemoveAnnotation = (data) => {
+		console.log(data, 'data here3')
+		removeAnnotation(data);
+		const operation = { action: "remove-annotation", data };
+		addOperation(operation);
+
+	}
+
 	const onUpdateAnnotation = (data) => {
 		// console.log(data, 'data643')
 		updateAnnotation(data);
@@ -1624,6 +1639,7 @@ const App = () => {
 							onAnnotationFocus={onAnnotationFocus}
 							annotationColor={annotationColor}
 							moveAnnotation={onMoveAnnotation}
+							removeAnnotation={onRemoveAnnotation}
 							updateAnnotation={onUpdateAnnotation}
 							resizeAnnotation={resizeAnnotation}
 							annotations={annotations}
