@@ -1,5 +1,15 @@
 import JSZip from 'jszip';
 import fetchBuffers from '../utils/fetchBuffers';
+import { useContext } from 'preact/hooks';
+import { AnnotationsContext } from '../Contexts/AnnotationsContext';
+import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
+
+const parseColor = (colorStr) => {
+	const red = parseInt(colorStr.substr(1, 2), 16) / 255;
+	const green = parseInt(colorStr.substr(3, 2), 16) / 255;
+	const blue = parseInt(colorStr.substr(5, 2), 16) / 255;
+	return { red, green, blue };
+};
 
 const downloadAll = async (pdfBuffers) => {
   // Initialize JSZip instance
@@ -24,31 +34,80 @@ const downloadAll = async (pdfBuffers) => {
   URL.revokeObjectURL(url);
 };
 
-function useDownload(files, isSandbox, fileNames) {
-	const triggerDownload = async () => {
-		if (isSandbox) {
-			// return alert("Download is not enabled in Sandbox mode.");
-		}
-    const successfulBuffers = await fetchBuffers(files.slice(0, fileNames.length));
-		if (!successfulBuffers.length) {
-			return alert("Nothing to download.");
-		}
-		if (successfulBuffers.length === 1) {
-			try {
-				const blob = new Blob([successfulBuffers[0]], { type: 'application/pdf' });
-				const url = URL.createObjectURL(blob);
-				const link = document.createElement('a');
-				link.href = url;
-				link.download = fileNames[0];
-				link.click();
-			} catch (error) {
-				console.error('Error modifying PDF:', error);
+const modifyPdfBuffer = async (buffer, annotations) => {
+	const pdfDoc = await PDFDocument.load(buffer);
+
+	// Apply annotations
+	for (const annotation of annotations) {
+			const page = pdfDoc.getPage(annotation.pageNumber - 1);
+
+			switch (annotation.name) {
+					case 'freeTextEditor':
+							const font = await pdfDoc.embedFont(StandardFonts.Courier);
+							const color = parseColor(annotation.color);
+							console.log(page.getWidth(), 'pagewidth2')
+							const textHeight = annotation.fontSize; // Approximate text height
+							page.drawText(annotation.content, {
+								x: annotation.x * page.getWidth(),
+								y: (1 - annotation.y) * page.getHeight() - textHeight,
+								size: annotation.fontSize,
+								font: font,
+								color: rgb(color.red, color.green, color.blue),
+							});
+							break;
+					case 'stampEditor':
+							// Example for stamp annotation
+							const jpgImage = await pdfDoc.embedJpg(annotation.urlPath);
+							page.drawImage(jpgImage, {
+									x: annotation.x * page.getWidth(),
+									y: (1 - annotation.y) * page.getHeight(),
+									width: annotation.width * page.getWidth(),
+									height: annotation.height * page.getHeight(),
+							});
+							break;
+					// Add cases for other annotation types
 			}
-			return;
-		}
-		downloadAll(successfulBuffers);
-		
-  }
+	}
+
+	// Return modified PDF buffer
+	return await pdfDoc.save();
+};
+
+function useDownload(files, isSandbox, fileNames) {
+
+	const { annotations } = useContext(AnnotationsContext);
+
+	const triggerDownload = async () => {
+			console.log(annotations, 'annotations');
+			if (isSandbox) {
+					// return alert("Download is not enabled in Sandbox mode.");
+			}
+
+			let successfulBuffers = await fetchBuffers(files.slice(0, fileNames.length));
+			if (!successfulBuffers.length) {
+					return alert("Nothing to download.");
+			}
+
+			// Check if there's only one PDF
+			if (successfulBuffers.length === 1) {
+					try {
+							// Modify single PDF buffer
+							const modifiedPdfBuffer = await modifyPdfBuffer(successfulBuffers[0], annotations);
+							const blob = new Blob([modifiedPdfBuffer], { type: 'application/pdf' });
+							const url = URL.createObjectURL(blob);
+							const link = document.createElement('a');
+							link.href = url;
+							link.download = fileNames[0];
+							link.click();
+					} catch (error) {
+							console.error('Error modifying PDF:', error);
+					}
+			} else {
+					// Modify all PDF buffers
+					const modifiedBuffers = await Promise.all(successfulBuffers.map(buffer => modifyPdfBuffer(buffer, annotations)));
+					downloadAll(modifiedBuffers);
+			}
+	};
 
 	return {
     triggerDownload
