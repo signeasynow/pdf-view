@@ -1351,7 +1351,7 @@ const App = () => {
 			color: data.color,
 			fontSize: data.fontSize
 		}
-		// const operation = { action: "update-annotation", data: payload };
+		const operation = { action: "update-annotation", data: payload };
 		// we are adding an excessive operation here when it's due to a redo
 		
 		if (isManuallyAddingImageRef.current) {
@@ -1472,16 +1472,16 @@ const App = () => {
 
 				}
 			}
-			// const operation = { action: "move-annotation", data: payload };
-			// addOperation(operation);
+			const operation = { action: "move-annotation", data: payload };
+			addOperation(operation);
 		});
 	}
 
 	const onRemoveAnnotation = (data) => {
 		console.log(data, 'data here3')
 		removeAnnotation(data);
-		// const operation = { action: "remove-annotation", data };
-		// addOperation(operation);
+		const operation = { action: "remove-annotation", data };
+		addOperation(operation);
 
 	}
 
