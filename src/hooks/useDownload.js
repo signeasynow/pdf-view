@@ -52,8 +52,8 @@ const modifyPdfBuffer = async (buffer, annotations) => {
 							const pointsPerInch = PixelsPerInch.PDF;
 							const fontSizeInPoints = (annotation.fontSize / dpi) * pointsPerInch;
 							page.drawText(annotation.content, {
-								x: annotation.x * page.getWidth(),
-								y: (1 - annotation.y) * page.getHeight() - fontSizeInPoints,
+								x: (annotation.x * page.getWidth()) + 2,
+								y: ((1 - annotation.y) * page.getHeight()) - 30, // - fontSizeInPoints,
 								size: annotation.fontSize,
 								font: font,
 								color: rgb(color.red, color.green, color.blue),
