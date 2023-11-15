@@ -61,10 +61,10 @@ const modifyPdfBuffer = async (buffer, annotations) => {
 							break;
 					case 'stampEditor':
 							// Example for stamp annotation
-							const jpgImage = await pdfDoc.embedJpg(annotation.urlPath);
+							const jpgImage = await pdfDoc.embedPng(annotation.urlPath);
 							page.drawImage(jpgImage, {
 									x: annotation.x * page.getWidth(),
-									y: (1 - annotation.y) * page.getHeight(),
+									y: (1 - annotation.y - annotation.height) * page.getHeight(),
 									width: annotation.width * page.getWidth(),
 									height: annotation.height * page.getHeight(),
 							});
