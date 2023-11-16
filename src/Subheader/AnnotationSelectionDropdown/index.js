@@ -113,7 +113,7 @@ const AnnotationSelectionDropdown = ({
     return annotations?.some((ann) => ann.name === "freeTextEditor")
   }
 
-  if (!tools?.editing?.signature) {
+  if (!tools?.editing?.includes("signature")) {
     return;
   }
 
