@@ -123,6 +123,7 @@ const Subheader = ({
 			<div css={contentLeftStyle}>
 			  <div style={{display: "flex", alignItems: "center"}}>
 					<AnnotationSelectionDropdown
+						tools={tools}
 						annotationMode={annotationMode}
 						onClickSignature={onAddImage}
 						onChangeActiveToolbarItem={onChangeActiveToolbarItem}

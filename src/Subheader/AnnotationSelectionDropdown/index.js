@@ -54,7 +54,8 @@ const zoomOptionStyle = css`
 const AnnotationSelectionDropdown = ({
   onClickSignature,
   onChangeActiveToolbarItem,
-  annotationMode
+  annotationMode,
+  tools
 }) => {
 
 	const { t } = useTranslation();
@@ -110,6 +111,10 @@ const AnnotationSelectionDropdown = ({
 
   const hasText = () => {
     return annotations?.some((ann) => ann.name === "freeTextEditor")
+  }
+
+  if (!tools?.editing?.signature) {
+    return;
   }
 
 	return (
