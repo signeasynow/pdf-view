@@ -34,6 +34,17 @@ const downloadAll = async (pdfBuffers) => {
   URL.revokeObjectURL(url);
 };
 
+async function getFontForAnnotation(pdfDoc, annotation) {
+  switch (annotation.fontFamily?.toLowerCase()) {
+    case 'courier':
+      return await pdfDoc.embedFont(StandardFonts.Courier);
+    case 'helvetica':
+      return await pdfDoc.embedFont(StandardFonts.Helvetica);
+    default:
+      return await pdfDoc.embedFont(StandardFonts.Courier); // Default font
+  }
+}
+
 const modifyPdfBuffer = async (buffer, annotations) => {
 	const pdfDoc = await PDFDocument.load(buffer);
 
@@ -43,7 +54,8 @@ const modifyPdfBuffer = async (buffer, annotations) => {
 
 			switch (annotation.name) {
 					case 'freeTextEditor':
-							const font = await pdfDoc.embedFont(StandardFonts.Courier);
+						  // TODO: Enable helvetica
+							const font = await getFontForAnnotation(pdfDoc, annotation);
 							const color = parseColor(annotation.color);
 							const textHeight = annotation.fontSize; // Approximate text height
 							page.drawText(annotation.content, {

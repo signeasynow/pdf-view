@@ -997,7 +997,7 @@ const App = () => {
 			name: "freeTextEditor"
     }];
     // allAnnotations = [];
-    setAnnotations(allAnnotations);
+    // setAnnotations(allAnnotations);
   }, []);
 
 	const onRotate = async (clockwise) => {
