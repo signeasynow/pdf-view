@@ -58,6 +58,7 @@ export const useAnnotations = (activeAnnotationRef) => {
   }
 
   const updateFreeTextAnnotation = (data, text) => {
+    // console.log(data, 'data444', data.content, 'dd', data?.source?.content, 'dg', text)
     let newData = JSON.parse(JSON.stringify(annotationsRef.current));
     const existingAnnotation = newData.find((e) => e.id === data.id);
     activeAnnotationRef.current = data.id;

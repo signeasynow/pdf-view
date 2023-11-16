@@ -1478,16 +1478,16 @@ const App = () => {
 	}
 
 	const onRemoveAnnotation = (data) => {
-		console.log(data, 'data here3')
+		// console.log(data, 'data here3')
 		removeAnnotation(data);
 		const operation = { action: "remove-annotation", data };
 		addOperation(operation);
 
 	}
 
-	const onUpdateAnnotation = (data) => {
+	const onUpdateAnnotation = (data, text) => {
 		// console.log(data, 'data643')
-		updateAnnotation(data);
+		updateAnnotation(data, text);
 
 	}
 

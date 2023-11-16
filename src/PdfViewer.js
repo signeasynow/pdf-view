@@ -172,28 +172,28 @@ export const PdfViewer = ({
 		});
 
 		eventBus.on("annotationfocused", ({ details }) => {
-			console.log(details, 'details r48')
+			// console.log(details, 'details r48')
 			onAnnotationFocus(details.current.id, details.current);
 		});
 
 		eventBus.on('annotationchanged', ({ details }) => {
-			console.log(details, 'details r44')
+			// console.log(details, 'details r44', details.text)
 			updateAnnotation(details.current, details.text)
 		});
 
 		eventBus.on('annotationeditorresized', (details) => {
-			console.log(details, 'details annotationeditorresized')
+			// console.log(details, 'details annotationeditorresized')
 		  resizeAnnotation(details);
 			// first, need initial width set.
 		});
 
 		eventBus.on('annotationeditormoved', (details) => {
-			console.log(details, 'details r455')
+			// console.log(details, 'details r455')
 			moveAnnotation(details);
 		});
 
 		eventBus.on('annotationremoved', (details) => {
-			console.log(details, 'details r422')
+			// console.log(details, 'details r422')
 			removeAnnotation(details.details);
 		});
 
