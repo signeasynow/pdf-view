@@ -6,7 +6,7 @@ import Slider from '../Slider';
 import { LoadingSpinner } from '../LoadingSpinner';
 import Split from '../../../assets/split-svgrepo-com.svg';
 import HeaderBtn from '../../Header/HeaderBtn';
-import { Icon, Tooltip } from 'aleon_35_pdf_ui_lib';
+import { Icon, Tooltip } from 'alien35_pdf_ui_lib_2';
 import AccessibleButton from '../AccessibleButton';
 
 const wrapperStyle = css`

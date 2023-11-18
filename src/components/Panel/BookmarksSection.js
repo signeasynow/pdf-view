@@ -6,7 +6,7 @@ import BookmarkIconFilledUrl from '../../../assets/bookmark-svgrepo-com.svg';  /
 import BookmarkIconUrl from '../../../assets/bookmark-fill-svgrepo-com.svg';  // Update path if needed
 import Dropdown from '../Dropdown';
 import Gear from '../../../assets/gear-svgrepo-com.svg';
-import { Icon } from "aleon_35_pdf_ui_lib";
+import { Icon } from "alien35_pdf_ui_lib_2";
 
 const optionsWrapper = css`
   display: flex;

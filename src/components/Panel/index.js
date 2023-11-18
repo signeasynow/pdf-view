@@ -4,7 +4,7 @@ import { css } from '@emotion/react';
 import { useState } from 'preact/hooks';
 import ThumbnailsSection from './ThumbnailsSection';
 import BookmarksSection from './BookmarksSection';
-import { Icon, Tooltip } from 'aleon_35_pdf_ui_lib';
+import { Icon, Tooltip } from 'alien35_pdf_ui_lib_2';
 import ExpandIcon from "../../../assets/expand-svgrepo-com.svg";
 import { useTranslation } from 'react-i18next';
 import PanelTools from './PanelTools';

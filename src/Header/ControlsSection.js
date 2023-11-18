@@ -5,7 +5,7 @@ import Gear from '../../assets/gear-svgrepo-com.svg';
 import RotateRight from '../../assets/rotate-right-svgrepo-com.svg';
 import RotateLeft from '../../assets/rotate-left-svgrepo-com.svg';
 import Dropdown from '../components/Dropdown';
-import { Icon } from 'aleon_35_pdf_ui_lib';
+import { Icon } from 'alien35_pdf_ui_lib_2';
 import HeaderBtn from './HeaderBtn';
 import { useTranslation } from 'react-i18next';
 

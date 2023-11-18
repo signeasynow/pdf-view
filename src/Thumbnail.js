@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 
 import { h } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { Icon, Checkbox } from 'aleon_35_pdf_ui_lib';
+import { Icon, Checkbox } from 'alien35_pdf_ui_lib_2';
 import Trash from '../assets/trash-svgrepo-com.svg';
 import RotateRight from '../assets/rotate-right-svgrepo-com.svg';
 import RotateLeft from '../assets/rotate-left-svgrepo-com.svg';

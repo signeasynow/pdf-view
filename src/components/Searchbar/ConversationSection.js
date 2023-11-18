@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import RobotIcon from '../../../assets/zap-svgrepo-com.svg';
 import UserIcon from '../../../assets/user-svgrepo-com.svg';
-import { Icon } from "aleon_35_pdf_ui_lib";
+import { Icon } from "alien35_pdf_ui_lib_2";
 import { LoadingSpinner } from '../LoadingSpinner';
 import { separateCitation } from '../../utils/separateCitation';
 

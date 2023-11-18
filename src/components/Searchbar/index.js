@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { useRef, useState } from 'preact/hooks';
-import { Icon } from 'aleon_35_pdf_ui_lib';
+import { Icon } from 'alien35_pdf_ui_lib_2';
 import ChevronLeft from '../../../assets/chevron-left-svgrepo-com.svg';
 import ChevronRight from '../../../assets/chevron-right-svgrepo-com.svg';
 import { useTranslation } from 'react-i18next';

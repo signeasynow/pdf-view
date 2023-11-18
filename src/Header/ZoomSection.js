@@ -7,7 +7,7 @@ import ChevronDown from '../../assets/chevron-down-svgrepo-com.svg';
 import Dropdown from '../components/Dropdown';
 import { useDebounce } from '../utils/useDebounce';
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { Icon, Tooltip } from 'aleon_35_pdf_ui_lib';
+import { Icon, Tooltip } from 'alien35_pdf_ui_lib_2';
 import { useTranslation } from 'react-i18next';
 
 const inputStyles = css`

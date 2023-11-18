@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { Icon, Tooltip } from 'aleon_35_pdf_ui_lib';
+import { Icon, Tooltip } from 'alien35_pdf_ui_lib_2';
 import AiIcon from "../../../assets/ai-file-svgrepo-com.svg";
 import SearchIcon from "../../../assets/search-svgrepo-com.svg";
 import ChatDelete from "../../../assets/chat-delete-svgrepo-com.svg";

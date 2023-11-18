@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 
-import { Icon, Tooltip } from 'aleon_35_pdf_ui_lib';
+import { Icon, Tooltip } from 'alien35_pdf_ui_lib_2';
 
 export const MySVGIcon = ({ strokeColor }) => {
   return (

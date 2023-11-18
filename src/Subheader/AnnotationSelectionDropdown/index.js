@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 import ChevronDown from '../../../assets/chevron-down-svgrepo-com.svg';
 import Dropdown from '../../components/Dropdown';
 import { useContext } from 'preact/hooks';
-import { Icon } from 'aleon_35_pdf_ui_lib';
+import { Icon } from 'alien35_pdf_ui_lib_2';
 import { useTranslation } from 'react-i18next';
 import { useModal } from '../../Contexts/ModalProvider';
 import HeaderBtn from '../../Header/HeaderBtn';
@@ -116,7 +116,7 @@ const AnnotationSelectionDropdown = ({
   if (!tools?.editing?.includes("signature")) {
     return;
   }
-
+  
 	return (
 		<div css={wrapper}>
 			<div css={innerWrapper}>
