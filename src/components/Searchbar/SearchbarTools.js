@@ -18,48 +18,20 @@ const SearchbarTools = ({
   
   const { showModal } = useModal();
 
+  return (
+    <div style={{display: "flex"}}>
+      <div onClick={() => onToggle("chat")} style={{fontWeight: "800", cursor: "pointer", padding: 4, fontSize: 16, textDecoration: searchBarView === "chat" ? "underline" : ""}}>Chat</div>
+      <div onClick={() => onToggle("search")} style={{fontWeight: "800", cursor: "pointer", padding: 4, fontSize: 16, textDecoration: searchBarView !== "chat" ? "underline" : ""}}>Search</div>
+      {
+        !!aiDocId && (
+          <div onClick={() => showModal("Proceeding will delete your chat history and remove the PDF from our records. Are you sure?", () => {
+            onRemoveChatHistory();
+          })} style={{cursor: "pointer", padding: 4, fontSize: 16 }}>Delete chat</div>
+        )
+      }
+    </div>
+  )
 
-  if (searchBarView === "ai") {
-    return (
-      <>
-        <Tooltip title={"Search text"}>
-          <AccessibleButton
-            onClick={onToggle} 
-            ariaLabel={"Search text"}
-          >
-            <Icon src={SearchIcon} alt={t("expand")} />
-          </AccessibleButton>
-        </Tooltip>
-        {
-          !!aiDocId && (
-            <div style={{marginLeft: 8}}>
-              <Tooltip title={"Delete chat"}>
-                <AccessibleButton
-                  onClick={() => showModal("Proceeding will delete your chat history and remove the PDF from our records. Are you sure?", () => {
-                    onRemoveChatHistory();
-                  })} 
-                  ariaLabel={"Delete chat"}
-                >
-                  <Icon src={ChatDelete} alt={"Delete chat"} />
-                </AccessibleButton>
-              </Tooltip>
-            </div>
-          )
-        }
-      </>
-    );
-  }
-
-	return (
-		<Tooltip title={"Ask your PDF questions with AI"}>
-      <AccessibleButton
-        onClick={onToggle} 
-        ariaLabel={"Ask your PDF questions with AI"}
-      >
-        <Icon src={AiIcon} alt={t("expand")} />
-      </AccessibleButton>
-    </Tooltip>
-	);
 };
 
 export default SearchbarTools;

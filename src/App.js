@@ -255,7 +255,7 @@ const App = () => {
 	const [buffer, setBuffer] = useState(1); // 1 for primary, 2 for secondary
 	const viewerContainerRef1 = useRef(null);
 	const viewerContainerRef2 = useRef(null);
-	const [searchBarView, setSearchBarView] = useState("ai");
+	const [searchBarView, setSearchBarView] = useState("chat");
 
 	const [pdfText, setPdfText] = useState("");
 
@@ -362,7 +362,8 @@ const App = () => {
 		if (!tools) {
 			return;
 		}
-		setSearchBarView(tools?.general?.includes("ai") ? "ai" : "search");
+		console.log(tools?.general?.includes("chat"), 'inclee', tools)
+		setSearchBarView(tools?.general?.includes("chat") ? "chat" : "search");
 	}, [tools]);
 
 	const onSearchBtnClick = () => {
@@ -653,6 +654,8 @@ const App = () => {
 	const [matchWholeWord, setMatchWholeWord] = useState(false);
 
 	const [caseSensitive, setCaseSensitive] = useState(false);
+
+	const isFindingCitationRef = useRef(false);
 
 	const _onSearchText = (e, _entireWord, _sensitive) => {
 		eventBusRef.current?.dispatch('find', {
@@ -1703,6 +1706,7 @@ const App = () => {
 						matchesCount={matchesCount}
 						matchWholeWord={matchWholeWord}
 						onChange={onSearchText}
+						onFindCitation={onSearchText}
 						showSearch={showSearch}
 						caseSensitive={caseSensitive}
 						onToggleCaseSensitive={onToggleCaseSensitive}

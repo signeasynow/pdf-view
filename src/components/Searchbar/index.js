@@ -140,6 +140,7 @@ const SearchBar = ({
 	onAskQuestion,
 	searchText,
 	onEmbed,
+	onFindCitation,
 	onChange,
 	matchesCount,
 	onNext,
@@ -211,19 +212,16 @@ const SearchBar = ({
 
 	return (
 		<div css={getWrapperClass()}>
+			<SearchbarTools
+				aiDocId={aiDocId}
+				onRemoveChatHistory={handleRemoveChatHistory}
+				searchBarView={searchBarView}
+				onToggle={(which) => {
+				setSearchBarView(which)
+			}} />
 			{
-				searchBarView === "ai" && showSearch && (
+				searchBarView === "chat" && showSearch && (
 					<>
-						<div css={topSectionStyle}>
-							<div css={thumbnailTopActionsWrapper}>
-								<SearchbarTools
-									aiDocId={aiDocId}
-									onRemoveChatHistory={handleRemoveChatHistory}
-									searchBarView={searchBarView} onToggle={() => {
-									setSearchBarView("search")
-								}} />
-							</div>
-						</div>
 						{
 							!aiDocId && (
 								<div style={{margin: 8, display: "flex", flexDirection: "column"}}>
@@ -246,7 +244,7 @@ const SearchBar = ({
 									rows={rows}
 									setRows={setRows}
 									handleSendQuestion={handleSendQuestion}
-									onFindCitation={onChange}
+									onFindCitation={onFindCitation}
 									onAskQuestion={onAskQuestion}
 									onEmbed={onEmbed}
 								/>
@@ -258,17 +256,6 @@ const SearchBar = ({
 			{
 				searchBarView === "search" && (
 					<>
-						<div css={topSectionStyle}>
-							{
-								tools?.general?.includes("chat") && (
-									<div css={thumbnailTopActionsWrapper}>
-										<SearchbarTools onToggle={() => {
-											setSearchBarView("ai")
-										}} />
-									</div>
-								)
-							}
-						</div>
 						<div css={innerWrapperStyle}>
 							<div>
 								<div css={inputWrapperStyle}>

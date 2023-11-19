@@ -5,7 +5,17 @@ import RobotIcon from '../../../assets/zap-svgrepo-com.svg';
 import UserIcon from '../../../assets/user-svgrepo-com.svg';
 import { Icon } from "alien35_pdf_ui_lib_2";
 import { LoadingSpinner } from '../LoadingSpinner';
-import { separateCitation } from '../../utils/separateCitation';
+
+const getFindableCitation = (text) => {
+  // Trim the text
+  let trimmedText = text.trim();
+
+  // Remove page numbers - Adjust regex based on expected page number formats
+  trimmedText = trimmedText.replace(/\[\d+\]|\(p\.\d+\)|\(pp\.\d+-\d+\)/g, '');
+
+  // Limit to 50 characters
+  return trimmedText.slice(0, 50).trim();
+}
 
 const conversationContainerStyle = css`
 padding: 8px;
@@ -34,9 +44,12 @@ const disclaimerStyle = css`
 `
 
 const citationStyle = css`
-color: #0b6fcc;
-font-style: italic;
-cursor: pointer;
+  display: inline-flex;
+  background: #f68800;
+  color: white;
+  border-radius: 4px;
+  padding: 0 8px;
+  cursor: pointer;
 `
 
 const inputWrapperStyle = css`
@@ -78,6 +91,14 @@ const aiWrapperStyle = css`
   font-size: 16px;
 `;
 
+const parseEntryText = (text) => {
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    console.error('Error parsing entry text:', error);
+    return { answer: text, citation: '' }; // Fallback in case of parsing error
+  }
+};
 
 const ConversationSection = ({
   onChange,
@@ -174,22 +195,24 @@ const ConversationSection = ({
         {/* Display the conversation history */}
         <div ref={conversationContainerRef} style={{marginBottom: (30 * rows) + 20}} css={conversationContainerStyle}>
           <div css={conversationContentStyle}>
-            {conversation.map((entry, index) => (
-              <div css={conversationEntryStyle} key={index}>
-                {entry.type === "question" ? <Icon clickable={false} src={UserIcon}/> : <Icon src={RobotIcon}/>}
-                <div>{separateCitation(entry.text).main}</div>
-                {console.log(separateCitation(entry.text), 'ttt')}
-                {
-                  !!separateCitation(entry.text).citations?.length && separateCitation(entry.text).citations.map((citation) => (
-                    <div onClick={() => onFindCitation({
-                      target: {
-                        value: citation
-                      }
-                    })} css={citationStyle}>‟{citation}”</div>
-                  ))
-                }
-              </div>
-            ))}
+            {conversation.map((entry, index) => {
+              const { answer, citation } = parseEntryText(entry.text);
+              return (
+                <div css={conversationEntryStyle} key={index}>
+                  {entry.type === "question" ? <Icon clickable={false} src={UserIcon}/> : <Icon src={RobotIcon}/>}
+                  <div>{answer}</div>
+                  {
+                    citation && (
+                      <div onClick={() => onFindCitation({
+                        target: {
+                          value: getFindableCitation(citation)
+                        }
+                      })}  css={citationStyle}>View citation</div>
+                    )
+                  }
+                </div>
+              );
+            })}
           </div>
         </div>
 				{/*<button onClick={onEmbed}>Embed</button>*/}

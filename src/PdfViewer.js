@@ -198,6 +198,7 @@ export const PdfViewer = ({
 		});
 
 		eventBus.on('updatefindmatchescount', ({ matchesCount }) => {
+			console.log(matchesCount, 'matchesCount44')
 			setMatchesCount(matchesCount?.total);
 		});
 
