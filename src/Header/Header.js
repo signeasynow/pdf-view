@@ -78,25 +78,9 @@ const Header = ({
 				}
 			</div>
 			{
-
-				/*
-				<HeaderBtn onClick={onPanel} title="Pan" iconAlt="Pan" icon={Hand} />
-        <select>
-        <option>View</option>
-        <option>Annotate</option>
-      </select>
-      */
-			}
-			{
 				tools?.general?.includes('search') && (
 					<HeaderBtn offsetX="-20px" onClick={onSearch} title={t("search")} iconAlt={t("search")} icon={showSearch ? File : Search} />
 				)
-			}
-			{
-
-				/*
-				<HeaderBtn title="Comments" iconAlt="Comments" icon={Comment} />
-				*/
 			}
 		</Wrapper>
 	)

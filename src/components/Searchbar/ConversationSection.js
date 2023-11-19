@@ -5,6 +5,7 @@ import RobotIcon from '../../../assets/zap-svgrepo-com.svg';
 import UserIcon from '../../../assets/user-svgrepo-com.svg';
 import { Icon } from "alien35_pdf_ui_lib_2";
 import { LoadingSpinner } from '../LoadingSpinner';
+import { useTranslation } from 'react-i18next';
 
 const getFindableCitation = (text) => {
   // Trim the text
@@ -116,6 +117,8 @@ const ConversationSection = ({
   onYesToWarning
 }) => {
 
+  const { t } = useTranslation();
+
   const [showWrongDocWarning, setShowWrongDocWarning] = useState(false);
 
   useEffect(() => {
@@ -179,11 +182,11 @@ const ConversationSection = ({
   if (showWrongDocWarning) {
     return (
       <div style={{margin: "4px 12px 8px", alignItems: "center", display: "flex", flexDirection: "column"}}>
-        <div>Document updated. Answers may refer to the previous version. Regenerate AI for current document?</div>
+        <div>{t("document-updated-warning")}</div>
         <div>
-          <button disabled={loading} onClick={onYesToWarning} css={closeBtnStyle}>{loading ? <LoadingSpinner size="sm" /> : "Yes"}</button>
+          <button disabled={loading} onClick={onYesToWarning} css={closeBtnStyle}>{loading ? <LoadingSpinner size="sm" /> : t("Yes")}</button>
           {
-            !loading && <button disabled={loading} onClick={onNoToWarning} css={closeBtnStyle}>No</button>
+            !loading && <button disabled={loading} onClick={onNoToWarning} css={closeBtnStyle}>{t("No")}</button>
           }
         </div>
       </div>
@@ -192,7 +195,6 @@ const ConversationSection = ({
   return (
     <div css={aiWrapperStyle}>
       <div>
-        {/* Display the conversation history */}
         <div ref={conversationContainerRef} style={{marginBottom: (30 * rows) + 20}} css={conversationContainerStyle}>
           <div css={conversationContentStyle}>
             {conversation.map((entry, index) => {
@@ -207,7 +209,7 @@ const ConversationSection = ({
                         target: {
                           value: getFindableCitation(citation)
                         }
-                      })}  css={citationStyle}>View citation</div>
+                      })}  css={citationStyle}>{t("View citation")}</div>
                     )
                   }
                 </div>
@@ -215,9 +217,7 @@ const ConversationSection = ({
             })}
           </div>
         </div>
-				{/*<button onClick={onEmbed}>Embed</button>*/}
         <div css={inputContainerStyle}>
-          {/* Input area */}
           <div ref={inputRef} css={inputWrapperStyle}>
             <textarea
               style={{cursor: aiLimitReached ? "not-allowed" : ""}}
@@ -226,11 +226,11 @@ const ConversationSection = ({
               ref={searchTextRef}
               rows={rows}
               onChange={handleChange}
-              placeholder={aiLimitReached ? "Daily limit reached. Subscribe to continue." : "Ask your document a question"}
+              placeholder={aiLimitReached ? t("daily-limit-warning") : t("ask-doc-question")}
             />
             <button disabled={loading || aiLimitReached} style={{cursor: aiLimitReached ? "not-allowed" : "pointer", fontSize: 16, border: "none", borderBottomRightRadius: "2px", borderTopRightRadius: "2px", color: "white", background: (loading || aiLimitReached) ? "white" : "#3183c8"}} onClick={handleSubmit}>{loading ? <LoadingSpinner size="sm" /> : "⮕"}</button>
           </div>
-          <p css={disclaimerStyle}>AI may produce inaccurate information and citations.</p>
+          <p css={disclaimerStyle}>{t("wrong-answers-warning")}</p>
         </div>
       </div>
     </div>

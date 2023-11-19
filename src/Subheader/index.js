@@ -227,7 +227,7 @@ const Subheader = ({
 										onClick={() => onRotate(false)} 
 										ariaLabel={t("redo")}
 									>
-										<HeaderBtn offsetX="-20px" style={{opacity: canDelete ? 1 : 0.5}} title={"Rotate counterclockwise"} iconAlt={t("remove")} icon={RotateLeft} />
+										<HeaderBtn offsetX="-20px" style={{opacity: canDelete ? 1 : 0.5}} title={t("rotateCounterClockwise")} iconAlt={t("rotateCounterClockwise")} icon={RotateLeft} />
 										{
 											!!multiPageSelections?.length && (
 												<div style={{
@@ -255,7 +255,7 @@ const Subheader = ({
 										onClick={() => onRotate(true)} 
 										ariaLabel={t("redo")}
 									>
-										<HeaderBtn offsetX="-30px" style={{opacity: canDelete ? 1 : 0.5}} title={"Rotate clockwise"} iconAlt={t("remove")} icon={RotateRight} />
+										<HeaderBtn offsetX="-30px" style={{opacity: canDelete ? 1 : 0.5}} title={t("rotateClockwise")} iconAlt={t("rotateClockwise")} icon={RotateRight} />
 									</AccessibleButton>
 								</div>
 							</div>
@@ -266,11 +266,11 @@ const Subheader = ({
 							<div style={{position: "relative"}}>
 								<AccessibleButton
 									onClick={onExtract} 
-									ariaLabel={t("redo")}
+									ariaLabel={t("Extract")}
 								>
 									<HeaderBtn
 										style={{opacity: canExtract ? 1 : 0.3}}
-										title={"Extract"} iconAlt={t("redo")} icon={Extract} />
+										title={t("Extract")} iconAlt={t("Extract")} icon={Extract} />
 										{
 											!!multiPageSelections?.length && (
 												<div style={{

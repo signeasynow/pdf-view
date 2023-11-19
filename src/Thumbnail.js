@@ -8,6 +8,7 @@ import Trash from '../assets/trash-svgrepo-com.svg';
 import RotateRight from '../assets/rotate-right-svgrepo-com.svg';
 import RotateLeft from '../assets/rotate-left-svgrepo-com.svg';
 import Extract from '../assets/gradebook-export-svgrepo-com.svg';
+import { useTranslation } from 'react-i18next';
 
 const thumbnailWrapper = css`
   display: flex;
@@ -97,6 +98,9 @@ export const Thumbnail = ({
 	onRotate,
 	clickIsMultiSelect
 }) => {
+
+	const t = useTranslation();
+
 	const canvasRef = useRef(null);
 	const [isDragging, setIsDragging] = useState(false); // Add this state to keep track
 
@@ -226,14 +230,14 @@ export const Thumbnail = ({
 					{
 						tools?.editing?.includes("rotation") && (
 							<>
-								<strong css={contextMenuLabel}>Page orientation</strong>
+								<strong css={contextMenuLabel}>{t["pageOrientation"]}</strong>
 								<div onClick={() => onRotate(true, pageNum)} css={contextMenuItem}>
-									<Icon src={RotateRight} alt="Delete" />
-									<p css={contextMenuItemText}>Rotate clockwise</p>
+									<Icon src={RotateRight} alt={t["rotateClockwise"]} />
+									<p css={contextMenuItemText}>{t["rotateClockwise"]}</p>
 								</div>
 								<div onClick={() => onRotate(false, pageNum)} css={contextMenuItem}>
-									<Icon src={RotateLeft} alt="Delete" />
-									<p css={contextMenuItemText}>Rotate counterclockwise</p>
+									<Icon src={RotateLeft} alt={t["rotateCounterClockwise"]} />
+									<p css={contextMenuItemText}>{t["rotateCounterClockwise"]}</p>
 								</div>
 							</>
 						)
@@ -246,15 +250,15 @@ export const Thumbnail = ({
 					}
 					{
 						tools?.editing?.includes("remove") || tools?.editing?.includes("extract") && (
-							<strong css={contextMenuLabel}>Page manipulation</strong>
+							<strong css={contextMenuLabel}>{t["Page manipulation"]}</strong>
 						)
 					}
 					{
 						tools?.editing?.includes("remove") && (
 							<>
 								<div onClick={() => onDelete(pageNum)} css={contextMenuItem}>
-									<Icon src={Trash} alt="Delete" />
-									<p css={contextMenuItemText}>Delete</p>
+									<Icon src={Trash} alt={t["Delete"]} />
+									<p css={contextMenuItemText}>{t["Delete"]}</p>
 								</div>
 							</>
 						)
@@ -263,8 +267,8 @@ export const Thumbnail = ({
 						tools?.editing?.includes("extract") && (
 							<>
 								<div onClick={() => onExtract(pageNum)} css={contextMenuItem}>
-									<Icon src={Extract} alt="Delete" />
-									<p css={contextMenuItemText}>Extract</p>
+									<Icon src={Extract} alt={t["Extract"]} />
+									<p css={contextMenuItemText}>{t["Extract"]}</p>
 								</div>
 							</>
 						)

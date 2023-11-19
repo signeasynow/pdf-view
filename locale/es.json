@@ -19,5 +19,26 @@
   "expand": "Expandir",
   "undo": "Deshacer",
   "redo": "Rehacer",
-  "remove": "Eliminar"
+  "remove": "Eliminar",
+  "minimize": "Minimizar",
+  "Add text": "Añadir texto",
+  "Add signature": "Añadir firma",
+  "Edit signature": "Editar firma",
+  "Edit text": "Editar texto",
+  "End edit mode": "Finalizar modo de edición",
+  "document-updated-warning": "Documento actualizado. Las respuestas pueden referirse a la versión anterior. ¿Regenerar IA para el documento actual?",
+  "Yes": "Sí",
+  "No": "No",
+  "View citation": "Ver cita",
+  "daily-limit-warning": "Límite diario alcanzado. Suscríbete para continuar.",
+  "ask-doc-question": "Haz una pregunta a tu documento",
+  "wrong-answers-warning": "La IA puede producir información y citas inexactas.",
+  "Delete chat": "Eliminar chat",
+  "delete-proceed-warning": "Al continuar se eliminará el historial de chat y se removerá el PDF de nuestros registros. ¿Estás seguro?",
+  "Chat": "Chat",
+  "Search": "Buscar",
+  "Extract": "Extraer",
+  "Page manipulation": "Manipulación de página",
+  "Delete": "Eliminar"
+
 }

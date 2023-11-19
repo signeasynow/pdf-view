@@ -116,7 +116,7 @@ const AnnotationSelectionDropdown = ({
   if (!tools?.editing?.includes("signature")) {
     return;
   }
-  
+
 	return (
 		<div css={wrapper}>
 			<div css={innerWrapper}>
@@ -125,26 +125,26 @@ const AnnotationSelectionDropdown = ({
 					marginTop={28}
 					title={
 						<div css={dropdownTitle}>
-              <HeaderBtn offsetX="12px" title={"Add text"} iconAlt={t("search")} icon={WriteIcon} />
+              <HeaderBtn offsetX="12px" title={t("Add text")} iconAlt={t("search")} icon={WriteIcon} />
 							<Icon size="sm" src={ChevronDown} alt={t("arrowDown")} />
 						</div>
 					}
 					child={<div css={childStyle}>
-            <div css={zoomOptionStyle} onClick={onSelectSignature}><img height={24} width={24} src={SignatureIcon}/>Add signature</div>
-            <div css={zoomOptionStyle} onClick={onSelectFreeText}><img height={24} width={24} src={TextIcon}/>Add text</div>
+            <div css={zoomOptionStyle} onClick={onSelectSignature}><img height={24} width={24} src={SignatureIcon}/>{t("Add signature")}</div>
+            <div css={zoomOptionStyle} onClick={onSelectFreeText}><img height={24} width={24} src={TextIcon}/>{t("Add text")}</div>
             {
               hasSignature() && (
-                <div css={zoomOptionStyle} onClick={onSelectEditSignature}><img height={24} width={24} src={SignatureRemoveIcon}/>Edit signature</div>
+                <div css={zoomOptionStyle} onClick={onSelectEditSignature}><img height={24} width={24} src={SignatureRemoveIcon}/>{t("Edit signature")}</div>
               )
             }
             {
               hasText() && (
-                <div css={zoomOptionStyle} onClick={onSelectEditText}><img height={24} width={24} src={EditTextIcon}/>Edit text</div>
+                <div css={zoomOptionStyle} onClick={onSelectEditText}><img height={24} width={24} src={EditTextIcon}/>{t("Edit text")}</div>
               )
             }
             {
               annotationsEnabled() && (
-                <div css={zoomOptionStyle} onClick={onSelectNone}><img height={24} width={24} src={WriteIcon}/>End edit mode</div>
+                <div css={zoomOptionStyle} onClick={onSelectNone}><img height={24} width={24} src={WriteIcon}/>{t("End edit mode")}</div>
               )
             }
 					</div>}

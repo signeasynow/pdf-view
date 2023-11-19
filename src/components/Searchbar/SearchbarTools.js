@@ -20,13 +20,13 @@ const SearchbarTools = ({
 
   return (
     <div style={{display: "flex"}}>
-      <div onClick={() => onToggle("chat")} style={{fontWeight: "800", cursor: "pointer", padding: 4, fontSize: 16, textDecoration: searchBarView === "chat" ? "underline" : ""}}>Chat</div>
-      <div onClick={() => onToggle("search")} style={{fontWeight: "800", cursor: "pointer", padding: 4, fontSize: 16, textDecoration: searchBarView !== "chat" ? "underline" : ""}}>Search</div>
+      <div onClick={() => onToggle("chat")} style={{fontWeight: "800", cursor: "pointer", padding: 4, fontSize: 16, textDecoration: searchBarView === "chat" ? "underline" : ""}}>{t("Chat")}</div>
+      <div onClick={() => onToggle("search")} style={{fontWeight: "800", cursor: "pointer", padding: 4, fontSize: 16, textDecoration: searchBarView !== "chat" ? "underline" : ""}}>{t("Search")}</div>
       {
         !!aiDocId && (
-          <div onClick={() => showModal("Proceeding will delete your chat history and remove the PDF from our records. Are you sure?", () => {
+          <div onClick={() => showModal(t("delete-proceed-warning"), () => {
             onRemoveChatHistory();
-          })} style={{cursor: "pointer", padding: 4, fontSize: 16 }}>Delete chat</div>
+          })} style={{cursor: "pointer", padding: 4, fontSize: 16 }}>{t("Delete chat")}</div>
         )
       }
     </div>
