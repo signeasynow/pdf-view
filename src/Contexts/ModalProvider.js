@@ -22,7 +22,6 @@ export const ModalProvider = ({ children }) => {
   const showSignatureModal = (msg, onConfirm) => {
     setMessage(msg);
     setIsSignatureVisible(true);
-    console.log(onConfirm, 'onConfirm')
     setOnConfirmCallback(() => onConfirm); // Storing the callback
   };
 

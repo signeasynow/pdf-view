@@ -69,6 +69,8 @@
     "react-i18next": "^13.2.1",
     "react-onclickoutside": "^6.13.0",
     "react-select": "^5.7.3",
-    "react-signature-canvas": "^1.0.6"
+    "react-signature-canvas": "^1.0.6",
+    "react-signature-pad-wrapper": "^3.3.4",
+    "trim-canvas": "^0.1.2"
   }
 }

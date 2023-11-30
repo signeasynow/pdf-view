@@ -1,9 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import {  css } from '@emotion/react';
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
-import SignatureCanvas from 'react-signature-canvas';
+import SignaturePad from 'react-signature-pad-wrapper'; // Updated import
 import { SignaturesContext } from '../../Contexts/SignaturesContext';
 import { ColorButton } from './ColorButton';
+import trimCanvas from 'trim-canvas';
 
 const overlayStyle = css`
   position: fixed;
@@ -62,32 +63,13 @@ export const SignatureModal = ({ onConfirm, message, onClose }) => {
   const { setInitialsSignature, setFullSignature, fullSignature, initialsSignature } = useContext(SignaturesContext);
 
   const handleSaveSignature = () => {
-
-    const createHighResImage = (canvasRef) => {
-      if (canvasRef.current && !canvasRef.current.isEmpty()) {
-        const originalCanvas = canvasRef.current.getCanvas();
-        const ratio = window.devicePixelRatio || 1;
-  
-        // Create a temporary canvas with higher resolution
-        const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = originalCanvas.width * ratio;
-        tempCanvas.height = originalCanvas.height * ratio;
-  
-        const tempCtx = tempCanvas.getContext('2d');
-        tempCtx.scale(ratio, ratio);
-        tempCtx.drawImage(originalCanvas, 0, 0);
-  
-        // Convert high-resolution canvas to data URL
-        return tempCanvas.toDataURL('image/png');
-      }
-      return null;
-    };
+    // console.log(signatureRef.current, 'signatureRef.current')
     // Convert canvas to data URL (base64 image) only if the canvas is not empty
     const signatureImage = !signatureRef.current.isEmpty()
-      ? signatureRef.current.getTrimmedCanvas().toDataURL('image/png')
+      ? trimCanvas(signatureRef.current.canvas?.current).toDataURL('image/png')
       : fullSignature;
     const initialsImage = !initialRef.current.isEmpty()
-      ? initialRef.current.getTrimmedCanvas().toDataURL('image/png')
+      ? trimCanvas(initialRef.current.canvas?.current).toDataURL('image/png')
       : initialsSignature;
   
     // Only update localStorage and context if there's a new signature/initials
@@ -155,8 +137,9 @@ export const SignatureModal = ({ onConfirm, message, onClose }) => {
         <div style={{display: "flex", flexFlow: "wrap"}}>
           <div style={{marginRight: 8, background: "#efefef", border: "1px solid #d3d3d3", width: 400, borderRadius: "4px"}}>
             <div style={{cursor: "crosshair"}}>
-              <SignatureCanvas ref={signatureRef} penColor={penColor}
-                canvasProps={{width: 400, height: 160, className: 'sigCanvas'}} />
+              <SignaturePad ref={signatureRef} options={{ velocityFilterWeight: 0.4, penColor: penColor }}
+          canvasProps={{ width: 800, height: 320, className: 'sigCanvas' }} />
+
             </div>
             <div style={{
               marginLeft: 8, marginRight: 8,
@@ -176,8 +159,8 @@ export const SignatureModal = ({ onConfirm, message, onClose }) => {
           </div>
           <div style={{background: "#efefef", border: "1px solid #d3d3d3", width: 280, borderRadius: "4px"}}>
             <div style={{cursor: "crosshair"}}>
-              <SignatureCanvas ref={initialRef} penColor={penColor}
-                canvasProps={{width: 280, height: 160, className: 'sigCanvas'}} />
+              <SignaturePad ref={initialRef} penColor={penColor}
+          canvasProps={{ width: 280, height: 160, className: 'sigCanvas' }} />
             </div>
             <div style={{
               marginLeft: 8, marginRight: 8,
