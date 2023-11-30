@@ -1447,7 +1447,7 @@ const App = () => {
 			value: {
 				bitmapUrl: localStorage.getItem(localStorageName),
 				// initialWidth: 0.1,
-				initialHeight: 0.08
+				initialHeight: 0.04
 			}
 		}
 		setAnnotationMode("signature");
