@@ -1446,7 +1446,8 @@ const App = () => {
 			type: AnnotationEditorParamsType.CREATE,
 			value: {
 				bitmapUrl: localStorage.getItem(localStorageName),
-				initialWidth: 0.1
+				// initialWidth: 0.1,
+				initialHeight: 0.08
 			}
 		}
 		setAnnotationMode("signature");
