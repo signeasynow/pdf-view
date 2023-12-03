@@ -56,6 +56,7 @@ const Subheader = ({
 	editableAnnotationId,
 	onUpdateFontSize,
 	onUpdateFontFamily,
+	onEnableClickTagMode,
 	onEnableFreeTextMode,
 	handleChooseColor,
 	onDisableEditorMode,

@@ -79,6 +79,7 @@ export const PdfViewer = ({
 	setDocumentLoading,
 	isSandbox,
 	updateCurrentScale,
+	onTagClicked
 }) => {
 
 	const panelSpaceUsed = () => {
@@ -171,13 +172,19 @@ export const PdfViewer = ({
 
 		});
 
+		eventBus.on("tagclicked", (details) => {
+			console.log(details, 'details 778')
+			onTagClicked(details);
+			// onAnnotationFocus(details.current.id, details.current);
+		});
+
 		eventBus.on("annotationfocused", ({ details }) => {
-			// console.log(details, 'details r48')
+			console.log(details, 'details r48')
 			onAnnotationFocus(details.current.id, details.current);
 		});
 
 		eventBus.on('annotationchanged', ({ details }) => {
-			// console.log(details, 'details r44', details.text)
+			console.log(details, 'details r44', details.text)
 			updateAnnotation(details.current, details.text)
 		});
 

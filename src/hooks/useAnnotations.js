@@ -83,6 +83,8 @@ export const useAnnotations = (activeAnnotationRef) => {
     setAnnotations(newData);
   }
 
+  console.log(annotations, 'annotati33')
+
   const updateSignatureAnnotation = (data) => {
     let newData = JSON.parse(JSON.stringify(annotationsRef.current));
     const existingAnnotation = newData.find((e) => e.id === data.id);
@@ -101,6 +103,7 @@ export const useAnnotations = (activeAnnotationRef) => {
         x: existingAnnotation ? existingAnnotation.x : data.x,
         y: existingAnnotation ? existingAnnotation.y : data.y,
         urlPath: data.urlPath,
+        overlayText: existingAnnotation ? existingAnnotation.overlayText : data.overlayText,
         name: "stampEditor"
       },
     ];

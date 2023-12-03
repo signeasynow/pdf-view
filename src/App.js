@@ -45,6 +45,8 @@ import { AnnotationEditorParamsType } from 'pdfjs-dist/build/pdf';
 import { FilesContext } from './Contexts/FilesContext';
 import { UndoRedoContext } from './Contexts/UndoRedoContext';
 import { ActivePageContext } from './Contexts/ActivePageContext';
+import SignatureIconPng from "../assets/yellow-bg-500-150.png";
+import SignatureIcon54Png from "../assets/yellow-bg-5-4.png";
 
 async function splitPdfPages(pdfBytes, splitIndices) {
   const originalPdfDoc = await PDFDocument.load(pdfBytes);
@@ -243,6 +245,7 @@ const App = () => {
 
 	const [searchText, setSearchText] = useState('');
 	const [isSplitting, setIsSplitting] = useState(false);
+	const [editorMode, setEditorMode] = useState("regular");
 	const eventBusRef = useRef(null);
 	const pdfLinkServiceRef = useRef(null);
 	const pdfFindControllerRef = useRef(null);
@@ -468,6 +471,7 @@ const App = () => {
 			}
 			if (typeof event.data === 'object' && !!event.data.mode) {
 				setIsSplitting(event.data.mode === "split");
+				setEditorMode(event.data.mode || "regular");
 			}
 			if (typeof event.data === 'object' && !!event.data.uuid) {
 				setInputtedUuid(event.data.uuid);
@@ -1178,6 +1182,15 @@ const App = () => {
 		setAnnotationMode("freetext");
 	}
 
+	const onEnableClickTagMode = async () => {
+		pdfViewerRef.current.annotationEditorMode = {
+			isFromKeyboard: false,
+			mode: pdfjs.AnnotationEditorType.CLICKTAG,
+			source: null
+		};
+		// setAnnotationMode("freetext");
+	}
+
 	const onDisableEditorMode = async () => {
 		pdfViewerRef.current.annotationEditorMode = {
 			isFromKeyboard: false,
@@ -1352,7 +1365,8 @@ const App = () => {
 			name: data.name,
 			content: data.content,
 			color: data.color,
-			fontSize: data.fontSize
+			fontSize: data.fontSize,
+			overlayText: data.overlayText
 		}
 		const operation = { action: "update-annotation", data: payload };
 		// we are adding an excessive operation here when it's due to a redo
@@ -1435,6 +1449,25 @@ const App = () => {
 
 	const isManuallyAddingImageRef = useRef(false);
 
+	const onTagClicked = (details) => {
+		console.log(details, 'details35', details.source.width)
+		isManuallyAddingImageRef.current = true;
+		pdfViewerRef.current.annotationEditorMode = {
+			isFromKeyboard: false,
+			mode: pdfjs.AnnotationEditorType.STAMP,
+			source: null
+		};
+		pdfViewerRef.current.annotationEditorParams = {
+			type: AnnotationEditorParamsType.CREATE,
+			value: {
+				bitmapUrl: localStorage.getItem("signatureImage"),
+				// initialWidth: 0.1,
+				initialHeight: 0.04,
+				initialX: details.x + (details.source.width / 2),
+				initialY: details.y + (details.source.height) - 0.04
+			}
+		}
+	}
 	const onAddImage = (localStorageName) => {
 		isManuallyAddingImageRef.current = true;
 		pdfViewerRef.current.annotationEditorMode = {
@@ -1451,6 +1484,28 @@ const App = () => {
 			}
 		}
 		setAnnotationMode("signature");
+	}
+
+	const onClickField = (type) => {
+		pdfViewerRef.current.annotationEditorMode = {
+			isFromKeyboard: false,
+			mode: pdfjs.AnnotationEditorType.STAMP,
+			source: null
+		};
+		const typeMap = {
+			Sign: 0.25,
+		}
+		pdfViewerRef.current.annotationEditorParams = {
+			type: AnnotationEditorParamsType.CREATE,
+			value: {
+				bitmapUrl: type === "Sign" ? SignatureIcon54Png : SignatureIconPng,
+				initialWidth: type === "Sign" ? 0.18 : undefined,
+				initialHeight: type === "Sign" ? undefined : 0.04,
+				// imageType, deprecated
+				// initialWidth: typeMap[type] || 0.1,
+				overlayText: type
+			}
+		}
 	}
 
 	const onMoveAnnotation = (data) => {
@@ -1581,6 +1636,7 @@ const App = () => {
 							setAnnotationColor={setAnnotationColor}
 							onDisableEditorMode={onDisableEditorMode}
 							onEnableFreeTextMode={onEnableFreeTextMode}
+							onEnableClickTagMode={onEnableClickTagMode}
 							pdfProxyObj={pdfProxyObj}
 							canExtract={canExtract()}
 							onExtract={onExtract}
@@ -1639,6 +1695,7 @@ const App = () => {
 					}
 					<div css={pdfViewerWrapper}>
 						<PdfViewer
+							onTagClicked={onTagClicked}
 							activeToolbarItemRef={activeToolbarItemRef}
 							onAnnotationFocus={onAnnotationFocus}
 							annotationColor={annotationColor}
@@ -1685,6 +1742,9 @@ const App = () => {
 						/>
 					</div>
 					<SearchBar
+						onEnableClickTagMode={onEnableClickTagMode}
+						onClickField={onClickField}
+						editorMode={editorMode}
 						showFullScreenSearch={showFullScreenSearch()}
 						tools={tools}
 						aiLimitReached={aiLimitReached}

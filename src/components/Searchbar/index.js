@@ -129,11 +129,13 @@ const thumbnailTopActionsWrapper = css`
 
 const SearchBar = ({
 	aiDocHash,
+	editorMode,
 	tools,
 	aiLimitReached,
 	currentAiDocHash,
 	showFullScreenSearch,
 	aiDocId,
+	onClickField,
 	showSearch,
 	setSearchBarView,
 	searchBarView,
@@ -153,6 +155,7 @@ const SearchBar = ({
 	onClear,
 	onNoToAiWarning,
 	conversation,
+	onEnableClickTagMode,
 	setConversation
 }) => {
 
@@ -208,6 +211,19 @@ const SearchBar = ({
 			return fullSearchWrapper;
 		}
 		return showSearch ? visibleSearchWrapper : invisibleSearchWrapper;
+	}
+
+	if (editorMode === "tag") {
+		return (
+			<div css={getWrapperClass()}>
+				Click to add a field to the Document
+				<button onClick={() => onClickField("Sign")}>Signature</button>
+				<button onClick={() => onClickField("Name")}>Name</button>
+				<button onClick={() => onClickField("Email")}>Email</button>
+				<button onClick={() => onClickField("Date")}>Date</button>
+				<button onClick={onEnableClickTagMode}>Turn off edit mode</button>
+			</div>
+		)
 	}
 
 	return (
