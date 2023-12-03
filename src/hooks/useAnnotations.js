@@ -112,6 +112,7 @@ export const useAnnotations = (activeAnnotationRef) => {
   }
 
   const throttledUpdateAnnotation = debounce((data, text) => {
+    console.log(data, 'data333', data.height)
     if (!data) {
       return;
     }
@@ -145,6 +146,7 @@ export const useAnnotations = (activeAnnotationRef) => {
   };
 
   const throttledResizeAnnotation = debounce((data) => {
+    console.log(data, 'resize2')
     updateAnnotationParam(data.id, {
       width: data.width,
       height: data.height,

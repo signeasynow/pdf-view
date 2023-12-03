@@ -175,7 +175,6 @@ export const PdfViewer = ({
 		eventBus.on("tagclicked", (details) => {
 			console.log(details, 'details 778')
 			onTagClicked(details);
-			// onAnnotationFocus(details.current.id, details.current);
 		});
 
 		eventBus.on("annotationfocused", ({ details }) => {

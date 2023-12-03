@@ -1353,6 +1353,7 @@ const App = () => {
 		activeAnnotationRef.current = id;
 		setEditableAnnotationId(id);
 		updateAnnotation(data);
+		console.log(data, 'data over here', data.height);
 		const payload = {
 			height: data.height,
 			width: data.width,
