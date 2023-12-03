@@ -1366,7 +1366,8 @@ const App = () => {
 			content: data.content,
 			color: data.color,
 			fontSize: data.fontSize,
-			overlayText: data.overlayText
+			overlayText: data.overlayText,
+			moveDisabled: data.moveDisabled
 		}
 		const operation = { action: "update-annotation", data: payload };
 		// we are adding an excessive operation here when it's due to a redo
@@ -1464,7 +1465,8 @@ const App = () => {
 				// initialWidth: 0.1,
 				initialHeight: 0.04,
 				initialX: details.x + (details.source.width / 2),
-				initialY: details.y + (details.source.height) - 0.04
+				initialY: details.y + (details.source.height) - 0.04,
+				moveDisabled: true
 			}
 		}
 	}

@@ -104,6 +104,7 @@ export const useAnnotations = (activeAnnotationRef) => {
         y: existingAnnotation ? existingAnnotation.y : data.y,
         urlPath: data.urlPath,
         overlayText: existingAnnotation ? existingAnnotation.overlayText : data.overlayText,
+        moveDisabled: existingAnnotation ? existingAnnotation.moveDisabled : data.moveDisabled,
         name: "stampEditor"
       },
     ];
