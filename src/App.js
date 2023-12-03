@@ -989,7 +989,9 @@ const App = () => {
 		addOperation(operation);
 	}
 
-	const {updateAnnotation, moveAnnotation, updateAnnotationParam, resizeAnnotation, removeAnnotation} = useAnnotations(activeAnnotationRef);
+	const isManuallyAddingImageRef = useRef(false);
+
+	const {updateAnnotation, moveAnnotation, updateAnnotationParam, resizeAnnotation, removeAnnotation} = useAnnotations(activeAnnotationRef, isManuallyAddingImageRef);
 	const { annotations, setAnnotations } = useContext(AnnotationsContext);
 	useEffect(() => {
     let allAnnotations = [{
@@ -1354,29 +1356,7 @@ const App = () => {
 		setEditableAnnotationId(id);
 		updateAnnotation(data);
 		console.log(data, 'data over here', data.height);
-		const payload = {
-			height: data.height,
-			width: data.width,
-			id: data.id,
-			pageIndex: data.pageIndex,
-			pageNumber: data.pageIndex + 1,
-			x: data.x,
-			y: data.y,
-			urlPath: data.urlPath,
-			name: data.name,
-			content: data.content,
-			color: data.color,
-			fontSize: data.fontSize,
-			overlayText: data.overlayText,
-			moveDisabled: data.moveDisabled
-		}
-		const operation = { action: "update-annotation", data: payload };
-		// we are adding an excessive operation here when it's due to a redo
 		
-		if (isManuallyAddingImageRef.current) {
-			addOperation(operation);
-			isManuallyAddingImageRef.current = false;
-		}
 		// addOperation(operation);
 	}
 
@@ -1449,7 +1429,6 @@ const App = () => {
 		})
 	}
 
-	const isManuallyAddingImageRef = useRef(false);
 
 	const onTagClicked = (details) => {
 		console.log(details, 'details35', details.source.width)
