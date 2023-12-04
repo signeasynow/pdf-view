@@ -277,6 +277,11 @@ const App = () => {
   });
 	const [annotationColor, setAnnotationColor] = useState('#fff');
 
+	const pdfProxyObjRef = useRef(null);
+
+	useEffect(() => {
+		pdfProxyObjRef.current = pdfProxyObj;
+	}, [pdfProxyObj]);
 
 	const hasConsumerSubscription = async () => {
 		if (!inputtedUuid) {
@@ -1429,9 +1434,7 @@ const App = () => {
 		})
 	}
 
-
-	const onTagClicked = (details) => {
-		console.log(details, 'details35', details.source.width)
+	const handleSignTagClicked = (details) => {
 		isManuallyAddingImageRef.current = true;
 		pdfViewerRef.current.annotationEditorMode = {
 			isFromKeyboard: false,
@@ -1450,6 +1453,64 @@ const App = () => {
 			}
 		}
 	}
+
+	const handleNameTagClicked = async (details) => {
+		isManuallyAddingImageRef.current = true;
+		// console.log(pdfProxyObj, 'pdfProxyObj')
+		const buffer = await pdfProxyObjRef.current.getData();
+		const dog = {
+      id: "abc",
+      pageNumber: 1,
+			pageIndex: 0,
+      content: "dFruityy5",
+      x: 0.1,
+      y: 0.1,
+      color: "#008000",
+      fontSize: 28,
+			fontFamily: "courier",
+			name: "freeTextEditor"
+    }
+		updateAnnotation(dog, "hello");
+		await savePDF(buffer, pdfId);
+		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
+		newModifiedPayload[activePageIndex] = new Date().toISOString();
+		setModifiedFiles(newModifiedPayload);
+
+		/*
+		pdfViewerRef.current.annotationEditorMode = {
+			isFromKeyboard: false,
+			mode: pdfjs.AnnotationEditorType.FREETEXT,
+			source: null
+		};
+		pdfViewerRef.current.annotationEditorParams = {
+			type: AnnotationEditorParamsType.CREATE,
+			value: {
+				// bitmapUrl: localStorage.getItem("signatureImage"),
+				// initialWidth: 0.1,
+				// initialHeight: 0.04,
+				content: "DOGGO",
+				initialX: details.x + (details.source.width / 2),
+				initialY: details.y + (details.source.height) - 0.04,
+				moveDisabled: true
+			}
+		}
+		*/
+
+	}
+
+	const onTagClicked = (details) => {
+		switch (details.source.overlayText) {
+			case "Sign": {
+				handleSignTagClicked(details);
+				break;
+			}
+			case "Name": {
+				handleNameTagClicked(details);
+				break;
+			}
+		}
+	}
+
 	const onAddImage = (localStorageName) => {
 		isManuallyAddingImageRef.current = true;
 		pdfViewerRef.current.annotationEditorMode = {
@@ -1468,15 +1529,13 @@ const App = () => {
 		setAnnotationMode("signature");
 	}
 
+
 	const onClickField = (type) => {
 		pdfViewerRef.current.annotationEditorMode = {
 			isFromKeyboard: false,
 			mode: pdfjs.AnnotationEditorType.STAMP,
 			source: null
 		};
-		const typeMap = {
-			Sign: 0.25,
-		}
 		pdfViewerRef.current.annotationEditorParams = {
 			type: AnnotationEditorParamsType.CREATE,
 			value: {
