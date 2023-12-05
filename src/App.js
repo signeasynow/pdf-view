@@ -997,7 +997,7 @@ const App = () => {
 	const isManuallyAddingImageRef = useRef(false);
 
 	const {updateAnnotation, moveAnnotation, updateAnnotationParam, resizeAnnotation, removeAnnotation} = useAnnotations(activeAnnotationRef, isManuallyAddingImageRef);
-	const { annotations, setAnnotations } = useContext(AnnotationsContext);
+	const { annotations, setAnnotations, annotationsRef } = useContext(AnnotationsContext);
 	useEffect(() => {
     let allAnnotations = [{
       id: "abc",
@@ -1455,47 +1455,72 @@ const App = () => {
 	}
 
 	const handleNameTagClicked = async (details) => {
-		isManuallyAddingImageRef.current = true;
-		// console.log(pdfProxyObj, 'pdfProxyObj')
-		const buffer = await pdfProxyObjRef.current.getData();
+		const text = "Name here";
+		console.log(details, 'details334')
 		const dog = {
-      id: "abc",
-      pageNumber: 1,
-			pageIndex: 0,
-      content: "dFruityy5",
-      x: 0.1,
-      y: 0.1,
-      color: "#008000",
-      fontSize: 28,
-			fontFamily: "courier",
-			name: "freeTextEditor"
+      id: details.id,
+      pageNumber: details.source.pageIndex + 1,
+			pageIndex: details.source.pageIndex,
+      content: text,
+      x: details.x,
+      y: details.y,
+      color: "#080808",
+      fontSize: 16,
+			fontFamily: "helvetica",
+			name: "freeTextEditor",
+			moveDisabled: true
     }
-		updateAnnotation(dog, "hello");
-		await savePDF(buffer, pdfId);
-		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
-		newModifiedPayload[activePageIndex] = new Date().toISOString();
-		setModifiedFiles(newModifiedPayload);
+		updateAnnotation(dog, text);
+		pdfViewerRef.current.setDocument(pdfProxyObjRef.current, [
+			...annotationsRef.current.filter((each) => each.id !== details.id),
+			dog
+		]);
+	}
 
-		/*
-		pdfViewerRef.current.annotationEditorMode = {
-			isFromKeyboard: false,
-			mode: pdfjs.AnnotationEditorType.FREETEXT,
-			source: null
-		};
-		pdfViewerRef.current.annotationEditorParams = {
-			type: AnnotationEditorParamsType.CREATE,
-			value: {
-				// bitmapUrl: localStorage.getItem("signatureImage"),
-				// initialWidth: 0.1,
-				// initialHeight: 0.04,
-				content: "DOGGO",
-				initialX: details.x + (details.source.width / 2),
-				initialY: details.y + (details.source.height) - 0.04,
-				moveDisabled: true
-			}
-		}
-		*/
+	const handleEmailTagClicked = async (details) => {
+		const text = "Email here";
+		console.log(details, 'details334')
+		const dog = {
+      id: details.id,
+      pageNumber: details.source.pageIndex + 1,
+			pageIndex: details.source.pageIndex,
+      content: text,
+      x: details.x,
+      y: details.y,
+      color: "#080808",
+      fontSize: 16,
+			fontFamily: "helvetica",
+			name: "freeTextEditor",
+			moveDisabled: true
+    }
+		updateAnnotation(dog, text);
+		pdfViewerRef.current.setDocument(pdfProxyObjRef.current, [
+			...annotationsRef.current.filter((each) => each.id !== details.id),
+			dog
+		]);
+	}
 
+	const handleDateTagClicked = async (details) => {
+		const text = "Date here";
+		console.log(details, 'details334', annotations)
+		const dog = {
+      id: details.id,
+      pageNumber: details.source.pageIndex + 1,
+			pageIndex: details.source.pageIndex,
+      content: text,
+      x: details.x,
+      y: details.y,
+      color: "#080808",
+      fontSize: 16,
+			fontFamily: "helvetica",
+			name: "freeTextEditor",
+			moveDisabled: true
+    }
+		updateAnnotation(dog, text);
+		pdfViewerRef.current.setDocument(pdfProxyObjRef.current, [
+			...annotationsRef.current.filter((each) => each.id !== details.id),
+			dog
+		]);
 	}
 
 	const onTagClicked = (details) => {
@@ -1506,6 +1531,14 @@ const App = () => {
 			}
 			case "Name": {
 				handleNameTagClicked(details);
+				break;
+			}
+			case "Date": {
+				handleDateTagClicked(details);
+				break;
+			}
+			case "Email": {
+				handleEmailTagClicked(details);
 				break;
 			}
 		}

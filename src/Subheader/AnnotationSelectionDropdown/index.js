@@ -105,7 +105,6 @@ const AnnotationSelectionDropdown = ({
   }
 
   const hasSignature = () => {
-    console.log(annotations, 'annotations bro3')
     return annotations?.some((ann) => ann.name === "stampEditor")
   }
 

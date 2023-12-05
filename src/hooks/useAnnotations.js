@@ -74,8 +74,10 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
         x: existingAnnotation ? existingAnnotation.x : data.x,
         y: existingAnnotation ? existingAnnotation.y : data.y,
         content: text,
+        moveDisabled: existingAnnotation ? existingAnnotation.moveDisabled : data.moveDisabled,
         color: existingAnnotation ? existingAnnotation.color : data.color,
         fontSize: existingAnnotation ? existingAnnotation.fontSize : data.fontSize,
+        fontFamily: existingAnnotation ? existingAnnotation.fontFamily : data.fontFamily,
         name: "freeTextEditor"
       },
     ];
@@ -139,6 +141,7 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
 			content: data.content,
 			color: data.color,
 			fontSize: data.fontSize,
+      fontFamily: data.fontFamily,
 			overlayText: data.overlayText,
 			moveDisabled: data.moveDisabled
 		}
@@ -181,6 +184,7 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
 
   return {
     annotations,
+    annotationsRef,
     updateAnnotation: throttledUpdateAnnotation,
     moveAnnotation,
     removeAnnotation,
