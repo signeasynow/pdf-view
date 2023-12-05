@@ -116,6 +116,11 @@ const topSectionStyle = css`
 	align-items: center;
 `;
 
+const tagBtnStyle = css`
+  background: #fee179;
+	margin: 4px;
+`
+
 const thumbnailTopActionsWrapper = css`
   background: #d6dee8;
 	width: 100px;
@@ -216,12 +221,16 @@ const SearchBar = ({
 	if (editorMode === "tag") {
 		return (
 			<div css={getWrapperClass()}>
-				Click to add a field to the Document
-				<button onClick={() => onClickField("Sign")}>Signature</button>
-				<button onClick={() => onClickField("Name")}>Name</button>
-				<button onClick={() => onClickField("Email")}>Email</button>
-				<button onClick={() => onClickField("Date")}>Date</button>
-				<button onClick={onEnableClickTagMode}>Turn off edit mode</button>
+				<div style={{margin: "4px"}}>Click to add a field to the document. Your client will be able to click these tags.</div>
+				<button css={tagBtnStyle} onClick={() => onClickField("Sign")}>Signature</button>
+				<button css={tagBtnStyle} onClick={() => onClickField("Name")}>Name</button>
+				<button css={tagBtnStyle} onClick={() => onClickField("Email")}>Email</button>
+				<button css={tagBtnStyle} onClick={() => onClickField("Date")}>Date</button>
+				{
+					/*
+					<button css={tagBtnStyle} onClick={onEnableClickTagMode}>Turn off edit mode</button>
+					*/
+				}
 			</div>
 		)
 	}

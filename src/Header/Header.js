@@ -4,6 +4,7 @@ import Search from '../../assets/file-search-svgrepo-com.svg';
 import File from '../../assets/file-svgrepo-com.svg';
 import Panel from '../../assets/panel-left-svgrepo-com.svg';
 import Download from '../../assets/download-svgrepo-com.svg';
+import Tag from '../../assets/tag-svgrepo-com.svg';
 import ZoomSection from './ZoomSection';
 import HeaderBtn from './HeaderBtn';
 import { useTranslation } from 'react-i18next';
@@ -77,11 +78,18 @@ const Header = ({
 					)
 				}
 			</div>
-			{
-				tools?.general?.includes('search') && (
-					<HeaderBtn offsetX="-20px" onClick={onSearch} title={t("search")} iconAlt={t("search")} icon={showSearch ? File : Search} />
-				)
-			}
+			<div>
+				{
+					tools?.general?.includes('search') && (
+						<HeaderBtn offsetX="-20px" onClick={onSearch} title={t("search")} iconAlt={t("search")} icon={showSearch ? File : Search} />
+					)
+				}
+				{
+					tools?.general?.includes('tag') && (
+						<HeaderBtn offsetX="-20px" onClick={onSearch} title={"Tag document"} iconAlt={t("search")} icon={Tag} />
+					)
+				}
+			</div>
 		</Wrapper>
 	)
 }
