@@ -48,6 +48,7 @@
     "@amplitude/analytics-browser": "^2.2.3",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@ramonak/react-progress-bar": "^5.1.1",
     "@supabase/supabase-js": "^2.33.1",
     "aleon_35_pdf_viewer_lib": "^1.0.8",
     "alien35-pf": "^3.10.111",

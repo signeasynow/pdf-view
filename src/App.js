@@ -370,7 +370,6 @@ const App = () => {
 		if (!tools) {
 			return;
 		}
-		console.log(tools?.general?.includes("chat"), 'inclee', tools)
 		setSearchBarView(tools?.general?.includes("chat") ? "chat" : "search");
 	}, [tools]);
 
@@ -399,6 +398,7 @@ const App = () => {
 	const [modifiedFiles, setModifiedFiles] = useState([]);
 
 	const [inputtedLicenseKey, setInputtedLicenseKey] = useState(null);
+	const [initialAnnotations, setInitialAnnotations] = useState([]);
 	const {files, setFiles} = useContext(FilesContext)
 
 	const [fileNames, setFileNames] = useState([]);
@@ -419,6 +419,7 @@ const App = () => {
 	// console.log(redoStack, 'redoStack', operations)
 	const [activeToolbarItem, setActiveToolbarItem] = useState("");
 	const activeToolbarItemRef = useRef(null);
+	const [customData, setCustomData] = useState({});
 
 	useEffect(() => {
 		activeToolbarItemRef.current = activeToolbarItem;
@@ -480,6 +481,12 @@ const App = () => {
 			}
 			if (typeof event.data === 'object' && !!event.data.uuid) {
 				setInputtedUuid(event.data.uuid);
+			}
+			if (typeof event.data === 'object' && !!event.data.customData) {
+				setCustomData(event.data.customData);
+			}
+			if (typeof event.data === 'object' && !!event.data.initialAnnotations) {
+				setInitialAnnotations(event.data.initialAnnotations);
 			}
 			if (event.data?.type === 'fromCore') {
 				const id = event.data.id;
@@ -1013,6 +1020,15 @@ const App = () => {
     // allAnnotations = [];
     // setAnnotations(allAnnotations);
   }, []);
+
+	useEffect(() => {
+		if (!initialAnnotations) {
+			return;
+		}
+		console.log(pdfViewerRef.current, 'pdfViewerRef.current2')
+		// onEnableClickTagMode();
+		setAnnotations(initialAnnotations)
+	}, [initialAnnotations])
 
 	const onRotate = async (clockwise) => {
 		if (!pdfProxyObj) {
@@ -1769,6 +1785,7 @@ const App = () => {
 					}
 					<div css={pdfViewerWrapper}>
 						<PdfViewer
+							initialAnnotations={initialAnnotations}
 							onTagClicked={onTagClicked}
 							activeToolbarItemRef={activeToolbarItemRef}
 							onAnnotationFocus={onAnnotationFocus}
@@ -1816,7 +1833,10 @@ const App = () => {
 						/>
 					</div>
 					<SearchBar
+						fileName={fileNames[activePageIndex]}
+						customData={customData}
 						onEnableClickTagMode={onEnableClickTagMode}
+						pdfProxyObj={pdfProxyObj}
 						onClickField={onClickField}
 						editorMode={editorMode}
 						showFullScreenSearch={showFullScreenSearch()}

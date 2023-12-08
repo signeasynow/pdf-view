@@ -130,6 +130,11 @@ export const SignatureModal = ({ onConfirm, message, onClose }) => {
     onClearFullSignature();
   };
 
+  useEffect(() => {
+    signatureRef.current.penColor = penColor;
+    initialRef.current.penColor = penColor;
+  }, [penColor])
+
   return (
     <div css={overlayStyle}>
       <div css={modalContentStyle}>
@@ -137,7 +142,7 @@ export const SignatureModal = ({ onConfirm, message, onClose }) => {
         <div style={{display: "flex", flexFlow: "wrap"}}>
           <div style={{marginRight: 8, background: "#efefef", border: "1px solid #d3d3d3", width: 400, borderRadius: "4px"}}>
             <div style={{cursor: "crosshair"}}>
-              <SignaturePad ref={signatureRef} options={{ velocityFilterWeight: 0.4, penColor: penColor }}
+              <SignaturePad ref={signatureRef} options={{ velocityFilterWeight: 0.4 }}
           canvasProps={{ width: 800, height: 320, className: 'sigCanvas' }} />
 
             </div>

@@ -85,8 +85,6 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
     setAnnotations(newData);
   }
 
-  console.log(annotations, 'annotati33')
-
   const updateSignatureAnnotation = (data) => {
     let newData = JSON.parse(JSON.stringify(annotationsRef.current));
     const existingAnnotation = newData.find((e) => e.id === data.id);

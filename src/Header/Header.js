@@ -86,7 +86,7 @@ const Header = ({
 				}
 				{
 					tools?.general?.includes('tag') && (
-						<HeaderBtn offsetX="-20px" onClick={onSearch} title={"Tag document"} iconAlt={t("search")} icon={Tag} />
+						<HeaderBtn offsetX="-20px" onClick={onSearch} title={"Add markers"} iconAlt={t("search")} icon={Tag} />
 					)
 				}
 			</div>

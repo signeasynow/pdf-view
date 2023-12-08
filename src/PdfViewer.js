@@ -44,6 +44,7 @@ const containerStyle = css`
 
 export const PdfViewer = ({
 	activePageIndex,
+	initialAnnotations,
 	onAnnotationFocus,
 	activeToolbarItemRef,
 	annotations,
@@ -165,6 +166,13 @@ export const PdfViewer = ({
 				pdfViewerRef.current.annotationEditorMode = {
 					isFromKeyboard: false,
 					mode: pdfjs.AnnotationEditorType.FREETEXT,
+					source: null
+				};
+			}
+			if (initialAnnotations) {
+				pdfViewerRef.current.annotationEditorMode = {
+					isFromKeyboard: false,
+					mode: pdfjs.AnnotationEditorType.CLICKTAG,
 					source: null
 				};
 			}

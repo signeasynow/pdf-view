@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import SearchbarTools from './SearchbarTools';
 import ConversationSection from './ConversationSection';
 import { extractLastThreeQA } from '../../utils/extractLastQaQuestions';
+import TagSection from './TagSection';
 
 const confirmBtnStyle = css`
   background: #3183c8;
@@ -134,8 +135,10 @@ const thumbnailTopActionsWrapper = css`
 
 const SearchBar = ({
 	aiDocHash,
+	fileName,
+	customData,
 	editorMode,
-	tools,
+	pdfProxyObj,
 	aiLimitReached,
 	currentAiDocHash,
 	showFullScreenSearch,
@@ -160,7 +163,6 @@ const SearchBar = ({
 	onClear,
 	onNoToAiWarning,
 	conversation,
-	onEnableClickTagMode,
 	setConversation
 }) => {
 
@@ -220,18 +222,14 @@ const SearchBar = ({
 
 	if (editorMode === "tag") {
 		return (
-			<div css={getWrapperClass()}>
-				<div style={{margin: "4px"}}>Click to add a field to the document. Your client will be able to click these tags.</div>
-				<button css={tagBtnStyle} onClick={() => onClickField("Sign")}>Signature</button>
-				<button css={tagBtnStyle} onClick={() => onClickField("Name")}>Name</button>
-				<button css={tagBtnStyle} onClick={() => onClickField("Email")}>Email</button>
-				<button css={tagBtnStyle} onClick={() => onClickField("Date")}>Date</button>
-				{
-					/*
-					<button css={tagBtnStyle} onClick={onEnableClickTagMode}>Turn off edit mode</button>
-					*/
-				}
-			</div>
+			<TagSection
+				fileName={fileName}
+				customData={customData}
+				pdfProxyObj={pdfProxyObj}
+				showFullScreenSearch={showFullScreenSearch}
+				onClickField={onClickField}
+				showSearch={showSearch}
+			/>
 		)
 	}
 
