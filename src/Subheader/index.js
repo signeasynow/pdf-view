@@ -98,9 +98,6 @@ const Subheader = ({
 		return !!tools?.editing?.length;
 	}
 
-	const { showSignatureModal } = useModal();
-
-
 	const onChangeActiveToolbarItem = ({
 		tooltype
 	}) => {

@@ -39,6 +39,7 @@ import { extractAllTextFromPDF } from './utils/extractAllTextFromPdf';
 import { ModalProvider, useModal } from './Contexts/ModalProvider';
 import { AnnotationsContext, AnnotationsProvider } from './Contexts/AnnotationsContext';
 import useListenForSearchbarRequest from './hooks/useListenForSearchbarRequest';
+import useListenForSignatureModalRequest from './hooks/useListenForSignatureModalRequest';
 import * as pdfjs from 'pdfjs-dist';
 import { useAnnotations } from './hooks/useAnnotations';
 import { AnnotationEditorParamsType } from 'pdfjs-dist/build/pdf';
@@ -359,7 +360,10 @@ const App = () => {
 
 	const [multiPageSelections, setMultiPageSelections] = useState([]);
 
-	const { setModifiedUiElements: setModifiedUiElementsModal } = useModal();
+	const { setModifiedUiElements: setModifiedUiElementsModal,
+		showSignatureModal,
+		hideSignatureModal
+	} = useModal();
 	useEffect(() => {
 		if (!modifiedUiElements) {
 			return;
@@ -677,6 +681,14 @@ const App = () => {
 			setShowSearch((prev) => !prev);
 		}
 	})
+	useListenForSignatureModalRequest((enable) => {
+		// console.log(enable, 'enable bro3')
+		if (enable === true) {
+			showSignatureModal();
+		} else if (enable === false) {
+			hideSignatureModal();
+		}
+	});
 	useListenForThumbnailZoomRequest((v) => {
 		setExpandedViewThumbnailScale(v);
 		setThumbnailScale(v);

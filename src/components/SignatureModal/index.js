@@ -24,7 +24,6 @@ const modalContentStyle = css`
   background-color: white;
   padding: 20px;
   border-radius: 8px;
-  width: 720px;
   max-width: 100%;
   text-align: center;
 `;
@@ -154,11 +153,35 @@ export const SignatureModal = ({
     return modifiedUiElements?.signatureModal?.buttons.includes("cancel");
   }
 
+  const shouldShowInitialsPad = () => {
+    if (!modifiedUiElements?.signatureModal?.drawingPads) {
+      return true;
+    }
+    return modifiedUiElements?.signatureModal?.drawingPads.includes("initials");
+  }
+
+  const shouldShowColors = () => {
+    if (typeof modifiedUiElements?.signatureModal?.colorChoice !== "boolean") {
+      return true;
+    }
+    return modifiedUiElements?.signatureModal?.colorChoice
+  }
+
+  const signatureMarginRight = () => {
+    if (isSmallScreen || !shouldShowInitialsPad()) {
+      return 0;
+    }
+    return 8;
+  }
+
   return (
     <div css={overlayStyle}>
-      <div css={modalContentStyle}>
+      <div
+        css={modalContentStyle}
+        style={{ width: shouldShowInitialsPad() ? 720 : 400 }}
+      >
         <div style={{display: "flex", flexFlow: "wrap"}}>
-          <div style={{marginRight: isSmallScreen ? 0 : 8, background: "#efefef", border: "1px solid #d3d3d3", width: 400, borderRadius: "4px"}}>
+          <div style={{marginRight: signatureMarginRight(), background: "#efefef", border: "1px solid #d3d3d3", width: 400, borderRadius: "4px"}}>
             <div style={{cursor: "crosshair"}}>
               <SignaturePad ref={signatureRef} options={{ velocityFilterWeight: 0.4 }}
           canvasProps={{ width: 800, height: 320, className: 'sigCanvas' }} />
@@ -180,34 +203,45 @@ export const SignatureModal = ({
                 color: "#3083c8", fontSize: "14px"}} onClick={onClearFullSignature}>Clear</div>
             </div>
           </div>
-          <div style={{background: "#efefef", border: "1px solid #d3d3d3", width: 280, borderRadius: "4px"}}>
-            <div style={{cursor: "crosshair"}}>
-              <SignaturePad ref={initialRef} penColor={penColor}
-          canvasProps={{ width: 280, height: 160, className: 'sigCanvas' }} />
-            </div>
-            <div style={{
-              marginLeft: 8, marginRight: 8,
-              alignItems: "center",
-              display: "flex", justifyContent: "space-between", borderTop: "1px solid #d3d3d3", }}>
-              <div />
-              <div style={{
-                fontSize: "12px",
-                color: "grey",
-                paddingTop: 4,
-                paddingBottom: 4,
-              }}>Draw initials</div>
-              <div style={{
-                cursor: "pointer",
-                color: "#3083c8", fontSize: "14px"}} onClick={onClearInitials}>Clear</div>
-            </div>
-          </div>
+          {
+            shouldShowInitialsPad() && (
+              <div style={{background: "#efefef", border: "1px solid #d3d3d3", width: 280, borderRadius: "4px"}}>
+                <div style={{cursor: "crosshair"}}>
+                  <SignaturePad ref={initialRef} penColor={penColor}
+              canvasProps={{ width: 280, height: 160, className: 'sigCanvas' }} />
+                </div>
+                <div style={{
+                  marginLeft: 8, marginRight: 8,
+                  alignItems: "center",
+                  display: "flex", justifyContent: "space-between", borderTop: "1px solid #d3d3d3", }}>
+                  <div />
+                  <div style={{
+                    fontSize: "12px",
+                    color: "grey",
+                    paddingTop: 4,
+                    paddingBottom: 4,
+                  }}>Draw initials</div>
+                  <div style={{
+                    cursor: "pointer",
+                    color: "#3083c8", fontSize: "14px"}} onClick={onClearInitials}>Clear</div>
+                </div>
+              </div>
+            )
+          }
         </div>
         <div style={{ marginBottom: '8px', marginTop: '8px' }}>
           {/* Color selection buttons */}
-          <ColorButton color="black" onChangeColor={changeColor} />
-          <ColorButton color="red" onChangeColor={changeColor} />
-          <ColorButton color="blue" onChangeColor={changeColor} />
-          <ColorButton color="green" onChangeColor={changeColor} />
+          {
+            shouldShowColors() && (
+              <>
+                <ColorButton color="black" onChangeColor={changeColor} />
+                <ColorButton color="red" onChangeColor={changeColor} />
+                <ColorButton color="blue" onChangeColor={changeColor} />
+                <ColorButton color="green" onChangeColor={changeColor} />
+              </>
+            )
+          }
+          
         </div>
         <button css={confirmBtnStyle} variant="primary" size="sm" onClick={onClickConfirm}>
           Confirm
