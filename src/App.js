@@ -36,7 +36,7 @@ import useListenForSplitPagesRequest from './hooks/useListenForSplitPagesRequest
 import useListenForRemoveChatHistoryRequest from './hooks/useListenForRemoveChatHistoryRequest';
 import { PDFDocument, degrees } from 'pdf-lib';
 import { extractAllTextFromPDF } from './utils/extractAllTextFromPdf';
-import { ModalProvider } from './Contexts/ModalProvider';
+import { ModalProvider, useModal } from './Contexts/ModalProvider';
 import { AnnotationsContext, AnnotationsProvider } from './Contexts/AnnotationsContext';
 import useListenForSearchbarRequest from './hooks/useListenForSearchbarRequest';
 import * as pdfjs from 'pdfjs-dist';
@@ -347,6 +347,8 @@ const App = () => {
 
 	const isSmallScreen = useMediaQuery('(max-width: 550px)');
 
+	const [modifiedUiElements, setModifiedUiElements] = useState(null);
+
 	const showFullScreenSearch = () => {
 		return isSmallScreen && showSearch;
 	}
@@ -356,6 +358,14 @@ const App = () => {
 	}
 
 	const [multiPageSelections, setMultiPageSelections] = useState([]);
+
+	const { setModifiedUiElements: setModifiedUiElementsModal } = useModal();
+	useEffect(() => {
+		if (!modifiedUiElements) {
+			return;
+		}
+		setModifiedUiElementsModal(modifiedUiElements);
+	}, [modifiedUiElements]);
 
 	useEffect(() => {
 		window.parent.postMessage({ type: 'multi-page-selection-change', message: multiPageSelections }, window.parent.origin);
@@ -488,6 +498,9 @@ const App = () => {
 			if (typeof event.data === 'object' && !!event.data.initialAnnotations) {
 				setInitialAnnotations(event.data.initialAnnotations);
 			}
+			if (typeof event.data === 'object' && !!event.data.modifiedUiElements) {
+				setModifiedUiElements(event.data.modifiedUiElements);
+			}
 			if (event.data?.type === 'fromCore') {
 				const id = event.data.id;
 				if (pendingRequests[id]) {
@@ -499,6 +512,8 @@ const App = () => {
 			}
 		}, false);
 	}, []);
+
+	// console.log(modifiedUiElements, 'modifiedUiElements')
 
 	async function doMerge(pdfList) {
 		const mergedPdf = await PDFDocument.create();

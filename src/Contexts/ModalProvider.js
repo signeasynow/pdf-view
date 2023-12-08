@@ -12,6 +12,7 @@ export const ModalProvider = ({ children }) => {
   const [message, setMessage] = useState('');
   const [onConfirmCallback, setOnConfirmCallback] = useState(null);
   const [isSignatureVisible, setIsSignatureVisible] = useState(false);
+  const [modifiedUiElements, setModifiedUiElements] = useState(null);
 
   const showModal = (msg, onConfirm) => {
     setMessage(msg);
@@ -34,9 +35,14 @@ export const ModalProvider = ({ children }) => {
   };
 
   return (
-    <ModalContext.Provider value={{ showModal, showSignatureModal, hideModal }}>
+    <ModalContext.Provider value={{ showModal, showSignatureModal, hideModal, setModifiedUiElements }}>
       {isVisible && <ConfirmationModal onConfirm={onConfirmCallback} message={message} onClose={hideModal} />}
-      {isSignatureVisible && <SignatureModal onConfirm={onConfirmCallback} message={message} onClose={hideSignatureModal} />}
+      {isSignatureVisible && <SignatureModal
+        modifiedUiElements={modifiedUiElements}
+        onConfirm={onConfirmCallback}
+        message={message}
+        onClose={hideSignatureModal}
+      />}
       {children}
     </ModalContext.Provider>
   );

@@ -5,6 +5,7 @@ import SignaturePad from 'react-signature-pad-wrapper'; // Updated import
 import { SignaturesContext } from '../../Contexts/SignaturesContext';
 import { ColorButton } from './ColorButton';
 import trimCanvas from 'trim-canvas';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
 
 const overlayStyle = css`
   position: fixed;
@@ -16,7 +17,7 @@ const overlayStyle = css`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* Ensure it's on top */
+  z-index: 999999; /* Ensure it's on top */
 `;
 
 const modalContentStyle = css`
@@ -26,13 +27,6 @@ const modalContentStyle = css`
   width: 720px;
   max-width: 100%;
   text-align: center;
-`;
-
-const topCloseBtnStyle = css`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  cursor: pointer;
 `;
 
 const confirmBtnStyle = css`
@@ -54,7 +48,13 @@ const closeBtnStyle = css`
   cursor: pointer;
 `
 
-export const SignatureModal = ({ onConfirm, message, onClose }) => {
+export const SignatureModal = ({
+  onConfirm,
+  onClose,
+  modifiedUiElements
+}) => {
+
+  console.log(modifiedUiElements, 'modifiedUiElements');
 
   const signatureRef = useRef();
   const initialRef = useRef();
@@ -130,17 +130,35 @@ export const SignatureModal = ({ onConfirm, message, onClose }) => {
     onClearFullSignature();
   };
 
+  const isSmallScreen = useMediaQuery('(max-width: 550px)');
+
+
   useEffect(() => {
     signatureRef.current.penColor = penColor;
     initialRef.current.penColor = penColor;
-  }, [penColor])
+  }, [penColor]);
+
+  const onClickConfirm = () => {
+    if (signatureRef.current.isEmpty()) {
+      return alert("Please draw your signature before proceeding.");
+    }
+    // Handle confirm action here
+    handleSaveSignature();
+    onClose?.();
+  }
+
+  const shouldShowCancelBtn = () => {
+    if (!modifiedUiElements?.signatureModal?.buttons) {
+      return true;
+    }
+    return modifiedUiElements?.signatureModal?.buttons.includes("cancel");
+  }
 
   return (
     <div css={overlayStyle}>
       <div css={modalContentStyle}>
-        <span css={topCloseBtnStyle} onClick={onClose}>&times;</span>
         <div style={{display: "flex", flexFlow: "wrap"}}>
-          <div style={{marginRight: 8, background: "#efefef", border: "1px solid #d3d3d3", width: 400, borderRadius: "4px"}}>
+          <div style={{marginRight: isSmallScreen ? 0 : 8, background: "#efefef", border: "1px solid #d3d3d3", width: 400, borderRadius: "4px"}}>
             <div style={{cursor: "crosshair"}}>
               <SignaturePad ref={signatureRef} options={{ velocityFilterWeight: 0.4 }}
           canvasProps={{ width: 800, height: 320, className: 'sigCanvas' }} />
@@ -191,14 +209,14 @@ export const SignatureModal = ({ onConfirm, message, onClose }) => {
           <ColorButton color="blue" onChangeColor={changeColor} />
           <ColorButton color="green" onChangeColor={changeColor} />
         </div>
-        <button css={confirmBtnStyle} variant="primary" size="sm" onClick={() => {
-          // Handle confirm action here
-          handleSaveSignature();
-          onClose?.();
-        }}>
+        <button css={confirmBtnStyle} variant="primary" size="sm" onClick={onClickConfirm}>
           Confirm
         </button>
-        <button css={closeBtnStyle} variant="secondary" size="md" onClick={onClose}>Cancel</button>
+        {
+          shouldShowCancelBtn() && (
+            <button css={closeBtnStyle} variant="secondary" size="md" onClick={onClose}>Cancel</button>
+          )
+        }
       </div>
     </div>
   );
