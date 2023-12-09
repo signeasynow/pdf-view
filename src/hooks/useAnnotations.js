@@ -1,4 +1,4 @@
-import { useContext } from 'preact/hooks';
+import { useContext, useEffect, useState } from 'preact/hooks';
 import { AnnotationsContext } from '../Contexts/AnnotationsContext';
 import { UndoRedoContext } from '../Contexts/UndoRedoContext';
 
@@ -113,21 +113,46 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
     setAnnotations(newData);
   }
 
-  const throttledUpdateAnnotation = debounce((data, text) => {
+  const [updateQueue, setUpdateQueue] = useState([]);
+
+  const addToQueue = (data, text, type) => {
+    setUpdateQueue(queue => [...queue, { data, text, type }]);
+  };
+
+  const processQueue = () => {
+    if (updateQueue.length === 0) return;
+
+    const { data, text, type } = updateQueue[0];
+    switch (type) {
+      case 'freeTextEditor':
+        updateFreeTextAnnotation(data, text);
+        break;
+      case 'stampEditor':
+        updateSignatureAnnotation(data);
+        break;
+      // ... other cases
+    }
+
+    // Remove the processed item from the queue
+    setUpdateQueue(queue => queue.slice(1));
+  };
+
+  useEffect(() => {
+    if (updateQueue.length > 0) {
+      const timer = setTimeout(processQueue, 50); // Process queue with delay
+      return () => clearTimeout(timer);
+    }
+  }, [updateQueue]);
+
+  const throttledUpdateAnnotation = (data, text) => {
     console.log(data, 'data333', data.height)
     if (!data) {
       return;
     }
-    switch (data.name) {
-      case "freeTextEditor": {
-        updateFreeTextAnnotation(data, text);
-        break;
-      }
-      case "stampEditor": {
-        updateSignatureAnnotation(data);
-        break;
-      }
-    }
+    const type = data.name;
+    // Add to queue
+    addToQueue(data, text, type);
+
     const payload = {
 			height: data.height,
 			width: data.width,
@@ -152,7 +177,7 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
 			addOperation(operation);
 			isManuallyAddingImageRef.current = false;
 		}
-  }, 50);
+  };
 
   const updateAnnotationParam = (id, ...params) => {
     let newData = JSON.parse(JSON.stringify(annotationsRef.current));
