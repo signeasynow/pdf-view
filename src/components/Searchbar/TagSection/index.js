@@ -129,6 +129,7 @@ const TagSection = ({
   const [subjectModified, setSubjectModified] = useState(false);
   const [message, setMessage] = useState(`Hello,\n\nPlease sign the document attached.\n\nThank you,\n\n${customData?.name}`);
   const [messageModified, setMessageModified] = useState(false);
+  const [loadingSend, setLoadingSend] = useState(false);
 
   useEffect(() => {
     if (subjectModified) {
@@ -162,11 +163,13 @@ const TagSection = ({
   console.log(customData, 'custom444')
 
   const onSend = async () => {
+    setLoadingSend(true);
     const buffer = await pdfProxyObj.getData();
     const uuid = generateUUID();
     const doc = await uploadPDF(buffer, uuid, customData?.userId);
     console.log(doc, 'doc33', uuid, buffer)
     if (!doc) {
+      setLoadingSend(false);
       alert("Something went wrong. We were unable to upload your PDF.")
       return;
     }
@@ -184,7 +187,16 @@ const TagSection = ({
         subject
       },
     });
+
+    if (error) {
+      alert("Something went wrong sending the email");
+      setLoadingSend(false);
+      return;
+    }
+    alert("Your document has been sent successfully! Track & edit your document under Account > Documents.")
+    setLoadingSend(false);
   }
+  
 
   const onChangeEmailTag = (e) => {
     if (emailInput === recipientEmail) {
