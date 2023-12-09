@@ -134,6 +134,7 @@ const thumbnailTopActionsWrapper = css`
 `;
 
 const SearchBar = ({
+	onDisableEditorMode,
 	aiDocHash,
 	fileName,
 	customData,
@@ -223,6 +224,7 @@ const SearchBar = ({
 	if (editorMode === "tag") {
 		return (
 			<TagSection
+				onDisableEditorMode={onDisableEditorMode}
 				fileName={fileName}
 				customData={customData}
 				pdfProxyObj={pdfProxyObj}

@@ -1860,6 +1860,7 @@ const App = () => {
 						/>
 					</div>
 					<SearchBar
+						onDisableEditorMode={onDisableEditorMode}
 						fileName={fileNames[activePageIndex]}
 						customData={customData}
 						onEnableClickTagMode={onEnableClickTagMode}

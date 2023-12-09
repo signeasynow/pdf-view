@@ -67,9 +67,12 @@ export const SignatureModal = ({
     const signatureImage = !signatureRef.current.isEmpty()
       ? trimCanvas(signatureRef.current.canvas?.current).toDataURL('image/png')
       : fullSignature;
-    const initialsImage = !initialRef.current.isEmpty()
-      ? trimCanvas(initialRef.current.canvas?.current).toDataURL('image/png')
-      : initialsSignature;
+    let initialsImage;
+    if (initialRef.current) {
+      initialsImage = !initialRef.current.isEmpty()
+        ? trimCanvas(initialRef.current.canvas?.current).toDataURL('image/png')
+        : initialsSignature;
+    }
   
     // Only update localStorage and context if there's a new signature/initials
     if (signatureImage) {
@@ -134,7 +137,10 @@ export const SignatureModal = ({
 
   useEffect(() => {
     signatureRef.current.penColor = penColor;
-    initialRef.current.penColor = penColor;
+    if (initialRef.current) {
+      initialRef.current.penColor = penColor;
+    }
+    
   }, [penColor]);
 
   const onClickConfirm = () => {
