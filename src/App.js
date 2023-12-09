@@ -1495,16 +1495,17 @@ const App = () => {
 				moveDisabled: true
 			}
 		}
-		pdfViewerRef.current.annotationEditorMode = {
-			isFromKeyboard: false,
-			mode: pdfjs.AnnotationEditorType.CLICKTAG,
-			source: null
-		};
+		if (editorMode === "click-tag") {
+			pdfViewerRef.current.annotationEditorMode = {
+				isFromKeyboard: false,
+				mode: pdfjs.AnnotationEditorType.CLICKTAG,
+				source: null
+			};
+		}
 	}
 
 	const handleNameTagClicked = async (details) => {
-		const text = "Name here";
-		console.log(details, 'details334')
+		const text = customData?.nameTagValue;
 		const dog = {
       id: details.id,
       pageNumber: details.source.pageIndex + 1,
@@ -1526,7 +1527,7 @@ const App = () => {
 	}
 
 	const handleEmailTagClicked = async (details) => {
-		const text = "Email here";
+		const text = customData?.emailTagValue;
 		console.log(details, 'details334')
 		const dog = {
       id: details.id,
@@ -1549,7 +1550,7 @@ const App = () => {
 	}
 
 	const handleDateTagClicked = async (details) => {
-		const text = "Date here";
+		const text = customData?.dateTagValue;
 		console.log(details, 'details334', annotations)
 		const dog = {
       id: details.id,
@@ -1628,11 +1629,14 @@ const App = () => {
 				overlayText: type
 			}
 		}
-		pdfViewerRef.current.annotationEditorMode = {
-			isFromKeyboard: false,
-			mode: pdfjs.AnnotationEditorType.CLICKTAG,
-			source: null
-		};
+		if (editorMode === "click-tag") {
+			pdfViewerRef.current.annotationEditorMode = {
+				isFromKeyboard: false,
+				mode: pdfjs.AnnotationEditorType.CLICKTAG,
+				source: null
+			};
+		}
+		
 	}
 
 	const onMoveAnnotation = (data) => {

@@ -61,6 +61,7 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
     // console.log(data, 'data444', data.content, 'dd', data?.source?.content, 'dg', text)
     let newData = JSON.parse(JSON.stringify(annotationsRef.current));
     const existingAnnotation = newData.find((e) => e.id === data.id);
+    console.log(newData, 'newData1__', annotations)
     activeAnnotationRef.current = data.id;
     if (!existingAnnotation) {
       // TOTALLY FINE FOR THERE TO BE NONE.
@@ -81,6 +82,7 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
         name: "freeTextEditor"
       },
     ];
+    console.log(newData, 'newData2__')
 
     setAnnotations(newData);
   }
