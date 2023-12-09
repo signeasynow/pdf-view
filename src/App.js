@@ -1495,6 +1495,11 @@ const App = () => {
 				moveDisabled: true
 			}
 		}
+		pdfViewerRef.current.annotationEditorMode = {
+			isFromKeyboard: false,
+			mode: pdfjs.AnnotationEditorType.CLICKTAG,
+			source: null
+		};
 	}
 
 	const handleNameTagClicked = async (details) => {
@@ -1623,6 +1628,11 @@ const App = () => {
 				overlayText: type
 			}
 		}
+		pdfViewerRef.current.annotationEditorMode = {
+			isFromKeyboard: false,
+			mode: pdfjs.AnnotationEditorType.CLICKTAG,
+			source: null
+		};
 	}
 
 	const onMoveAnnotation = (data) => {

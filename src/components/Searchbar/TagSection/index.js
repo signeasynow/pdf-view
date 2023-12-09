@@ -98,6 +98,16 @@ const sendBtn = css`
   cursor: pointer;
 `
 
+const loadingSendBtn = css`
+  display: flex;
+  padding: 0 0 0 8px;
+  background: #d8d8d8;
+  border-radius: 4px;
+  border: none;
+  align-items: center;
+  cursor: not-allowed;
+`
+
 const backBtn = css`
   display: flex;
   padding: 0 8px 0 0;
@@ -326,7 +336,7 @@ const TagSection = ({
       </div>
       <div style={{display: "flex", justifyContent: "space-between", padding: "8px 4px", background: "#f1f3f5"}}>
         <button css={backBtn} onClick={onRevertFromStage2}><Icon src={ChevronLeft} alt="Right" /><div>Back</div></button>
-        <button css={sendBtn} onClick={onSend}><div>Send</div><Icon src={SendIcon} alt="Right" /></button>
+        <button disabled={loadingSend} css={loadingSend ? loadingSendBtn : sendBtn} onClick={onSend}><div>Send</div><Icon src={SendIcon} alt="Right" /></button>
       </div>
     </div>
 	);
