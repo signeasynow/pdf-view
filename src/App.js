@@ -839,10 +839,12 @@ const App = () => {
     };
   }, []);
 
+	console.log(tools, 'tools')
+
 	const showHeader = () => {
 		return tools?.general?.includes("download") || tools?.general?.includes("panel-toggle")
 		|| tools?.general?.includes("zoom") || tools?.general?.includes("search")
-		|| tools?.editing?.includes("rotation")
+		|| tools?.editing?.includes("rotation") || tools?.markers?.includes("go-to-next")
 	}
 
 	const showSubheader = () => {

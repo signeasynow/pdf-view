@@ -9,6 +9,7 @@ import ZoomSection from './ZoomSection';
 import HeaderBtn from './HeaderBtn';
 import { useTranslation } from 'react-i18next';
 import VerticalDivider from '../components/VerticalDivider';
+import GoToNextTag from '../components/GoToNextTag';
 
 const Wrapper = ({ children }) => (
 	<div css={css({
@@ -48,6 +49,7 @@ const Header = ({
  return (
 		<Wrapper>
 			<div css={contentLeftStyle}>
+				<GoToNextTag />
 				{
 					tools?.general?.includes('download') && (
 						<>
