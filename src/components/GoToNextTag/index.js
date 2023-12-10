@@ -6,6 +6,18 @@ const wrapper = css`
 	color: white;
   width: 140px;
   text-align: center;
+  background: #437baf;
+  padding: 4px;
+  margin-right: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.25);
+`;
+
+const doneWrapper = css`
+  color: white;
+  width: 140px;
+  text-align: center;
   background: #008200;
   padding: 4px;
   margin-right: 8px;
@@ -55,12 +67,20 @@ export const GoToNextTag = ({
   const nextAnnotationType = () => {
     const annotation = nextAnnotation();
     if (!annotation) {
-      return;
+      return "Save & Finish";
     }
 
     return `Go to ${overlayMap[annotation.overlayText]}`;
   }
 
+  const isDone = () => {
+    return !nextAnnotation();
+  }
+
+  const onSaveAndFinish = () => {
+    // audit
+    // propagate to the iFrame parent who will handle the UI
+  }
 
   const onClick = () => {
     // console.log(annotations, 'annot33')
@@ -71,12 +91,12 @@ export const GoToNextTag = ({
               pageNumber: annotation.pageNumber
           });
       } else {
-          console.log('No next annotation found');
+          onSaveAndFinish()
       }
   }
 
   return (
-    <div onClick={onClick} css={nextAnnotation() ? wrapper : emptyWrapper}>
+    <div onClick={onClick} css={isDone() ? doneWrapper : wrapper}>
       {nextAnnotationType()}
     </div>
   );
