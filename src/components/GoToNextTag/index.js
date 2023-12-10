@@ -42,8 +42,12 @@ export const GoToNextTag = ({
     );
 
     // Sort annotations by pageNumber to find the next one
-    clickableAnnotations.sort((a, b) => a.pageNumber - b.pageNumber);
-
+    clickableAnnotations.sort((a, b) => {
+        if (a.pageNumber === b.pageNumber) {
+            return a.y - b.y; // For same page, sort by y value (vertical position)
+        }
+        return a.pageNumber - b.pageNumber; // Otherwise, sort by page number
+    });
     // Assuming you want to find the first annotation in the sorted array
     return clickableAnnotations[0];
   }
