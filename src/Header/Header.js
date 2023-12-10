@@ -49,7 +49,11 @@ const Header = ({
  return (
 		<Wrapper>
 			<div css={contentLeftStyle}>
-				<GoToNextTag />
+				{
+					tools?.markers?.includes("go-to-next") && (
+						<GoToNextTag pdf={pdfViewerObj} />
+					)
+				}
 				{
 					tools?.general?.includes('download') && (
 						<>
