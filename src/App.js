@@ -1575,6 +1575,13 @@ const App = () => {
 	}
 
 	const onTagClicked = (details) => {
+		console.log(details, 'details2');
+		const tagPayload = {
+			markerType: details.source?.overlayText,
+			pageNumber: details.source?.pageIndex + 1,
+			coordinates: [details.source?.x, details.source?.y]
+		}
+		window.parent.postMessage({ type: "click-tag", ...tagPayload }, '*');
 		switch (details.source.overlayText) {
 			case "Sign": {
 				handleSignTagClicked(details);

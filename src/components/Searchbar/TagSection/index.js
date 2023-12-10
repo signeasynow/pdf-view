@@ -9,6 +9,17 @@ import ChevronLeft from '../../../../assets/chevron-left-svgrepo-com.svg';
 import { AnnotationsContext } from '../../../Contexts/AnnotationsContext';
 import { supabase } from '../../../utils/supabase';
 
+async function getUserIP() {
+  try {
+    const response = await fetch('https://httpbin.org/ip');
+    const data = await response.json();
+    return data.origin;
+  } catch (error) {
+    console.error('Error fetching IP:', error);
+    return null;
+  }
+}
+
 function generateUUID() {
   let d = new Date().getTime(); //Timestamp
   let d2 = (performance && performance.now && (performance.now()*1000)) || 0; //Time in microseconds since page-load or 0 if unsupported
@@ -170,7 +181,18 @@ const TagSection = ({
     return annotationsRef.current.some((ann) => ann.overlayText === "Email")
   }
 
-  console.log(customData, 'custom444')
+  console.log(customData, 'custom444');
+
+  const [ip, setIp] = useState("");
+
+  const fetchIp = async () => {
+    const res = await getUserIP();
+    setIp(res);
+  }
+
+  useEffect(() => {
+    fetchIp();
+  }, [])
 
   const onSend = async () => {
     setLoadingSend(true);
@@ -194,7 +216,9 @@ const TagSection = ({
         nameField: nameInput,
         senderName: customData?.name,
         documentName: fileName,
-        subject
+        subject,
+        userIp: ip,
+        userAgent: navigator.userAgent
       },
     });
 

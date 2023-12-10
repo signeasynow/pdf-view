@@ -78,6 +78,7 @@ export const GoToNextTag = ({
   }
 
   const onSaveAndFinish = () => {
+    window.parent.postMessage({ type: "finish-signing"});
     // audit
     // propagate to the iFrame parent who will handle the UI
   }

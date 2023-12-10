@@ -181,7 +181,7 @@ export const PdfViewer = ({
 		});
 
 		eventBus.on("tagclicked", (details) => {
-			// console.log(details, 'details 778')
+			console.log(details, 'details 778')
 			onTagClicked(details);
 		});
 
