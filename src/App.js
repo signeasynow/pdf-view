@@ -1546,7 +1546,11 @@ const App = () => {
 
 	const handleEmailTagClicked = async (details) => {
 		const text = customData?.emailTagValue;
-		console.log(details, 'details334')
+		pdfViewerRef.current.annotationEditorMode = {
+			isFromKeyboard: false,
+			mode: pdfjs.AnnotationEditorType.FREETEXT,
+			source: null
+		};
 		const dog = {
       id: details.id,
       pageNumber: details.source.pageIndex + 1,
@@ -1554,22 +1558,36 @@ const App = () => {
       content: text,
       x: details.x,
       y: details.y,
+			initialX: details.x,
+			initialY: details.y,
       color: "#080808",
       fontSize: 16,
 			fontFamily: "helvetica",
 			name: "freeTextEditor",
 			moveDisabled: true
     }
+		pdfViewerRef.current.annotationEditorParams = {
+			type: AnnotationEditorParamsType.CREATE,
+			value: dog
+		}
+		// maintains the mode.
+		if (editorMode === "click-tag") {
+			pdfViewerRef.current.annotationEditorMode = {
+				isFromKeyboard: false,
+				mode: pdfjs.AnnotationEditorType.CLICKTAG,
+				source: null
+			};
+		}
 		updateAnnotation(dog, text);
-		pdfViewerRef.current.setDocument(pdfProxyObjRef.current, [
-			...annotationsRef.current.filter((each) => each.id !== details.id),
-			dog
-		]);
 	}
 
 	const handleDateTagClicked = async (details) => {
 		const text = customData?.dateTagValue;
-		console.log(details, 'details334', annotations)
+		pdfViewerRef.current.annotationEditorMode = {
+			isFromKeyboard: false,
+			mode: pdfjs.AnnotationEditorType.FREETEXT,
+			source: null
+		};
 		const dog = {
       id: details.id,
       pageNumber: details.source.pageIndex + 1,
@@ -1577,17 +1595,27 @@ const App = () => {
       content: text,
       x: details.x,
       y: details.y,
+			initialX: details.x,
+			initialY: details.y,
       color: "#080808",
       fontSize: 16,
 			fontFamily: "helvetica",
 			name: "freeTextEditor",
 			moveDisabled: true
     }
+		pdfViewerRef.current.annotationEditorParams = {
+			type: AnnotationEditorParamsType.CREATE,
+			value: dog
+		}
+		// maintains the mode.
+		if (editorMode === "click-tag") {
+			pdfViewerRef.current.annotationEditorMode = {
+				isFromKeyboard: false,
+				mode: pdfjs.AnnotationEditorType.CLICKTAG,
+				source: null
+			};
+		}
 		updateAnnotation(dog, text);
-		pdfViewerRef.current.setDocument(pdfProxyObjRef.current, [
-			...annotationsRef.current.filter((each) => each.id !== details.id),
-			dog
-		]);
 	}
 
 	const onTagClicked = (details) => {
