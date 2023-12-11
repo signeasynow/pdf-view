@@ -1497,6 +1497,7 @@ const App = () => {
 				moveDisabled: true
 			}
 		}
+		// maintains the mode.
 		if (editorMode === "click-tag") {
 			pdfViewerRef.current.annotationEditorMode = {
 				isFromKeyboard: false,
@@ -1521,7 +1522,7 @@ const App = () => {
 			name: "freeTextEditor",
 			moveDisabled: true
     }
-		updateAnnotation(dog, text);
+		// updateAnnotation(dog, text);
 		pdfViewerRef.current.setDocument(pdfProxyObjRef.current, [
 			...annotationsRef.current.filter((each) => each.id !== details.id),
 			dog

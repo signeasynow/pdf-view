@@ -11,27 +11,6 @@ import { addSandboxWatermark } from './utils/addSandboxWatermark';
 import simpleHash from './utils/simpleHash';
 import { AnnotationEditorParamsType } from 'pdfjs-dist/build/pdf';
 
-function simulateClick(x, y, element) {
-  const event = new MouseEvent('click', {
-    'view': window,
-    'bubbles': true,
-    'cancelable': true,
-    'clientX': x,
-    'clientY': y
-  });
-  element.dispatchEvent(event);
-}
-
-class CustomPDFViewer extends PDFViewer {
-  addAnnotation(pageNumber, annotationData) {
-		console.log("ADDINGG ANN")
-		const pdfElement = document.querySelector('.annotationEditorLayer');
-
-    // Get the page view for the specified page number
-    console.log(pdfjs.AnnotationEditorLayer, 'pdfjs.AnnotationEditorLayer')
-  }
-}
-
 const SANDBOX_BUNDLE_SRC = 'pdfjs-dist/build/pdf.sandbox.js';
 
 const containerStyle = css`
