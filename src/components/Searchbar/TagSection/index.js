@@ -199,7 +199,7 @@ const TagSection = ({
     const buffer = await pdfProxyObj.getData();
     const uuid = generateUUID();
     const doc = await uploadPDF(buffer, uuid, customData?.userId);
-    console.log(doc, 'doc33', uuid, buffer)
+    // console.log(doc, 'doc33', uuid, buffer)
     if (!doc) {
       setLoadingSend(false);
       alert("Something went wrong. We were unable to upload your PDF.")
