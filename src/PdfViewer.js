@@ -148,7 +148,7 @@ export const PdfViewer = ({
 					source: null
 				};
 			}
-			if (initialAnnotations) {
+			if (initialAnnotations && tools?.markers?.includes("clickable")) {
 				pdfViewerRef.current.annotationEditorMode = {
 					isFromKeyboard: false,
 					mode: pdfjs.AnnotationEditorType.CLICKTAG,
@@ -160,7 +160,7 @@ export const PdfViewer = ({
 		});
 
 		eventBus.on("tagclicked", (details) => {
-			console.log(details, 'details 778')
+			// console.log(details, 'details 778')
 			onTagClicked(details);
 		});
 

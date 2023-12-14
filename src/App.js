@@ -20,7 +20,7 @@ import i18n from "./utils/i18n";
 import useInitWasm from './hooks/useInitWasm';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import useDeclareIframeLoaded from './hooks/useDeclareIframeLoaded';
-import useDownload from './hooks/useDownload';
+import useDownload, { modifyPdfBuffer } from './hooks/useDownload';
 import useListenForDownloadRequest from './hooks/useListenForDownloadRequest';
 import usePropageClickEvents from './hooks/usePropagateClickEvents';
 import {supabase} from './utils/supabase';
@@ -48,6 +48,7 @@ import { UndoRedoContext } from './Contexts/UndoRedoContext';
 import { ActivePageContext } from './Contexts/ActivePageContext';
 import SignatureIconPng from "../assets/yellow-bg-500-150.png";
 import SignatureIcon54Png from "../assets/yellow-bg-5-4.png";
+import useListenForRequestBufferRequest from './hooks/useListenForRequestBufferRequest';
 
 async function splitPdfPages(pdfBytes, splitIndices) {
   const originalPdfDoc = await PDFDocument.load(pdfBytes);
@@ -631,6 +632,16 @@ const App = () => {
 		}
 	}, [files]);
 
+	const onRequestBuffer = async () => {
+		let successfulBuffers = await fetchBuffers(files.slice(0, fileNames.length));
+		if (!successfulBuffers.length) {
+			return alert("Something went wrong.");
+		}
+		const modifiedPdfBuffer = await modifyPdfBuffer(successfulBuffers[0], annotations);
+		console.log(modifiedPdfBuffer, 'modifiedPdfBuffer2')
+		window.parent.postMessage({ type: "request-buffer-completed", message: modifiedPdfBuffer });
+	}
+
 	const onCombinePdfs = async () => {
 
 		const errors = [];
@@ -660,6 +671,7 @@ const App = () => {
 	useListenForMergeFilesRequest(onMergeFiles);
 	useListenForSplitPagesRequest(onSplitPages);
 	useListenForCombineFilesRequest(onCombinePdfs);
+	useListenForRequestBufferRequest(onRequestBuffer);
 	
 	useListenForThumbnailFullScreenRequest((enable) => {
 		if (enable === true) {
@@ -1049,6 +1061,10 @@ const App = () => {
     // allAnnotations = [];
     // setAnnotations(allAnnotations);
   }, []);
+
+	useEffect(() => {
+		window.parent.postMessage({ type: 'annotations-change', message: annotations }, window.parent.origin);
+	}, [annotations]);
 
 	useEffect(() => {
 		if (!initialAnnotations) {
@@ -1619,7 +1635,7 @@ const App = () => {
 	}
 
 	const onTagClicked = (details) => {
-		console.log(details, 'details2');
+		// console.log(details, 'details2');
 		const tagPayload = {
 			markerType: details.source?.overlayText,
 			pageNumber: details.source?.pageIndex + 1,

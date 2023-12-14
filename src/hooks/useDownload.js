@@ -45,7 +45,7 @@ async function getFontForAnnotation(pdfDoc, annotation) {
   }
 }
 
-const modifyPdfBuffer = async (buffer, annotations) => {
+export const modifyPdfBuffer = async (buffer, annotations) => {
 	const pdfDoc = await PDFDocument.load(buffer);
 
 	// Apply annotations
