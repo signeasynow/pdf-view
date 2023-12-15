@@ -4,10 +4,14 @@ module.exports = {
 		browser: true,
 		es2021: true
 	},
+	plugins: [
+		'promise'
+	],
 	extends: [
 		'preact',
 		'plugin:preact/recommended',
-		'plugin:jest/recommended' // add this line
+		'plugin:jest/recommended',
+		'plugin:promise/recommended'
 	],
 	parser: '@babel/eslint-parser', // use the new parser
 	parserOptions: {
@@ -28,6 +32,7 @@ module.exports = {
 		'react/react-in-jsx-scope': 'off',
 		'react/jsx-uses-react': 'off',
 		'react/jsx-uses-vars': 'error',
-		"no-undef": "off"
+		'no-undef': 'off',
+		'no-unused-vars': ['error', { args: 'after-used' }]
 	}
 };
