@@ -89,7 +89,7 @@ const ZoomSection = ({
 	const [zoomValue, setZoomValue] = useState(100);
 
 	useEffect(() => {
-		if (typeof defaultZoom !== "number") {
+		if (typeof defaultZoom !== 'number') {
 			return;
 		}
 		setZoomValue(defaultZoom);
@@ -202,14 +202,14 @@ const ZoomSection = ({
 */
 
 	const onFitWidth = () => {
-		pdfViewerObj.currentScaleValue = "page-width";
-		setZoomValue(Math.round(pdfViewerObj.currentScale * 100))
-	}
+		pdfViewerObj.currentScaleValue = 'page-width';
+		setZoomValue(Math.round(pdfViewerObj.currentScale * 100));
+	};
 
 	const onFitHeight = () => {
-		pdfViewerObj.currentScaleValue = "page-height";
-		setZoomValue(Math.round(pdfViewerObj.currentScale * 100))
-	}
+		pdfViewerObj.currentScaleValue = 'page-height';
+		setZoomValue(Math.round(pdfViewerObj.currentScale * 100));
+	};
 
 	useEffect(() => {
 		if (!pdfViewerObj) {
@@ -247,7 +247,7 @@ const ZoomSection = ({
 					title={
 						<div css={dropdownTitle}>
 							<div css={percentStyle}>%</div>
-							<Icon size="sm" src={ChevronDown} alt={t("arrowDown")} />
+							<Icon size="sm" src={ChevronDown} alt={t('arrowDown')} />
 						</div>
 					}
 					child={<div css={childStyle}>
@@ -268,12 +268,12 @@ const ZoomSection = ({
 					</div>}
 				/>
 				<div css={zoomLeft}>
-					<Tooltip title={t("zoomIn")}>
-						<Icon onClick={onZoomIn} src={ZoomOut} alt={t("zoomIn")} />
+					<Tooltip title={t('zoomIn')}>
+						<Icon onClick={onZoomIn} src={ZoomOut} alt={t('zoomIn')} />
 					</Tooltip>
 				</div>
-				<Tooltip title={t("zoomOut")}>
-					<Icon onClick={onZoomOut} src={ZoomIn} alt={t("zoomOut")} />
+				<Tooltip title={t('zoomOut')}>
+					<Icon onClick={onZoomOut} src={ZoomIn} alt={t('zoomOut')} />
 				</Tooltip>
 			</div>
 		</div>

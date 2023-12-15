@@ -11,24 +11,24 @@ import { useAnnotations } from '../../hooks/useAnnotations';
 import { useDebounce } from '../../utils/useDebounce';
 
 function generateNumbers() {
-  let numbers = [];
+	let numbers = [];
 
-  // Numbers from 1 to 20
-  for (let i = 1; i <= 20; i++) {
-    numbers.push(i);
-  }
+	// Numbers from 1 to 20
+	for (let i = 1; i <= 20; i++) {
+		numbers.push(i);
+	}
 
-  // Every second number from 20 to 48
-  for (let i = 22; i <= 48; i += 2) {
-    numbers.push(i);
-  }
+	// Every second number from 20 to 48
+	for (let i = 22; i <= 48; i += 2) {
+		numbers.push(i);
+	}
 
-  // Every fourth number from 48 to 128
-  for (let i = 52; i <= 128; i += 4) {
-    numbers.push(i);
-  }
+	// Every fourth number from 48 to 128
+	for (let i = 52; i <= 128; i += 4) {
+		numbers.push(i);
+	}
 
-  return numbers;
+	return numbers;
 }
 
 const inputStyles = css`
@@ -84,20 +84,20 @@ const zoomOptionStyle = css`
 `;
 
 const families = [
-  {
-    value: "courier",
-    label: "Courier"
-  },
-  {
-    value: "helvetica",
-    label: "Helvetica"
-  }
-]
+	{
+		value: 'courier',
+		label: 'Courier'
+	},
+	{
+		value: 'helvetica',
+		label: 'Helvetica'
+	}
+];
 
 const FontFamilyInput = ({
-  pdfViewerRef,
-  onUpdateFontFamily,
-  fontFamilyValue,
+	pdfViewerRef,
+	onUpdateFontFamily,
+	fontFamilyValue,
 	setFontFamilyValue
 }) => {
 
@@ -111,16 +111,16 @@ const FontFamilyInput = ({
 
 	const onChangeFontSizeByText = useDebounce(_onChangeFontSizeByText, 5);
 
-  const onSelectValue = (v) => {
-    console.log(v, 'v bro')
-    setFontFamilyValue(v);
-    // console.log(pdfViewerRef.current, 'pdfViewerRef.current')
-    pdfViewerRef.current.annotationEditorParams = {
+	const onSelectValue = (v) => {
+		console.log(v, 'v bro');
+		setFontFamilyValue(v);
+		// console.log(pdfViewerRef.current, 'pdfViewerRef.current')
+		pdfViewerRef.current.annotationEditorParams = {
 			type: AnnotationEditorParamsType.FREETEXT_FONT,
 			value: v.value
-		}
-    onUpdateFontFamily(v.value);
-  }
+		};
+		onUpdateFontFamily(v.value);
+	};
 
 	return (
 		<div css={wrapper}>
@@ -130,16 +130,16 @@ const FontFamilyInput = ({
 					marginTop={28}
 					title={
 						<div css={dropdownTitle}>
-              <input disabled value={fontFamilyValue.label} css={inputStyles} ref={fontSizeTextRef} onChange={onChangeFontSizeByText} type="text" />
-							<Icon size="sm" src={ChevronDown} alt={t("arrowDown")} />
+							<input disabled value={fontFamilyValue.label} css={inputStyles} ref={fontSizeTextRef} onChange={onChangeFontSizeByText} type="text" />
+							<Icon size="sm" src={ChevronDown} alt={t('arrowDown')} />
 						</div>
 					}
 					child={<div css={childStyle}>
-            {
-              families.map((e) => (
-                <div key={e.value} css={zoomOptionStyle} onClick={() => onSelectValue(e)}>{e.label}</div>
-              ))
-            }
+						{
+							families.map((e) => (
+								<div key={e.value} css={zoomOptionStyle} onClick={() => onSelectValue(e)}>{e.label}</div>
+							))
+						}
 					</div>}
 				/>
 			</div>

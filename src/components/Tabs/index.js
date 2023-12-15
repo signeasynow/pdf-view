@@ -13,7 +13,7 @@ const Wrapper = ({ children }) => (
 		display: 'flex',
 		background: 'white',
 		height: heightOffsetTabs,
-		alignItems: "center",
+		alignItems: 'center',
 		margin: '0 12px',
 		justifyContent: 'flex-start',
 		borderTop: '1px solid #ccc'
@@ -28,20 +28,19 @@ const Tabs = ({
 	fileNames,
 	activePageIndex,
 	onClick
-}) => {
-	return (
-		<Wrapper>
-			{
-				fileNames.map((name, idx) => (
-					<span onClick={() => onClick(idx)} style={{
-						cursor: activePageIndex === idx ? "" : "pointer",
-						border: activePageIndex !== idx ? "1px solid #1c1c1c" : "1px solid #cccccc",
-						background: activePageIndex !== idx ? "#e4e4e4" : ""
-					}} css={tabStyle}>{name}</span>
-				))
-			}
-		</Wrapper>
-	)
-}
+}) => (
+	<Wrapper>
+		{
+			fileNames.map((name, idx) => (
+				<span onClick={() => onClick(idx)} style={{
+					cursor: activePageIndex === idx ? '' : 'pointer',
+					border: activePageIndex !== idx ? '1px solid #1c1c1c' : '1px solid #cccccc',
+					background: activePageIndex !== idx ? '#e4e4e4' : ''
+				}} css={tabStyle}
+				>{name}</span>
+			))
+		}
+	</Wrapper>
+);
 
 export default Tabs;

@@ -18,7 +18,7 @@ const confirmBtnStyle = css`
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
-`
+`;
 const disabledConfirmBtnStyle = css`
 background: grey;
 color: white;
@@ -27,7 +27,7 @@ font-size: 16px;
 padding: 8px 16px;
 border-radius: 4px;
 cursor: not-allowed;
-`
+`;
 
 const visibleSearchWrapper = css`
   background: #f1f3f5;
@@ -120,7 +120,7 @@ const topSectionStyle = css`
 const tagBtnStyle = css`
   background: #fee179;
 	margin: 4px;
-`
+`;
 
 const thumbnailTopActionsWrapper = css`
   background: #d6dee8;
@@ -170,27 +170,27 @@ const SearchBar = ({
 	const conversationContainerRef = useRef(null); // New ref for the conversation container
 
 	const [loading, setLoading] = useState(false);
-  const [rows, setRows] = useState(1);
+	const [rows, setRows] = useState(1);
 
 	const handleSendQuestion = (questionText) => {
-    setRows(1);
-    setLoading(true);
-    onAskQuestion(questionText, extractLastThreeQA(conversation)).then((answerText) => {
-			if (answerText?.error === "document purged") {
-				alert("This document's metadata has been removed from our servers and we can't answer any more questions about it. Please re-upload the document to proceed.")
+		setRows(1);
+		setLoading(true);
+		onAskQuestion(questionText, extractLastThreeQA(conversation)).then((answerText) => {
+			if (answerText?.error === 'document purged') {
+				alert("This document's metadata has been removed from our servers and we can't answer any more questions about it. Please re-upload the document to proceed.");
 				return;
 			}
-      setConversation([
-        ...conversation,
-        { type: 'question', text: questionText },
-        { type: 'answer', text: answerText.answer }
-      ]);
-      setLoading(false);
-    }).catch((err) => {
-      alert("Something went wrong. Please reload the page and try again.")
-      setLoading(false);
-    });
-  };
+			setConversation([
+				...conversation,
+				{ type: 'question', text: questionText },
+				{ type: 'answer', text: answerText.answer }
+			]);
+			setLoading(false);
+		}).catch((err) => {
+			alert('Something went wrong. Please reload the page and try again.');
+			setLoading(false);
+		});
+	};
 
 	const { t } = useTranslation();
 	const searchTextRef = useRef('');
@@ -202,26 +202,26 @@ const SearchBar = ({
 
 	const handleRemoveChatHistory = () => {
 		onRemoveChatHistory();
-	}
+	};
 
 	const handleEmbed = () => {
 		setLoading(true);
 		onEmbed().then(() => {
 			setLoading(false);
 		}).catch((err) => {
-			alert("Something went wrong. Please try again later.")
+			alert('Something went wrong. Please try again later.');
 			setLoading(false);
-		})
-	}
+		});
+	};
 
 	const getWrapperClass = () => {
 		if (showFullScreenSearch) {
 			return fullSearchWrapper;
 		}
 		return showSearch ? visibleSearchWrapper : invisibleSearchWrapper;
-	}
+	};
 
-	if (editorMode === "tag") {
+	if (editorMode === 'tag') {
 		return (
 			<TagSection
 				onDisableEditorMode={onDisableEditorMode}
@@ -232,7 +232,7 @@ const SearchBar = ({
 				onClickField={onClickField}
 				showSearch={showSearch}
 			/>
-		)
+		);
 	}
 
 	return (
@@ -242,16 +242,17 @@ const SearchBar = ({
 				onRemoveChatHistory={handleRemoveChatHistory}
 				searchBarView={searchBarView}
 				onToggle={(which) => {
-				setSearchBarView(which)
-			}} />
+					setSearchBarView(which);
+				}}
+			/>
 			{
-				searchBarView === "chat" && showSearch && (
+				searchBarView === 'chat' && showSearch && (
 					<>
 						{
 							!aiDocId && (
-								<div style={{margin: 8, display: "flex", flexDirection: "column"}}>
-									<button disabled={loading || aiLimitReached} onClick={handleEmbed} css={aiLimitReached ? disabledConfirmBtnStyle : confirmBtnStyle}>{loading ? "Please wait..." : "Enable AI Discussions"}</button>
-									<p>{aiLimitReached ? "Daily limit reached. Subscribe to continue." : "Activate to let AI answer queries about this document."}</p>
+								<div style={{ margin: 8, display: 'flex', flexDirection: 'column' }}>
+									<button disabled={loading || aiLimitReached} onClick={handleEmbed} css={aiLimitReached ? disabledConfirmBtnStyle : confirmBtnStyle}>{loading ? 'Please wait...' : 'Enable AI Discussions'}</button>
+									<p>{aiLimitReached ? 'Daily limit reached. Subscribe to continue.' : 'Activate to let AI answer queries about this document.'}</p>
 								</div>
 							)
 						}
@@ -279,12 +280,12 @@ const SearchBar = ({
 				)
 			}
 			{
-				searchBarView === "search" && (
+				searchBarView === 'search' && (
 					<>
 						<div css={innerWrapperStyle}>
 							<div>
 								<div css={inputWrapperStyle}>
-									<input css={inputStyle} ref={searchTextRef} onChange={onChange} placeholder={t("searchDocument")} />
+									<input css={inputStyle} ref={searchTextRef} onChange={onChange} placeholder={t('searchDocument')} />
 									{
 										!!searchText && <button css={inputCloseStyle} onClick={onClickClear}>✖</button>
 									}
@@ -292,23 +293,23 @@ const SearchBar = ({
 							</div>
 							<div css={belowInputStyle}>
 								<input value={caseSensitive} onClick={onToggleCaseSensitive} type="checkbox" id="caseSensitive" />
-								<label css={checkboxLabelStyle} htmlFor="caseSensitive">{t("caseSensitive")}</label>
+								<label css={checkboxLabelStyle} htmlFor="caseSensitive">{t('caseSensitive')}</label>
 								<input value={matchWholeWord} onClick={onToggleWholeWord} type="checkbox" id="wholeWord" />
-								<label css={checkboxLabelStyle} htmlFor="wholeWord">{t("wholeWord")}</label>
+								<label css={checkboxLabelStyle} htmlFor="wholeWord">{t('wholeWord')}</label>
 								{
 									!!searchText && (
 										<>
 											<hr css={hrStyle} />
 											<div css={resultsCountSectionStyle}>
 												<div>
-												{t('resultsFound', { count: matchesCount })}
+													{t('resultsFound', { count: matchesCount })}
 												</div>
 												<div css={arrowsStyle}>
 													<div onClick={onPrev}>
-														<Icon src={ChevronLeft} alt={t("arrowLeft")} />
+														<Icon src={ChevronLeft} alt={t('arrowLeft')} />
 													</div>
 													<div onClick={onNext}>
-														<Icon src={ChevronRight} alt={t("arrowRight")} />
+														<Icon src={ChevronRight} alt={t('arrowRight')} />
 													</div>
 												</div>
 											</div>

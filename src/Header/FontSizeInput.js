@@ -13,24 +13,24 @@ import { AnnotationEditorParamsType } from 'pdfjs-dist/build/pdf';
 import { useAnnotations } from '../hooks/useAnnotations';
 
 function generateNumbers() {
-  let numbers = [];
+	let numbers = [];
 
-  // Numbers from 1 to 20
-  for (let i = 1; i <= 20; i++) {
-    numbers.push(i);
-  }
+	// Numbers from 1 to 20
+	for (let i = 1; i <= 20; i++) {
+		numbers.push(i);
+	}
 
-  // Every second number from 20 to 48
-  for (let i = 22; i <= 48; i += 2) {
-    numbers.push(i);
-  }
+	// Every second number from 20 to 48
+	for (let i = 22; i <= 48; i += 2) {
+		numbers.push(i);
+	}
 
-  // Every fourth number from 48 to 128
-  for (let i = 52; i <= 128; i += 4) {
-    numbers.push(i);
-  }
+	// Every fourth number from 48 to 128
+	for (let i = 52; i <= 128; i += 4) {
+		numbers.push(i);
+	}
 
-  return numbers;
+	return numbers;
 }
 
 const inputStyles = css`
@@ -87,15 +87,15 @@ const zoomOptionStyle = css`
 `;
 
 const FontSizeInput = ({
-  pdfViewerRef,
-  onUpdateFontSize,
-  fontSizeValue,
-  setFontSizeValue
+	pdfViewerRef,
+	onUpdateFontSize,
+	fontSizeValue,
+	setFontSizeValue
 }) => {
 
 	const { t } = useTranslation();
   
-  // const { annotations } = useAnnotations();
+	// const { annotations } = useAnnotations();
 
 	const fontSizeTextRef = useRef(fontSizeValue);
 
@@ -103,7 +103,7 @@ const FontSizeInput = ({
 
 	};
 
- /*
+	/*
   useEffect(() => {
     const existingAnnotation = annotations.find((e) => e.id === editableAnnotationId);
     console.log(existingAnnotation, 'existingAnnotation2', editableAnnotationId, 'ann', annotations)
@@ -113,17 +113,17 @@ const FontSizeInput = ({
 
 	const onChangeFontSizeByText = useDebounce(_onChangeFontSizeByText, 5);
 
-  const onSelectValue = (v) => {
-    setFontSizeValue(v);
-    // console.log(pdfViewerRef.current, 'pdfViewerRef.current')
-    pdfViewerRef.current.annotationEditorParams = {
+	const onSelectValue = (v) => {
+		setFontSizeValue(v);
+		// console.log(pdfViewerRef.current, 'pdfViewerRef.current')
+		pdfViewerRef.current.annotationEditorParams = {
 			type: AnnotationEditorParamsType.FREETEXT_SIZE,
 			value: v
-		}
-    onUpdateFontSize(v);
-  }
+		};
+		onUpdateFontSize(v);
+	};
 
-  const getNumbers = useMemo(generateNumbers, [])
+	const getNumbers = useMemo(generateNumbers, []);
 
 	return (
 		<div css={wrapper}>
@@ -133,17 +133,17 @@ const FontSizeInput = ({
 					marginTop={28}
 					title={
 						<div css={dropdownTitle}>
-              <input disabled value={fontSizeValue} css={inputStyles} ref={fontSizeTextRef} onChange={onChangeFontSizeByText} type="text" />
+							<input disabled value={fontSizeValue} css={inputStyles} ref={fontSizeTextRef} onChange={onChangeFontSizeByText} type="text" />
 							<div css={percentStyle}>pt</div>
-							<Icon size="sm" src={ChevronDown} alt={t("arrowDown")} />
+							<Icon size="sm" src={ChevronDown} alt={t('arrowDown')} />
 						</div>
 					}
 					child={<div css={childStyle}>
-            {
-              getNumbers.map((e) => (
-                <div key={e} css={zoomOptionStyle} onClick={() => onSelectValue(e)}>{e}pt</div>
-              ))
-            }
+						{
+							getNumbers.map((e) => (
+								<div key={e} css={zoomOptionStyle} onClick={() => onSelectValue(e)}>{e}pt</div>
+							))
+						}
 					</div>}
 				/>
 			</div>

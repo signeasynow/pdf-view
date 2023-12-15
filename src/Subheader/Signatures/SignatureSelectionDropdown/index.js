@@ -66,69 +66,66 @@ const zoomOptionStyle = css`
 `;
 
 const families = [
-  {
-    value: "courier",
-    label: "Courier"
-  },
-  {
-    value: "helvetica",
-    label: "Helvetica"
-  }
-]
+	{
+		value: 'courier',
+		label: 'Courier'
+	},
+	{
+		value: 'helvetica',
+		label: 'Helvetica'
+	}
+];
 
 const SignatureSelectionDropdown = ({
-  pdfViewerRef,
-  onUpdateFontFamily,
-  fullSignature,
-  initialsSignature,
+	pdfViewerRef,
+	onUpdateFontFamily,
+	fullSignature,
+	initialsSignature,
 	setFontFamilyValue,
-  onClickSignature
+	onClickSignature
 }) => {
 
-  const [mainType, setMainType] = useState("full");
+	const [mainType, setMainType] = useState('full');
 
 	const { t } = useTranslation();
   
-  const { showSignatureModal } = useModal();
+	const { showSignatureModal } = useModal();
 
-  const mainSrc = () => {
-    return mainType === "full" ? fullSignature : initialsSignature
-  }
+	const mainSrc = () => mainType === 'full' ? fullSignature : initialsSignature;
 
-  const dropdownSrc = () => {
-    return mainType !== "full" ? fullSignature : initialsSignature
-  }
+	const dropdownSrc = () => mainType !== 'full' ? fullSignature : initialsSignature;
 
-  const onClickOptionDropdown = () => {
-    if (mainType === "full") {
-      setMainType("initials");
-      onClickSignature("initialsImage")
-    } else {
-      setMainType("full");
-      onClickSignature("signatureImage")
-    }
+	const onClickOptionDropdown = () => {
+		if (mainType === 'full') {
+			setMainType('initials');
+			onClickSignature('initialsImage');
+		}
+		else {
+			setMainType('full');
+			onClickSignature('signatureImage');
+		}
     
-  }
+	};
 
-  const handleClickSignature = () => {
-    onClickSignature(mainType === "full" ? "signatureImage" : "initialsImage");
-  }
+	const handleClickSignature = () => {
+		onClickSignature(mainType === 'full' ? 'signatureImage' : 'initialsImage');
+	};
 
 	return (
 		<div css={wrapper}>
 			<div css={innerWrapper}>
-        <img onClick={handleClickSignature} style={{height: "100%", width: "100%", objectFit: "contain", cursor: "pointer"}} src={mainSrc()} />
+				<img onClick={handleClickSignature} style={{ height: '100%', width: '100%', objectFit: 'contain', cursor: 'pointer' }} src={mainSrc()} />
 				<Dropdown
 					width={100}
 					marginTop={28}
 					title={
 						<div css={dropdownTitle}>
-							<Icon size="sm" src={ChevronDown} alt={t("arrowDown")} />
+							<Icon size="sm" src={ChevronDown} alt={t('arrowDown')} />
 						</div>
 					}
 					child={<div css={childStyle}>
-            <img onClick={onClickOptionDropdown} style={{height: 24, width: "100%", objectFit: "contain", cursor: "pointer"}} src={dropdownSrc()} />
-            <div css={zoomOptionStyle} onClick={() => showSignatureModal("Test", () => {})}>Edit signature / initials</div>
+						<img onClick={onClickOptionDropdown} style={{ height: 24, width: '100%', objectFit: 'contain', cursor: 'pointer' }} src={dropdownSrc()} />
+						<div css={zoomOptionStyle} onClick={() => showSignatureModal('Test', () => {})}>Edit signature / initials</div>
 					</div>}
 				/>
 			</div>

@@ -1,5 +1,5 @@
-import i18n from "i18next";
-import { initReactI18next } from "react-i18next";
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
 import en from '../../locale/en.json';
 import es from '../../locale/es.json';
 import ru from '../../locale/ru.json';
@@ -11,44 +11,44 @@ import pt from '../../locale/pt.json';
 import ko from '../../locale/ko.json';
 
 const resources = {
-  en: {
-    translation: en
-  },
-  es: {
-    translation: es
-  },
-  ru: {
-    translation: ru
-  },
-  am: {
-    translation: am
-  },
-  de: {
-    translation: de
-  },
-  hi: {
-    translation: hi
-  },
-  it: {
-    translation: it
-  },
-  pt: {
-    translation: pt
-  },
-  ko: {
-    translation: ko
-  }
+	en: {
+		translation: en
+	},
+	es: {
+		translation: es
+	},
+	ru: {
+		translation: ru
+	},
+	am: {
+		translation: am
+	},
+	de: {
+		translation: de
+	},
+	hi: {
+		translation: hi
+	},
+	it: {
+		translation: it
+	},
+	pt: {
+		translation: pt
+	},
+	ko: {
+		translation: ko
+	}
 };
 
 i18n
-  .use(initReactI18next)
-  .init({
-    resources,
-    lng: "en",
-    fallbackLng: "en",
-    interpolation: {
-      escapeValue: false
-    }
-  });
+	.use(initReactI18next)
+	.init({
+		resources,
+		lng: 'en',
+		fallbackLng: 'en',
+		interpolation: {
+			escapeValue: false
+		}
+	});
 
 export default i18n;

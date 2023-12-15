@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { css } from "@emotion/react";
+import { css } from '@emotion/react';
 
 const spinnerStyle = css`
   border: 4px solid rgba(0, 0, 0, 0.1);
@@ -20,10 +20,10 @@ const spinnerStyle = css`
 `;
 
 export function LoadingSpinner({
-  size = "md"
+	size = 'md'
 }) {
 
-  return (
-    <div style={{height: size === "sm" ? 12: "", width: size === "sm" ? 12: ""}} css={spinnerStyle}></div>
-  );
-};
+	return (
+		<div style={{ height: size === 'sm' ? 12: '', width: size === 'sm' ? 12: '' }} css={spinnerStyle} />
+	);
+}

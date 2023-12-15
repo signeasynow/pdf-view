@@ -7,7 +7,7 @@ function usePropagateClickEvents() {
 			const newEvent = new MouseEvent('click', {
 				bubbles: true,
 				cancelable: true,
-				view: window.parent,
+				view: window.parent
 			});
     
 			// Dispatch the event to the parent document

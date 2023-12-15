@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 import { useState } from 'preact/hooks'; // add this import
 import { h } from 'preact';
 import { Thumbnail } from './Thumbnail';
-import {LoadingSpinner} from "./components/LoadingSpinner";
+import { LoadingSpinner } from './components/LoadingSpinner';
 
 const wrapperStyle = css`
   position: relative;
@@ -32,7 +32,7 @@ const fullScreenWrapper = css`
   &::-webkit-scrollbar-thumb {
     background: #888;
   }
-`
+`;
 
 const ThumbnailsContainer = ({
 	onDragEnd,
@@ -60,7 +60,7 @@ const ThumbnailsContainer = ({
 		
 		// Handle line indicator
 		if (dragOverIndex === i + 1) {
-			elements = [...elements, <div css={lineIndicatorStyle}></div>];
+			elements = [...elements, <div css={lineIndicatorStyle} />];
 		}
 	
 		// Thumbnail component
@@ -73,7 +73,7 @@ const ThumbnailsContainer = ({
 				multiPageSelections={multiPageSelections}
 				setMultiPageSelections={setMultiPageSelections}
 				onDragStart={(e, pageNum) => {
-					e.dataTransfer.setData("text/plain", pageNum);
+					e.dataTransfer.setData('text/plain', pageNum);
 					setDraggingIndex(pageNum);
 				}}
 				onDragOver={(e, pageNum) => {
@@ -104,34 +104,33 @@ const ThumbnailsContainer = ({
 	});
 
 	if (documentLoading) return (
-		<div style={{display: "flex", flexDirection: "column", alignItems: "center", marginTop: 20}}>
+		<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 20 }}>
 			<LoadingSpinner />
 			<div>Loading...</div>
 		</div>
 	);
 
 	return (<div
-		css={wrapperStyle}>
+		css={wrapperStyle}
+	        >
 		{thumbnails}
 		<div
-      draggable
-      onDragOver={(e) => {
-        e.preventDefault();
-        // set the dragOverIndex to numPages + 1 for the dummy element
-        setDragOverIndex(numPages + 1);
-      }}
-      onDragEnd={() => {
-        // If dummy is the target, move the dragging item to the end
-        onDragEnd(draggingIndex, numPages);
-        setDraggingIndex(null);
-        setDragOverIndex(null);
-      }}
-    >
-      {/* Style your dummy thumbnail here */}
-      <div style={{height: "40px", width: "150px", borderTop: dragOverIndex === numPages + 1 ? "2px solid red" : ""}}>
-
-      </div>
-    </div>
+			draggable
+			onDragOver={(e) => {
+				e.preventDefault();
+				// set the dragOverIndex to numPages + 1 for the dummy element
+				setDragOverIndex(numPages + 1);
+			}}
+			onDragEnd={() => {
+				// If dummy is the target, move the dragging item to the end
+				onDragEnd(draggingIndex, numPages);
+				setDraggingIndex(null);
+				setDragOverIndex(null);
+			}}
+		>
+			{/* Style your dummy thumbnail here */}
+			<div style={{ height: '40px', width: '150px', borderTop: dragOverIndex === numPages + 1 ? '2px solid red' : '' }} />
+		</div>
 	</div>);
 };
 

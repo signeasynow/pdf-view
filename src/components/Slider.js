@@ -53,42 +53,42 @@ const plusStyle = css`
 
 
 const Slider = ({ value, onChange }) => (
-  <div css={rangeWrapperStyle}>
-    <AccessibleButton
-      ariaLabel="Minus"
-      onClick={() => {
-        onChange({
-          target: {
-            value: Math.max(value - 1, 0)
-          }
-        })
-      }}
-    >
-      <label css={minusStyle}>—</label>
-    </AccessibleButton>
-    <input
-      css={rangeStyle}
-      value={value}
-      onChange={onChange}
-      type="range"
-      id="scale"
-      name="scale"
-      min="0"
-      max="10"
-    />
-    <AccessibleButton
-      ariaLabel="Plus"
-      onClick={() => {
-        onChange({
-          target: {
-            value: Math.min(value + 1, 10)
-          }
-        })
-      }}
-    >
-      <label css={plusStyle}>+</label>
-    </AccessibleButton>
-  </div>
+	<div css={rangeWrapperStyle}>
+		<AccessibleButton
+			ariaLabel="Minus"
+			onClick={() => {
+				onChange({
+					target: {
+						value: Math.max(value - 1, 0)
+					}
+				});
+			}}
+		>
+			<label css={minusStyle}>—</label>
+		</AccessibleButton>
+		<input
+			css={rangeStyle}
+			value={value}
+			onChange={onChange}
+			type="range"
+			id="scale"
+			name="scale"
+			min="0"
+			max="10"
+		/>
+		<AccessibleButton
+			ariaLabel="Plus"
+			onClick={() => {
+				onChange({
+					target: {
+						value: Math.min(value + 1, 10)
+					}
+				});
+			}}
+		>
+			<label css={plusStyle}>+</label>
+		</AccessibleButton>
+	</div>
 );
 
 export default Slider;

@@ -11,7 +11,7 @@ function useInitWasm() {
 			await __wbg_init(bufferSource);
 		}
 		initWasmAsync();
-}, []);
+	}, []);
 
 	return null;
 }

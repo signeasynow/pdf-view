@@ -16,7 +16,7 @@ const Wrapper = ({ children }) => (
 		display: 'flex',
 		background: 'white',
 		height: 50,
-		alignItems: "center",
+		alignItems: 'center',
 		margin: '0 12px',
 		justifyContent: 'space-between'
 	})}
@@ -46,18 +46,18 @@ const Header = ({
 }) => {
 	const { t } = useTranslation();
 
- return (
+	return (
 		<Wrapper>
 			<div css={contentLeftStyle}>
 				{
-					tools?.markers?.includes("go-to-next") && (
+					tools?.markers?.includes('go-to-next') && (
 						<GoToNextTag pdf={pdfViewerObj} />
 					)
 				}
 				{
 					tools?.general?.includes('download') && (
 						<>
-							<HeaderBtn offsetX="10px" onClick={onDownload} title={t("download")} iconAlt={t("download")}  icon={Download} />
+							<HeaderBtn offsetX="10px" onClick={onDownload} title={t('download')} iconAlt={t('download')}  icon={Download} />
 							<VerticalDivider />
 						</>
 					)
@@ -65,7 +65,7 @@ const Header = ({
 				{
 					(tools?.general?.includes('panel-toggle') && !showFullScreenThumbnails && !showFullScreenSearch) && (
 						<>
-							<HeaderBtn onClick={onPanel} title={t("panel")} iconAlt={t("panel")} icon={Panel} />
+							<HeaderBtn onClick={onPanel} title={t('panel')} iconAlt={t('panel')} icon={Panel} />
 							<VerticalDivider />
 						</>
 					)
@@ -87,17 +87,17 @@ const Header = ({
 			<div>
 				{
 					tools?.general?.includes('search') && (
-						<HeaderBtn offsetX="-20px" onClick={onSearch} title={t("search")} iconAlt={t("search")} icon={showSearch ? File : Search} />
+						<HeaderBtn offsetX="-20px" onClick={onSearch} title={t('search')} iconAlt={t('search')} icon={showSearch ? File : Search} />
 					)
 				}
 				{
 					tools?.general?.includes('tag') && (
-						<HeaderBtn offsetX="-20px" onClick={onSearch} title={"Add markers"} iconAlt={t("search")} icon={Tag} />
+						<HeaderBtn offsetX="-20px" onClick={onSearch} title={'Add markers'} iconAlt={t('search')} icon={Tag} />
 					)
 				}
 			</div>
 		</Wrapper>
-	)
-}
+	);
+};
 
 export default Header;

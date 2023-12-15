@@ -5,7 +5,7 @@ import { useState } from 'preact/hooks';
 import ThumbnailsSection from './ThumbnailsSection';
 import BookmarksSection from './BookmarksSection';
 import { Icon, Tooltip } from 'alien35_pdf_ui_lib_2';
-import ExpandIcon from "../../../assets/expand-svgrepo-com.svg";
+import ExpandIcon from '../../../assets/expand-svgrepo-com.svg';
 import { useTranslation } from 'react-i18next';
 import PanelTools from './PanelTools';
 import FullScreenThumbnails from './FullScreenThumbnails';
@@ -63,39 +63,40 @@ const Panel = ({
 	const [activeTab, setActiveTab] = useState(0);
 
 	const onThumbnailClick = (num, e) => {
-		setActivePage(num)
+		setActivePage(num);
 		if (e.shiftKey) {
 			let resultingArray = [...multiPageSelections.filter((each) => each !== num)];
 			if (multiPageSelections.includes(num)) {
 				// redundant now: resultingArray = resultingArray.filter((each) => each !== num);
-			} else {
+			}
+			else {
 				resultingArray.push(num);
 			}
 			setMultiPageSelections(resultingArray);
 		}
-	}
+	};
 
 	if (showFullScreenThumbnails) {
-		return <FullScreenThumbnails
-		showSearch={showSearch}
-		fileName={fileName}
-		splitMarkers={splitMarkers}
-		onClickSplit={onClickSplit}
-		documentLoading={documentLoading}
-		onDeleteThumbnail={onDeleteThumbnail}
-		onExtractThumbnail={onExtractThumbnail}
-		onDragEnd={onDragEnd}
-		isSplitting={isSplitting}
-		activePage={activePage}
-		pdf={pdf}
-		tools={tools}
-		onThumbnailClick={onThumbnailClick}
-		pdfProxyObj={pdfProxyObj}
-		multiPageSelections={multiPageSelections}
-		setMultiPageSelections={setMultiPageSelections}
-		onRotate={onRotate}
-		expandedViewThumbnailScale={expandedViewThumbnailScale}
-		/>
+		return (<FullScreenThumbnails
+			showSearch={showSearch}
+			fileName={fileName}
+			splitMarkers={splitMarkers}
+			onClickSplit={onClickSplit}
+			documentLoading={documentLoading}
+			onDeleteThumbnail={onDeleteThumbnail}
+			onExtractThumbnail={onExtractThumbnail}
+			onDragEnd={onDragEnd}
+			isSplitting={isSplitting}
+			activePage={activePage}
+			pdf={pdf}
+			tools={tools}
+			onThumbnailClick={onThumbnailClick}
+			pdfProxyObj={pdfProxyObj}
+			multiPageSelections={multiPageSelections}
+			setMultiPageSelections={setMultiPageSelections}
+			onRotate={onRotate}
+			expandedViewThumbnailScale={expandedViewThumbnailScale}
+		        />);
 	}
 
 	return (
@@ -136,7 +137,7 @@ const Panel = ({
 
 export default Panel;
 
-				/*
+/*
 						<Tooltip title="Bookmarks">
 							<Icon onClick={() => setActiveTab(1)} src={Bookmark} alt="Menu" />
 						</Tooltip>

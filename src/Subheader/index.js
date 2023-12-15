@@ -28,7 +28,7 @@ const Wrapper = ({ children }) => (
 		display: 'flex',
 		background: 'white',
 		height: 50,
-		alignItems: "center",
+		alignItems: 'center',
 		margin: '0 12px',
 		justifyContent: 'space-between',
 		borderTop: '1px solid #ccc'
@@ -76,12 +76,12 @@ const Subheader = ({
 	expandedViewThumbnailScale,
 	setExpandedViewThumbnailScale,
 	onExtract,
-	pdfViewerRef,
+	pdfViewerRef
 }) => {
 	
 	const { t } = useTranslation();
 
-  const handleInputChange = (e) => {
+	const handleInputChange = (e) => {
 		const num = parseInt(e.target.value);
 		setExpandedViewThumbnailScale(num);
 	};
@@ -89,37 +89,35 @@ const Subheader = ({
 	const getSelectionsCount = () => {
 		const { length } = multiPageSelections;
 		if (length > 99) {
-			return "99+"
+			return '99+';
 		}
 		return length;
-	}
+	};
 
-	const showUndoRedo = () => {
-		return !!tools?.editing?.length;
-	}
+	const showUndoRedo = () => !!tools?.editing?.length;
 
 	const onChangeActiveToolbarItem = ({
 		tooltype
 	}) => {
 		handleChangeActiveToolbarItem(tooltype);
 		switch (tooltype) {
-      case 'text':
+			case 'text':
 				onEnableFreeTextMode();
-        break;
+				break;
 			case 'signature':
 				onEnableFreeTextMode();
 				break;
 			case 'none':
-				handleChangeActiveToolbarItem("");
+				handleChangeActiveToolbarItem('');
 				onDisableEditorMode();
 				break;
-    }
-	}
+		}
+	};
 
 	return (
 		<Wrapper>
 			<div css={contentLeftStyle}>
-			  <div style={{display: "flex", alignItems: "center"}}>
+			  <div style={{ display: 'flex', alignItems: 'center' }}>
 					<AnnotationSelectionDropdown
 						tools={tools}
 						annotationMode={annotationMode}
@@ -150,34 +148,35 @@ const Subheader = ({
 				{
 					showFullScreenThumbnails && (
 						<AccessibleButton
-							onClick={onMinimize} 
-							ariaLabel={t("minimize")}
+							onClick={onMinimize}
+							ariaLabel={t('minimize')}
 						>
-							<HeaderBtn title={t("minimize")} iconAlt={t("minimize")} icon={Minimize} />
+							<HeaderBtn title={t('minimize')} iconAlt={t('minimize')} icon={Minimize} />
 						</AccessibleButton>
 					)
 				}
 				{
-					!!multiPageSelections?.length ? (
+					multiPageSelections?.length ? (
 						<div style={{
-							display: "flex",
-							alignItems: "center"
-						}}>
+							display: 'flex',
+							alignItems: 'center'
+						}}
+						>
 							<AccessibleButton
-								onClick={() => setMultiPageSelections([])} 
-								ariaLabel={t("redo")}
+								onClick={() => setMultiPageSelections([])}
+								ariaLabel={t('redo')}
 							>
-								<HeaderBtn title={"Clear selection"} iconAlt={t("redo")} icon={RemoveSelection} />
+								<HeaderBtn title={'Clear selection'} iconAlt={t('redo')} icon={RemoveSelection} />
 							</AccessibleButton>
 						</div>
 					) : (
-						<div style={{width: "37px"}}></div>
+						<div style={{ width: '37px' }} />
 					)
 				}
 			</div>
 			{
 				showFullScreenThumbnails && (
-					<div style={{display: "flex", alignItems: "center"}}>
+					<div style={{ display: 'flex', alignItems: 'center' }}>
 						<div>
 							<Slider
 								value={expandedViewThumbnailScale}
@@ -193,132 +192,139 @@ const Subheader = ({
 						showUndoRedo() && (
 							<>
 								<AccessibleButton
-									onClick={undoLastAction} 
-									ariaLabel={t("undo")}
+									onClick={undoLastAction}
+									ariaLabel={t('undo')}
 								>
 									<HeaderBtn
-										style={{opacity: undoStackLength ? 1 : 0.5}}
-										title={t("undo")} iconAlt={t("undo")} icon={Undo} />
+										style={{ opacity: undoStackLength ? 1 : 0.5 }}
+										title={t('undo')} iconAlt={t('undo')} icon={Undo}
+									/>
 								</AccessibleButton>
 								<AccessibleButton
-									onClick={redoLastAction} 
-									ariaLabel={t("redo")}
+									onClick={redoLastAction}
+									ariaLabel={t('redo')}
 								>
 									<HeaderBtn
-										style={{opacity: redoStackLength ? 1 : 0.5}}
-										title={t("redo")} iconAlt={t("redo")} icon={Redo} />
+										style={{ opacity: redoStackLength ? 1 : 0.5 }}
+										title={t('redo')} iconAlt={t('redo')} icon={Redo}
+									/>
 								</AccessibleButton>
 								<VerticalDivider />
 							</>
 						)
 					}
 					{
-						tools?.editing?.includes("rotation") && (
+						tools?.editing?.includes('rotation') && (
 							<div style={{
-								display: "flex",
-								border: !!multiPageSelections?.length ? "1px solid #f96804" : "1px solid transparent",
-								background: !!multiPageSelections?.length ? "#f6f6f6" : "",
-								borderRadius: "10px"
-							}}>
-								<div style={{position: "relative"}}>
+								display: 'flex',
+								border: multiPageSelections?.length ? '1px solid #f96804' : '1px solid transparent',
+								background: multiPageSelections?.length ? '#f6f6f6' : '',
+								borderRadius: '10px'
+							}}
+							>
+								<div style={{ position: 'relative' }}>
 									<AccessibleButton
-										onClick={() => onRotate(false)} 
-										ariaLabel={t("redo")}
+										onClick={() => onRotate(false)}
+										ariaLabel={t('redo')}
 									>
-										<HeaderBtn offsetX="-20px" style={{opacity: canDelete ? 1 : 0.5}} title={t("rotateCounterClockwise")} iconAlt={t("rotateCounterClockwise")} icon={RotateLeft} />
+										<HeaderBtn offsetX="-20px" style={{ opacity: canDelete ? 1 : 0.5 }} title={t('rotateCounterClockwise')} iconAlt={t('rotateCounterClockwise')} icon={RotateLeft} />
 										{
 											!!multiPageSelections?.length && (
 												<div style={{
-													position: "absolute",
+													position: 'absolute',
 													bottom: 0,
-													color: "white",
+													color: 'white',
 													left: 0,
-													pointerEvents: "none",
+													pointerEvents: 'none',
 													height: 12,
 													minWidth: 12,
-													background: "#f96804",
+													background: '#f96804',
 													fontSize: 12,
 													padding: 2,
-													display: "flex",
-													alignItems: "center",
-													justifyContent: "center",
-													borderRadius: "8px"
-												}}>{getSelectionsCount()}</div>
+													display: 'flex',
+													alignItems: 'center',
+													justifyContent: 'center',
+													borderRadius: '8px'
+												}}
+												>{getSelectionsCount()}</div>
 											)
 										}
 									</AccessibleButton>
 								</div>
-								<div style={{position: "relative"}}>
+								<div style={{ position: 'relative' }}>
 									<AccessibleButton
-										onClick={() => onRotate(true)} 
-										ariaLabel={t("redo")}
+										onClick={() => onRotate(true)}
+										ariaLabel={t('redo')}
 									>
-										<HeaderBtn offsetX="-30px" style={{opacity: canDelete ? 1 : 0.5}} title={t("rotateClockwise")} iconAlt={t("rotateClockwise")} icon={RotateRight} />
+										<HeaderBtn offsetX="-30px" style={{ opacity: canDelete ? 1 : 0.5 }} title={t('rotateClockwise')} iconAlt={t('rotateClockwise')} icon={RotateRight} />
 									</AccessibleButton>
 								</div>
 							</div>
 						)
 					}
 					{
-						tools?.editing?.includes("extract") && (
-							<div style={{position: "relative"}}>
+						tools?.editing?.includes('extract') && (
+							<div style={{ position: 'relative' }}>
 								<AccessibleButton
-									onClick={onExtract} 
-									ariaLabel={t("Extract")}
+									onClick={onExtract}
+									ariaLabel={t('Extract')}
 								>
 									<HeaderBtn
-										style={{opacity: canExtract ? 1 : 0.3}}
-										title={t("Extract")} iconAlt={t("Extract")} icon={Extract} />
-										{
-											!!multiPageSelections?.length && (
-												<div style={{
-													position: "absolute",
-													bottom: 0,
-													color: "white",
-													left: 0,
-													pointerEvents: "none",
-													height: 12,
-													minWidth: 12,
-													background: "#f96804",
-													fontSize: 12,
-													padding: 2,
-													display: "flex",
-													alignItems: "center",
-													justifyContent: "center",
-													borderRadius: "8px"
-												}}>{getSelectionsCount()}</div>
-											)
-										}
+										style={{ opacity: canExtract ? 1 : 0.3 }}
+										title={t('Extract')} iconAlt={t('Extract')} icon={Extract}
+									/>
+									{
+										!!multiPageSelections?.length && (
+											<div style={{
+												position: 'absolute',
+												bottom: 0,
+												color: 'white',
+												left: 0,
+												pointerEvents: 'none',
+												height: 12,
+												minWidth: 12,
+												background: '#f96804',
+												fontSize: 12,
+												padding: 2,
+												display: 'flex',
+												alignItems: 'center',
+												justifyContent: 'center',
+												borderRadius: '8px'
+											}}
+											>{getSelectionsCount()}</div>
+										)
+									}
 								</AccessibleButton>
 							</div>
 						)
 					}
 					{
-						tools?.editing?.includes("remove") && (
-							<div style={{position: "relative"}}>
+						tools?.editing?.includes('remove') && (
+							<div style={{ position: 'relative' }}>
 								<AccessibleButton
-									onClick={onDelete} 
-									ariaLabel={t("redo")}
+									onClick={onDelete}
+									ariaLabel={t('redo')}
 								>
-									<HeaderBtn style={{opacity: canDelete ? 1 : 0.5}} title={t("remove")} iconAlt={t("remove")} icon={Trash} />
+									<HeaderBtn style={{ opacity: canDelete ? 1 : 0.5 }} title={t('remove')} iconAlt={t('remove')} icon={Trash} />
 									{
 										!!multiPageSelections?.length && (
 											<div style={{
-												position: "absolute",
+												position: 'absolute',
 												bottom: 0,
-												color: "white",
+												color: 'white',
 												left: 0,
-												pointerEvents: "none",
+												pointerEvents: 'none',
 												height: 12,
 												minWidth: 12,
-												background: "#f96804",
+												background: '#f96804',
 												fontSize: 12,
 												padding: 2,
-												display: "flex",
-												alignItems: "center",
-												justifyContent: "center",
-												borderRadius: "8px"
-											}}>{getSelectionsCount()}</div>
+												display: 'flex',
+												alignItems: 'center',
+												justifyContent: 'center',
+												borderRadius: '8px'
+											}}
+											>{getSelectionsCount()}</div>
 										)
 									}
 								</AccessibleButton>
@@ -328,7 +334,7 @@ const Subheader = ({
 				</>
 			</div>
 		</Wrapper>
-	)
-}
+	);
+};
 
 export default Subheader;

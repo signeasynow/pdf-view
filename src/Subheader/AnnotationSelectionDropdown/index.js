@@ -52,69 +52,63 @@ const zoomOptionStyle = css`
 `;
 
 const AnnotationSelectionDropdown = ({
-  onClickSignature,
-  onChangeActiveToolbarItem,
-  annotationMode,
-  tools
+	onClickSignature,
+	onChangeActiveToolbarItem,
+	annotationMode,
+	tools
 }) => {
 
 	const { t } = useTranslation();
   
-  const { showSignatureModal } = useModal();
+	const { showSignatureModal } = useModal();
 
-  const { fullSignature, initialsSignature } = useContext(SignaturesContext);
+	const { fullSignature, initialsSignature } = useContext(SignaturesContext);
 	const { annotations } = useContext(AnnotationsContext);
 
-  const onSelectEditSignature = () => {
-    onChangeActiveToolbarItem({tooltype: "signature"})
-  }
+	const onSelectEditSignature = () => {
+		onChangeActiveToolbarItem({ tooltype: 'signature' });
+	};
 
-  const onSelectEditText = () => {
-    onChangeActiveToolbarItem({tooltype: "text"})
-  }
+	const onSelectEditText = () => {
+		onChangeActiveToolbarItem({ tooltype: 'text' });
+	};
 
-  const onSelectSignature = () => {
-    if (!fullSignature && !initialsSignature) {
-      showSignatureModal("Test", () => {});
-      return;
-    }
-    if (fullSignature) {
-      onClickSignature("signatureImage");
-      onChangeActiveToolbarItem({tooltype: "signature"})
-      // go ahead and add
-      return;
-    }
-    onClickSignature("initialsImage");
-    onChangeActiveToolbarItem({tooltype: "signature"})
-    // initialsImage
-    // add initials
+	const onSelectSignature = () => {
+		if (!fullSignature && !initialsSignature) {
+			showSignatureModal('Test', () => {});
+			return;
+		}
+		if (fullSignature) {
+			onClickSignature('signatureImage');
+			onChangeActiveToolbarItem({ tooltype: 'signature' });
+			// go ahead and add
+			return;
+		}
+		onClickSignature('initialsImage');
+		onChangeActiveToolbarItem({ tooltype: 'signature' });
+		// initialsImage
+		// add initials
     
-  }
+	};
 
-  const onSelectFreeText = () => {
-    onChangeActiveToolbarItem({tooltype: "text"})
+	const onSelectFreeText = () => {
+		onChangeActiveToolbarItem({ tooltype: 'text' });
 
-  }
+	};
 
-  const onSelectNone = () => {
-    onChangeActiveToolbarItem({tooltype: "none"})
-  }
+	const onSelectNone = () => {
+		onChangeActiveToolbarItem({ tooltype: 'none' });
+	};
 
-  const annotationsEnabled = () => {
-    return annotationMode === "freetext" || annotationMode === "signature"
-  }
+	const annotationsEnabled = () => annotationMode === 'freetext' || annotationMode === 'signature';
 
-  const hasSignature = () => {
-    return annotations?.some((ann) => ann.name === "stampEditor")
-  }
+	const hasSignature = () => annotations?.some((ann) => ann.name === 'stampEditor');
 
-  const hasText = () => {
-    return annotations?.some((ann) => ann.name === "freeTextEditor")
-  }
+	const hasText = () => annotations?.some((ann) => ann.name === 'freeTextEditor');
 
-  if (!tools?.editing?.includes("signature")) {
-    return;
-  }
+	if (!tools?.editing?.includes('signature')) {
+		return;
+	}
 
 	return (
 		<div css={wrapper}>
@@ -124,28 +118,28 @@ const AnnotationSelectionDropdown = ({
 					marginTop={28}
 					title={
 						<div css={dropdownTitle}>
-              <HeaderBtn offsetX="12px" title={t("Add text")} iconAlt={t("search")} icon={WriteIcon} />
-							<Icon size="sm" src={ChevronDown} alt={t("arrowDown")} />
+							<HeaderBtn offsetX="12px" title={t('Add text')} iconAlt={t('search')} icon={WriteIcon} />
+							<Icon size="sm" src={ChevronDown} alt={t('arrowDown')} />
 						</div>
 					}
 					child={<div css={childStyle}>
-            <div css={zoomOptionStyle} onClick={onSelectSignature}><img height={24} width={24} src={SignatureIcon}/>{t("Add signature")}</div>
-            <div css={zoomOptionStyle} onClick={onSelectFreeText}><img height={24} width={24} src={TextIcon}/>{t("Add text")}</div>
-            {
-              hasSignature() && (
-                <div css={zoomOptionStyle} onClick={onSelectEditSignature}><img height={24} width={24} src={SignatureRemoveIcon}/>{t("Edit signature")}</div>
-              )
-            }
-            {
-              hasText() && (
-                <div css={zoomOptionStyle} onClick={onSelectEditText}><img height={24} width={24} src={EditTextIcon}/>{t("Edit text")}</div>
-              )
-            }
-            {
-              annotationsEnabled() && (
-                <div css={zoomOptionStyle} onClick={onSelectNone}><img height={24} width={24} src={WriteIcon}/>{t("End edit mode")}</div>
-              )
-            }
+						<div css={zoomOptionStyle} onClick={onSelectSignature}><img height={24} width={24} src={SignatureIcon} />{t('Add signature')}</div>
+						<div css={zoomOptionStyle} onClick={onSelectFreeText}><img height={24} width={24} src={TextIcon} />{t('Add text')}</div>
+						{
+							hasSignature() && (
+								<div css={zoomOptionStyle} onClick={onSelectEditSignature}><img height={24} width={24} src={SignatureRemoveIcon} />{t('Edit signature')}</div>
+							)
+						}
+						{
+							hasText() && (
+								<div css={zoomOptionStyle} onClick={onSelectEditText}><img height={24} width={24} src={EditTextIcon} />{t('Edit text')}</div>
+							)
+						}
+						{
+							annotationsEnabled() && (
+								<div css={zoomOptionStyle} onClick={onSelectNone}><img height={24} width={24} src={WriteIcon} />{t('End edit mode')}</div>
+							)
+						}
 					</div>}
 				/>
 			</div>

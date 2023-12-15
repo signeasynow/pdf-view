@@ -2,7 +2,7 @@
 import { css } from '@emotion/react';
 
 export const ColorButton = ({ color, onChangeColor }) => {
-  const buttonStyle = css`
+	const buttonStyle = css`
     background-color: ${color};
     border: 2px solid ${color === 'white' ? 'black' : 'transparent'};
     border-radius: 50%;
@@ -12,7 +12,7 @@ export const ColorButton = ({ color, onChangeColor }) => {
     cursor: pointer;
   `;
 
-  return (
-    <button css={buttonStyle} onClick={() => onChangeColor(color)} />
-  );
+	return (
+		<button css={buttonStyle} onClick={() => onChangeColor(color)} />
+	);
 };

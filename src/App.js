@@ -10,20 +10,20 @@ import { useDebounce } from './utils/useDebounce';
 import SearchBar from './components/Searchbar';
 import { PdfViewer } from './PdfViewer';
 import Panel from './components/Panel';
-import { heightOffset0, heightOffset1, heightOffset3, heightOffsetTabs } from "./constants";
+import { heightOffset0, heightOffset1, heightOffset3, heightOffsetTabs } from './constants';
 // import { remove_pages, move_page, move_pages, rotate_pages, merge_pdfs, PdfMergeData, start } from '../lib/pdf_wasm_project.js';
 import { deletePDF, retrievePDF, savePDF } from './utils/indexDbUtils';
 import { invokePlugin, pendingRequests } from './utils/pluginUtils';
 import fetchBuffers from './utils/fetchBuffers';
 import { I18nextProvider } from 'react-i18next';
-import i18n from "./utils/i18n";
+import i18n from './utils/i18n';
 import useInitWasm from './hooks/useInitWasm';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import useDeclareIframeLoaded from './hooks/useDeclareIframeLoaded';
 import useDownload, { modifyPdfBuffer } from './hooks/useDownload';
 import useListenForDownloadRequest from './hooks/useListenForDownloadRequest';
 import usePropageClickEvents from './hooks/usePropagateClickEvents';
-import {supabase} from './utils/supabase';
+import { supabase } from './utils/supabase';
 import generateRandomKey from './utils/generateRandomKey';
 import simpleHash from './utils/simpleHash';
 import * as amplitude from '@amplitude/analytics-browser';
@@ -46,99 +46,100 @@ import { AnnotationEditorParamsType } from 'pdfjs-dist/build/pdf';
 import { FilesContext } from './Contexts/FilesContext';
 import { UndoRedoContext } from './Contexts/UndoRedoContext';
 import { ActivePageContext } from './Contexts/ActivePageContext';
-import SignatureIconPng from "../assets/yellow-bg-500-150.png";
-import SignatureIcon54Png from "../assets/yellow-bg-5-4.png";
+import SignatureIconPng from '../assets/yellow-bg-500-150.png';
+import SignatureIcon54Png from '../assets/yellow-bg-5-4.png';
 import useListenForRequestBufferRequest from './hooks/useListenForRequestBufferRequest';
 
 async function splitPdfPages(pdfBytes, splitIndices) {
-  const originalPdfDoc = await PDFDocument.load(pdfBytes);
-  const numPages = originalPdfDoc.getPageCount();
-  // Sort the split indices in ascending order
-  const sortedIndices = [...splitIndices, numPages].sort((a, b) => a - b);
-  const allPdfBuffers = [];
-  let start = 0;
+	const originalPdfDoc = await PDFDocument.load(pdfBytes);
+	const numPages = originalPdfDoc.getPageCount();
+	// Sort the split indices in ascending order
+	const sortedIndices = [...splitIndices, numPages].sort((a, b) => a - b);
+	const allPdfBuffers = [];
+	let start = 0;
 
-  for (const end of sortedIndices) {
-    // Create a new PDF document for each split index
-    const newPdfDoc = await PDFDocument.create();
+	for (const end of sortedIndices) {
+		// Create a new PDF document for each split index
+		const newPdfDoc = await PDFDocument.create();
 
-    // Copy and add pages from the original PDF document
+		// Copy and add pages from the original PDF document
 		const copiedPages = await newPdfDoc.copyPages(originalPdfDoc, Array.from({ length: end - start }, (_, i) => i + start));
-    for (const page of copiedPages) {
-      newPdfDoc.addPage(page);
-    }
+		for (const page of copiedPages) {
+			newPdfDoc.addPage(page);
+		}
 
-    // Save the new PDF document to a buffer
-    const newPdfBuffer = await newPdfDoc.save();
-    allPdfBuffers.push(newPdfBuffer);
+		// Save the new PDF document to a buffer
+		const newPdfBuffer = await newPdfDoc.save();
+		allPdfBuffers.push(newPdfBuffer);
 
-    start = end;
-  }
+		start = end;
+	}
 
-  return allPdfBuffers;
+	return allPdfBuffers;
 }
 
 async function removePdfPages(pdfBuffer, pageIndices) {
-  // Load the PDF document from the buffer
-  const pdfDoc = await PDFDocument.load(pdfBuffer);
+	// Load the PDF document from the buffer
+	const pdfDoc = await PDFDocument.load(pdfBuffer);
 
-  // Sort indices in descending order so that removal doesn't affect subsequent indices
-  const sortedIndices = pageIndices.sort((a, b) => b - a);
+	// Sort indices in descending order so that removal doesn't affect subsequent indices
+	const sortedIndices = pageIndices.sort((a, b) => b - a);
 
-  // Loop through the sorted indices array to remove specified pages
-  sortedIndices.forEach((pageIndex) => {
-    pdfDoc.removePage(pageIndex);
-  });
+	// Loop through the sorted indices array to remove specified pages
+	sortedIndices.forEach((pageIndex) => {
+		pdfDoc.removePage(pageIndex);
+	});
 
-  // Serialize the PDF back to a buffer
-  const modifiedPdfBuffer = await pdfDoc.save();
+	// Serialize the PDF back to a buffer
+	const modifiedPdfBuffer = await pdfDoc.save();
   
-  return modifiedPdfBuffer;
+	return modifiedPdfBuffer;
 }
 
 async function rotatePdfPages(pdfBuffer, pageIndices, angle) {
-  // Load the PDF document from the buffer
-  const pdfDoc = await PDFDocument.load(pdfBuffer);
+	// Load the PDF document from the buffer
+	const pdfDoc = await PDFDocument.load(pdfBuffer);
 
-  // Loop through the indices array to rotate specified pages
-  pageIndices.forEach((pageIndex) => {
-    const page = pdfDoc.getPages()[pageIndex];
-    if (page) {
-      // Get current rotation angle
-      const currentRotation = page.getRotation().angle;
+	// Loop through the indices array to rotate specified pages
+	pageIndices.forEach((pageIndex) => {
+		const page = pdfDoc.getPages()[pageIndex];
+		if (page) {
+			// Get current rotation angle
+			const currentRotation = page.getRotation().angle;
 
-      // Calculate the new rotation angle
-      const newRotation = (currentRotation + angle) % 360;
+			// Calculate the new rotation angle
+			const newRotation = (currentRotation + angle) % 360;
 
-      // Use the 'degrees' function to set the new rotation
-      page.setRotation(degrees(newRotation));
-    }
-  });
+			// Use the 'degrees' function to set the new rotation
+			page.setRotation(degrees(newRotation));
+		}
+	});
 
-  // Serialize the PDF back to a buffer
-  const rotatedPdfBuffer = await pdfDoc.save();
+	// Serialize the PDF back to a buffer
+	const rotatedPdfBuffer = await pdfDoc.save();
   
-  return rotatedPdfBuffer;
+	return rotatedPdfBuffer;
 }
 
 function markIndexes(numPages, startIndexes) {
 	const initialOrder = Array.from({ length: numPages }, (_, i) => i);
-	return initialOrder.map((item, index) => 
+	return initialOrder.map((item, index) =>
 		startIndexes.includes(index) ? `m${item}` : item
 	);
 }
 
 function placeIndexesInPlace(array, startIndexes, end) {
-  if (end === 0) {
-    array.splice(0, 0, ...startIndexes);  // Insert at the beginning
-  } else {
-    array.splice(end + 1, 0, ...startIndexes);  // Insert after the "end" element
-  }
-  return array;
+	if (end === 0) {
+		array.splice(0, 0, ...startIndexes);  // Insert at the beginning
+	}
+	else {
+		array.splice(end + 1, 0, ...startIndexes);  // Insert after the "end" element
+	}
+	return array;
 }
 
 function removeIndexPlaceholders(array) {
-	return array.filter((e) => typeof e !== "string")
+	return array.filter((e) => typeof e !== 'string');
 }
 
 function getArrayOrder(numPages, startIndexes, end) {
@@ -148,76 +149,76 @@ function getArrayOrder(numPages, startIndexes, end) {
 }
 
 async function reorderPages(pdfBytes, newOrder) {
-  const originalPdfDoc = await PDFDocument.load(pdfBytes);
-  const newPdfDoc = await PDFDocument.create();
+	const originalPdfDoc = await PDFDocument.load(pdfBytes);
+	const newPdfDoc = await PDFDocument.create();
 
-  const numPages = originalPdfDoc.getPageCount();
-  const pages = Array.from({ length: numPages }, (_, i) => originalPdfDoc.getPage(i));
+	const numPages = originalPdfDoc.getPageCount();
+	const pages = Array.from({ length: numPages }, (_, i) => originalPdfDoc.getPage(i));
 
-  // Reorder pages based on newOrder
-  for (const oldIndex of newOrder) {
-    if (oldIndex < numPages) {
-      const [copiedPage] = await newPdfDoc.copyPages(originalPdfDoc, [oldIndex]);
-      newPdfDoc.addPage(copiedPage);
-    }
-  }
+	// Reorder pages based on newOrder
+	for (const oldIndex of newOrder) {
+		if (oldIndex < numPages) {
+			const [copiedPage] = await newPdfDoc.copyPages(originalPdfDoc, [oldIndex]);
+			newPdfDoc.addPage(copiedPage);
+		}
+	}
 
-  // Fill in the gaps with pages that were not reordered
-  for (let i = 0; i < numPages; i++) {
-    if (!newOrder.includes(i)) {
-      const [copiedPage] = await newPdfDoc.copyPages(originalPdfDoc, [i]);
-      newPdfDoc.addPage(copiedPage);
-    }
-  }
+	// Fill in the gaps with pages that were not reordered
+	for (let i = 0; i < numPages; i++) {
+		if (!newOrder.includes(i)) {
+			const [copiedPage] = await newPdfDoc.copyPages(originalPdfDoc, [i]);
+			newPdfDoc.addPage(copiedPage);
+		}
+	}
 
-  const newPdfBytes = await newPdfDoc.save();
-  return newPdfBytes;
+	const newPdfBytes = await newPdfDoc.save();
+	return newPdfBytes;
 }
 
 
 export async function movePages(pdfBytes, fromIndexes, toIndex) {
-  const pdfDoc = await PDFDocument.load(pdfBytes);
-  const originalPages = pdfDoc.getPages();
+	const pdfDoc = await PDFDocument.load(pdfBytes);
+	const originalPages = pdfDoc.getPages();
 
-  if (originalPages.length === 0) {
-    throw new Error('The PDF document has no pages.');
-  }
+	if (originalPages.length === 0) {
+		throw new Error('The PDF document has no pages.');
+	}
 
-  // Sort fromIndexes for easier manipulation
-  fromIndexes.sort((a, b) => a - b);
+	// Sort fromIndexes for easier manipulation
+	fromIndexes.sort((a, b) => a - b);
 
-  // Adjust toIndex based on the direction of the move
-  let adjustedToIndex = toIndex;
-  for (const index of fromIndexes) {
-    if (index < adjustedToIndex) adjustedToIndex--;
-  }
+	// Adjust toIndex based on the direction of the move
+	let adjustedToIndex = toIndex;
+	for (const index of fromIndexes) {
+		if (index < adjustedToIndex) adjustedToIndex--;
+	}
 
-  const newPdfDoc = await PDFDocument.create();
+	const newPdfDoc = await PDFDocument.create();
   
-  // Copy over the rearranged pages to the new document
-  const indicesToCopy = [];
-  for (let i = 0; i < originalPages.length; i++) {
-    if (!fromIndexes.includes(i)) {
-      indicesToCopy.push(i);
-    }
-  }
+	// Copy over the rearranged pages to the new document
+	const indicesToCopy = [];
+	for (let i = 0; i < originalPages.length; i++) {
+		if (!fromIndexes.includes(i)) {
+			indicesToCopy.push(i);
+		}
+	}
 
-  // Insert the pages to be moved at the new index
-  for (const index of fromIndexes) {
-    indicesToCopy.splice(adjustedToIndex++, 0, index);
-  }
+	// Insert the pages to be moved at the new index
+	for (const index of fromIndexes) {
+		indicesToCopy.splice(adjustedToIndex++, 0, index);
+	}
 
-  const copiedPages = await newPdfDoc.copyPages(pdfDoc, indicesToCopy);
-  for (const page of copiedPages) {
-    newPdfDoc.addPage(page);
-  }
+	const copiedPages = await newPdfDoc.copyPages(pdfDoc, indicesToCopy);
+	for (const page of copiedPages) {
+		newPdfDoc.addPage(page);
+	}
 
-  // Serialize the new PDF to bytes and return
-  const newPdfBytes = await newPdfDoc.save();
-  return newPdfBytes;
+	// Serialize the new PDF to bytes and return
+	const newPdfBytes = await newPdfDoc.save();
+	return newPdfBytes;
 }
 
-amplitude.init("76825a74ed5e5f72bc6a75fd052e78ad")
+amplitude.init('76825a74ed5e5f72bc6a75fd052e78ad');
 
 const Flex = css`
 display: flex;
@@ -237,7 +238,7 @@ const failWrap = css`
 
 const App = () => {
 
-	const {activePageIndex, setActivePageIndex} = useContext(ActivePageContext)
+	const { activePageIndex, setActivePageIndex } = useContext(ActivePageContext);
 	const [matchesCount, setMatchesCount] = useState(0);
 
 	const pdfId = `pdfId${activePageIndex}`;
@@ -247,7 +248,7 @@ const App = () => {
 
 	const [searchText, setSearchText] = useState('');
 	const [isSplitting, setIsSplitting] = useState(false);
-	const [editorMode, setEditorMode] = useState("regular");
+	const [editorMode, setEditorMode] = useState('regular');
 	const eventBusRef = useRef(null);
 	const pdfLinkServiceRef = useRef(null);
 	const pdfFindControllerRef = useRef(null);
@@ -260,9 +261,9 @@ const App = () => {
 	const [buffer, setBuffer] = useState(1); // 1 for primary, 2 for secondary
 	const viewerContainerRef1 = useRef(null);
 	const viewerContainerRef2 = useRef(null);
-	const [searchBarView, setSearchBarView] = useState("chat");
+	const [searchBarView, setSearchBarView] = useState('chat');
 
-	const [pdfText, setPdfText] = useState("");
+	const [pdfText, setPdfText] = useState('');
 
 	const [expandedViewThumbnailScale, setExpandedViewThumbnailScale] = useState(2);
 	const [thumbnailScale, setThumbnailScale] = useState(2);
@@ -274,9 +275,9 @@ const App = () => {
 	const [editableAnnotationId, setEditableAnnotationId] = useState(null);
 	const [fontSizeValue, setFontSizeValue] = useState(12);
 	const [fontFamilyValue, setFontFamilyValue] = useState({
-    value: "helvetica",
-    label: "Helvetica"
-  });
+		value: 'helvetica',
+		label: 'Helvetica'
+	});
 	const [annotationColor, setAnnotationColor] = useState('#fff');
 
 	const pdfProxyObjRef = useRef(null);
@@ -290,13 +291,13 @@ const App = () => {
 			return true; // weird state. will allow it.
 		}
 		const { data, error } = await supabase.functions.invoke('verify-consumer-subscription', {
-      body: { user_id: inputtedUuid },
-    });
+			body: { user_id: inputtedUuid }
+		});
 		if (error) {
 			return true; // we'll take the heat
 		}
-		return data.message === "Active subscription found";
-	}
+		return data.message === 'Active subscription found';
+	};
 
 	const isThrottled = useRef(false);
 
@@ -309,7 +310,7 @@ const App = () => {
 		const result = await hasConsumerSubscription();
 		setAiLimitReached(!result);
 		if (result) {
-			window.localStorage.setItem("timestamps", "[]");
+			window.localStorage.setItem('timestamps', '[]');
 		}
 		setTimeout(() => {
 			isThrottled.current = false;
@@ -318,13 +319,13 @@ const App = () => {
 	
 	useEffect(() => {
 		const currentTime = new Date().getTime();
-		let timestamps = JSON.parse(window.localStorage.getItem("timestamps") || "[]");
+		let timestamps = JSON.parse(window.localStorage.getItem('timestamps') || '[]');
 	
 		// Filter out timestamps older than 24 hours
 		timestamps = timestamps.filter(ts => currentTime - ts < 24 * 60 * 60 * 1000);
 	
 		// Save the filtered timestamps back to localStorage
-		window.localStorage.setItem("timestamps", JSON.stringify(timestamps));
+		window.localStorage.setItem('timestamps', JSON.stringify(timestamps));
 	
 		// Check if more than 10 questions have been asked in the past 24 hours
 		if (timestamps.length > 10) {
@@ -333,15 +334,13 @@ const App = () => {
 	
 		// Add a new timestamp for the current question
 		timestamps.push(currentTime);
-		window.localStorage.setItem("timestamps", JSON.stringify(timestamps));
+		window.localStorage.setItem('timestamps', JSON.stringify(timestamps));
 		
 	}, [conversation]);
 	
 	const switchBuffer = () => setBuffer(buffer === 1 ? 2 : 1);
 
-	const getTargetContainer = () => {
-		return buffer === 1 ? viewerContainerRef2 : viewerContainerRef1;
-	};
+	const getTargetContainer = () => buffer === 1 ? viewerContainerRef2 : viewerContainerRef1;
 	const [isSandbox, setIsSandbox] = useState(false);
 
 	const [showSearch, setShowSearch] = useState(false);
@@ -351,13 +350,9 @@ const App = () => {
 
 	const [modifiedUiElements, setModifiedUiElements] = useState(null);
 
-	const showFullScreenSearch = () => {
-		return isSmallScreen && showSearch;
-	}
+	const showFullScreenSearch = () => isSmallScreen && showSearch;
 	
-	const shouldShowPanel = () => {
-		return showPanel && !showFullScreenSearch();
-	}
+	const shouldShowPanel = () => showPanel && !showFullScreenSearch();
 
 	const [multiPageSelections, setMultiPageSelections] = useState([]);
 
@@ -385,7 +380,7 @@ const App = () => {
 		if (!tools) {
 			return;
 		}
-		setSearchBarView(tools?.general?.includes("chat") ? "chat" : "search");
+		setSearchBarView(tools?.general?.includes('chat') ? 'chat' : 'search');
 	}, [tools]);
 
 	const onSearchBtnClick = () => {
@@ -397,11 +392,11 @@ const App = () => {
 	};
 
 	const initAnalytics = () => {
-		if (process.env.NODE_ENV === "development") {
+		if (process.env.NODE_ENV === 'development') {
 			return;
 		}
 		amplitude.track('session_start');
-	}
+	};
 
 	useEffect(() => {
 		initAnalytics();
@@ -409,12 +404,12 @@ const App = () => {
 
 	useInitWasm();
 
-  const [modifiedFile, setModifiedFile] = useState(null);
+	const [modifiedFile, setModifiedFile] = useState(null);
 	const [modifiedFiles, setModifiedFiles] = useState([]);
 
 	const [inputtedLicenseKey, setInputtedLicenseKey] = useState(null);
 	const [initialAnnotations, setInitialAnnotations] = useState([]);
-	const {files, setFiles} = useContext(FilesContext)
+	const { files, setFiles } = useContext(FilesContext);
 
 	const [fileNames, setFileNames] = useState([]);
 	const { triggerDownload: onDownload } = useDownload(files, isSandbox, fileNames);
@@ -430,9 +425,9 @@ const App = () => {
 	
 	const [documentLoading, setDocumentLoading] = useState(true);
 
-	const {operations, setOperations, redoStack, setRedoStack, addOperation} = useContext(UndoRedoContext)
+	const { operations, setOperations, redoStack, setRedoStack, addOperation } = useContext(UndoRedoContext);
 	// console.log(redoStack, 'redoStack', operations)
-	const [activeToolbarItem, setActiveToolbarItem] = useState("");
+	const [activeToolbarItem, setActiveToolbarItem] = useState('');
 	const activeToolbarItemRef = useRef(null);
 	const [customData, setCustomData] = useState({});
 
@@ -444,7 +439,8 @@ const App = () => {
 		try {
 			setOperations(initialRedoUndoObject());
 			setRedoStack(initialRedoUndoObject());
-		} catch (err) {}
+		}
+		catch (err) {}
 	}, [files]);
 
 	const addInitialFiles = async (event) => {
@@ -457,24 +453,26 @@ const App = () => {
 				const results = await Promise.allSettled(tasks);
 	
 				results.forEach((result, idx) => {
-					if (result.status === "fulfilled") {
+					if (result.status === 'fulfilled') {
 						console.log(`Successfully deleted pdfId${idx}`);
-					} else {
+					}
+					else {
 						console.warn(`Failed to delete pdfId${idx}: ${result.reason}`);
 					}
 				});
 	
-			} catch (err) {
-				console.error("An error occurred while deleting PDFs:", err);
+			}
+			catch (err) {
+				console.error('An error occurred while deleting PDFs:', err);
 			}
 		};
 	
 		await doRemove();
 		setFiles(event.data.files);
-		setFileNames(event.data.files.map((each) => each.name))
-	}
+		setFileNames(event.data.files.map((each) => each.name));
+	};
 
-	const [inputtedUuid, setInputtedUuid] = useState("");
+	const [inputtedUuid, setInputtedUuid] = useState('');
 
 	useEffect(() => {
 		window.addEventListener('message', (event) => {
@@ -485,14 +483,14 @@ const App = () => {
 				setTools(event.data.tools);
 			}
 			if (typeof event.data === 'object' && event.data.locale) {
-				i18n.changeLanguage(event.data.locale)
+				i18n.changeLanguage(event.data.locale);
 			}
 			if (typeof event.data === 'object' && event.data.licenseKey) {
 				setInputtedLicenseKey(event.data.licenseKey);
 			}
 			if (typeof event.data === 'object' && !!event.data.mode) {
-				setIsSplitting(event.data.mode === "split");
-				setEditorMode(event.data.mode || "regular");
+				setIsSplitting(event.data.mode === 'split');
+				setEditorMode(event.data.mode || 'regular');
 			}
 			if (typeof event.data === 'object' && !!event.data.uuid) {
 				setInputtedUuid(event.data.uuid);
@@ -543,22 +541,21 @@ const App = () => {
 		];
 		*/
 		const modifiedPdfArray = await doMerge(pdfList);
-		window.parent.postMessage({ type: "merge-files-completed", message: modifiedPdfArray});
-	}
+		window.parent.postMessage({ type: 'merge-files-completed', message: modifiedPdfArray });
+	};
 
 	async function doSplit(buffer, splits) {
 		try {
 			const modifiedPdfArrays = await splitPdfPages(new Uint8Array(buffer), splits);
-			const result = modifiedPdfArrays.map((each, idx) => {
-				return {
-					name: `document-${idx + 1}.pdf`,
-					url: each.slice(0)
-				}
-			})
+			const result = modifiedPdfArrays.map((each, idx) => ({
+				name: `document-${idx + 1}.pdf`,
+				url: each.slice(0)
+			}));
 			setFiles(result);
 			setFileNames(result.map((each) => each.name));
 			return result;
-		} catch (error) {
+		}
+		catch (error) {
 			console.error('Error modifying PDF:', error);
 		}
 		return;
@@ -578,9 +575,9 @@ const App = () => {
 		// setModifiedFiles(newModifiedPayload);
 		// setFileNames([fileNames[0].replace('.pdf', '-split.pdf')]);
 		setSplitMarkers([]);
-		window.parent.postMessage({ type: "split-pages-completed"});
+		window.parent.postMessage({ type: 'split-pages-completed' });
 
-	}
+	};
 
 	const combinePDFs = async (pdfBuffers) => {
 		const combinedPdf = await PDFDocument.create();
@@ -598,7 +595,7 @@ const App = () => {
 		}
 	
 		return await combinedPdf.save();
-	}
+	};
 
 	useEffect(() => {
 		if (!files?.length) {
@@ -613,15 +610,17 @@ const App = () => {
 				const results = await Promise.allSettled(tasks);
 	
 				results.forEach((result, idx) => {
-					if (result.status === "fulfilled") {
+					if (result.status === 'fulfilled') {
 						console.log(`Successfully deleted pdfId${idx}`);
-					} else {
+					}
+					else {
 						console.warn(`Failed to delete pdfId${idx}: ${result.reason}`);
 					}
 				});
 	
-			} catch (err) {
-				console.error("An error occurred while deleting PDFs:", err);
+			}
+			catch (err) {
+				console.error('An error occurred while deleting PDFs:', err);
 			}
 		};
 	
@@ -629,18 +628,18 @@ const App = () => {
 
 		return () => {
 			doRemove();
-		}
+		};
 	}, [files]);
 
 	const onRequestBuffer = async () => {
 		let successfulBuffers = await fetchBuffers(files.slice(0, fileNames.length));
 		if (!successfulBuffers.length) {
-			return alert("Something went wrong.");
+			return alert('Something went wrong.');
 		}
 		const modifiedPdfBuffer = await modifyPdfBuffer(successfulBuffers[0], annotations);
-		console.log(modifiedPdfBuffer, 'modifiedPdfBuffer2')
-		window.parent.postMessage({ type: "request-buffer-completed", message: modifiedPdfBuffer });
-	}
+		console.log(modifiedPdfBuffer, 'modifiedPdfBuffer2');
+		window.parent.postMessage({ type: 'request-buffer-completed', message: modifiedPdfBuffer });
+	};
 
 	const onCombinePdfs = async () => {
 
@@ -655,8 +654,9 @@ const App = () => {
 			setModifiedFiles(newModifiedPayload);
 			setFileNames([fileNames[0].replace('.pdf', '-merged.pdf')]);
 
-			window.parent.postMessage({ type: "combine-files-completed", message: modifiedPdfArray });
-		} else {
+			window.parent.postMessage({ type: 'combine-files-completed', message: modifiedPdfArray });
+		}
+		else {
 			// Handle case where no PDFs were successfully retrieved
 		}
 	
@@ -676,35 +676,41 @@ const App = () => {
 	useListenForThumbnailFullScreenRequest((enable) => {
 		if (enable === true) {
 			onExpand();
-		} else if (enable === false) {
+		}
+		else if (enable === false) {
 			onMinimize();
-		} else if (shouldShowFullScreenThumbnails()) {
+		}
+		else if (shouldShowFullScreenThumbnails()) {
 			onMinimize();
-		} else {
+		}
+		else {
 			onExpand();
 		}
 	});
 	useListenForSearchbarRequest((enable) => {
 		if (enable === true) {
 			setShowSearch(true);
-		} else if (enable === false) {
+		}
+		else if (enable === false) {
 			setShowSearch(false);
-		} else {
+		}
+		else {
 			setShowSearch((prev) => !prev);
 		}
-	})
+	});
 	useListenForSignatureModalRequest((enable) => {
 		// console.log(enable, 'enable bro3')
 		if (enable === true) {
 			showSignatureModal();
-		} else if (enable === false) {
+		}
+		else if (enable === false) {
 			hideSignatureModal();
 		}
 	});
 	useListenForThumbnailZoomRequest((v) => {
 		setExpandedViewThumbnailScale(v);
 		setThumbnailScale(v);
-	})
+	});
 
 	const [matchWholeWord, setMatchWholeWord] = useState(false);
 
@@ -789,34 +795,35 @@ const App = () => {
 
 	const checkLicense = async () => {
 		const { data, error } = await supabase.functions.invoke('verify-license-key', {
-      body: { licenseKey: inputtedLicenseKey, origin: window.origin },
-    });
+			body: { licenseKey: inputtedLicenseKey, origin: window.origin }
+		});
 		if (error) {
-			if (error.message === "Invalid license key") {
+			if (error.message === 'Invalid license key') {
 				setHasValidLicense(false);
 			}
 			// we'll take the blame here
 			return;
 		}
-		if (data.message === "Unauthorized domain") {
+		if (data.message === 'Unauthorized domain') {
 			setIsInValidDomain(false);
 			return;
 		}
-		if (data.error === "Unauthorized domain") {
+		if (data.error === 'Unauthorized domain') {
 			setIsInValidDomain(false);
 			return;
 		}
-		if (data.error === "Invalid license key") {
+		if (data.error === 'Invalid license key') {
 			setIsInValidDomain(false);
 			return;
 		}
-		if (data.message === "License and domain are valid") {
+		if (data.message === 'License and domain are valid') {
 			setHasValidLicense(true);
-		} else {
+		}
+		else {
 			// not sure what this is actually
 			setHasValidLicense(false);
 		}
-	}
+	};
 
 	const annotationEditorUIManagerRef = useRef(null);
 
@@ -830,38 +837,34 @@ const App = () => {
 		if (!inputtedLicenseKey) {
 			return;
 		}
-		if (inputtedLicenseKey.toLowerCase() === "sandbox") {
+		if (inputtedLicenseKey.toLowerCase() === 'sandbox') {
 			setIsSandbox(true);
 			return;
 		}
 		checkLicense();
 	}, [isOnline, inputtedLicenseKey]);
 
-  useEffect(() => {
-    const updateOnlineStatus = () => {
-      setIsOnline(navigator.onLine);
-    };
+	useEffect(() => {
+		const updateOnlineStatus = () => {
+			setIsOnline(navigator.onLine);
+		};
 
-    window.addEventListener('online', updateOnlineStatus);
-    window.addEventListener('offline', updateOnlineStatus);
+		window.addEventListener('online', updateOnlineStatus);
+		window.addEventListener('offline', updateOnlineStatus);
 
-    return () => {
-      window.removeEventListener('online', updateOnlineStatus);
-      window.removeEventListener('offline', updateOnlineStatus);
-    };
-  }, []);
+		return () => {
+			window.removeEventListener('online', updateOnlineStatus);
+			window.removeEventListener('offline', updateOnlineStatus);
+		};
+	}, []);
 
-	console.log(tools, 'tools')
+	console.log(tools, 'tools');
 
-	const showHeader = () => {
-		return tools?.general?.includes("download") || tools?.general?.includes("panel-toggle")
-		|| tools?.general?.includes("zoom") || tools?.general?.includes("search")
-		|| tools?.editing?.includes("rotation") || tools?.markers?.includes("go-to-next")
-	}
+	const showHeader = () => tools?.general?.includes('download') || tools?.general?.includes('panel-toggle')
+		|| tools?.general?.includes('zoom') || tools?.general?.includes('search')
+		|| tools?.editing?.includes('rotation') || tools?.markers?.includes('go-to-next');
 
-	const showSubheader = () => {
-		return (!!tools?.editing?.length || tools?.general?.includes("thumbnails")) && !showFullScreenSearch()
-	}
+	const showSubheader = () => (!!tools?.editing?.length || tools?.general?.includes('thumbnails')) && !showFullScreenSearch();
 
 
 	const undoLastAction = async () => {
@@ -926,14 +929,14 @@ const App = () => {
 		const order = getArrayOrder(pdfProxyObj.numPages, start, end);
 		const modifiedPdfArray = await reorderPages(new Uint8Array(buffer), order);
 		return modifiedPdfArray;
-	}
+	};
 
 	useEffect(() => {
 		setDocumentLoading(true);
 	}, [activePageIndex]);
 
-	const [aiDocHash, setAiDocHash] = useState(localStorage.getItem("aiDocHash") || "");
-	const [currentAiDocHash, setCurrentAiDocHash] = useState("");
+	const [aiDocHash, setAiDocHash] = useState(localStorage.getItem('aiDocHash') || '');
+	const [currentAiDocHash, setCurrentAiDocHash] = useState('');
 	async function addWatermark(pdfBytes) {
 		// Load a PDFDocument from the existing PDF bytes
 		const pdfDoc = await PDFDocument.load(pdfBytes);
@@ -952,7 +955,7 @@ const App = () => {
 				y: height - 4 * 12,
 				size: 12,
 				font: helveticaFont,
-				color: rgb(0.95, 0.1, 0.1),
+				color: rgb(0.95, 0.1, 0.1)
 			});
 		}
 	
@@ -966,59 +969,61 @@ const App = () => {
 		try {
 			const modifiedPdfArray = await removePdfPages(new Uint8Array(buffer), pages.map((each) => each - 1));
 			return modifiedPdfArray.buffer;
-		} catch (error) {
+		}
+		catch (error) {
 			console.error('Error modifying PDF:', error);
 		}
 		return;
-	}
+	};
 
 	const doRotate = async (pages, buffer, clockwise = true) => {
 		try {
 			const modifiedPdfArray = await rotatePdfPages(new Uint8Array(buffer), pages.map((each) => each - 1), clockwise ? 90 : -90);
 			return modifiedPdfArray.buffer;
-		} catch (error) {
+		}
+		catch (error) {
 			console.error('Error modifying PDF:', error);
 		}
 		return;
-	}
+	};
 
 	const doUpdateAnnotations = async (data) => {
 		updateAnnotation(data);
 		return await pdfProxyObj.getData();
-	}
+	};
 
 	const doMoveAnnotations = async (data) => {
 		moveAnnotation(data, () => {});
 		return await pdfProxyObj.getData();
-	}
+	};
 
 	const doRemoveAnnotations = async (data) => {
 		removeAnnotation(data);
 		return await pdfProxyObj.getData();
-	}
+	};
 
 	const applyOperation = async (operation, buffer) => {
 		switch (operation.action) {
-			case "delete": {
+			case 'delete': {
 				return await doDelete(operation.pages, buffer);
 			}
-			case "drag": {
+			case 'drag': {
 				return await doDrag(operation.start, operation.end, buffer);
 			}
-			case "rotate": {
+			case 'rotate': {
 				return await doRotate(operation.pages, buffer, operation.clockwise);
 			}
-			case "update-annotation": {
+			case 'update-annotation': {
 				return await doUpdateAnnotations(operation.data);
 			}
-			case "move-annotation": {
+			case 'move-annotation': {
 				return await doMoveAnnotations(operation.data);
 			}
-			case "remove-annotation": {
+			case 'remove-annotation': {
 				return await doRemoveAnnotations(operation.data);
 			}
 		}
-	}
+	};
 
 	const onRotateFullScreenThumbnails = async (clockwise) => {
 		if (!pdfProxyObj) {
@@ -1031,7 +1036,7 @@ const App = () => {
 		if (!pagesToRotate.length) {
 			return;
 		}
-		const operation = { action: "rotate", pages: pagesToRotate, clockwise};
+		const operation = { action: 'rotate', pages: pagesToRotate, clockwise };
 		// setMultiPageSelections([]);
 		const bufferResult = await applyOperation(operation, buffer);
 		await savePDF(bufferResult, pdfId);
@@ -1040,27 +1045,27 @@ const App = () => {
 		setModifiedFiles(newModifiedPayload);
 	
 		addOperation(operation);
-	}
+	};
 
 	const isManuallyAddingImageRef = useRef(false);
 
-	const {updateAnnotation, moveAnnotation, updateAnnotationParam, resizeAnnotation, removeAnnotation} = useAnnotations(activeAnnotationRef, isManuallyAddingImageRef);
+	const { updateAnnotation, moveAnnotation, updateAnnotationParam, resizeAnnotation, removeAnnotation } = useAnnotations(activeAnnotationRef, isManuallyAddingImageRef);
 	const { annotations, setAnnotations, annotationsRef } = useContext(AnnotationsContext);
 	useEffect(() => {
-    let allAnnotations = [{
-      id: "abc",
-      pageNumber: 1,
-      content: "dFruityy5",
-      x: 0.1,
-      y: 0.1,
-      color: "#008000",
-      fontSize: 28,
-			fontFamily: "courier",
-			name: "freeTextEditor"
-    }];
-    // allAnnotations = [];
-    // setAnnotations(allAnnotations);
-  }, []);
+		let allAnnotations = [{
+			id: 'abc',
+			pageNumber: 1,
+			content: 'dFruityy5',
+			x: 0.1,
+			y: 0.1,
+			color: '#008000',
+			fontSize: 28,
+			fontFamily: 'courier',
+			name: 'freeTextEditor'
+		}];
+		// allAnnotations = [];
+		// setAnnotations(allAnnotations);
+	}, []);
 
 	useEffect(() => {
 		window.parent.postMessage({ type: 'annotations-change', message: annotations }, window.parent.origin);
@@ -1070,10 +1075,10 @@ const App = () => {
 		if (!initialAnnotations) {
 			return;
 		}
-		console.log(pdfViewerRef.current, 'pdfViewerRef.current2')
+		console.log(pdfViewerRef.current, 'pdfViewerRef.current2');
 		// onEnableClickTagMode();
-		setAnnotations(initialAnnotations)
-	}, [initialAnnotations])
+		setAnnotations(initialAnnotations);
+	}, [initialAnnotations]);
 
 	const onRotate = async (clockwise) => {
 		if (!pdfProxyObj) {
@@ -1083,8 +1088,8 @@ const App = () => {
 
 		const buffer = await pdfProxyObj.getData();
 		const numPages = pdfProxyObj?.numPages;
-		const pagesToRotate = Array.from({length: numPages}).map((_, i) => i + 1);
-		const operation = { action: "rotate", pages: pagesToRotate, clockwise};
+		const pagesToRotate = Array.from({ length: numPages }).map((_, i) => i + 1);
+		const operation = { action: 'rotate', pages: pagesToRotate, clockwise };
 		// setMultiPageSelections([]);
 		const bufferResult = await applyOperation(operation, buffer);
 		await savePDF(bufferResult, pdfId);
@@ -1093,7 +1098,7 @@ const App = () => {
 		setModifiedFiles(newModifiedPayload);
 	
 		addOperation(operation);
-	}
+	};
 
 	const onRotateThumbnail = async (clockwise, pageNum) => {
 		if (!pdfProxyObj) {
@@ -1103,7 +1108,7 @@ const App = () => {
 
 		const buffer = await pdfProxyObj.getData();
 		const pagesToRotate = multiPageSelections?.length ? Array.from(new Set([...multiPageSelections, pageNum])) : [pageNum];
-		const operation = { action: "rotate", pages: pagesToRotate, clockwise};
+		const operation = { action: 'rotate', pages: pagesToRotate, clockwise };
 		const bufferResult = await applyOperation(operation, buffer);
 		await savePDF(bufferResult, pdfId);
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
@@ -1111,49 +1116,49 @@ const App = () => {
 		setModifiedFiles(newModifiedPayload);
 	
 		addOperation(operation);
-	}
+	};
 
 	const canDelete = () => {
 		if (shouldShowFullScreenThumbnails()) {
-			return !!multiPageSelections?.length
+			return !!multiPageSelections?.length;
 		}
-		return !!multiPageSelections?.length || !!activePage
-	}
+		return !!multiPageSelections?.length || !!activePage;
+	};
 	
 	const canExtract = (override) => {
 		if (Array.isArray(override)) {
 			return !!override?.length;
 		}
 		if (shouldShowFullScreenThumbnails()) {
-			return !!multiPageSelections?.length
+			return !!multiPageSelections?.length;
 		}
-		return !!multiPageSelections?.length || !!activePage
-	}
+		return !!multiPageSelections?.length || !!activePage;
+	};
 
 	const onExtract = async (override) => {
-    if (!canExtract(override)) {
-        return;
-    }
-    if (!pdfProxyObj) {
-        console.log('No PDF loaded to download');
-        return;
-    }
+		if (!canExtract(override)) {
+			return;
+		}
+		if (!pdfProxyObj) {
+			console.log('No PDF loaded to download');
+			return;
+		}
 
-    const buffer = await pdfProxyObj.getData();
-    const totalPages = pdfProxyObj.numPages;
-    let selectedPages = multiPageSelections?.length ? new Set(multiPageSelections) : new Set([activePage]);
+		const buffer = await pdfProxyObj.getData();
+		const totalPages = pdfProxyObj.numPages;
+		let selectedPages = multiPageSelections?.length ? new Set(multiPageSelections) : new Set([activePage]);
 		if (override?.length) {
 			selectedPages = new Set(override);
 		}
-    // Use Set for O(1) lookup, then generate the pagesToRemove array in O(n) time
-    const pagesToRemove = Array.from({ length: totalPages }, (_, i) => i + 1).filter((pageNum) => !selectedPages.has(pageNum));
+		// Use Set for O(1) lookup, then generate the pagesToRemove array in O(n) time
+		const pagesToRemove = Array.from({ length: totalPages }, (_, i) => i + 1).filter((pageNum) => !selectedPages.has(pageNum));
 
-    const operation = { action: "delete", pages: pagesToRemove };
-    setMultiPageSelections([]);
-    const bufferResult = await applyOperation(operation, buffer);
-    await savePDF(bufferResult, pdfId);
-		window.parent.postMessage({ type: "extract-pages-completed", success: true});
-    let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
+		const operation = { action: 'delete', pages: pagesToRemove };
+		setMultiPageSelections([]);
+		const bufferResult = await applyOperation(operation, buffer);
+		await savePDF(bufferResult, pdfId);
+		window.parent.postMessage({ type: 'extract-pages-completed', success: true });
+		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
 
@@ -1162,7 +1167,7 @@ const App = () => {
 
 	useListenForExtractPagesRequest((v) => {
 		onExtract(v);
-	})
+	});
 
 	const onDelete = async () => {
 		if (!canDelete()) {
@@ -1175,7 +1180,7 @@ const App = () => {
 
 		const buffer = await pdfProxyObj.getData();
 		const pagesToRemove = multiPageSelections?.length ? multiPageSelections : [activePage];
-		const operation = { action: "delete", pages: pagesToRemove};
+		const operation = { action: 'delete', pages: pagesToRemove };
 		setMultiPageSelections([]);
 		const bufferResult = await applyOperation(operation, buffer);
 		await savePDF(bufferResult, pdfId);
@@ -1184,31 +1189,31 @@ const App = () => {
 		setModifiedFiles(newModifiedPayload);
 	
 		addOperation(operation);
-	}
+	};
 
 	const onExtractThumbnail = async (page) => {
-    if (!pdfProxyObj) {
-        console.log('No PDF loaded to download');
-        return;
-    }
+		if (!pdfProxyObj) {
+			console.log('No PDF loaded to download');
+			return;
+		}
 
-    const buffer = await pdfProxyObj.getData();
-    const totalPages = pdfProxyObj.numPages;
-    let selectedPages = multiPageSelections?.length ? new Set([...multiPageSelections, page]) : new Set([page]);
-    // Use Set for O(1) lookup, then generate the pagesToRemove array in O(n) time
-    const pagesToRemove = Array.from({ length: totalPages }, (_, i) => i + 1).filter((pageNum) => !selectedPages.has(pageNum));
+		const buffer = await pdfProxyObj.getData();
+		const totalPages = pdfProxyObj.numPages;
+		let selectedPages = multiPageSelections?.length ? new Set([...multiPageSelections, page]) : new Set([page]);
+		// Use Set for O(1) lookup, then generate the pagesToRemove array in O(n) time
+		const pagesToRemove = Array.from({ length: totalPages }, (_, i) => i + 1).filter((pageNum) => !selectedPages.has(pageNum));
 
-    const operation = { action: "delete", pages: pagesToRemove };
-    setMultiPageSelections([]);
-    const bufferResult = await applyOperation(operation, buffer);
-    await savePDF(bufferResult, pdfId);
-		window.parent.postMessage({ type: "extract-pages-completed", success: true});
-    let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
+		const operation = { action: 'delete', pages: pagesToRemove };
+		setMultiPageSelections([]);
+		const bufferResult = await applyOperation(operation, buffer);
+		await savePDF(bufferResult, pdfId);
+		window.parent.postMessage({ type: 'extract-pages-completed', success: true });
+		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
 
 		addOperation(operation);
-	}
+	};
 
 	const onDeleteThumbnail = async (page) => {
 		if (!pdfProxyObj) {
@@ -1218,7 +1223,7 @@ const App = () => {
 
 		const buffer = await pdfProxyObj.getData();
 		const pagesToRemove = multiPageSelections?.length ? Array.from(new Set([...multiPageSelections, page])) : [page];
-		const operation = { action: "delete", pages: pagesToRemove};
+		const operation = { action: 'delete', pages: pagesToRemove };
 		setMultiPageSelections([]);
 		const bufferResult = await applyOperation(operation, buffer);
 		await savePDF(bufferResult, pdfId);
@@ -1227,19 +1232,19 @@ const App = () => {
 		setModifiedFiles(newModifiedPayload);
 	
 		addOperation(operation);
-	}
+	};
 
 	const handleChooseColor = (color) => {
 		pdfViewerRef.current.annotationEditorParams = {
 			type: AnnotationEditorParamsType.FREETEXT_COLOR,
 			value: color
-		}
+		};
 		updateAnnotationParam(activeAnnotationRef.current, {
 			color
-		})
-	}
+		});
+	};
 
-	const [annotationMode, setAnnotationMode] = useState("none");
+	const [annotationMode, setAnnotationMode] = useState('none');
 
 	const onEnableFreeTextMode = async () => {
 		pdfViewerRef.current.annotationEditorMode = {
@@ -1247,8 +1252,8 @@ const App = () => {
 			mode: pdfjs.AnnotationEditorType.FREETEXT,
 			source: null
 		};
-		setAnnotationMode("freetext");
-	}
+		setAnnotationMode('freetext');
+	};
 
 	const onEnableClickTagMode = async () => {
 		pdfViewerRef.current.annotationEditorMode = {
@@ -1257,7 +1262,7 @@ const App = () => {
 			source: null
 		};
 		// setAnnotationMode("freetext");
-	}
+	};
 
 	const onDisableEditorMode = async () => {
 		pdfViewerRef.current.annotationEditorMode = {
@@ -1265,26 +1270,29 @@ const App = () => {
 			mode: pdfjs.AnnotationEditorType.NONE,
 			source: null
 		};
-		setAnnotationMode("none");
+		setAnnotationMode('none');
 		// const bufferResult = await pdfProxyObj.getData();
 		// await savePDF(bufferResult, pdfId);
 		// setModifiedFiles(new Date().toISOString());
-	}
+	};
 
 	const mainHeight = () => {
 		let myHeight;
 		if (!showHeader() && !showSubheader()) {
 			myHeight = heightOffset0;
-		} else if (!showSubheader()) {
+		}
+		else if (!showSubheader()) {
 			myHeight = heightOffset1;
-		} else if (!showHeader()) {
+		}
+		else if (!showHeader()) {
 			myHeight = heightOffset3;
-		} else {
+		}
+		else {
 			myHeight = heightOffset1 + heightOffset3;
 		}
 		myHeight += heightOffsetTabs;
 		return `calc(100vh - ${myHeight}px)`;
-	}
+	};
 
 	const onDragEnd = async (start, end) => {
 		if (!pdfProxyObj) {
@@ -1294,11 +1302,12 @@ const App = () => {
 		let startToUse = start;
 		if (multiPageSelections?.length) {
 			startToUse = Array.from(new Set([...multiPageSelections.map((e) => e - 1), startToUse])).sort();
-		} else if (start === end) {
+		}
+		else if (start === end) {
 			return;
 		}
 		const buffer = await pdfProxyObj.getData();
-		const operation = { action: "drag", start: startToUse, end };
+		const operation = { action: 'drag', start: startToUse, end };
 	
 		// Apply the drag and drop operation
 		const newBuffer = await applyOperation(operation, buffer);
@@ -1307,6 +1316,7 @@ const App = () => {
 		await savePDF(newBuffer, pdfId);
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
+
 		/*
 		if (Array.isArray(startToUse)) {
 			const order = getArrayOrder(pdfProxyObj.numPages, startToUse, end);
@@ -1328,93 +1338,90 @@ const App = () => {
 		
 		// Update undo and redo stacks
 		addOperation(operation);
-	}
+	};
 
 	const [splitMarkers, setSplitMarkers] = useState([]);
 
 	const onClickSplit = (idx) => {
 		if (splitMarkers.includes(idx)) {
 			setSplitMarkers(splitMarkers.filter((each) => each !== idx));
-		} else {
+		}
+		else {
 			setSplitMarkers(Array.from(new Set([...splitMarkers, idx])));
 		}
-	}
+	};
 
 	const [showFullScreenThumbnails, setShowFullScreenThumbnails] = useState(false);
 
-	const shouldShowFullScreenThumbnails = () => {
-		return showFullScreenThumbnails && !showFullScreenSearch();
-	}
+	const shouldShowFullScreenThumbnails = () => showFullScreenThumbnails && !showFullScreenSearch();
 
 	const onExpand = () => {
 		setShowFullScreenThumbnails(true);
-	}
+	};
 
 	const [defaultZoom, setDefaultZoom] = useState(null);
 
 	const updateCurrentScale = (num) => {
 		setDefaultZoom(num);
-	}
+	};
 
 	const onChangeActivePageIndex = (idx) => {
 		setActivePageIndex(idx);
-	}
+	};
 
-	const forceFullThumbnailsView = () => {
-		return isSmallScreen && shouldShowPanel() && !showSearch && !showFullScreenSearch();
-	}
+	const forceFullThumbnailsView = () => isSmallScreen && shouldShowPanel() && !showSearch && !showFullScreenSearch();
 	// console.log(pdfText, 'pdfText', inputtedUuid)
-	const [aiDocId, setAiDocId] = useState(localStorage.getItem("aiDocId") || "");
+	const [aiDocId, setAiDocId] = useState(localStorage.getItem('aiDocId') || '');
 
-	const [embeddingKey, setEmbeddingKey] = useState(localStorage.getItem("embeddingKey") || "");
+	const [embeddingKey, setEmbeddingKey] = useState(localStorage.getItem('embeddingKey') || '');
 	const onEmbed = async () => {
 		const { data, error } = await supabase.functions.invoke('embed', {
-      body: { user_id: inputtedUuid, paragraphs: pdfText },
-    });
+			body: { user_id: inputtedUuid, paragraphs: pdfText }
+		});
 		if (error) {
-			alert("Something went wrong. Please try again later.");
+			alert('Something went wrong. Please try again later.');
 			console.error(`Error embedding: ${error}`);
 			return;
 		}
-		const newEmbeddingKey = data?.embeddingKey || "";
+		const newEmbeddingKey = data?.embeddingKey || '';
 		setEmbeddingKey(newEmbeddingKey);
-		localStorage.setItem("embeddingKey", newEmbeddingKey);
-		const docId = data?.docId || "";
+		localStorage.setItem('embeddingKey', newEmbeddingKey);
+		const docId = data?.docId || '';
 		setAiDocId(docId);
-		localStorage.setItem("aiDocId", docId);
+		localStorage.setItem('aiDocId', docId);
 		const hash = simpleHash(JSON.stringify(pdfText));
 		setAiDocHash(hash);
-		localStorage.setItem("aiDocHash", hash);
+		localStorage.setItem('aiDocHash', hash);
 		return;
-	}
+	};
 
 	const onNoToAiWarning = () => {
 		const hash = simpleHash(JSON.stringify(pdfText));
 		setAiDocHash(hash);
 		setCurrentAiDocHash(hash);
-		window.localStorage.setItem("aiDocHash", hash);
-	}
+		window.localStorage.setItem('aiDocHash', hash);
+	};
 
 	const onFreeTextAnnotationFocus = (id, data) => {
 		activeAnnotationRef.current = id;
 		setEditableAnnotationId(id);
-		setFontSizeValue(data.fontSize)
+		setFontSizeValue(data.fontSize);
 		const map = {
 			courier: {
-				value: "courier",
-				label: "Courier"
+				value: 'courier',
+				label: 'Courier'
 			},
 			helvetica: {
-				value: "helvetica",
-				label: "Helvetica"
-			},
-		}
-		setAnnotationColor(data.color)
+				value: 'helvetica',
+				label: 'Helvetica'
+			}
+		};
+		setAnnotationColor(data.color);
 		if (!map[data.fontFamily]) {
 			return;
 		}
-		setFontFamilyValue(map[data.fontFamily])
-	}
+		setFontFamilyValue(map[data.fontFamily]);
+	};
 
 	const onSignatureAnnotationFocus = (id, data) => {
 		// console.log(id, data, 'id, data', isManuallyAddingImageRef)
@@ -1424,21 +1431,21 @@ const App = () => {
 		console.log(data, 'data over here', data.height);
 		
 		// addOperation(operation);
-	}
+	};
 
 	const onAnnotationFocus = (id, data) => {
 		switch (data.name) {
-			case "freeTextEditor": {
+			case 'freeTextEditor': {
 				onFreeTextAnnotationFocus(id, data);
 				break;
 			}
-			case "stampEditor": {
+			case 'stampEditor': {
 				onSignatureAnnotationFocus(id, data);
 				break;
 			}
 		}
 		
-	}
+	};
 
 	const onRemoveChatHistory = async () => {
 		setConversation([]);
@@ -1447,53 +1454,53 @@ const App = () => {
 			return;
 		}
 		const { data, error } = await supabase.functions.invoke('remove_ai_from_doc', {
-      body: { docId: aiDocId },
-    });
+			body: { docId: aiDocId }
+		});
 		if (error) {
-			alert("Something went wrong. Please try again later.");
+			alert('Something went wrong. Please try again later.');
 			console.error(`Error embedding: ${error}`);
 			return;
 		}
-		setAiDocId("");
-		localStorage.setItem("aiDocId", "");
-	}
+		setAiDocId('');
+		localStorage.setItem('aiDocId', '');
+	};
 
 	const handleChangeActiveToolbarItem = (v) => {
 		setActiveToolbarItem(v);
-	}
+	};
 
-	useListenForRemoveChatHistoryRequest(onRemoveChatHistory)
+	useListenForRemoveChatHistoryRequest(onRemoveChatHistory);
 
 	const onAskQuestion = async (question, prevQuestions) => {
 		const { data, error } = await supabase.functions.invoke('ask_ai', {
-      body: { doc_id: aiDocId, question_text: question, last_questions: prevQuestions, embedding_key: embeddingKey},
-    });
+			body: { doc_id: aiDocId, question_text: question, last_questions: prevQuestions, embedding_key: embeddingKey }
+		});
 		if (error) {
-			alert("Something went wrong. Please try again later.");
+			alert('Something went wrong. Please try again later.');
 			console.error(`Error embedding: ${error}`);
 			return;
 		}
 		return data;
-	}
+	};
 
 	const onMinimize = () => {
 		setShowFullScreenThumbnails(false);
 		if (isSmallScreen) {
 			setShowPanel(false);
 		}
-	}
+	};
 
 	const onUpdateFontSize = (v) => {
 		updateAnnotationParam(activeAnnotationRef.current, {
 			fontSize: v
-		})
-	}
+		});
+	};
 
 	const onUpdateFontFamily = (v) => {
 		updateAnnotationParam(activeAnnotationRef.current, {
 			fontFamily: v
-		})
-	}
+		});
+	};
 
 	const handleSignTagClicked = (details) => {
 		isManuallyAddingImageRef.current = true;
@@ -1506,23 +1513,23 @@ const App = () => {
 		pdfViewerRef.current.annotationEditorParams = {
 			type: AnnotationEditorParamsType.CREATE,
 			value: {
-				bitmapUrl: localStorage.getItem("signatureImage"),
+				bitmapUrl: localStorage.getItem('signatureImage'),
 				// initialWidth: 0.1,
 				initialHeight: height,
 				initialX: details.x + (details.source.width / 2),
 				initialY: details.y + (details.source.height) - height,
 				moveDisabled: true
 			}
-		}
+		};
 		// maintains the mode.
-		if (editorMode === "click-tag") {
+		if (editorMode === 'click-tag') {
 			pdfViewerRef.current.annotationEditorMode = {
 				isFromKeyboard: false,
 				mode: pdfjs.AnnotationEditorType.CLICKTAG,
 				source: null
 			};
 		}
-	}
+	};
 
 	const handleNameTagClicked = async (details) => {
 		const text = customData?.nameTagValue;
@@ -1532,26 +1539,26 @@ const App = () => {
 			source: null
 		};
 		const dog = {
-      id: details.id,
-      pageNumber: details.source.pageIndex + 1,
+			id: details.id,
+			pageNumber: details.source.pageIndex + 1,
 			pageIndex: details.source.pageIndex,
-      content: text,
-      x: details.x,
-      y: details.y,
+			content: text,
+			x: details.x,
+			y: details.y,
 			initialX: details.x,
 			initialY: details.y,
-      color: "#080808",
-      fontSize: 16,
-			fontFamily: "helvetica",
-			name: "freeTextEditor",
+			color: '#080808',
+			fontSize: 16,
+			fontFamily: 'helvetica',
+			name: 'freeTextEditor',
 			moveDisabled: true
-    }
+		};
 		pdfViewerRef.current.annotationEditorParams = {
 			type: AnnotationEditorParamsType.CREATE,
 			value: dog
-		}
+		};
 		// maintains the mode.
-		if (editorMode === "click-tag") {
+		if (editorMode === 'click-tag') {
 			pdfViewerRef.current.annotationEditorMode = {
 				isFromKeyboard: false,
 				mode: pdfjs.AnnotationEditorType.CLICKTAG,
@@ -1559,7 +1566,7 @@ const App = () => {
 			};
 		}
 		updateAnnotation(dog, text);
-	}
+	};
 
 	const handleEmailTagClicked = async (details) => {
 		const text = customData?.emailTagValue;
@@ -1569,26 +1576,26 @@ const App = () => {
 			source: null
 		};
 		const dog = {
-      id: details.id,
-      pageNumber: details.source.pageIndex + 1,
+			id: details.id,
+			pageNumber: details.source.pageIndex + 1,
 			pageIndex: details.source.pageIndex,
-      content: text,
-      x: details.x,
-      y: details.y,
+			content: text,
+			x: details.x,
+			y: details.y,
 			initialX: details.x,
 			initialY: details.y,
-      color: "#080808",
-      fontSize: 16,
-			fontFamily: "helvetica",
-			name: "freeTextEditor",
+			color: '#080808',
+			fontSize: 16,
+			fontFamily: 'helvetica',
+			name: 'freeTextEditor',
 			moveDisabled: true
-    }
+		};
 		pdfViewerRef.current.annotationEditorParams = {
 			type: AnnotationEditorParamsType.CREATE,
 			value: dog
-		}
+		};
 		// maintains the mode.
-		if (editorMode === "click-tag") {
+		if (editorMode === 'click-tag') {
 			pdfViewerRef.current.annotationEditorMode = {
 				isFromKeyboard: false,
 				mode: pdfjs.AnnotationEditorType.CLICKTAG,
@@ -1596,7 +1603,7 @@ const App = () => {
 			};
 		}
 		updateAnnotation(dog, text);
-	}
+	};
 
 	const handleDateTagClicked = async (details) => {
 		const text = customData?.dateTagValue;
@@ -1606,26 +1613,26 @@ const App = () => {
 			source: null
 		};
 		const dog = {
-      id: details.id,
-      pageNumber: details.source.pageIndex + 1,
+			id: details.id,
+			pageNumber: details.source.pageIndex + 1,
 			pageIndex: details.source.pageIndex,
-      content: text,
-      x: details.x,
-      y: details.y,
+			content: text,
+			x: details.x,
+			y: details.y,
 			initialX: details.x,
 			initialY: details.y,
-      color: "#080808",
-      fontSize: 16,
-			fontFamily: "helvetica",
-			name: "freeTextEditor",
+			color: '#080808',
+			fontSize: 16,
+			fontFamily: 'helvetica',
+			name: 'freeTextEditor',
 			moveDisabled: true
-    }
+		};
 		pdfViewerRef.current.annotationEditorParams = {
 			type: AnnotationEditorParamsType.CREATE,
 			value: dog
-		}
+		};
 		// maintains the mode.
-		if (editorMode === "click-tag") {
+		if (editorMode === 'click-tag') {
 			pdfViewerRef.current.annotationEditorMode = {
 				isFromKeyboard: false,
 				mode: pdfjs.AnnotationEditorType.CLICKTAG,
@@ -1633,7 +1640,7 @@ const App = () => {
 			};
 		}
 		updateAnnotation(dog, text);
-	}
+	};
 
 	const onTagClicked = (details) => {
 		// console.log(details, 'details2');
@@ -1641,27 +1648,27 @@ const App = () => {
 			markerType: details.source?.overlayText,
 			pageNumber: details.source?.pageIndex + 1,
 			coordinates: [details.source?.x, details.source?.y]
-		}
-		window.parent.postMessage({ type: "click-tag", ...tagPayload }, '*');
+		};
+		window.parent.postMessage({ type: 'click-tag', ...tagPayload }, '*');
 		switch (details.source.overlayText) {
-			case "Sign": {
+			case 'Sign': {
 				handleSignTagClicked(details);
 				break;
 			}
-			case "Name": {
+			case 'Name': {
 				handleNameTagClicked(details);
 				break;
 			}
-			case "Date": {
+			case 'Date': {
 				handleDateTagClicked(details);
 				break;
 			}
-			case "Email": {
+			case 'Email': {
 				handleEmailTagClicked(details);
 				break;
 			}
 		}
-	}
+	};
 
 	const onAddImage = (localStorageName) => {
 		isManuallyAddingImageRef.current = true;
@@ -1677,9 +1684,9 @@ const App = () => {
 				// initialWidth: 0.1,
 				initialHeight: 0.04
 			}
-		}
-		setAnnotationMode("signature");
-	}
+		};
+		setAnnotationMode('signature');
+	};
 
 
 	const onClickField = (type) => {
@@ -1691,15 +1698,15 @@ const App = () => {
 		pdfViewerRef.current.annotationEditorParams = {
 			type: AnnotationEditorParamsType.CREATE,
 			value: {
-				bitmapUrl: type === "Sign" ? SignatureIcon54Png : SignatureIconPng,
-				initialWidth: type === "Sign" ? 0.18 : undefined,
-				initialHeight: type === "Sign" ? undefined : 0.04,
+				bitmapUrl: type === 'Sign' ? SignatureIcon54Png : SignatureIconPng,
+				initialWidth: type === 'Sign' ? 0.18 : undefined,
+				initialHeight: type === 'Sign' ? undefined : 0.04,
 				// imageType, deprecated
 				// initialWidth: typeMap[type] || 0.1,
 				overlayText: type
 			}
-		}
-		if (editorMode === "click-tag") {
+		};
+		if (editorMode === 'click-tag') {
 			pdfViewerRef.current.annotationEditorMode = {
 				isFromKeyboard: false,
 				mode: pdfjs.AnnotationEditorType.CLICKTAG,
@@ -1707,7 +1714,7 @@ const App = () => {
 			};
 		}
 		
-	}
+	};
 
 	const onMoveAnnotation = (data) => {
 		moveAnnotation(data, () => {
@@ -1728,28 +1735,28 @@ const App = () => {
 				source: {
 					pageIndex: data.source.pageIndex
 					// TODO Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'pageIndex')
-//      pageNumber: data.source.pageIndex + 1,
+					//      pageNumber: data.source.pageIndex + 1,
 
 				}
-			}
-			const operation = { action: "move-annotation", data: payload };
+			};
+			const operation = { action: 'move-annotation', data: payload };
 			addOperation(operation);
 		});
-	}
+	};
 
 	const onRemoveAnnotation = (data) => {
 		// console.log(data, 'data here3')
 		removeAnnotation(data);
-		const operation = { action: "remove-annotation", data };
+		const operation = { action: 'remove-annotation', data };
 		addOperation(operation);
 
-	}
+	};
 
 	const onUpdateAnnotation = (data, text) => {
 		// console.log(data, 'data643')
 		updateAnnotation(data, text);
 
-	}
+	};
 
 	if (fileLoadFailError) {
 		return (
@@ -1762,20 +1769,20 @@ const App = () => {
 
 	if (!isOnline) {
 		return (
-			<div style={{margin: 4}}>
+			<div style={{ margin: 4 }}>
 				<h1>Connection Issue Detected</h1>
 				<p>We couldn't find an active internet connection. Please ensure you're connected to the internet to continue.</p>
 			</div>
-		)
+		);
 	}
 
 	if (hasValidLicense === false) {
 		return (
-			<div style={{margin: 4}}>
+			<div style={{ margin: 4 }}>
 				<h1>License Key Invalid</h1>
 				<p>Your provided license key appears to be invalid. To resolve this issue, please reach out to your account administrator.</p>
 			</div>
-		)
+		);
 	}
 
 	/*
@@ -1791,14 +1798,14 @@ const App = () => {
 
 	if (!inputtedLicenseKey) {
 		return (
-			<div></div>
-		)
+			<div />
+		);
 	}
 
 	return (
 		<>
 			{/*<button onClick={onClickTestHandler}>Crazy btn</button>*/}
-			<div style={{height: mainHeight()}}>
+			<div style={{ height: mainHeight() }}>
 				{
 					showHeader() && (
 						<Header
@@ -1920,7 +1927,7 @@ const App = () => {
 							setModifiedFiles={setModifiedFiles}
 							modifiedFiles={modifiedFiles}
 							activePageIndex={activePageIndex}
-							isSandbox={inputtedLicenseKey?.toLowerCase() === "sandbox"}
+							isSandbox={inputtedLicenseKey?.toLowerCase() === 'sandbox'}
 							addWatermark={addWatermark}
 							updateCurrentScale={updateCurrentScale}
 							buffer={buffer}

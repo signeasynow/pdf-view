@@ -110,28 +110,27 @@ export const Thumbnail = ({
 		// e.stopPropagation();
 		if (multiPageSelections?.includes(pageNum)) {
 			setMultiPageSelections(multiPageSelections.filter((each) => each !== pageNum));
-		} else {
+		}
+		else {
 			setMultiPageSelections([...multiPageSelections, pageNum]);
 		}
-	}
+	};
 
-	const isTargetedByDragRect = () => {
-		return selectedIndexes?.includes(pageNum - 1);
-	}
+	const isTargetedByDragRect = () => selectedIndexes?.includes(pageNum - 1);
 
 	const isMultiSelected = () => {
 		if (isLeftPanel) {
 			return multiPageSelections?.includes(pageNum);
 		}
 		return multiPageSelections?.includes(pageNum) || isTargetedByDragRect();
-	}
+	};
 
 	const isSingleOrMultiDragging = () => {
 		if (isDragging) {
 			return true;
 		}
-		return typeof draggingIndex === "number" && isMultiSelected()
-	}
+		return typeof draggingIndex === 'number' && isMultiSelected();
+	};
 
 	useEffect(() => {
 		const renderThumbnail = async () => {
@@ -148,8 +147,8 @@ export const Thumbnail = ({
 		};
 
 		if (!hidden) {
-      renderThumbnail();
-    }
+			renderThumbnail();
+		}
 	}, [hidden, pageNum, scale, pdfProxyObj]);
 
 	const onRightClick = (e) => {
@@ -170,14 +169,14 @@ export const Thumbnail = ({
 	};
 
 	useEffect(() => {
-    const onHide = () => {
-      hideContextMenu();
-    };
-    document.addEventListener('hide-contextmenu', onHide);
-    return () => {
-      document.removeEventListener('hide-contextmenu', onHide);
-    };
-  }, []);
+		const onHide = () => {
+			hideContextMenu();
+		};
+		document.addEventListener('hide-contextmenu', onHide);
+		return () => {
+			document.removeEventListener('hide-contextmenu', onHide);
+		};
+	}, []);
 
 	const onClick = (e) => {
 		// e.stopPropagation();
@@ -187,24 +186,24 @@ export const Thumbnail = ({
 			return;
 		}
 		onThumbnailClick(pageNum, e);
-	}
+	};
 
 	const getThumbnailClass = () => {
 		if (clickIsMultiSelect) {
-			return [isMultiSelected() ? activeCanvasStyle : canvasStyle]
+			return [isMultiSelected() ? activeCanvasStyle : canvasStyle];
 		}
 		return [activePage === pageNum ? activeCanvasStyle : canvasStyle];
-	}
+	};
 
 	// console.log(tools?.editing?.includes('move'), "tools?.editing?.includes('move')")
 
 	return (
 		<div
-			style={{color: "#7f7f7f", alignSelf: "auto"}}
+			style={{ color: '#7f7f7f', alignSelf: 'auto' }}
 			draggable={tools?.editing?.includes('move')}
 			onDragStart={(e) => {
 				setIsDragging(true);
-				onDragStart(e, pageNum)
+				onDragStart(e, pageNum);
 			}}
 			onDragOver={(e) => onDragOver(e, pageNum)}
 			onDragEnd={(e) => {
@@ -216,59 +215,59 @@ export const Thumbnail = ({
 				isSingleOrMultiDragging() ? draggingStyle : null
 			]}
 			id={`thumbnail-${pageNum}`}
-    >
-				{
-				contextMenu.visible && 
+		>
+			{
+				contextMenu.visible &&
 				<div
 					css={contextMenuStyle}
 					style={{
-					top: `${contextMenu.y}px`,
-					left: `${contextMenu.x}px`,
-				}}
-				onClick={hideContextMenu}
+						top: `${contextMenu.y}px`,
+						left: `${contextMenu.x}px`
+					}}
+					onClick={hideContextMenu}
 				>
 					{
-						tools?.editing?.includes("rotation") && (
+						tools?.editing?.includes('rotation') && (
 							<>
-								<strong css={contextMenuLabel}>{t["pageOrientation"]}</strong>
+								<strong css={contextMenuLabel}>{t.pageOrientation}</strong>
 								<div onClick={() => onRotate(true, pageNum)} css={contextMenuItem}>
-									<Icon src={RotateRight} alt={t["rotateClockwise"]} />
-									<p css={contextMenuItemText}>{t["rotateClockwise"]}</p>
+									<Icon src={RotateRight} alt={t.rotateClockwise} />
+									<p css={contextMenuItemText}>{t.rotateClockwise}</p>
 								</div>
 								<div onClick={() => onRotate(false, pageNum)} css={contextMenuItem}>
-									<Icon src={RotateLeft} alt={t["rotateCounterClockwise"]} />
-									<p css={contextMenuItemText}>{t["rotateCounterClockwise"]}</p>
+									<Icon src={RotateLeft} alt={t.rotateCounterClockwise} />
+									<p css={contextMenuItemText}>{t.rotateCounterClockwise}</p>
 								</div>
 							</>
 						)
 					}
 					{
-						tools?.editing?.includes("rotation")
-						&& tools?.editing?.includes("remove") && (
+						tools?.editing?.includes('rotation')
+						&& tools?.editing?.includes('remove') && (
 							<hr />
 						)
 					}
 					{
-						tools?.editing?.includes("remove") || tools?.editing?.includes("extract") && (
-							<strong css={contextMenuLabel}>{t["Page manipulation"]}</strong>
+						tools?.editing?.includes('remove') || tools?.editing?.includes('extract') && (
+							<strong css={contextMenuLabel}>{t['Page manipulation']}</strong>
 						)
 					}
 					{
-						tools?.editing?.includes("remove") && (
+						tools?.editing?.includes('remove') && (
 							<>
 								<div onClick={() => onDelete(pageNum)} css={contextMenuItem}>
-									<Icon src={Trash} alt={t["Delete"]} />
-									<p css={contextMenuItemText}>{t["Delete"]}</p>
+									<Icon src={Trash} alt={t.Delete} />
+									<p css={contextMenuItemText}>{t.Delete}</p>
 								</div>
 							</>
 						)
 					}
 					{
-						tools?.editing?.includes("extract") && (
+						tools?.editing?.includes('extract') && (
 							<>
 								<div onClick={() => onExtract(pageNum)} css={contextMenuItem}>
-									<Icon src={Extract} alt={t["Extract"]} />
-									<p css={contextMenuItemText}>{t["Extract"]}</p>
+									<Icon src={Extract} alt={t.Extract} />
+									<p css={contextMenuItemText}>{t.Extract}</p>
 								</div>
 							</>
 						)
@@ -278,7 +277,8 @@ export const Thumbnail = ({
 			<div
 				onContextMenu={onRightClick}
 				onClick={onClick}
-				style={{display: "inline-flex", cursor: "pointer"}} css={getThumbnailClass()} >
+				style={{ display: 'inline-flex', cursor: 'pointer' }} css={getThumbnailClass()}
+			>
 				<div css={checkboxStyle}>
 					<Checkbox onChange={(e) => {
 						if (!clickIsMultiSelect) {
@@ -288,9 +288,9 @@ export const Thumbnail = ({
 					/>
 				</div>
 				{/*<input checked={isMultiSelected()} onClick={onToggleMultiSelect} css={checkboxStyle} type="checkbox" />*/}
-				<canvas style={{opacity: isMultiSelected() ? 0.5 : 1}} class="canvas-page" ref={canvasRef} />
+				<canvas style={{ opacity: isMultiSelected() ? 0.5 : 1 }} class="canvas-page" ref={canvasRef} />
 			</div>
-			<div style={{ fontSize: '0.8rem', marginTop: '0.5rem', pointerEvents: "none", color: isFullScreen ? "white" : "" }}>{displayPageNum}</div>
+			<div style={{ fontSize: '0.8rem', marginTop: '0.5rem', pointerEvents: 'none', color: isFullScreen ? 'white' : '' }}>{displayPageNum}</div>
 		</div>
 	);
 };

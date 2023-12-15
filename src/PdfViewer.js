@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'preact/hooks';
 import * as pdfjs from 'pdfjs-dist';
 import { EventBus, PDFLinkService, PDFViewer, PDFFindController, PDFScriptingManager } from 'pdfjs-dist/web/pdf_viewer';
 import 'pdfjs-dist/web/pdf_viewer.css';
-import { heightOffset0, heightOffset1, heightOffset3, heightOffsetTabs } from "./constants";
+import { heightOffset0, heightOffset1, heightOffset3, heightOffsetTabs } from './constants';
 import { retrievePDF, savePDF } from './utils/indexDbUtils';
 import { extractAllTextFromPDF } from './utils/extractAllTextFromPdf';
 import { addSandboxWatermark } from './utils/addSandboxWatermark';
@@ -77,7 +77,7 @@ export const PdfViewer = ({
 
 	useEffect(() => {
 		annotationsRef.current = annotations;
-	}, [annotations])
+	}, [annotations]);
 
 
 	const hasWatermarkAdded = useRef(false);
@@ -87,19 +87,20 @@ export const PdfViewer = ({
 		pdfLinkServiceRef.current?.setDocument(null);
 		try {
 			await pdfScriptingManagerRef.current?.destroyPromise();
-		} catch (err) {}
+		}
+		catch (err) {}
 		pdfViewerRef.current?.cleanup();
-	}
+	};
 
 	useEffect(() => {
 		if (!eventBusRef.current) {
 			return;
 		}
-		console.log(annotationColor, 'annotationColor')
-		eventBusRef.current.dispatch("switchannotationeditorparams", {
+		console.log(annotationColor, 'annotationColor');
+		eventBusRef.current.dispatch('switchannotationeditorparams', {
 			type: AnnotationEditorParamsType.FREETEXT_COLOR,
 			value: annotationColor
-		})
+		});
 	}, [annotationColor]);
 
 	const applyDocument = async (viewerContainer) => {
@@ -113,7 +114,7 @@ export const PdfViewer = ({
 		// const pdfRenderingQueue = new pdfjs.PDFRenderingQueue();
 		pdfViewerRef.current = new PDFViewer({
 			container: viewerContainer,
-			viewer: document.getElementById("viewer"),
+			viewer: document.getElementById('viewer'),
 			eventBus: eventBusRef.current,
 			linkService: pdfLinkServiceRef.current,
 			findController: pdfFindControllerRef.current,
@@ -128,27 +129,27 @@ export const PdfViewer = ({
 		pdfScriptingManagerRef.current.setViewer(pdfViewerRef.current);
 		
 		eventBus.on('pagesinit', () => {
-			pdfViewerRef.current.currentScaleValue = "page-height";
+			pdfViewerRef.current.currentScaleValue = 'page-height';
 			updateCurrentScale(Math.round(pdfViewerRef.current.currentScale * 100));
 		});
 
 		eventBus.on('pagesloaded', () => {
 			setDocumentLoading(false);
-			if (typeof activePage === "number") {
+			if (typeof activePage === 'number') {
 				pdfLinkServiceRef.current?.goToPage(activePage || 1);
 			}
 			window.parent.postMessage({
-				type: "pages-loaded",
+				type: 'pages-loaded',
 				message: new Date().toISOString()
-			})
-			if (activeToolbarItemRef.current === "text") {
+			});
+			if (activeToolbarItemRef.current === 'text') {
 				pdfViewerRef.current.annotationEditorMode = {
 					isFromKeyboard: false,
 					mode: pdfjs.AnnotationEditorType.FREETEXT,
 					source: null
 				};
 			}
-			if (initialAnnotations && tools?.markers?.includes("clickable")) {
+			if (initialAnnotations && tools?.markers?.includes('clickable')) {
 				pdfViewerRef.current.annotationEditorMode = {
 					isFromKeyboard: false,
 					mode: pdfjs.AnnotationEditorType.CLICKTAG,
@@ -159,19 +160,19 @@ export const PdfViewer = ({
 
 		});
 
-		eventBus.on("tagclicked", (details) => {
+		eventBus.on('tagclicked', (details) => {
 			// console.log(details, 'details 778')
 			onTagClicked(details);
 		});
 
-		eventBus.on("annotationfocused", ({ details }) => {
+		eventBus.on('annotationfocused', ({ details }) => {
 			// console.log(details, 'details r48')
 			onAnnotationFocus(details.current.id, details.current);
 		});
 
 		eventBus.on('annotationchanged', ({ details }) => {
 			// console.log(details, 'details r44', details.text)
-			updateAnnotation(details.current, details.text)
+			updateAnnotation(details.current, details.text);
 		});
 
 		eventBus.on('annotationeditorresized', (details) => {
@@ -206,7 +207,7 @@ export const PdfViewer = ({
 			}
 		
 			// Get the scroll container
-			const container = document.getElementById("panel");
+			const container = document.getElementById('panel');
 			
 			// Calculate the visible area within the container
 			const containerTop = container.scrollTop;
@@ -232,7 +233,8 @@ export const PdfViewer = ({
 		if (!modFile) {
 			try {
 				modFile = await retrievePDF(`original${activePageIndex}`);
-			} catch (err) {
+			}
+			catch (err) {
 
 			}
 		}
@@ -243,7 +245,7 @@ export const PdfViewer = ({
 				if (isSandbox) {
 					const pdfData = new Uint8Array(await loadedPdfDocument.getData()).slice(0);
 					const pdfWithWatermark = await addSandboxWatermark(new Uint8Array(pdfData));
-					loadedPdfDocument = await pdfjs.getDocument({data: pdfWithWatermark}).promise;
+					loadedPdfDocument = await pdfjs.getDocument({ data: pdfWithWatermark }).promise;
 					hasWatermarkAdded.current = true;
 				}
 				// If no modifiedFile, continue to set the loaded PDF document.
@@ -265,12 +267,12 @@ export const PdfViewer = ({
 				window.parent.postMessage({ type: 'file-failed', message: reason?.message }, '*');
 			}
 		);
-	}
+	};
 
 	useEffect(() => {
-    if (!files?.length || !viewerContainerRef1.current) return;
-    const targetContainer = viewerContainerRef1;
-    applyDocument(targetContainer.current); // assume applyDocument is async
+		if (!files?.length || !viewerContainerRef1.current) return;
+		const targetContainer = viewerContainerRef1;
+		applyDocument(targetContainer.current); // assume applyDocument is async
 	}, [files, modifiedFiles, activePageIndex]);
 
 
@@ -294,30 +296,33 @@ export const PdfViewer = ({
 	}, [modifiedFiles, files]);
 
 	const width = () => {
-		if (!tools?.general?.includes("thumbnails")) {
-			return "100%"
+		if (!tools?.general?.includes('thumbnails')) {
+			return '100%';
 		}
 		return `calc(100% - ${panelSpaceUsed()}px)`;
-	}
+	};
 
 	const height = () => {
 		let toolbarSpaceUsed;
 		if (!showHeader && !showSubheader) {
 			toolbarSpaceUsed = heightOffset0;
-		} else if (!showSubheader) {
+		}
+		else if (!showSubheader) {
 			toolbarSpaceUsed = heightOffset1;
-		} else if (!showHeader) {
+		}
+		else if (!showHeader) {
 			toolbarSpaceUsed = heightOffset3;
-		} else {
+		}
+		else {
 			toolbarSpaceUsed = heightOffset1 + heightOffset3;
 		}
 		toolbarSpaceUsed += heightOffsetTabs;
 		return `calc(100% - ${toolbarSpaceUsed}px)`;
-	}
+	};
 
 	return (
 		<div>
-			<div ref={viewerContainerRef1} id="viewerContainer" css={containerStyle} style={{ width: width(), height: height(), visibility: "visible" }}>
+			<div ref={viewerContainerRef1} id="viewerContainer" css={containerStyle} style={{ width: width(), height: height(), visibility: 'visible' }}>
 				<div id="viewer" class="pdfViewer" />
 			</div>
 		</div>

@@ -16,51 +16,51 @@ const wrapper = css`
 `;
 
 export const ColorWheel = ({
-  onChooseColor,
-  annotationColor,
+	onChooseColor,
+	annotationColor,
 	setAnnotationColor
 }) => {
-  const [showPicker, setShowPicker] = useState(false);
+	const [showPicker, setShowPicker] = useState(false);
 
-  const handleColorChange = (color) => {
-    setAnnotationColor(color.hex);
-    if (onChooseColor) {
-      onChooseColor(color.hex);
-    }
-  };
+	const handleColorChange = (color) => {
+		setAnnotationColor(color.hex);
+		if (onChooseColor) {
+			onChooseColor(color.hex);
+		}
+	};
 
-  const togglePicker = () => {
-    setShowPicker(!showPicker);
-  };
+	const togglePicker = () => {
+		setShowPicker(!showPicker);
+	};
 
-  return (
-    <div css={wrapper}>
-      <img
-        onClick={togglePicker}
-        style={{ borderRadius: '4px', width: 32, height: 32 }}
-        src={ColorWheelIcon}
-        alt="Color Wheel"
-      />
-      {showPicker && (
-        <div style={{ position: 'absolute', zIndex: 99999, top: 40 }}>
-          <div
-            style={{
-              position: 'fixed',
-              top: '0px',
-              right: '0px',
-              bottom: '0px',
-              left: '0px',
-            }}
-            onClick={togglePicker}
-          />
-          <SketchPicker
-            color={annotationColor}
-            disableAlpha={true} // This will remove the opacity slider
-            onChangeComplete={handleColorChange}
-            presetColors={[]} // Pass an empty array to remove preset colors
-          />
-        </div>
-      )}
-    </div>
-  );
+	return (
+		<div css={wrapper}>
+			<img
+				onClick={togglePicker}
+				style={{ borderRadius: '4px', width: 32, height: 32 }}
+				src={ColorWheelIcon}
+				alt="Color Wheel"
+			/>
+			{showPicker && (
+				<div style={{ position: 'absolute', zIndex: 99999, top: 40 }}>
+					<div
+						style={{
+							position: 'fixed',
+							top: '0px',
+							right: '0px',
+							bottom: '0px',
+							left: '0px'
+						}}
+						onClick={togglePicker}
+					/>
+					<SketchPicker
+						color={annotationColor}
+						disableAlpha // This will remove the opacity slider
+						onChangeComplete={handleColorChange}
+						presetColors={[]} // Pass an empty array to remove preset colors
+					/>
+				</div>
+			)}
+		</div>
+	);
 };

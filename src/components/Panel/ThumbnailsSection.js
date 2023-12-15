@@ -62,9 +62,7 @@ const ThumbnailsSection = ({
 		onThumbnailClick(num, e);
 	};
 
-	const shouldShowTopBar = () => {
-		return tools?.thumbnails?.includes('zoom') || tools?.thumbnails?.includes('expand')
-	}
+	const shouldShowTopBar = () => tools?.thumbnails?.includes('zoom') || tools?.thumbnails?.includes('expand');
 	
 
 	return (
