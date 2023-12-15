@@ -426,7 +426,6 @@ const App = () => {
 	const [documentLoading, setDocumentLoading] = useState(true);
 
 	const { operations, setOperations, redoStack, setRedoStack, addOperation } = useContext(UndoRedoContext);
-	// console.log(redoStack, 'redoStack', operations)
 	const [activeToolbarItem, setActiveToolbarItem] = useState('');
 	const activeToolbarItemRef = useRef(null);
 	const [customData, setCustomData] = useState({});
