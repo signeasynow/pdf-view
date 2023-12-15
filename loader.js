@@ -4,6 +4,6 @@ import 'pdfjs-dist/web/pdf_viewer.css';
 
 import { render } from 'preact';
 import AppRoot from './src/AppRoot';
-pdfjs.GlobalWorkerOptions.workerSrc = "lib/pdf.worker.js" // || `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = 'lib/pdf.worker.js'; // || `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 render(<AppRoot />, document.getElementById('app'));
