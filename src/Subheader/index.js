@@ -82,7 +82,7 @@ const Subheader = ({
 	const { t } = useTranslation();
 
 	const handleInputChange = (e) => {
-		const num = parseInt(e.target.value);
+		const num = parseInt(e.target.value, 10);
 		setExpandedViewThumbnailScale(num);
 	};
 

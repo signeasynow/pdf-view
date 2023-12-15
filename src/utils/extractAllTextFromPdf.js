@@ -15,7 +15,7 @@ export async function extractAllTextFromPDF(pdfDocument) {
 
 			// Heuristic: If the text ends with a character typical for ending a sentence or a paragraph,
 			// or if this is the last item, then we treat it as the end of the paragraph.
-			if (item.str.match(/[\.\?\!]\s*$/) || index === textItems.length - 1) {
+			if (item.str.match(/[.?!]\s*$/) || index === textItems.length - 1) {
 				paragraphCount++;  // Increment the paragraph count
 				sections.push({ page: i, paragraph: paragraphCount, text_span: paragraph.trim() });
 				paragraph = '';

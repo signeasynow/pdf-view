@@ -189,7 +189,7 @@ const FullScreenThumbnails = ({
 			if (isSplitting) {
 				if (i !== 0) {
 					if (splitMarkers.includes(i)) {
-						elements = [...elements, <div style={{ display: 'flex', alignItems: 'center' }}>
+						elements = [...elements, <div key={i} style={{ display: 'flex', alignItems: 'center' }}>
 							<Tooltip title="Splitting here">
 								<div style={{ background: '#f96804', borderRadius: '4px' }}>
 									<AccessibleButton ariaLabel="Split" onClick={() => onClickSplit(i)}>
@@ -200,7 +200,7 @@ const FullScreenThumbnails = ({
 						</div>];
 					}
 					else {
-						elements = [...elements, <div style={{ display: 'flex', alignItems: 'center' }}>
+						elements = [...elements, <div key={i} style={{ display: 'flex', alignItems: 'center' }}>
 							<Tooltip title="Add a split here">
 								<AccessibleButton ariaLabel="Split" onClick={() => onClickSplit(i)}>
 									<Icon src={Split} />
@@ -211,10 +211,10 @@ const FullScreenThumbnails = ({
 				}
 			}
 			else if (i === dragOverIndex - 1) {
-				elements = [...elements, <div css={dummyThumbnailStyle} />];
+				elements = [...elements, <div key={i} css={dummyThumbnailStyle} />];
 			}
 			else {
-				elements = [...elements, <div css={emptyDummyThumbnailStyle} />];
+				elements = [...elements, <div key={i} css={emptyDummyThumbnailStyle} />];
 			}
 
 			const thumbnailElement = (

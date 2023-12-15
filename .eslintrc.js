@@ -33,6 +33,8 @@ module.exports = {
 		'react/jsx-uses-react': 'off',
 		'react/jsx-uses-vars': 'error',
 		'no-undef': 'off',
-		'no-unused-vars': ['error', { args: 'after-used' }]
+		'no-unused-vars': ['warn', { args: 'after-used' }],
+		'no-mixed-spaces-and-tabs': 'off',
+		'no-case-declarations': 'off'
 	}
 };

@@ -21,6 +21,9 @@ const BookmarksSection = ({
 	setActivePage
 }) => {
 
+	const [isRenaming, setIsRenaming] = useState(false);
+	const [newTitle, setNewTitle] = useState(page.title);
+
 	const [bookmarkedPages, setBookmarkedPages] = useState([]);
 
 	const { applyBookmarkButtons, removeBookmarkButtons } = usePdfBookmarks();
@@ -64,8 +67,6 @@ const BookmarksSection = ({
 			</div>
 			{
 				bookmarkedPages.map((page) => {
-					const [isRenaming, setIsRenaming] = useState(false);
-					const [newTitle, setNewTitle] = useState(page.title);
 
 					const handleRename = () => {
 						setIsRenaming(true);
@@ -124,13 +125,11 @@ const BookmarksSection = ({
 							</div>
 							{
 								!isRenaming && isDropdownVisible && (
-									<Dropdown title={
-										<Icon src={Gear} alt="View controls" />
-									}
+									<Dropdown title={<Icon src={Gear} alt="View controls" />}
 										child={<div>
-										<p onClick={handleRename}>Rename</p>
-										<p onClick={() => toggleBookmark(page.pageNumber)}>Delete</p>
-									</div>}
+											<p onClick={handleRename}>Rename</p>
+											<p onClick={() => toggleBookmark(page.pageNumber)}>Delete</p>
+										</div>}
 									/>
 								)
 							}

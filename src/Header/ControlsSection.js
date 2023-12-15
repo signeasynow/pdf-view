@@ -39,20 +39,18 @@ const ControlsSection = ({
 
 	return (
 		<>
-			<Dropdown title={
-				<HeaderBtn title={t('viewControls')} iconAlt={t('viewControls')} icon={Gear} />
-			}
+			<Dropdown title={<HeaderBtn title={t('viewControls')} iconAlt={t('viewControls')} icon={Gear} />}
 				child={<div css={childStyle}>
-				<h4 css={titleStyle}>{t('pageOrientation')}</h4>
-				<div css={optionStyle} onClick={() => onRotate(true)}>
-					<Icon src={RotateRight} alt={t('rotateClockwise')} />
-					<p css={optionTextStyle}>{t('rotateClockwise')}</p>
-				</div>
-				<div css={optionStyle} onClick={() => onRotate(false)}>
-					<Icon src={RotateLeft} alt={t('rotateCounterClockwise')} />
-					<p css={optionTextStyle}>{t('rotateCounterClockwise')}</p>
-				</div>
-			</div>}
+					<h4 css={titleStyle}>{t('pageOrientation')}</h4>
+					<div css={optionStyle} onClick={() => onRotate(true)}>
+						<Icon src={RotateRight} alt={t('rotateClockwise')} />
+						<p css={optionTextStyle}>{t('rotateClockwise')}</p>
+					</div>
+					<div css={optionStyle} onClick={() => onRotate(false)}>
+						<Icon src={RotateLeft} alt={t('rotateCounterClockwise')} />
+						<p css={optionTextStyle}>{t('rotateCounterClockwise')}</p>
+					</div>
+				</div>}
 			/>
 		</>
 	);

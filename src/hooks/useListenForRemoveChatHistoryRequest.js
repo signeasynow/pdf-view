@@ -1,6 +1,6 @@
 import { useEffect } from 'preact/hooks';
 
-function uesListenForRemoveChatHistoryRequest(callback) {
+function useListenForRemoveChatHistoryRequest(callback) {
 	useEffect(() => {
 		const messageFunc =  (event) => {
 			if (event.data && event.data.type === 'remove-chat-history') {
@@ -16,4 +16,4 @@ function uesListenForRemoveChatHistoryRequest(callback) {
 	return null;
 }
 
-export default uesListenForRemoveChatHistoryRequest;
+export default useListenForRemoveChatHistoryRequest;

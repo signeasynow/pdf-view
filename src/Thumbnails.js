@@ -60,7 +60,7 @@ const ThumbnailsContainer = ({
 		
 		// Handle line indicator
 		if (dragOverIndex === i + 1) {
-			elements = [...elements, <div css={lineIndicatorStyle} />];
+			elements = [...elements, <div key={i} css={lineIndicatorStyle} />];
 		}
 	
 		// Thumbnail component

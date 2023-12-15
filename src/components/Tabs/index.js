@@ -32,7 +32,7 @@ const Tabs = ({
 	<Wrapper>
 		{
 			fileNames.map((name, idx) => (
-				<span onClick={() => onClick(idx)} style={{
+				<span key={idx} onClick={() => onClick(idx)} style={{
 					cursor: activePageIndex === idx ? '' : 'pointer',
 					border: activePageIndex !== idx ? '1px solid #1c1c1c' : '1px solid #cccccc',
 					background: activePageIndex !== idx ? '#e4e4e4' : ''

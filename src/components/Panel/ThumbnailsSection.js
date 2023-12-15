@@ -49,7 +49,7 @@ const ThumbnailsSection = ({
 }) => {
 
 	const handleInputChange = (e) => {
-		const num = parseInt(e.target.value);
+		const num = parseInt(e.target.value, 10);
 		setThumbnailScale(num);
 	};
 

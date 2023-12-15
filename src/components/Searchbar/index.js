@@ -186,6 +186,7 @@ const SearchBar = ({
 				{ type: 'answer', text: answerText.answer }
 			]);
 			setLoading(false);
+			return;
 		}).catch((err) => {
 			alert('Something went wrong. Please reload the page and try again.');
 			setLoading(false);
@@ -208,6 +209,7 @@ const SearchBar = ({
 		setLoading(true);
 		onEmbed().then(() => {
 			setLoading(false);
+			return;
 		}).catch((err) => {
 			alert('Something went wrong. Please try again later.');
 			setLoading(false);

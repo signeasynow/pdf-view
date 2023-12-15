@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint .",
+    "lint": "eslint ./src",
+    "quiet-lint": "eslint --quiet ./src",
     "start": "webpack serve --open --mode development",
     "build": "webpack --mode production",
     "dev-process": "NODE_ENV=development webpack --mode development && rm -rf pdf-ui && mv dist pdf-ui && cp -rf pdf-ui ../ts-regular/public && cp -rf pdf-ui ../i18n-pdf-website/public && cp -rf pdf-ui ../react_plugin/public && cp -rf pdf-ui ../extension3/public && cp -rf pdf-ui ../extension-preact/public && cp -rf pdf-ui ../react-pdf-demo/public",
