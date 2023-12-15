@@ -1502,14 +1502,15 @@ const App = () => {
 			mode: pdfjs.AnnotationEditorType.STAMP,
 			source: null
 		};
+		const height = 0.05;
 		pdfViewerRef.current.annotationEditorParams = {
 			type: AnnotationEditorParamsType.CREATE,
 			value: {
 				bitmapUrl: localStorage.getItem("signatureImage"),
 				// initialWidth: 0.1,
-				initialHeight: 0.04,
+				initialHeight: height,
 				initialX: details.x + (details.source.width / 2),
-				initialY: details.y + (details.source.height) - 0.04,
+				initialY: details.y + (details.source.height) - height,
 				moveDisabled: true
 			}
 		}
@@ -1777,6 +1778,7 @@ const App = () => {
 		)
 	}
 
+	/*
 	if (isInValidDomain === false) {
 		return (
 			<div style={{margin: 4}}>
@@ -1785,6 +1787,7 @@ const App = () => {
 			</div>
 		)
 	}
+	*/
 
 	if (!inputtedLicenseKey) {
 		return (

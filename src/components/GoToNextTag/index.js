@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { useAnnotations } from '../../hooks/useAnnotations';
+import { useCallback } from 'preact/hooks';
 
 const wrapper = css`
 	color: white;
@@ -47,7 +48,7 @@ export const GoToNextTag = ({
 
   const { annotations } = useAnnotations();
 
-  const nextAnnotation = () => {
+  const nextAnnotation = useCallback(() => {
     // Filter annotations for those with name 'stampEditor' and having overlayText
     const clickableAnnotations = annotations.filter(annotation => 
         annotation.name === 'stampEditor' && annotation.overlayText
@@ -62,7 +63,7 @@ export const GoToNextTag = ({
     });
     // Assuming you want to find the first annotation in the sorted array
     return clickableAnnotations[0];
-  }
+  }, [annotations])
 
   const nextAnnotationType = () => {
     const annotation = nextAnnotation();
@@ -94,6 +95,10 @@ export const GoToNextTag = ({
       } else {
           onSaveAndFinish()
       }
+  }
+
+  if (!nextAnnotation()) {
+    return null;
   }
 
   return (

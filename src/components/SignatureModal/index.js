@@ -53,8 +53,6 @@ export const SignatureModal = ({
   modifiedUiElements
 }) => {
 
-  console.log(modifiedUiElements, 'modifiedUiElements');
-
   const signatureRef = useRef();
   const initialRef = useRef();
   const [penColor, setPenColor] = useState('black'); // Default pen color
