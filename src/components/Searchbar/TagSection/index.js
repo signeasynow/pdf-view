@@ -8,6 +8,7 @@ import SendIcon from '../../../../assets/send-alt-1-svgrepo-com.svg';
 import ChevronLeft from '../../../../assets/chevron-left-svgrepo-com.svg';
 import { AnnotationsContext } from '../../../Contexts/AnnotationsContext';
 import { supabase } from '../../../utils/supabase';
+import { isValidEmail } from '../../../utils/isValidEmail';
 
 async function getUserIP() {
 	try {
@@ -194,6 +195,18 @@ const TagSection = ({
 	}, []);
 
 	const onSend = async () => {
+		if (!subject) {
+			alert('Subject is required');
+			return;
+		}
+		if (!recipientEmail) {
+			alert('Email is required');
+			return;
+		}
+		if (!isValidEmail(recipientEmail)) {
+			alert('Email is invalid');
+			return;
+		}
 		setLoadingSend(true);
 		const buffer = await pdfProxyObj.getData();
 		const uuid = generateUUID();
@@ -227,7 +240,8 @@ const TagSection = ({
 			return;
 		}
 		alert('Your document has been sent successfully! Track & edit your document under Account > Documents.');
-		setLoadingSend(false);
+		// leave this to true to avoid abuse.
+		setLoadingSend(true);
 	};
   
 
@@ -277,6 +291,22 @@ const TagSection = ({
 		setMessageModified(true);
 	};
 
+	const onSubmitStage1 = () => {
+		if (hasNameTag() && !nameInput) {
+			alert('Name is required');
+			return;
+		}
+		if (hasEmailTag() && !emailInput) {
+			alert('Email is required');
+			return;
+		}
+		if (hasEmailTag() && !isValidEmail(emailInput)) {
+			alert('Email is invalid');
+			return;
+		}
+		setStage(2);
+	};
+
 	if (stage === 0) {
 		return (
 			<div>
@@ -307,7 +337,7 @@ const TagSection = ({
 			<div>
 				<div css={getWrapperClass()}>
 					<div style={{ margin: '12px 4px 8px' }}><ProgressBar completed={67} customLabel="&nbsp;" bgColor="#d9b432" /></div>
-					<div style={{ margin: '4px' }}>Enter the values for the following fields. These details will populate automatically when a corresponding marker is clicked.</div>
+					<div style={{ margin: '4px' }}>When a marker is clicked, the following fields will auto-populate with these values:</div>
 					{
 						hasNameTag() && (
 							<input
@@ -331,7 +361,7 @@ const TagSection = ({
 				</div>
 				<div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 4px', background: '#f1f3f5' }}>
 					<button css={backBtn} onClick={() => setStage(0)}><Icon src={ChevronLeft} alt="Right" /><div>Back</div></button>
-					<button css={nextBtn} onClick={() => setStage(2)}><div>Next</div><Icon src={ChevronRight} alt="Right" /></button>
+					<button css={nextBtn} onClick={onSubmitStage1}><div>Next</div><Icon src={ChevronRight} alt="Right" /></button>
 				</div>
 			</div>
 		);

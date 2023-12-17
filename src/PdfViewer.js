@@ -275,7 +275,7 @@ export const PdfViewer = ({
 				window.parent.postMessage({ type: 'file-failed', message: reason?.message }, '*');
 			}
 		).catch(err => {
-			alert('Something went wrong loading the file');
+			// Fail silently alert('Something went wrong loading the file');
 		});
 	};
 

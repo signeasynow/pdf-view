@@ -1050,22 +1050,7 @@ const App = () => {
 	const isManuallyAddingImageRef = useRef(false);
 
 	const { updateAnnotation, moveAnnotation, updateAnnotationParam, resizeAnnotation, removeAnnotation } = useAnnotations(activeAnnotationRef, isManuallyAddingImageRef);
-	const { annotations, setAnnotations, annotationsRef } = useContext(AnnotationsContext);
-	useEffect(() => {
-		let allAnnotations = [{
-			id: 'abc',
-			pageNumber: 1,
-			content: 'dFruityy5',
-			x: 0.1,
-			y: 0.1,
-			color: '#008000',
-			fontSize: 28,
-			fontFamily: 'courier',
-			name: 'freeTextEditor'
-		}];
-		// allAnnotations = [];
-		// setAnnotations(allAnnotations);
-	}, []);
+	const { annotations, setAnnotations } = useContext(AnnotationsContext);
 
 	useEffect(() => {
 		window.parent.postMessage({ type: 'annotations-change', message: annotations }, window.parent.origin);
