@@ -91,6 +91,10 @@ const families = [
 	{
 		value: 'helvetica',
 		label: 'Helvetica'
+	},
+	{
+		value: 'timesroman',
+		label: 'Times New Roman'
 	}
 ];
 

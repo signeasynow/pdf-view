@@ -65,17 +65,6 @@ const zoomOptionStyle = css`
   }
 `;
 
-const families = [
-	{
-		value: 'courier',
-		label: 'Courier'
-	},
-	{
-		value: 'helvetica',
-		label: 'Helvetica'
-	}
-];
-
 const SignatureSelectionDropdown = ({
 	pdfViewerRef,
 	onUpdateFontFamily,

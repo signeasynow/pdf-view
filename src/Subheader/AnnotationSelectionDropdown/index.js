@@ -118,7 +118,7 @@ const AnnotationSelectionDropdown = ({
 					marginTop={28}
 					title={
 						<div css={dropdownTitle}>
-							<HeaderBtn offsetX="12px" title={t('Add text')} iconAlt={t('search')} icon={WriteIcon} />
+							<HeaderBtn offsetX="12px" title={t('Add annotation')} iconAlt={t('Add annotation')} icon={WriteIcon} />
 							<Icon size="sm" src={ChevronDown} alt={t('arrowDown')} />
 						</div>
 					}

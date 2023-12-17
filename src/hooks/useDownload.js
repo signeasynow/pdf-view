@@ -35,14 +35,14 @@ const downloadAll = async (pdfBuffers) => {
 };
 
 async function getFontForAnnotation(pdfDoc, annotation) {
-	switch (annotation.fontFamily?.toLowerCase()) {
-		case 'courier':
-			return await pdfDoc.embedFont(StandardFonts.Courier);
-		case 'helvetica':
-			return await pdfDoc.embedFont(StandardFonts.Helvetica);
-		default:
-			return await pdfDoc.embedFont(StandardFonts.Courier); // Default font
-	}
+	const fontMap = {
+		courier: StandardFonts.Courier,
+		helvetica: StandardFonts.Helvetica,
+		timesroman: StandardFonts.TimesRoman
+	};
+
+	const fontName = fontMap[annotation.fontFamily?.toLowerCase()] || StandardFonts.TimesRoman; // Default font
+	return await pdfDoc.embedFont(fontName);
 }
 
 export const modifyPdfBuffer = async (buffer, annotations) => {
