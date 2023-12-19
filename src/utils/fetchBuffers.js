@@ -14,10 +14,10 @@ const blobUrlToArrayBuffer = async (blobUrl) => {
 	}
 };
 
-async function fetchBuffers(files) {
+async function fetchBuffers(files, storage) {
 	// Initialize tasks to retrieve PDFs
 	const arr = Array.from({ length: files.length }).fill(null);
-	const tasks = arr.map((_, idx) => retrievePDF(`pdfId${idx}`));
+	const tasks = arr.map((_, idx) => storage?.retrieve(`pdfId${idx}`));
   
 	// Execute all tasks
 	const results = await Promise.allSettled(tasks);

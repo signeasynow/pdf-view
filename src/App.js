@@ -12,7 +12,7 @@ import { PdfViewer } from './PdfViewer';
 import Panel from './components/Panel';
 import { heightOffset0, heightOffset1, heightOffset3, heightOffsetTabs } from './constants';
 // import { remove_pages, move_page, move_pages, rotate_pages, merge_pdfs, PdfMergeData, start } from '../lib/pdf_wasm_project.js';
-import { deletePDF, retrievePDF, savePDF } from './utils/indexDbUtils';
+import { IndexedDBStorage, deletePDF } from './utils/indexDbUtils';
 import { invokePlugin, pendingRequests } from './utils/pluginUtils';
 import fetchBuffers from './utils/fetchBuffers';
 import { I18nextProvider } from 'react-i18next';
@@ -254,6 +254,8 @@ const App = () => {
 	const pdfScriptingManagerRef = useRef(null);
 	const pdfViewerRef = useRef(null);
 
+	const [storage, setStorage] = useState(new IndexedDBStorage());
+
 	const [pdfProxyObj, setPdfProxyObj] = useState(null);
 	const [pdfViewerObj, setPdfViewerObj] = useState(null);
 
@@ -411,7 +413,7 @@ const App = () => {
 	const { files, setFiles } = useContext(FilesContext);
 
 	const [fileNames, setFileNames] = useState([]);
-	const { triggerDownload: onDownload } = useDownload(files, isSandbox, fileNames);
+	const { triggerDownload: onDownload } = useDownload(files, isSandbox, fileNames, storage);
 
 
 	const initialRedoUndoObject = () => {
@@ -447,7 +449,7 @@ const App = () => {
 		const doRemove = async () => {
 			try {
 				const arr = Array.from({ length: event.data.files.length }).fill(null);
-				const tasks = arr.map((_, idx) => deletePDF(`original${idx}`) && deletePDF(`pdfId${idx}`));
+				const tasks = arr.map((_, idx) => storage?.delete(`original${idx}`) && storage?.delete(`pdfId${idx}`));
 	
 				const results = await Promise.allSettled(tasks);
 	
@@ -564,7 +566,7 @@ const App = () => {
 		const buffer = await pdfProxyObj.getData();
 		
 		const results = await doSplit(buffer, splitMarkers);
-		const tasks = results.map((each, idx) => savePDF(each.url.buffer, `original${idx}`));
+		const tasks = results.map((each, idx) => storage?.save(each.url.buffer, `original${idx}`));
 		await Promise.all(tasks);
 
 		let newModifiedPayload = {};
@@ -604,7 +606,7 @@ const App = () => {
 		const doRemove = async () => {
 			try {
 				const arr = Array.from({ length: files.length }).fill(null);
-				const tasks = arr.map((_, idx) => deletePDF(`pdfId${idx}`));
+				const tasks = arr.map((_, idx) => storage?.delete(`pdfId${idx}`));
 	
 				const results = await Promise.allSettled(tasks);
 	
@@ -631,7 +633,7 @@ const App = () => {
 	}, [files]);
 
 	const onRequestBuffer = async () => {
-		let successfulBuffers = await fetchBuffers(files.slice(0, fileNames.length));
+		let successfulBuffers = await fetchBuffers(files.slice(0, fileNames.length), storage);
 		if (!successfulBuffers.length) {
 			return alert('Something went wrong.');
 		}
@@ -644,10 +646,10 @@ const App = () => {
 
 		const errors = [];
 	
-		const successfulBuffers = await fetchBuffers(files);
+		const successfulBuffers = await fetchBuffers(files, storage);
 		if (successfulBuffers.length > 0) {
 			const modifiedPdfArray = await combinePDFs(successfulBuffers);
-			await savePDF(modifiedPdfArray.buffer, pdfId);
+			await storage?.save(modifiedPdfArray.buffer, pdfId);
 			let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 			newModifiedPayload[activePageIndex] = new Date().toISOString();
 			setModifiedFiles(newModifiedPayload);
@@ -873,7 +875,7 @@ const App = () => {
 		console.log('ttt_0');
 		let buffer;
 		try {
-			buffer = await retrievePDF(originalPdfId);
+			buffer = await storage?.retrieve(originalPdfId);
 		}
 		catch (err) {
 			console.log(err, 'err33');
@@ -887,7 +889,7 @@ const App = () => {
 		}
 		console.log('ttt_2');
 		// Save the buffer after undo as the current state
-		await savePDF(buffer, pdfId);
+		await storage?.save(buffer, pdfId);
 		console.log('ttt_3');
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
@@ -909,7 +911,7 @@ const App = () => {
 		if (redoStack[activePageIndex]?.length === 0) return;
 		const lastRedoOperation = redoStack[activePageIndex]?.[redoStack[activePageIndex].length - 1];
 		// Start with the original PDF
-		let buffer = await retrievePDF(originalPdfId);
+		let buffer = await storage?.retrieve(originalPdfId);
 		// Replay all operations including the redo operation
 		const allOperationsUpToRedo = [...operations[activePageIndex], lastRedoOperation];
 		for (const operation of allOperationsUpToRedo) {
@@ -917,7 +919,7 @@ const App = () => {
 		}
 	
 		// Save the buffer after redo as the current state
-		await savePDF(buffer, pdfId);
+		await storage?.save(buffer, pdfId);
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
@@ -1047,7 +1049,7 @@ const App = () => {
 		const operation = { action: 'rotate', pages: pagesToRotate, clockwise };
 		// setMultiPageSelections([]);
 		const bufferResult = await applyOperation(operation, buffer);
-		await savePDF(bufferResult, pdfId);
+		await storage?.save(bufferResult, pdfId);
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
@@ -1085,7 +1087,7 @@ const App = () => {
 		const operation = { action: 'rotate', pages: pagesToRotate, clockwise };
 		// setMultiPageSelections([]);
 		const bufferResult = await applyOperation(operation, buffer);
-		await savePDF(bufferResult, pdfId);
+		await storage?.save(bufferResult, pdfId);
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
@@ -1103,7 +1105,7 @@ const App = () => {
 		const pagesToRotate = multiPageSelections?.length ? Array.from(new Set([...multiPageSelections, pageNum])) : [pageNum];
 		const operation = { action: 'rotate', pages: pagesToRotate, clockwise };
 		const bufferResult = await applyOperation(operation, buffer);
-		await savePDF(bufferResult, pdfId);
+		await storage?.save(bufferResult, pdfId);
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
@@ -1149,7 +1151,7 @@ const App = () => {
 		const operation = { action: 'delete', pages: pagesToRemove };
 		setMultiPageSelections([]);
 		const bufferResult = await applyOperation(operation, buffer);
-		await savePDF(bufferResult, pdfId);
+		await storage?.save(bufferResult, pdfId);
 		window.parent.postMessage({ type: 'extract-pages-completed', success: true });
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
@@ -1175,7 +1177,7 @@ const App = () => {
 		const operation = { action: 'delete', pages: pagesToRemove };
 		setMultiPageSelections([]);
 		const bufferResult = await applyOperation(operation, buffer);
-		await savePDF(bufferResult, pdfId);
+		await storage?.save(bufferResult, pdfId);
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
@@ -1198,7 +1200,7 @@ const App = () => {
 		const operation = { action: 'delete', pages: pagesToRemove };
 		setMultiPageSelections([]);
 		const bufferResult = await applyOperation(operation, buffer);
-		await savePDF(bufferResult, pdfId);
+		await storage?.save(bufferResult, pdfId);
 		window.parent.postMessage({ type: 'extract-pages-completed', success: true });
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
@@ -1218,7 +1220,7 @@ const App = () => {
 		const operation = { action: 'delete', pages: pagesToRemove };
 		setMultiPageSelections([]);
 		const bufferResult = await applyOperation(operation, buffer);
-		await savePDF(bufferResult, pdfId);
+		await storage?.save(bufferResult, pdfId);
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
@@ -1264,7 +1266,7 @@ const App = () => {
 		};
 		setAnnotationMode('none');
 		// const bufferResult = await pdfProxyObj.getData();
-		// await savePDF(bufferResult, pdfId);
+		// await storage?.save(bufferResult, pdfId);
 		// setModifiedFiles(new Date().toISOString());
 	};
 
@@ -1305,7 +1307,7 @@ const App = () => {
 		const newBuffer = await applyOperation(operation, buffer);
 	
 		// Save and update state
-		await savePDF(newBuffer, pdfId);
+		await storage?.save(newBuffer, pdfId);
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 
@@ -1897,6 +1899,7 @@ const App = () => {
 					}
 					<div css={pdfViewerWrapper}>
 						<PdfViewer
+							storage={storage}
 							initialAnnotations={initialAnnotations}
 							onTagClicked={onTagClicked}
 							activeToolbarItemRef={activeToolbarItemRef}

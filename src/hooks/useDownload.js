@@ -84,7 +84,7 @@ export const modifyPdfBuffer = async (buffer, annotations) => {
 	return await pdfDoc.save();
 };
 
-function useDownload(files, isSandbox, fileNames) {
+function useDownload(files, isSandbox, fileNames, storage) {
 
 	const { annotations } = useContext(AnnotationsContext);
 
@@ -92,7 +92,7 @@ function useDownload(files, isSandbox, fileNames) {
 		if (isSandbox) {
 			// return alert("Download is not enabled in Sandbox mode.");
 		}
-		let successfulBuffers = await fetchBuffers(files.slice(0, fileNames.length));
+		let successfulBuffers = await fetchBuffers(files.slice(0, fileNames.length), storage);
 		if (!successfulBuffers.length) {
 			return alert('Nothing to download.');
 		}

@@ -5,7 +5,6 @@ import * as pdfjs from 'pdfjs-dist';
 import { EventBus, PDFLinkService, PDFViewer, PDFFindController, PDFScriptingManager } from 'pdfjs-dist/web/pdf_viewer';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import { heightOffset0, heightOffset1, heightOffset3, heightOffsetTabs } from './constants';
-import { retrievePDF, savePDF } from './utils/indexDbUtils';
 import { extractAllTextFromPDF } from './utils/extractAllTextFromPdf';
 import { addSandboxWatermark } from './utils/addSandboxWatermark';
 import simpleHash from './utils/simpleHash';
@@ -22,6 +21,7 @@ const containerStyle = css`
 `;
 
 export const PdfViewer = ({
+	storage,
 	activePageIndex,
 	initialAnnotations,
 	onAnnotationFocus,
@@ -228,32 +228,17 @@ export const PdfViewer = ({
 		});
 		let modFile;
 		if (modifiedFiles[activePageIndex]) {
-			modFile = await retrievePDF(`pdfId${activePageIndex}`);
+			modFile = await storage?.retrieve(`pdfId${activePageIndex}`);
 		}
 		if (!modFile) {
 			try {
-				modFile = await retrievePDF(`original${activePageIndex}`);
+				modFile = await storage?.retrieve(`original${activePageIndex}`);
 			}
 			catch (err) {
 
 			}
 		}
 		const loadingTask = pdfjs.getDocument(modFile || files[activePageIndex]?.url);
-
-		async function handlePdfProcessing() {
-			if (!modifiedFiles[activePageIndex]) {
-				savePDF(new Uint8Array(await loadedPdfDocument.getData()).slice(0), `original${activePageIndex}`);
-			}
-		}
-
-		async function handleSandboxProcessing() {
-			if (isSandbox) {
-				const pdfData = new Uint8Array(await loadedPdfDocument.getData()).slice(0);
-				const pdfWithWatermark = await addSandboxWatermark(pdfData);
-				loadedPdfDocument = await pdfjs.getDocument({ data: pdfWithWatermark }).promise;
-				hasWatermarkAdded.current = true;
-			}
-		}
 	
 		loadingTask.promise.then(
 			async (loadedPdfDocument) => {
@@ -269,7 +254,7 @@ export const PdfViewer = ({
 				pdfLinkServiceRef.current.setDocument(loadedPdfDocument, null);
 				
 				if (!modifiedFiles[activePageIndex]) {
-					savePDF(new Uint8Array(await loadedPdfDocument.getData()).slice(0), `original${activePageIndex}`);
+					storage?.save(new Uint8Array(await loadedPdfDocument.getData()).slice(0), `original${activePageIndex}`);
 				}
 				const text = await extractAllTextFromPDF(loadedPdfDocument);
 				setPdfText(text);
