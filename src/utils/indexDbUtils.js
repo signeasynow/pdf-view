@@ -17,7 +17,7 @@ export const retrievePDF = async (id) => {
 		const transaction = db.transaction(['pdfs'], 'readonly');
 		const objectStore = transaction.objectStore('pdfs');
 		const request = objectStore.get(id);
-
+		console.log(request, 'request335');
 		request.onsuccess = () => {
 			if (request.result?.pdf) {
 				resolve(request.result.pdf);
@@ -32,6 +32,7 @@ export const retrievePDF = async (id) => {
 
 // Save PDF to IndexedDB
 export const savePDF = async (buffer, id) => {
+	console.log('saving pdf');
 	const db = await openDB();
 	return new Promise((resolve, reject) => {
 		const transaction = db.transaction(['pdfs'], 'readwrite');

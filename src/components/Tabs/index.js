@@ -14,7 +14,7 @@ const Wrapper = ({ children }) => (
 		background: 'white',
 		height: heightOffsetTabs,
 		alignItems: 'center',
-		margin: '0 12px',
+		padding: '0 12px',
 		justifyContent: 'flex-start',
 		borderTop: '1px solid #ccc'
 	})}

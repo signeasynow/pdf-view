@@ -17,7 +17,6 @@ import { invokePlugin, pendingRequests } from './utils/pluginUtils';
 import fetchBuffers from './utils/fetchBuffers';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './utils/i18n';
-import useInitWasm from './hooks/useInitWasm';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import useDeclareIframeLoaded from './hooks/useDeclareIframeLoaded';
 import useDownload, { modifyPdfBuffer } from './hooks/useDownload';
@@ -368,7 +367,7 @@ const App = () => {
 	}, [modifiedUiElements]);
 
 	useEffect(() => {
-		window.parent.postMessage({ type: 'multi-page-selection-change', message: multiPageSelections }, window.parent.origin);
+		window.parent.postMessage({ type: 'multi-page-selection-change', message: multiPageSelections }, '*');
 	}, [multiPageSelections]);
 
 	const [activePage, setActivePage] = useState(1);
@@ -402,7 +401,7 @@ const App = () => {
 		initAnalytics();
 	}, []);
 
-	useInitWasm();
+	// useInitWasm();
 
 	const [modifiedFile, setModifiedFile] = useState(null);
 	const [modifiedFiles, setModifiedFiles] = useState([]);
@@ -444,7 +443,7 @@ const App = () => {
 	}, [files]);
 
 	const addInitialFiles = async (event) => {
-		event.source.postMessage({ type: 'file-received', success: true }, event.origin);
+		event.source.postMessage({ type: 'file-received', success: true }, '*');
 		const doRemove = async () => {
 			try {
 				const arr = Array.from({ length: event.data.files.length }).fill(null);
@@ -871,16 +870,25 @@ const App = () => {
 		if (operations[activePageIndex]?.length === 0) return;
 		const lastOperation = operations[activePageIndex]?.[operations[activePageIndex].length - 1];
 		// Start with the original PDF
-		let buffer = await retrievePDF(originalPdfId);
+		console.log('ttt_0');
+		let buffer;
+		try {
+			buffer = await retrievePDF(originalPdfId);
+		}
+		catch (err) {
+			console.log(err, 'err33');
+		}
+		console.log('ttt_1');
 		setAnnotations([]);
 		// Replay all operations except for the last one
 		for (let i = 0; i < operations[activePageIndex]?.length - 1; i++) {
 			const operation = operations[activePageIndex][i];
 			buffer = await applyOperation(operation, buffer); // Assuming applyOperation returns the updated buffer
 		}
-	
+		console.log('ttt_2');
 		// Save the buffer after undo as the current state
 		await savePDF(buffer, pdfId);
+		console.log('ttt_3');
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
@@ -1053,7 +1061,7 @@ const App = () => {
 	const { annotations, setAnnotations } = useContext(AnnotationsContext);
 
 	useEffect(() => {
-		window.parent.postMessage({ type: 'annotations-change', message: annotations }, window.parent.origin);
+		window.parent.postMessage({ type: 'annotations-change', message: annotations }, '*');
 	}, [annotations]);
 
 	useEffect(() => {
@@ -1162,7 +1170,6 @@ const App = () => {
 			console.log('No PDF loaded to download');
 			return;
 		}
-
 		const buffer = await pdfProxyObj.getData();
 		const pagesToRemove = multiPageSelections?.length ? multiPageSelections : [activePage];
 		const operation = { action: 'delete', pages: pagesToRemove };

@@ -29,7 +29,7 @@ const Wrapper = ({ children }) => (
 		background: 'white',
 		height: 50,
 		alignItems: 'center',
-		margin: '0 12px',
+		padding: '0 12px',
 		justifyContent: 'space-between',
 		borderTop: '1px solid #ccc'
 	})}
