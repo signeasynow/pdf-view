@@ -257,26 +257,31 @@ export const PdfViewer = ({
 	
 		loadingTask.promise.then(
 			async (loadedPdfDocument) => {
-				await handleSandboxProcessing();
+				if (isSandbox) {
+					const pdfData = new Uint8Array(await loadedPdfDocument.getData()).slice(0);
+					const pdfWithWatermark = await addSandboxWatermark(new Uint8Array(pdfData));
+					loadedPdfDocument = await pdfjs.getDocument({data: pdfWithWatermark}).promise;
+					hasWatermarkAdded.current = true;
+				}
 				// If no modifiedFile, continue to set the loaded PDF document.
 				setPdfProxyObj(loadedPdfDocument);
 				pdfViewerRef.current.setDocument(loadedPdfDocument, annotationsRef.current);
 				pdfLinkServiceRef.current.setDocument(loadedPdfDocument, null);
 				
-				await handlePdfProcessing();
+				if (!modifiedFiles[activePageIndex]) {
+					savePDF(new Uint8Array(await loadedPdfDocument.getData()).slice(0), `original${activePageIndex}`);
+				}
 				const text = await extractAllTextFromPDF(loadedPdfDocument);
 				setPdfText(text);
 				setCurrentAiDocHash(simpleHash(JSON.stringify(text)));
-				return;
+				
 			},
 			reason => {
 				setFileLoadFailError(reason?.message);
 				console.error(JSON.stringify(reason), 'error.');
 				window.parent.postMessage({ type: 'file-failed', message: reason?.message }, '*');
 			}
-		).catch(err => {
-			// Fail silently alert('Something went wrong loading the file');
-		});
+		);
 	};
 
 	useEffect(() => {
