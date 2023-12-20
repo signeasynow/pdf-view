@@ -1,3 +1,23 @@
+function uint8ArrayToBase64(buffer) {
+	let binary = '';
+	const bytes = new Uint8Array(buffer);
+	const len = bytes.byteLength;
+	for (let i = 0; i < len; i++) {
+			binary += String.fromCharCode(bytes[i]);
+	}
+	return window.btoa(binary);
+}
+
+function base64ToUint8Array(base64) {
+	const binaryString = window.atob(base64);
+	const len = binaryString.length;
+	const bytes = new Uint8Array(len);
+	for (let i = 0; i < len; i++) {
+			bytes[i] = binaryString.charCodeAt(i);
+	}
+	return bytes;
+}
+
 const openDB = async () => new Promise((resolve, reject) => {
 	const request = indexedDB.open('myDB', 1);
 
@@ -143,7 +163,45 @@ export class IndexedDBStorage extends StorageInterface {
 	}
 }
 
-class ChromeStorage extends StorageInterface {
-  // Implement the methods using chrome.storage.local
-  // Similar to the examples I provided in the previous message
+export class ChromeStorage extends StorageInterface {
+		async save(buffer, id) {
+			const base64String = uint8ArrayToBase64(buffer);
+			return new Promise((resolve, reject) => {
+					chrome.storage.local.set({ [id]: base64String }, function() {
+							if (chrome.runtime.lastError) {
+									return reject(chrome.runtime.lastError);
+							}
+							resolve(`Saved record with id: ${id}`);
+					});
+			});
+	}
+
+	async retrieve(id) {
+    return new Promise((resolve, reject) => {
+        chrome.storage.local.get(id, function(result) {
+            if (chrome.runtime.lastError) {
+                return reject(chrome.runtime.lastError);
+            }
+            if (result[id]) {
+                const buffer = base64ToUint8Array(result[id]);
+                resolve(buffer);
+            } else {
+                reject(`No record found with id: ${id}`);
+            }
+        });
+    });
+}
+
+	async delete(id) {
+		console.log('delete11')
+			// Implementation for deleting a PDF
+			return new Promise((resolve, reject) => {
+					chrome.storage.local.remove(id, function() {
+							if (chrome.runtime.lastError) {
+									return reject(chrome.runtime.lastError);
+							}
+							resolve(`Deleted record with id: ${id}`);
+					});
+			});
+	}
 }

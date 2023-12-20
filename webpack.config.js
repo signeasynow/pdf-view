@@ -1,4 +1,6 @@
 const path = require('path');
+const webpack = require('webpack');
+
 const envPath = path.join(__dirname, `.env.${process.env.NODE_ENV}`);
 require('dotenv').config({ path: envPath });
 
@@ -52,6 +54,9 @@ module.exports = {
 		extensions: ['.js']
 	},
 	plugins: [
+		new webpack.DefinePlugin({
+			'process.env.NODE_CHROME': JSON.stringify(process.env.NODE_CHROME)
+		}),
 		new HtmlWebpackPlugin({
 			template: 'index.html'
 		}),

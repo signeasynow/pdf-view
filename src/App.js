@@ -12,7 +12,7 @@ import { PdfViewer } from './PdfViewer';
 import Panel from './components/Panel';
 import { heightOffset0, heightOffset1, heightOffset3, heightOffsetTabs } from './constants';
 // import { remove_pages, move_page, move_pages, rotate_pages, merge_pdfs, PdfMergeData, start } from '../lib/pdf_wasm_project.js';
-import { IndexedDBStorage, deletePDF } from './utils/indexDbUtils';
+import { ChromeStorage, IndexedDBStorage, deletePDF } from './utils/indexDbUtils';
 import { invokePlugin, pendingRequests } from './utils/pluginUtils';
 import fetchBuffers from './utils/fetchBuffers';
 import { I18nextProvider } from 'react-i18next';
@@ -49,6 +49,10 @@ import SignatureIconPng from '../assets/yellow-bg-500-150.png';
 import SignatureIcon54Png from '../assets/yellow-bg-5-4.png';
 import useListenForRequestBufferRequest from './hooks/useListenForRequestBufferRequest';
 
+const isChromeExtension = process.env.NODE_CHROME === "true";
+let storage = isChromeExtension ? new ChromeStorage() : new IndexedDBStorage();
+// storage = new IndexedDBStorage();
+console.log(isChromeExtension, 'isChromeExtension');
 async function splitPdfPages(pdfBytes, splitIndices) {
 	const originalPdfDoc = await PDFDocument.load(pdfBytes);
 	const numPages = originalPdfDoc.getPageCount();
@@ -253,8 +257,6 @@ const App = () => {
 	const pdfFindControllerRef = useRef(null);
 	const pdfScriptingManagerRef = useRef(null);
 	const pdfViewerRef = useRef(null);
-
-	const [storage, setStorage] = useState(new IndexedDBStorage());
 
 	const [pdfProxyObj, setPdfProxyObj] = useState(null);
 	const [pdfViewerObj, setPdfViewerObj] = useState(null);
