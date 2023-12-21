@@ -3,6 +3,11 @@ import fetchBuffers from '../utils/fetchBuffers';
 import { useContext } from 'preact/hooks';
 import { AnnotationsContext } from '../Contexts/AnnotationsContext';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
+import { useModal } from '../Contexts/ModalProvider';
+
+const MAX_DOWNLOADS_PER_DAY = 3;
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+const DOWNLOAD_ATTEMPTS_KEY = 'downloadAttempts';
 
 const parseColor = (colorStr) => {
 	const red = parseInt(colorStr.substr(1, 2), 16) / 255;
@@ -88,7 +93,40 @@ function useDownload(files, isSandbox, fileNames, storage) {
 
 	const { annotations } = useContext(AnnotationsContext);
 
+	const { showAuthModal } = useModal();
+
+	const checkAndRecordDownloadAttempt = async () => {
+			try {
+					// Retrieve download attempts from storage
+					let downloadAttempts = await storage.retrieve(DOWNLOAD_ATTEMPTS_KEY);
+					downloadAttempts = downloadAttempts.filter(time => Date.now() - time < ONE_DAY_MS);
+
+					if (downloadAttempts.length >= MAX_DOWNLOADS_PER_DAY) {
+							throw new Error("You have reached the maximum download limit for today.");
+					}
+
+					// Record new download attempt
+					downloadAttempts.push(Date.now());
+					await storage.save(downloadAttempts, DOWNLOAD_ATTEMPTS_KEY);
+			} catch (error) {
+				console.log(error, 'error br3')
+					// Handle case where no record is found or other errors
+					if (error?.message?.includes("No record found") || error.includes("No record found")) {
+							await storage.save([Date.now()], DOWNLOAD_ATTEMPTS_KEY);
+					} else {
+							throw error;
+					}
+			}
+	};
+
 	const triggerDownload = async () => {
+		try {
+			await checkAndRecordDownloadAttempt();
+		} catch (error) {
+				showAuthModal();
+				return;
+		}
+
 		if (isSandbox) {
 			// return alert("Download is not enabled in Sandbox mode.");
 		}

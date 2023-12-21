@@ -9,22 +9,25 @@ import { SignaturesProvider } from './Contexts/SignaturesContext';
 import { FilesProvider } from './Contexts/FilesContext';
 import { UndoRedoProvider } from './Contexts/UndoRedoContext';
 import { ActivePageProvider } from './Contexts/ActivePageContext';
+import { UserProvider } from './Contexts/UserContext';
 
 const AppRoot = () => (
 	<I18nextProvider i18n={i18n}>
-		<FilesProvider>
-			<ActivePageProvider>
-				<UndoRedoProvider>
-					<SignaturesProvider>
-						<AnnotationsProvider>
-							<ModalProvider>
-								<App />
-							</ModalProvider>
-						</AnnotationsProvider>
-					</SignaturesProvider>
-				</UndoRedoProvider>
-			</ActivePageProvider>
-		</FilesProvider>
+		<UserProvider>
+      <FilesProvider>
+        <ActivePageProvider>
+          <UndoRedoProvider>
+            <SignaturesProvider>
+              <AnnotationsProvider>
+                <ModalProvider>
+                  <App />
+                </ModalProvider>
+              </AnnotationsProvider>
+            </SignaturesProvider>
+          </UndoRedoProvider>
+        </ActivePageProvider>
+      </FilesProvider>
+    </UserProvider>
 	</I18nextProvider>
 );
 
