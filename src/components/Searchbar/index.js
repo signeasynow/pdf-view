@@ -9,6 +9,7 @@ import SearchbarTools from './SearchbarTools';
 import ConversationSection from './ConversationSection';
 import { extractLastThreeQA } from '../../utils/extractLastQaQuestions';
 import TagSection from './TagSection';
+import { useUserData } from '../../hooks/useUserData';
 
 const confirmBtnStyle = css`
   background: #3183c8;
@@ -140,7 +141,7 @@ const SearchBar = ({
 	customData,
 	editorMode,
 	pdfProxyObj,
-	aiLimitReached,
+	aiLimitReached: _aiLimitReached,
 	currentAiDocHash,
 	showFullScreenSearch,
 	aiDocId,
@@ -166,6 +167,10 @@ const SearchBar = ({
 	conversation,
 	setConversation
 }) => {
+
+	const { hasValidSubscription } = useUserData();
+
+	const aiLimitReached = _aiLimitReached && !hasValidSubscription;
 
 	const conversationContainerRef = useRef(null); // New ref for the conversation container
 

@@ -12,13 +12,17 @@ let storage = isChromeExtension ? new ChromeStorage() : new IndexedDBStorage();
 
 function useListenForAiQuestionCount(conversation, setAiLimitReached) {
 
-  const { hasValidSubscription } = useUserData();
+  const { hasValidSubscription, licenseCheckDone } = useUserData();
 
   const isThrottled = useRef(false);
 
   const { showAuthModal } = useModal();
 
 	const checkConsumerSubscription = async () => {
+    if (!licenseCheckDone) {
+      // better UX. don't want to always show upon load
+      return;
+    }
     if (isThrottled.current) {
       return;
     }
@@ -41,29 +45,25 @@ function useListenForAiQuestionCount(conversation, setAiLimitReached) {
       let timestamps;
       try {
         const data = await storage.retrieve('timestamps', false);
-        console.log(data, 'data333')
         timestamps = JSON.parse(data) || [];
       } catch (e) {
-        console.log(e, 'e error')
         timestamps = [];
       }
-      console.log(timestamps, 'timesrampt4')
 
       // Filter out timestamps older than 24 hours
       timestamps = timestamps.filter(ts => currentTime - ts < 24 * 60 * 60 * 1000);
 
       // Check if more than 10 questions have been asked in the past 24 hours
-      if (timestamps.length > 0) {
+      if (timestamps.length > 10) {
         await checkConsumerSubscription();
       }
 
       // Add a new timestamp for the current question
       timestamps.push(currentTime);
       try {
-        const res = await storage.save(JSON.stringify(timestamps), 'timestamps', false);
-        console.log(res, 'ress2')
+        await storage.save(JSON.stringify(timestamps), 'timestamps', false);
+       
       } catch (err) {
-        console.log(err, 'err do s')
       }
     };
 

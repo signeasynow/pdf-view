@@ -1,11 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import {  css } from '@emotion/react';
-import { useContext, useState } from 'preact/hooks';
+import { useContext, useEffect, useState } from 'preact/hooks';
 import { supabase } from '../../utils/supabase';
 import { isValidEmail } from '../../utils/isValidEmail';
 import { UserContext } from '../../Contexts/UserContext';
 import { TextLink } from '../../components/TextLink';
 import { TextInput } from '../TextInput';
+import { useUserData } from '../../hooks/useUserData';
 
 const overlayStyle = css`
   position: fixed;
@@ -80,6 +81,14 @@ export const AuthModal = ({ message, onClose, showLogin }) => {
   const [showVerifyEmail, setShowVerifyEmail] = useState(false);
 
   const [shouldShowLogin, setShouldShowLogin] = useState(showLogin);
+
+  const { hasValidSubscription } = useUserData();
+
+  useEffect(() => {
+    if (hasValidSubscription) {
+      onClose();
+    }
+  }, [hasValidSubscription]);
 
   const onSubmit = () => {
     if (!email) {
