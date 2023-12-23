@@ -100,8 +100,8 @@ export class IndexedDBStorage extends StorageInterface {
 }
 
 export class ChromeStorage extends StorageInterface {
-		async save(buffer, id) {
-			const base64String = uint8ArrayToBase64(buffer);
+		async save(buffer, id, isBuffer = true) {
+			const base64String = isBuffer ? uint8ArrayToBase64(buffer) : buffer;
 			return new Promise((resolve, reject) => {
 					chrome.storage.local.set({ [id]: base64String }, function() {
 							if (chrome.runtime.lastError) {
@@ -112,15 +112,20 @@ export class ChromeStorage extends StorageInterface {
 			});
 	}
 
-	async retrieve(id) {
+	async retrieve(id, isBuffer = true) {
     return new Promise((resolve, reject) => {
         chrome.storage.local.get(id, function(result) {
+						console.log(result, 'result321')
             if (chrome.runtime.lastError) {
                 return reject(chrome.runtime.lastError);
             }
             if (result[id]) {
-                const buffer = base64ToUint8Array(result[id]);
+							if (isBuffer) {
+								const buffer = base64ToUint8Array(result[id]);
                 resolve(buffer);
+							} else {
+								resolve(result[id])
+							}
             } else {
                 reject(`No record found with id: ${id}`);
             }

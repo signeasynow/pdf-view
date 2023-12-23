@@ -99,7 +99,7 @@ function useDownload(files, isSandbox, fileNames, storage) {
 	const checkAndRecordDownloadAttempt = async () => {
 			try {
 					// Retrieve download attempts from storage
-					let downloadAttempts = await storage.retrieve(DOWNLOAD_ATTEMPTS_KEY);
+					let downloadAttempts = await storage.retrieve(DOWNLOAD_ATTEMPTS_KEY, false);
 					downloadAttempts = downloadAttempts.filter(time => Date.now() - time < ONE_DAY_MS);
 
 					if (downloadAttempts.length >= MAX_DOWNLOADS_PER_DAY) {
@@ -108,12 +108,12 @@ function useDownload(files, isSandbox, fileNames, storage) {
 
 					// Record new download attempt
 					downloadAttempts.push(Date.now());
-					await storage.save(downloadAttempts, DOWNLOAD_ATTEMPTS_KEY);
+					await storage.save(downloadAttempts, DOWNLOAD_ATTEMPTS_KEY, false);
 			} catch (error) {
 				console.log(error, 'error br3')
 					// Handle case where no record is found or other errors
 					if (error?.message?.includes("No record found") || error.includes("No record found")) {
-							await storage.save([Date.now()], DOWNLOAD_ATTEMPTS_KEY);
+							await storage.save([Date.now()], DOWNLOAD_ATTEMPTS_KEY, false);
 					} else {
 							throw error;
 					}
@@ -129,7 +129,7 @@ function useDownload(files, isSandbox, fileNames, storage) {
 				await checkAndRecordDownloadAttempt();
 			}
 		} catch (error) {
-				showAuthModal();
+				showAuthModal(null, "Create an account and subscribe for continued download access.");
 				return;
 		}
 

@@ -71,9 +71,7 @@ async function logInWithEmail({email, password}) {
   })
 }
 
-export const AuthModal = ({ onConfirm, onClose, showLogin }) => {
-
-  const { setDetails } = useContext(UserContext);
+export const AuthModal = ({ message, onClose, showLogin }) => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -189,6 +187,10 @@ export const AuthModal = ({ onConfirm, onClose, showLogin }) => {
       <div css={modalContentStyle}>
         <span css={topCloseBtnStyle} onClick={onClose}>&times;</span>
         <h1>Create account</h1>
+        {!!message && (
+          <div style={{color: "grey", marginBottom: 20}}>{message}</div>
+        )}
+
         <div>
           <TextInput style={{marginBottom: 8}} value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="Email" />
         </div>
