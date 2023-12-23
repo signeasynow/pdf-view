@@ -6,8 +6,6 @@ import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import { useModal } from '../Contexts/ModalProvider';
 import { useUserData } from './useUserData';
 
-const isChromeExtension = process.env.NODE_CHROME === "true";
-
 const MAX_DOWNLOADS_PER_DAY = 3;
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const DOWNLOAD_ATTEMPTS_KEY = 'downloadAttempts';
@@ -127,7 +125,7 @@ function useDownload(files, isSandbox, fileNames, storage) {
 
 	const triggerDownload = async () => {
 		try {
-			if (!hasValidSubscription && isChromeExtension) {
+			if (!hasValidSubscription) {
 				await checkAndRecordDownloadAttempt();
 			}
 		} catch (error) {

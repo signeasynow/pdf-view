@@ -3,8 +3,6 @@ import { supabase } from '../utils/supabase';
 import { UserContext } from '../Contexts/UserContext';
 import { AuthInfoContext } from '../Contexts/AuthInfoContext';
 
-const isChromeExtension = process.env.NODE_CHROME === "true";
-
 export const useUserData = () => {
   const {details: user, setDetails } = useContext(UserContext);
 
@@ -33,9 +31,6 @@ export const useUserData = () => {
     setFailHappened(false);
   }
   const checkUserExists = async (email) => {
-    if (!isChromeExtension) {
-      return;
-    }
     if (email) {
       const { data, error } = await supabase
         .from('users')

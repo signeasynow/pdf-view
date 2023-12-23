@@ -54,8 +54,7 @@ import useListenForAiQuestionCount from './hooks/useListenForAiQuestionCount';
 
 const isChromeExtension = process.env.NODE_CHROME === "true";
 let storage = isChromeExtension ? new ChromeStorage() : new IndexedDBStorage();
-// storage = new IndexedDBStorage();
-console.log(isChromeExtension, 'isChromeExtension');
+
 async function splitPdfPages(pdfBytes, splitIndices) {
 	const originalPdfDoc = await PDFDocument.load(pdfBytes);
 	const numPages = originalPdfDoc.getPageCount();
