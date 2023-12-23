@@ -4,6 +4,9 @@ import { useContext } from 'preact/hooks';
 import { AnnotationsContext } from '../Contexts/AnnotationsContext';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import { useModal } from '../Contexts/ModalProvider';
+import { useUserData } from './useUserData';
+
+const isChromeExtension = process.env.NODE_CHROME === "true";
 
 const MAX_DOWNLOADS_PER_DAY = 3;
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
@@ -119,9 +122,14 @@ function useDownload(files, isSandbox, fileNames, storage) {
 			}
 	};
 
+	const { hasValidSubscription } = useUserData();
+
+
 	const triggerDownload = async () => {
 		try {
-			await checkAndRecordDownloadAttempt();
+			if (!hasValidSubscription && isChromeExtension) {
+				await checkAndRecordDownloadAttempt();
+			}
 		} catch (error) {
 				showAuthModal();
 				return;

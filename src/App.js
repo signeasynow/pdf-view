@@ -48,6 +48,8 @@ import { ActivePageContext } from './Contexts/ActivePageContext';
 import SignatureIconPng from '../assets/yellow-bg-500-150.png';
 import SignatureIcon54Png from '../assets/yellow-bg-5-4.png';
 import useListenForRequestBufferRequest from './hooks/useListenForRequestBufferRequest';
+import useListenForStateChange from './hooks/useListenForStateChange';
+import { AuthInfoContext } from './Contexts/AuthInfoContext';
 
 const isChromeExtension = process.env.NODE_CHROME === "true";
 let storage = isChromeExtension ? new ChromeStorage() : new IndexedDBStorage();
@@ -476,6 +478,7 @@ const App = () => {
 	};
 
 	const [inputtedUuid, setInputtedUuid] = useState('');
+	const { setAuthInfo, authInfo } = useContext(AuthInfoContext);
 
 	useEffect(() => {
 		window.addEventListener('message', (event) => {
@@ -506,6 +509,10 @@ const App = () => {
 			}
 			if (typeof event.data === 'object' && !!event.data.modifiedUiElements) {
 				setModifiedUiElements(event.data.modifiedUiElements);
+			}
+			if (typeof event.data === 'object' && !!event.data.authInfo && event.data.authInfo?.token !== authInfo?.token) {
+				console.log("setting auth info", event.data.authInfo)
+				setAuthInfo(event.data.authInfo);
 			}
 			if (event.data?.type === 'fromCore') {
 				const id = event.data.id;
@@ -675,6 +682,7 @@ const App = () => {
 	useListenForSplitPagesRequest(onSplitPages);
 	useListenForCombineFilesRequest(onCombinePdfs);
 	useListenForRequestBufferRequest(onRequestBuffer);
+	useListenForStateChange();
 	
 	useListenForThumbnailFullScreenRequest((enable) => {
 		if (enable === true) {

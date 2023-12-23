@@ -4,12 +4,14 @@ import Search from '../../assets/file-search-svgrepo-com.svg';
 import File from '../../assets/file-svgrepo-com.svg';
 import Panel from '../../assets/panel-left-svgrepo-com.svg';
 import Download from '../../assets/download-svgrepo-com.svg';
+import Gear from '../../assets/gear-svgrepo-com.svg';
 import Tag from '../../assets/tag-svgrepo-com.svg';
 import ZoomSection from './ZoomSection';
 import HeaderBtn from './HeaderBtn';
 import { useTranslation } from 'react-i18next';
 import VerticalDivider from '../components/VerticalDivider';
 import GoToNextTag from '../components/GoToNextTag';
+import { useModal } from '../Contexts/ModalProvider';
 
 const Wrapper = ({ children }) => (
 	<div css={css({
@@ -46,9 +48,22 @@ const Header = ({
 }) => {
 	const { t } = useTranslation();
 
+	const { showSettingsModal } = useModal();
+	const onSettings = () => {
+		showSettingsModal();
+	}
+
 	return (
 		<Wrapper>
 			<div css={contentLeftStyle}>
+				{
+					tools?.general?.includes('settings') && (
+						<>
+							<HeaderBtn offsetX="10px" onClick={onSettings} title={"Settings"} iconAlt={t('download')}  icon={Gear} />
+							<VerticalDivider />
+						</>
+					)
+				}
 				{
 					tools?.markers?.includes('go-to-next') && (
 						<GoToNextTag pdf={pdfViewerObj} />
