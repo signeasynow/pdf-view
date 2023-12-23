@@ -3,8 +3,6 @@ import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import { supabase } from '../utils/supabase';
 import { AuthInfoContext } from './AuthInfoContext';
 
-const isChromeExtension = process.env.NODE_CHROME === "true";
-
 export const UserContext = createContext(null);
 
 export const UserProvider = ({ children }) => {
@@ -16,49 +14,11 @@ export const UserProvider = ({ children }) => {
     loading: true,
     result: null
   });
-  const getUser = async () => {
-    if (!isChromeExtension) {
-      return;
-    }
-    setDetails({
-      ...details,
-      loading: true
-    });
-    try {
-      const result = await supabase.auth.getUser();
-
-      if (result?.data?.user) {
-        setDetails({
-          fetched: true,
-          loading: false,
-          result: result.data.user
-        });
-        return result;
-      } else {
-        setDetails({
-          fetched: true,
-          loading: false,
-          result: null
-        });
-      }
-    } catch (err) {
-      setDetails({
-        fetched: true,
-        loading: false,
-        result: null
-      });
-    }
-  }
-	
-  useEffect(() => {
-    getUser();
-  }, []);
-
+  
   const hasSentSignedInRef = useRef(false);
 
   useEffect(() => {
 		supabase.auth.onAuthStateChange((event, session) => {
-      console.log(event, 'event registered here', session)
       const token = session?.access_token;
       const refreshToken = session?.refresh_token;
       if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {

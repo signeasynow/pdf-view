@@ -50,6 +50,7 @@ import SignatureIcon54Png from '../assets/yellow-bg-5-4.png';
 import useListenForRequestBufferRequest from './hooks/useListenForRequestBufferRequest';
 import useListenForStateChange from './hooks/useListenForStateChange';
 import { AuthInfoContext } from './Contexts/AuthInfoContext';
+import useListenForAiQuestionCount from './hooks/useListenForAiQuestionCount';
 
 const isChromeExtension = process.env.NODE_CHROME === "true";
 let storage = isChromeExtension ? new ChromeStorage() : new IndexedDBStorage();
@@ -290,58 +291,8 @@ const App = () => {
 	useEffect(() => {
 		pdfProxyObjRef.current = pdfProxyObj;
 	}, [pdfProxyObj]);
-
-	const hasConsumerSubscription = async () => {
-		if (!inputtedUuid) {
-			return true; // weird state. will allow it.
-		}
-		const { data, error } = await supabase.functions.invoke('verify-consumer-subscription', {
-			body: { user_id: inputtedUuid }
-		});
-		if (error) {
-			return true; // we'll take the heat
-		}
-		return data.message === 'Active subscription found';
-	};
-
-	const isThrottled = useRef(false);
-
-	const checkConsumerSubscription = async () => {
-		if (isThrottled.current) {
-			return;
-		}
-		isThrottled.current = true;
 	
-		const result = await hasConsumerSubscription();
-		setAiLimitReached(!result);
-		if (result) {
-			window.localStorage.setItem('timestamps', '[]');
-		}
-		setTimeout(() => {
-			isThrottled.current = false;
-		}, 1000);
-	};
-	
-	useEffect(() => {
-		const currentTime = new Date().getTime();
-		let timestamps = JSON.parse(window.localStorage.getItem('timestamps') || '[]');
-	
-		// Filter out timestamps older than 24 hours
-		timestamps = timestamps.filter(ts => currentTime - ts < 24 * 60 * 60 * 1000);
-	
-		// Save the filtered timestamps back to localStorage
-		window.localStorage.setItem('timestamps', JSON.stringify(timestamps));
-	
-		// Check if more than 10 questions have been asked in the past 24 hours
-		if (timestamps.length > 10) {
-			checkConsumerSubscription();
-		}
-	
-		// Add a new timestamp for the current question
-		timestamps.push(currentTime);
-		window.localStorage.setItem('timestamps', JSON.stringify(timestamps));
-		
-	}, [conversation]);
+	useListenForAiQuestionCount(conversation, setAiLimitReached);
 	
 	const switchBuffer = () => setBuffer(buffer === 1 ? 2 : 1);
 
