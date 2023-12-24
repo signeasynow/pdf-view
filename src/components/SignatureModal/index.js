@@ -6,6 +6,7 @@ import { SignaturesContext } from '../../Contexts/SignaturesContext';
 import { ColorButton } from './ColorButton';
 import trimCanvas from 'trim-canvas';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
+import { useTranslation } from 'react-i18next';
 
 const overlayStyle = css`
   position: fixed;
@@ -53,6 +54,8 @@ export const SignatureModal = ({
 	modifiedUiElements
 }) => {
 
+	const { t } = useTranslation();
+
 	const signatureRef = useRef();
 	const initialRef = useRef();
 	const [penColor, setPenColor] = useState('black'); // Default pen color
@@ -60,7 +63,6 @@ export const SignatureModal = ({
 	const { setInitialsSignature, setFullSignature, fullSignature, initialsSignature } = useContext(SignaturesContext);
 
 	const handleSaveSignature = () => {
-		// console.log(signatureRef.current, 'signatureRef.current')
 		// Convert canvas to data URL (base64 image) only if the canvas is not empty
 		const signatureImage = !signatureRef.current.isEmpty()
 			? trimCanvas(signatureRef.current.canvas?.current).toDataURL('image/png')
@@ -114,14 +116,10 @@ export const SignatureModal = ({
 
 	const onClearInitials = () => {
 		initialRef.current?.clear();
-		// localStorage.removeItem('initialsImage');
-		// setInitialsSignature("");
 	};
 
 	const onClearFullSignature = () => {
 		signatureRef.current?.clear();
-		//localStorage.removeItem('signatureImage');
-		//setFullSignature("");
 	};
 
 	const changeColor = (color) => {
@@ -143,7 +141,7 @@ export const SignatureModal = ({
 
 	const onClickConfirm = () => {
 		if (signatureRef.current.isEmpty()) {
-			return alert('Please draw your signature before proceeding.');
+			return alert(t("draw-signature-before"));
 		}
 		// Handle confirm action here
 		handleSaveSignature();
@@ -204,11 +202,11 @@ export const SignatureModal = ({
 								paddingTop: 4,
 								paddingBottom: 4
 							}}
-							>Draw signature</div>
+							>{t("Draw signature")}</div>
 							<div style={{
 								cursor: 'pointer',
 								color: '#3083c8', fontSize: '14px' }} onClick={onClearFullSignature}
-							>Clear</div>
+							>{t("Clear")}</div>
 						</div>
 					</div>
 					{
@@ -231,18 +229,17 @@ export const SignatureModal = ({
 										paddingTop: 4,
 										paddingBottom: 4
 									}}
-									>Draw initials</div>
+									>{t("Draw initials")}</div>
 									<div style={{
 										cursor: 'pointer',
 										color: '#3083c8', fontSize: '14px' }} onClick={onClearInitials}
-									>Clear</div>
+									>{t("Clear")}</div>
 								</div>
 							</div>
 						)
 					}
 				</div>
 				<div style={{ marginBottom: '8px', marginTop: '8px' }}>
-					{/* Color selection buttons */}
 					{
 						shouldShowColors() && (
 							<>
@@ -256,11 +253,11 @@ export const SignatureModal = ({
           
 				</div>
 				<button css={confirmBtnStyle} variant="primary" size="sm" onClick={onClickConfirm}>
-          Confirm
+          {t("Confirm")}
 				</button>
 				{
 					shouldShowCancelBtn() && (
-						<button css={closeBtnStyle} variant="secondary" size="md" onClick={onClose}>Cancel</button>
+						<button css={closeBtnStyle} variant="secondary" size="md" onClick={onClose}>{t("Cancel")}</button>
 					)
 				}
 			</div>

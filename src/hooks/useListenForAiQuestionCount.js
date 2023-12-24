@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'preact/hooks';
 import { useUserData } from './useUserData';
 import { useModal } from '../Contexts/ModalProvider';
 import { ChromeStorage, IndexedDBStorage } from '../utils/indexDbUtils';
+import { useTranslation } from 'react-i18next';
 
 // DONE: use storage, either chrome or indexdb rather than localstorage
 // DONE: if no subscription, show popup
@@ -18,6 +19,8 @@ function useListenForAiQuestionCount(conversation, setAiLimitReached) {
 
   const { showAuthModal } = useModal();
 
+  const { t } = useTranslation();
+
 	const checkConsumerSubscription = async () => {
     if (!licenseCheckDone) {
       // better UX. don't want to always show upon load
@@ -32,7 +35,7 @@ function useListenForAiQuestionCount(conversation, setAiLimitReached) {
     if (hasValidSubscription) {
       await storage.delete('timestamps');
     } else {
-      showAuthModal(false, "Create an account and subscribe for continued access to AI conversations");
+      showAuthModal(false, t("create-account-ai"));
     }
     setTimeout(() => {
       isThrottled.current = false;

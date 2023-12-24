@@ -88,6 +88,27 @@
   "recipient-name": "Recipient's name",
   "email-subject": "Email subject line",
   "add-custom-message": "Add a custom message",
-  "Send": "Send"
+  "Send": "Send",
+  "document-metadata-removed": "This document's metadata has been removed from our servers and we can't answer any more questions about it. Please re-upload the document to proceed.",
+  "went-wrong-reload": "Something went wrong. Please reload the page and try again.",
+  "something-went-wrong-try-again": "Something went wrong. Please try again later.",
+  "Please wait": "Please wait",
+  "enable-ai": "Enable AI Discussions",
+  "daily-limit-reached": "Daily limit reached. Subscribe to continue.",
+  "activate-to-let": "Activate to let AI answer queries about this document.",
+  "Log out": "Log out",
+  "draw-signature-before": "Please draw your signature before proceeding.",
+  "Draw signature": "Draw signature",
+  "Clear": "Clear",
+  "Draw initials": "Draw initials",
+  "Fit to width": "Fit to width",
+  "Fit to page": "Fit to page",
+  "create-account-subscribe": "Create an account and subscribe for continued download access.",
+  "you-reached-max": "You have reached the maximum download limit for today.",
+  "nothing-to-download": "Nothing to download.",
+  "create-account-ai": "Create an account and subscribe for continued access to AI conversations",
+  
+
+  
   
 }

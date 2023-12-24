@@ -1,11 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import {  css } from '@emotion/react';
-import { useContext, useEffect, useState } from 'preact/hooks';
+import { useContext, useState } from 'preact/hooks';
 import { supabase } from '../../utils/supabase';
 import { isValidEmail } from '../../utils/isValidEmail';
 import { UserContext } from '../../Contexts/UserContext';
 import { useModal } from '../../Contexts/ModalProvider';
 import { Button } from '../Button';
+import { useTranslation } from 'react-i18next';
 
 const overlayStyle = css`
   position: fixed;
@@ -35,25 +36,6 @@ const topCloseBtnStyle = css`
   cursor: pointer;
 `;
 
-const confirmBtnStyle = css`
-  background: #3183c8;
-  color: white;
-  border: 1px solid transparent;
-  font-size: 16px;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-`;
-
-const closeBtnStyle = css`
-  border: 1px solid lightgrey;
-  font-size: 16px;
-  padding: 8px 16px;
-  border-radius: 4px;
-  margin-left: 8px;
-  cursor: pointer;
-`;
-
 async function signInWithEmail({email, password}) {
 
   const { data, error } = await supabase.auth.signUp({
@@ -76,6 +58,8 @@ export const SettingsModal = ({ onClose }) => {
 
   const {details: user } = useContext(UserContext);
 
+  const { t } = useTranslation();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -84,48 +68,31 @@ export const SettingsModal = ({ onClose }) => {
 
   const onSubmit = () => {
     if (!email) {
-      return alert("Email is required");
+      return alert(t("email-required"));
     }
     if (!isValidEmail(email)) {
-      return alert("Email is invalid");
+      return alert(t("email-invalid"));
     }
     if (!password) {
-      return alert("Password is required");
+      return alert(t("password-required"));
     }
     if (password.length < 6) {
-      return alert("Password must be at least 6 characters long");
+      return alert(t("password-6-min"));
     }
     if (!confirmPassword) {
-      return alert("Password confirmation is required");
+      return alert(t("password-confirmation-required"));
     }
     if (password !== confirmPassword) {
-      return alert("Passwords don't match");
+      return alert(t("passwords-dont-match"));
     }
     const { data, error } = signInWithEmail({
       email,
       password
     })
     if (error) {
-      return alert(`Something went wrong. ${JSON.stringify(error)}`)
+      return alert(`${t("Something went wrong")}. ${JSON.stringify(error)}`)
     }
     setShowVerifyEmail(true);
-  }
-
-  const onSubmitLogin = () => {
-    if (!email) {
-      return alert("Email is required");
-    }
-    if (!password) {
-      return alert("Password is required");
-    }
-    const { data, error } = logInWithEmail({
-      email,
-      password
-    })
-    if (error) {
-      return alert(`Something went wrong. ${JSON.stringify(error)}`)
-    }
-    onClose();
   }
 
   const hasAccount = () => {
@@ -147,7 +114,7 @@ export const SettingsModal = ({ onClose }) => {
   const onLogout = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
-      alert(dictionary["Something went wrong"]);
+      alert(t("Something went wrong"));
       return;
     }
   }
@@ -163,10 +130,10 @@ export const SettingsModal = ({ onClose }) => {
               <div style={{fontSize: 16, marginBottom: 20 }}>{user?.result?.email}</div>
               <div style={{display: 'flex', justifyContent: 'space-between', alignItems: "center"}}>
                 <Button variant='secondary' onClick={onLogout}>
-                  Log out
+                  {t("Log out")}
                 </Button>
                 <Button variant='primary' onClick={onClose}>
-                  Cancel
+                  {t("Cancel")}
                 </Button>
               </div>
             </div>
@@ -175,8 +142,8 @@ export const SettingsModal = ({ onClose }) => {
         {
           !hasAccount() && (
             <div style={{display: 'flex', alignItems: "center", justifyContent: "space-between"}}>
-              <Button onClick={onCreateAccount}>Create account</Button>
-              <Button style={{width: 132}} onClick={onLogin}>Sign in</Button>
+              <Button onClick={onCreateAccount}>{t("Create account")}</Button>
+              <Button style={{width: 132}} onClick={onLogin}>{t("Log in")}</Button>
             </div>
           )
         }
@@ -185,7 +152,7 @@ export const SettingsModal = ({ onClose }) => {
             <>
               <hr />
               <Button variant='primary' onClick={onClose}>
-                Cancel
+                {t("Cancel")}
               </Button>
             </>
           )

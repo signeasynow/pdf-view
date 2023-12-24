@@ -251,8 +251,8 @@ const ZoomSection = ({
 						</div>
 					}
 					child={<div css={childStyle}>
-						<div css={zoomOptionStyle} onClick={onFitWidth}>Fit to width</div>
-						<div css={zoomOptionStyle} onClick={onFitHeight}>Fit to page</div>
+						<div css={zoomOptionStyle} onClick={onFitWidth}>{t("Fit to width")}</div>
+						<div css={zoomOptionStyle} onClick={onFitHeight}>{t("Fit to page")}</div>
 						<hr />
 						<div css={zoomOptionStyle} onClick={() => setZoom(0.1)}>10%</div>
 						<div css={zoomOptionStyle} onClick={() => setZoom(0.25)}>25%</div>

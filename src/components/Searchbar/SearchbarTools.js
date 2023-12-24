@@ -1,10 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { Icon, Tooltip } from 'alien35_pdf_ui_lib_2';
-import AiIcon from '../../../assets/ai-file-svgrepo-com.svg';
-import SearchIcon from '../../../assets/search-svgrepo-com.svg';
-import ChatDelete from '../../../assets/chat-delete-svgrepo-com.svg';
 import { useTranslation } from 'react-i18next';
-import AccessibleButton from '../AccessibleButton';
 import { useModal } from '../../Contexts/ModalProvider';
 
 const SearchbarTools = ({
@@ -32,7 +27,6 @@ const SearchbarTools = ({
 			}
 		</div>
 	);
-
 };
 
 export default SearchbarTools;

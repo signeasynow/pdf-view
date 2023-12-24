@@ -1,5 +1,5 @@
 import { createContext } from 'preact';
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useState } from 'preact/hooks';
 
 export const SignaturesContext = createContext({
 	fullSignature: '',

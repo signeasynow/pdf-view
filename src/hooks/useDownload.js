@@ -5,6 +5,7 @@ import { AnnotationsContext } from '../Contexts/AnnotationsContext';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import { useModal } from '../Contexts/ModalProvider';
 import { useUserData } from './useUserData';
+import { useTranslation } from 'react-i18next';
 
 const MAX_DOWNLOADS_PER_DAY = 3;
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
@@ -96,6 +97,8 @@ function useDownload(files, isSandbox, fileNames, storage) {
 
 	const { showAuthModal } = useModal();
 
+	const { t } = useTranslation();
+
 	const checkAndRecordDownloadAttempt = async () => {
 			try {
 					// Retrieve download attempts from storage
@@ -103,14 +106,13 @@ function useDownload(files, isSandbox, fileNames, storage) {
 					downloadAttempts = downloadAttempts.filter(time => Date.now() - time < ONE_DAY_MS);
 
 					if (downloadAttempts.length >= MAX_DOWNLOADS_PER_DAY) {
-							throw new Error("You have reached the maximum download limit for today.");
+							throw new Error(t("you-reached-max"));
 					}
 
 					// Record new download attempt
 					downloadAttempts.push(Date.now());
 					await storage.save(downloadAttempts, DOWNLOAD_ATTEMPTS_KEY, false);
 			} catch (error) {
-				console.log(error, 'error br3')
 					// Handle case where no record is found or other errors
 					if (error?.message?.includes("No record found") || error.includes("No record found")) {
 							await storage.save([Date.now()], DOWNLOAD_ATTEMPTS_KEY, false);
@@ -129,7 +131,7 @@ function useDownload(files, isSandbox, fileNames, storage) {
 				await checkAndRecordDownloadAttempt();
 			}
 		} catch (error) {
-				showAuthModal(null, "Create an account and subscribe for continued download access.");
+				showAuthModal(null, t("create-account-subscribe"));
 				return;
 		}
 
@@ -138,7 +140,7 @@ function useDownload(files, isSandbox, fileNames, storage) {
 		}
 		let successfulBuffers = await fetchBuffers(files.slice(0, fileNames.length), storage);
 		if (!successfulBuffers.length) {
-			return alert('Nothing to download.');
+			return alert(t("nothing-to-download"));
 		}
 
 		// Check if there's only one PDF

@@ -3,33 +3,11 @@ import { css } from '@emotion/react';
 
 import ChevronDown from '../../../assets/chevron-down-svgrepo-com.svg';
 import Dropdown from '../../components/Dropdown';
-import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
-import { Icon, Tooltip } from 'alien35_pdf_ui_lib_2';
+import { useRef } from 'preact/hooks';
+import { Icon } from 'alien35_pdf_ui_lib_2';
 import { useTranslation } from 'react-i18next';
 import { AnnotationEditorParamsType } from 'pdfjs-dist/build/pdf';
-import { useAnnotations } from '../../hooks/useAnnotations';
 import { useDebounce } from '../../utils/useDebounce';
-
-function generateNumbers() {
-	let numbers = [];
-
-	// Numbers from 1 to 20
-	for (let i = 1; i <= 20; i++) {
-		numbers.push(i);
-	}
-
-	// Every second number from 20 to 48
-	for (let i = 22; i <= 48; i += 2) {
-		numbers.push(i);
-	}
-
-	// Every fourth number from 48 to 128
-	for (let i = 52; i <= 128; i += 4) {
-		numbers.push(i);
-	}
-
-	return numbers;
-}
 
 const inputStyles = css`
   font-size: 16px;
@@ -64,11 +42,6 @@ const dropdownTitle = css`
   align-items: center;
   cursor: pointer;
   margin-right: 12px;
-`;
-
-const percentStyle = css`
-  margin-right: 8px;
-  color: #5b5b5b;
 `;
 
 const childStyle = css`
@@ -116,7 +89,6 @@ const FontFamilyInput = ({
 	const onChangeFontSizeByText = useDebounce(_onChangeFontSizeByText, 5);
 
 	const onSelectValue = (v) => {
-		console.log(v, 'v bro');
 		setFontFamilyValue(v);
 		// console.log(pdfViewerRef.current, 'pdfViewerRef.current')
 		pdfViewerRef.current.annotationEditorParams = {

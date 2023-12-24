@@ -103,19 +103,10 @@ const FontSizeInput = ({
 
 	};
 
-	/*
-  useEffect(() => {
-    const existingAnnotation = annotations.find((e) => e.id === editableAnnotationId);
-    console.log(existingAnnotation, 'existingAnnotation2', editableAnnotationId, 'ann', annotations)
-  }, [editableAnnotationId, annotations]);
-
-  */
-
 	const onChangeFontSizeByText = useDebounce(_onChangeFontSizeByText, 5);
 
 	const onSelectValue = (v) => {
 		setFontSizeValue(v);
-		// console.log(pdfViewerRef.current, 'pdfViewerRef.current')
 		pdfViewerRef.current.annotationEditorParams = {
 			type: AnnotationEditorParamsType.FREETEXT_SIZE,
 			value: v

@@ -2,8 +2,11 @@ import { useContext, useEffect, useState } from 'preact/hooks';
 import { supabase } from '../utils/supabase';
 import { UserContext } from '../Contexts/UserContext';
 import { AuthInfoContext } from '../Contexts/AuthInfoContext';
+import { useTranslation } from 'react-i18next';
 
 export const useUserData = () => {
+
+  const { t } = useTranslation();
   const {details: user, setDetails } = useContext(UserContext);
 
   const [userExists, setUserExists] = useState(null);
@@ -80,11 +83,9 @@ export const useUserData = () => {
       refresh_token: refreshToken
     });
     if (error) {
-      console.log(error, 'error log in via');
       return;
       // let it fail quiektly
     }
-    console.log(data, 'logged in token')
   }
 
   const checkForLogout = async (_user, _authInfo) => {
@@ -115,10 +116,8 @@ export const useUserData = () => {
   useEffect(() => {
     if (!user?.fetched && !!authInfo?.token && !authInfo?.token.startsWith("revoked_")) {
       loginViaToken(authInfo?.token, authInfo?.refreshToken);
-      console.log("finding token");
     }
     checkForLogout(user, authInfo);
-    console.log(user, 'user221', authInfo);
   }, [user, authInfo]);
 
   useEffect(() => {
@@ -141,14 +140,14 @@ export const useUserData = () => {
 		const id = user?.result?.id;
 		const email = user?.result?.email;
 		if (!id || !email) {
-			return alert("Something went wrong creating your account.");
+			return alert(t("something-went-wrong-creating"));
 		}
 		const {data, error} = await supabase
 			.from('users')
 			.upsert([{ id, email, name }]);
     if (error) {
       setFailHappened(true);
-      alert("Something went wrong creating your account.");
+      alert(t("something-went-wrong-creating"));
       failCb?.(error);
       return;
     }
@@ -160,14 +159,14 @@ export const useUserData = () => {
 		const id = user?.result?.id;
 		const email = user?.result?.email;
 		if (!id || !email) {
-			return alert("Something went wrong creating your account.");
+			return alert(t("something-went-wrong-creating"));
 		}
 		const {data, error} = await supabase
 			.from('users')
 			.upsert([{ id, ...fields }]);
     if (error) {
       setFailHappened(true);
-      alert("Something went wrong creating your account.");
+      alert(t("something-went-wrong-creating"));
 			failCb?.(error);
       return;
     }
@@ -200,8 +199,6 @@ export const useUserData = () => {
     const localSubscriptionInfo = userWithSubscription.subscriptions?.[0];
     
     setSubscriptionInfo(localSubscriptionInfo);
-
-    // setLicenseKey(localSubscriptionInfo?.license_key);
 
     setEndDate(localSubscriptionInfo?.end_date);
 

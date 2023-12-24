@@ -105,35 +105,6 @@ const arrowsStyle = css`
   display: flex;
 `;
 
-const topSectionStyle = css`
-  margin-top: 16px;
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  background: #f1f3f5;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-	flex-direction: column;
-	align-items: center;
-`;
-
-const tagBtnStyle = css`
-  background: #fee179;
-	margin: 4px;
-`;
-
-const thumbnailTopActionsWrapper = css`
-  background: #d6dee8;
-	width: 100px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	margin-top: 8px;
-	margin-bottom: 8px;
-	border-radius: 4px;
-`;
-
 const SearchBar = ({
 	onDisableEditorMode,
 	aiDocHash,
@@ -182,7 +153,7 @@ const SearchBar = ({
 		setLoading(true);
 		onAskQuestion(questionText, extractLastThreeQA(conversation)).then((answerText) => {
 			if (answerText?.error === 'document purged') {
-				alert("This document's metadata has been removed from our servers and we can't answer any more questions about it. Please re-upload the document to proceed.");
+				alert(t("document-metadata-removed"));
 				return;
 			}
 			setConversation([
@@ -193,7 +164,7 @@ const SearchBar = ({
 			setLoading(false);
 			return;
 		}).catch((err) => {
-			alert('Something went wrong. Please reload the page and try again.');
+			alert(t("went-wrong-reload"));
 			setLoading(false);
 		});
 	};
@@ -216,7 +187,7 @@ const SearchBar = ({
 			setLoading(false);
 			return;
 		}).catch((err) => {
-			alert('Something went wrong. Please try again later.');
+			alert(t("something-went-wrong-try-again"));
 			setLoading(false);
 		});
 	};
@@ -258,8 +229,8 @@ const SearchBar = ({
 						{
 							!aiDocId && (
 								<div style={{ margin: 8, display: 'flex', flexDirection: 'column' }}>
-									<button disabled={loading || aiLimitReached} onClick={handleEmbed} css={aiLimitReached ? disabledConfirmBtnStyle : confirmBtnStyle}>{loading ? 'Please wait...' : 'Enable AI Discussions'}</button>
-									<p>{aiLimitReached ? 'Daily limit reached. Subscribe to continue.' : 'Activate to let AI answer queries about this document.'}</p>
+									<button disabled={loading || aiLimitReached} onClick={handleEmbed} css={aiLimitReached ? disabledConfirmBtnStyle : confirmBtnStyle}>{loading ? `${t("Please wait")}...` : t("enable-ai")}</button>
+									<p>{aiLimitReached ? t("daily-limit-reached") : t("activate-to-let")}</p>
 								</div>
 							)
 						}

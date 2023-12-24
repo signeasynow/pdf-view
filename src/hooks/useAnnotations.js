@@ -59,7 +59,6 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
 		// console.log(data, 'data444', data.content, 'dd', data?.source?.content, 'dg', text)
 		let newData = JSON.parse(JSON.stringify(annotationsRef.current));
 		const existingAnnotation = newData.find((e) => e.id === data.id);
-		console.log(newData, 'newData1__', annotations);
 		activeAnnotationRef.current = data.id;
 		if (!existingAnnotation) {
 			// TOTALLY FINE FOR THERE TO BE NONE.
@@ -80,7 +79,6 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
 				name: 'freeTextEditor'
 			}
 		];
-		console.log(newData, 'newData2__');
 
 		setAnnotations(newData);
 	};
@@ -143,7 +141,6 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
 	}, [updateQueue]);
 
 	const throttledUpdateAnnotation = (data, text) => {
-		console.log(data, 'data333', data.height);
 		if (!data) {
 			return;
 		}
@@ -195,7 +192,6 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
 	};
 
 	const throttledResizeAnnotation = debounce((data) => {
-		console.log(data, 'resize2');
 		updateAnnotationParam(data.id, {
 			width: data.width,
 			height: data.height,
