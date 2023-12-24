@@ -21,8 +21,6 @@ const AnnotationTextSettings = ({
 
 }) => {
 
-	const { t } = useTranslation();
-
 	if (activeToolbarItem !== 'text') {
 		return;
 	}

@@ -1,4 +1,3 @@
-import { retrievePDF } from './indexDbUtils';
 import * as pdfjs from 'pdfjs-dist';
 
 const blobUrlToArrayBuffer = async (blobUrl) => {
@@ -26,7 +25,6 @@ async function fetchBuffers(files, storage) {
 	const successfulBuffers = [];
 	const processingTasks = results.map(async (result, idx) => {
 		if (result.status === 'fulfilled') {
-			console.log('fulfilled here');
 			successfulBuffers.push(result.value);
 		}
 		else {

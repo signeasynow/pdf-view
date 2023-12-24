@@ -15,7 +15,7 @@ import { heightOffset0, heightOffset1, heightOffset3, heightOffsetTabs } from '.
 import { ChromeStorage, IndexedDBStorage, deletePDF } from './utils/indexDbUtils';
 import { invokePlugin, pendingRequests } from './utils/pluginUtils';
 import fetchBuffers from './utils/fetchBuffers';
-import { I18nextProvider } from 'react-i18next';
+import { I18nextProvider, useTranslation } from 'react-i18next';
 import i18n from './utils/i18n';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import useDeclareIframeLoaded from './hooks/useDeclareIframeLoaded';
@@ -243,6 +243,7 @@ const failWrap = css`
 
 const App = () => {
 
+	const { t } = useTranslation();
 	const { activePageIndex, setActivePageIndex } = useContext(ActivePageContext);
 	const [matchesCount, setMatchesCount] = useState(0);
 
@@ -594,10 +595,9 @@ const App = () => {
 	const onRequestBuffer = async () => {
 		let successfulBuffers = await fetchBuffers(files.slice(0, fileNames.length), storage);
 		if (!successfulBuffers.length) {
-			return alert('Something went wrong.');
+			return alert(t("Something went wrong"));
 		}
 		const modifiedPdfBuffer = await modifyPdfBuffer(successfulBuffers[0], annotations);
-		console.log(modifiedPdfBuffer, 'modifiedPdfBuffer2');
 		window.parent.postMessage({ type: 'request-buffer-completed', message: modifiedPdfBuffer });
 	};
 
@@ -1333,7 +1333,7 @@ const App = () => {
 			body: { user_id: inputtedUuid, paragraphs: pdfText }
 		});
 		if (error) {
-			alert('Something went wrong. Please try again later.');
+			alert(t("something-went-wrong-try-again"));
 			console.error(`Error embedding: ${error}`);
 			return;
 		}
@@ -1411,7 +1411,7 @@ const App = () => {
 			body: { docId: aiDocId }
 		});
 		if (error) {
-			alert('Something went wrong. Please try again later.');
+			alert(t("something-went-wrong-try-again"));
 			console.error(`Error embedding: ${error}`);
 			return;
 		}
@@ -1430,7 +1430,7 @@ const App = () => {
 			body: { doc_id: aiDocId, question_text: question, last_questions: prevQuestions, embedding_key: embeddingKey }
 		});
 		if (error) {
-			alert('Something went wrong. Please try again later.');
+			alert(t("something-went-wrong-try-again"));
 			console.error(`Error embedding: ${error}`);
 			return;
 		}
@@ -1597,7 +1597,6 @@ const App = () => {
 	};
 
 	const onTagClicked = (details) => {
-		// console.log(details, 'details2');
 		const tagPayload = {
 			markerType: details.source?.overlayText,
 			pageNumber: details.source?.pageIndex + 1,
@@ -1715,7 +1714,7 @@ const App = () => {
 	if (fileLoadFailError) {
 		return (
 			<div css={failWrap}>
-				<h1>Failed to load the PDF.</h1>
+				<h1>{t("failed-to-load-pdf")}</h1>
 				<p>{fileLoadFailError}</p>
 			</div>
 		);
@@ -1724,8 +1723,8 @@ const App = () => {
 	if (!isOnline) {
 		return (
 			<div style={{ margin: 4 }}>
-				<h1>Connection Issue Detected</h1>
-				<p>We couldn't find an active internet connection. Please ensure you're connected to the internet to continue.</p>
+				<h1>{t("Connection Issue Detected")}</h1>
+				<p>{t("internet-connection")}</p>
 			</div>
 		);
 	}
@@ -1733,22 +1732,11 @@ const App = () => {
 	if (hasValidLicense === false) {
 		return (
 			<div style={{ margin: 4 }}>
-				<h1>License Key Invalid</h1>
-				<p>Your provided license key appears to be invalid. To resolve this issue, please reach out to your account administrator.</p>
+				<h1>{t("License Key Invalid")}</h1>
+				<p>{t("provided-license-key")}</p>
 			</div>
 		);
 	}
-
-	/*
-	if (isInValidDomain === false) {
-		return (
-			<div style={{margin: 4}}>
-				<h1>Invalid domain</h1>
-				<p>This domain ({window.origin}) is not permitted to render the PDF Web SDK. If this is a mistake, please update the Authorized Domains list in your Account portal.</p>
-			</div>
-		)
-	}
-	*/
 
 	if (!inputtedLicenseKey) {
 		return (

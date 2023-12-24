@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { useModal } from '../../Contexts/ModalProvider';
 import { useContext } from 'preact/hooks';
 import { SignaturesContext } from '../../Contexts/SignaturesContext';
-import HeaderBtn from '../../Header/HeaderBtn';
 import SignatureSelectionDropdown from './SignatureSelectionDropdown';
 
 export const MySVGIcon = ({ strokeColor }) => (
@@ -16,7 +15,6 @@ export const MySVGIcon = ({ strokeColor }) => (
 
 const Signatures = ({
 	tools,
-	onChangeActiveToolbarItem,
 	activeToolbarItem,
 	onClickSignature
 }) => {
@@ -34,7 +32,7 @@ const Signatures = ({
 		<div style={{ display: 'flex', marginLeft: 8 }}>
 			{
 				activeToolbarItem === 'signature' && !fullSignature && !initialsSignature && (
-					<button onClick={() => showSignatureModal('Test', () => {})}>Add signature</button>
+					<button onClick={() => showSignatureModal('Test', () => {})}>{t("Add signature")}</button>
 				)
 			}
 			{
