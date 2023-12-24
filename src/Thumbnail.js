@@ -1,7 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 
-import { h } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { Icon, Checkbox } from 'alien35_pdf_ui_lib_2';
 import Trash from '../assets/trash-svgrepo-com.svg';

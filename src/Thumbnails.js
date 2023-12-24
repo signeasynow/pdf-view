@@ -4,6 +4,7 @@ import { useState } from 'preact/hooks'; // add this import
 import { h } from 'preact';
 import { Thumbnail } from './Thumbnail';
 import { LoadingSpinner } from './components/LoadingSpinner';
+import { useTranslation } from 'react-i18next';
 
 const wrapperStyle = css`
   position: relative;
@@ -13,25 +14,6 @@ const lineIndicatorStyle = css`
   height: 2px;
   background-color: #3183c8;
   width: 100%;
-`;
-
-const fullScreenWrapper = css`
-  position: absolute;
-	height: 100%;
-	z-index: 4;
-	background: #282828;
-  overflow: auto;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-content: flex-start;  // Add this line
-
-  &::-webkit-scrollbar {
-    width: 10px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: #888;
-  }
 `;
 
 const ThumbnailsContainer = ({
@@ -50,6 +32,7 @@ const ThumbnailsContainer = ({
 	documentLoading
 }) => {
 	
+	const { t } = useTranslation();
 	const numPages = pdfProxyObj?.numPages;
 
 	const [draggingIndex, setDraggingIndex] = useState(null);
@@ -106,7 +89,7 @@ const ThumbnailsContainer = ({
 	if (documentLoading) return (
 		<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 20 }}>
 			<LoadingSpinner />
-			<div>Loading...</div>
+			<div>{t("loading")}...</div>
 		</div>
 	);
 
