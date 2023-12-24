@@ -53,11 +53,15 @@ const Header = ({
 		showSettingsModal();
 	}
 
+	const showSettings = () => {
+		return tools?.general?.includes('account') || tools?.general?.includes('locale')
+	}
+
 	return (
 		<Wrapper>
 			<div css={contentLeftStyle}>
 				{
-					tools?.general?.includes('settings') && (
+					showSettings() && (
 						<>
 							<HeaderBtn offsetX="10px" onClick={onSettings} title={"Settings"} iconAlt={t('download')}  icon={Gear} />
 							<VerticalDivider />

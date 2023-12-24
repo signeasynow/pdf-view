@@ -9,6 +9,7 @@ import { UndoRedoProvider } from './Contexts/UndoRedoContext';
 import { ActivePageProvider } from './Contexts/ActivePageContext';
 import { UserProvider } from './Contexts/UserContext';
 import { AuthInfoProvider } from './Contexts/AuthInfoContext';
+import { LocaleProvider } from './Contexts/LocaleContext';
 
 const AppRoot = () => (
 	<I18nextProvider i18n={i18n}>
@@ -19,9 +20,11 @@ const AppRoot = () => (
             <UndoRedoProvider>
               <SignaturesProvider>
                 <AnnotationsProvider>
-                  <ModalProvider>
-                    <App />
-                  </ModalProvider>
+                  <LocaleProvider>
+                    <ModalProvider>
+                      <App />
+                    </ModalProvider>
+                  </LocaleProvider>
                 </AnnotationsProvider>
               </SignaturesProvider>
             </UndoRedoProvider>

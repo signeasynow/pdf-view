@@ -112,6 +112,7 @@
   "Connection Issue Detected": "Problema de conexión detectado",
   "internet-connection": "No pudimos encontrar una conexión a internet activa. Por favor, asegúrate de estar conectado a internet para continuar.",
   "License Key Invalid": "Clave de licencia inválida",
-  "provided-license-key": "Tu clave de licencia proporcionada parece ser inválida. Para resolver este problema, por favor contacta a tu administrador de cuenta."
+  "provided-license-key": "Tu clave de licencia proporcionada parece ser inválida. Para resolver este problema, por favor contacta a tu administrador de cuenta.",
+  "Account": "Cuenta"
 
 }

@@ -112,7 +112,8 @@
   "Connection Issue Detected": "Verbindungsproblem festgestellt",
   "internet-connection": "Wir konnten keine aktive Internetverbindung finden. Bitte stellen Sie sicher, dass Sie mit dem Internet verbunden sind, um fortzufahren.",
   "License Key Invalid": "Lizenzschlüssel ungültig",
-  "provided-license-key": "Ihr bereitgestellter Lizenzschlüssel scheint ungültig zu sein. Um dieses Problem zu lösen, wenden Sie sich bitte an Ihren Kontoadministrator."
+  "provided-license-key": "Ihr bereitgestellter Lizenzschlüssel scheint ungültig zu sein. Um dieses Problem zu lösen, wenden Sie sich bitte an Ihren Kontoadministrator.",
+  "Account": "Konto"
 
 
 }

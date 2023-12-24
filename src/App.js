@@ -51,6 +51,7 @@ import useListenForRequestBufferRequest from './hooks/useListenForRequestBufferR
 import useListenForStateChange from './hooks/useListenForStateChange';
 import { AuthInfoContext } from './Contexts/AuthInfoContext';
 import useListenForAiQuestionCount from './hooks/useListenForAiQuestionCount';
+import { LocaleContext } from './Contexts/LocaleContext';
 
 const isChromeExtension = process.env.NODE_CHROME === "true";
 let storage = isChromeExtension ? new ChromeStorage() : new IndexedDBStorage();
@@ -431,6 +432,8 @@ const App = () => {
 	const [inputtedUuid, setInputtedUuid] = useState('');
 	const { setAuthInfo, authInfo } = useContext(AuthInfoContext);
 
+	const { onChangeLocale } = useContext(LocaleContext);
+
 	useEffect(() => {
 		window.addEventListener('message', (event) => {
 			if (typeof event.data === 'object' && event.data.files?.length) {
@@ -440,7 +443,7 @@ const App = () => {
 				setTools(event.data.tools);
 			}
 			if (typeof event.data === 'object' && event.data.locale) {
-				i18n.changeLanguage(event.data.locale);
+				onChangeLocale(event.data.locale);
 			}
 			if (typeof event.data === 'object' && event.data.licenseKey) {
 				setInputtedLicenseKey(event.data.licenseKey);

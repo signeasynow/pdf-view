@@ -18,6 +18,7 @@ export const ModalProvider = ({ children }) => {
 	const [isSettingsVisible, setIsSettingsVisible] = useState(false);
 	const [modifiedUiElements, setModifiedUiElements] = useState(null);
 	const [showLogin, setShowLogin] = useState(false);
+	const [locale, setLocale] = useState("");
 
 	const showModal = (msg, onConfirm) => {
 		setMessage(msg);
@@ -39,8 +40,9 @@ export const ModalProvider = ({ children }) => {
 		setAuthMessage(customMessage);
 	};
 
-	const showSettingsModal = () => {
+	const showSettingsModal = (_locale) => {
 		setIsSettingsVisible(true);
+		setLocale(_locale);
 	};
 
 	const hideModal = () => {
@@ -64,7 +66,7 @@ export const ModalProvider = ({ children }) => {
 		<ModalContext.Provider value={{ showModal, showSignatureModal, hideModal, setModifiedUiElements, showAuthModal, showSettingsModal }}>
 			{isVisible && <ConfirmationModal onConfirm={onConfirmCallback} message={message} onClose={hideModal} />}
 			{isAuthVisible && <AuthModal message={authMessage} onClose={hideAuthModal} showLogin={showLogin} />}
-			{isSettingsVisible && <SettingsModal onClose={hideSettingsModal} />}
+			{isSettingsVisible && <SettingsModal locale={locale} onClose={hideSettingsModal} />}
 			{isSignatureVisible && <SignatureModal
 				modifiedUiElements={modifiedUiElements}
 				onConfirm={onConfirmCallback}

@@ -7,6 +7,7 @@ import { UserContext } from '../../Contexts/UserContext';
 import { useModal } from '../../Contexts/ModalProvider';
 import { Button } from '../Button';
 import { useTranslation } from 'react-i18next';
+import { LocaleContext } from '../../Contexts/LocaleContext';
 
 const overlayStyle = css`
   position: fixed;
@@ -118,45 +119,69 @@ export const SettingsModal = ({ onClose }) => {
       return;
     }
   }
+  
+  const { locale, onChangeLocale } = useContext(LocaleContext);
+
+  const onChooseLocale = (e) => {
+    console.log(e.target.value, 'huh2')
+    onChangeLocale(e.target.value);
+  }
 
   return (
     <div css={overlayStyle}>
       <div css={modalContentStyle}>
         <span css={topCloseBtnStyle} onClick={onClose}>&times;</span>
-        <h1>Account</h1>
         {
-          hasAccount() && (
-            <div>
-              <div style={{fontSize: 16, marginBottom: 20 }}>{user?.result?.email}</div>
-              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: "center"}}>
-                <Button variant='secondary' onClick={onLogout}>
-                  {t("Log out")}
-                </Button>
-                <Button variant='primary' onClick={onClose}>
-                  {t("Cancel")}
-                </Button>
-              </div>
-            </div>
-          )
-        }
-        {
-          !hasAccount() && (
-            <div style={{display: 'flex', alignItems: "center", justifyContent: "space-between"}}>
-              <Button onClick={onCreateAccount}>{t("Create account")}</Button>
-              <Button style={{width: 132}} onClick={onLogin}>{t("Log in")}</Button>
-            </div>
-          )
-        }
-        {
-          !hasAccount() && (
+          true && (
             <>
-              <hr />
-              <Button variant='primary' onClick={onClose}>
-                {t("Cancel")}
-              </Button>
+            <h1>{t("Account")}</h1>
+              {
+                hasAccount() && (
+                  <div>
+                    <div style={{fontSize: 16, marginBottom: 20 }}>{user?.result?.email}</div>
+                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: "center"}}>
+                      <Button variant='secondary' onClick={onLogout}>
+                        {t("Log out")}
+                      </Button>
+                      <Button variant='primary' onClick={onClose}>
+                        {t("Cancel")}
+                      </Button>
+                    </div>
+                  </div>
+                )
+              }
+              {
+                !hasAccount() && (
+                  <div style={{display: 'flex', alignItems: "center", justifyContent: "space-between"}}>
+                    <Button onClick={onCreateAccount}>{t("Create account")}</Button>
+                    <Button style={{width: 132}} onClick={onLogin}>{t("Log in")}</Button>
+                  </div>
+                )
+              }
+              {
+                !hasAccount() && (
+                  <>
+                    <hr />
+                    <Button variant='primary' onClick={onClose}>
+                      {t("Cancel")}
+                    </Button>
+                  </>
+                )
+              }
             </>
           )
         }
+        <hr />
+        <select onChange={onChooseLocale} value={locale}>
+          <option value="de">Deutsch</option>
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="ko">한국어</option>
+          <option value="it">Italiano</option>
+          <option value="ru">Русский</option>
+          <option value="hi">हिंदी</option>
+          <option value="pt">Português</option>
+        </select>
       </div>
     </div>
   )
