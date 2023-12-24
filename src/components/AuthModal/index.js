@@ -1,12 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import {  css } from '@emotion/react';
-import { useContext, useEffect, useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import { supabase } from '../../utils/supabase';
 import { isValidEmail } from '../../utils/isValidEmail';
-import { UserContext } from '../../Contexts/UserContext';
 import { TextLink } from '../../components/TextLink';
 import { TextInput } from '../TextInput';
 import { useUserData } from '../../hooks/useUserData';
+import { useTranslation } from 'react-i18next';
 
 const overlayStyle = css`
   position: fixed;
@@ -74,6 +74,8 @@ async function logInWithEmail({email, password}) {
 
 export const AuthModal = ({ message, onClose, showLogin }) => {
 
+  const { t } = useTranslation();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -92,46 +94,46 @@ export const AuthModal = ({ message, onClose, showLogin }) => {
 
   const onSubmit = () => {
     if (!email) {
-      return alert("Email is required");
+      return alert(t("email-required"));
     }
     if (!isValidEmail(email)) {
-      return alert("Email is invalid");
+      return alert(t("email-invalid"));
     }
     if (!password) {
-      return alert("Password is required");
+      return alert(t("password-required"));
     }
     if (password.length < 6) {
-      return alert("Password must be at least 6 characters long");
+      return alert(t("password-6-min"));
     }
     if (!confirmPassword) {
-      return alert("Password confirmation is required");
+      return alert(t("password-confirmation-required"));
     }
     if (password !== confirmPassword) {
-      return alert("Passwords don't match");
+      return alert(t("passwords-dont-match"));
     }
     const { data, error } = signInWithEmail({
       email,
       password
     })
     if (error) {
-      return alert(`Something went wrong. ${JSON.stringify(error)}`)
+      return alert(`${t("Something went wrong")}. ${JSON.stringify(error)}`)
     }
     setShowVerifyEmail(true);
   }
 
   const onSubmitLogin = () => {
     if (!email) {
-      return alert("Email is required");
+      return alert(t("email-required"));
     }
     if (!password) {
-      return alert("Password is required");
+      return alert(t("password-required"));
     }
     const { data, error } = logInWithEmail({
       email,
       password
     })
     if (error) {
-      return alert(`Something went wrong. ${JSON.stringify(error)}`)
+      return alert(`${t("Something went wrong")}. ${JSON.stringify(error)}`)
     }
     onClose();
   }
@@ -149,20 +151,20 @@ export const AuthModal = ({ message, onClose, showLogin }) => {
       <div css={overlayStyle}>
         <div css={modalContentStyle}>
           <span css={topCloseBtnStyle} onClick={onClose}>&times;</span>
-          <h1>Log in</h1>
+          <h1>{t("Log in")}</h1>
           <div>
-            <TextInput style={{marginBottom: 8}} value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="Email" />
+            <TextInput style={{marginBottom: 8}} value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder={t("Email")} />
           </div>
           <div>
-            <TextInput style={{marginBottom: 16}} value={password} onChange={(e) => setPassword(e.target.value)} type="password" placeholder="Password" />
+            <TextInput style={{marginBottom: 16}} value={password} onChange={(e) => setPassword(e.target.value)} type="password" placeholder={t("Password")} />
           </div>
           <button css={confirmBtnStyle} variant="primary" size="sm" onClick={onSubmitLogin}
           >
-              Confirm
+              {t("Confirm")}
           </button>
-          <button css={closeBtnStyle} variant="secondary" size="md" onClick={onClose}>Cancel</button>
+          <button css={closeBtnStyle} variant="secondary" size="md" onClick={onClose}>{t("Cancel")}</button>
           <hr />
-          Don't have an account?&nbsp;<TextLink onClick={onRequestSignUp}>Create account</TextLink>
+          {t("dont-have-account")}&nbsp;<TextLink onClick={onRequestSignUp}>{t("Create account")}</TextLink>
         </div>
       </div>
     )
@@ -173,19 +175,19 @@ export const AuthModal = ({ message, onClose, showLogin }) => {
       <div css={overlayStyle}>
         <div css={modalContentStyle}>
           <span css={topCloseBtnStyle} onClick={onClose}>&times;</span>
-          <h1>Email Verification and Subscription Selection</h1>
-          <p>Please check your email to verify your address and choose a subscription plan. After completing these steps, you can log in using the form below:</p>
+          <h1>{t("email-verification-subscription")}</h1>
+          <p>{t("please-check-email")}</p>
           <div>
-            <TextInput style={{marginBottom: 8}} value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="Email" />
+            <TextInput style={{marginBottom: 8}} value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder={t("Email")} />
           </div>
           <div>
-            <TextInput style={{marginBottom: 16}} value={password} onChange={(e) => setPassword(e.target.value)} type="password" placeholder="Password" />
+            <TextInput style={{marginBottom: 16}} value={password} onChange={(e) => setPassword(e.target.value)} type="password" placeholder={t("Password")} />
           </div>
           <button css={confirmBtnStyle} variant="primary" size="sm" onClick={onSubmitLogin}
           >
-              Confirm
+              {t("Confirm")}
           </button>
-          <button css={closeBtnStyle} variant="secondary" size="md" onClick={onClose}>Cancel</button>
+          <button css={closeBtnStyle} variant="secondary" size="md" onClick={onClose}>{t("Cancel")}</button>
         </div>
       </div>
     )
@@ -195,27 +197,27 @@ export const AuthModal = ({ message, onClose, showLogin }) => {
     <div css={overlayStyle}>
       <div css={modalContentStyle}>
         <span css={topCloseBtnStyle} onClick={onClose}>&times;</span>
-        <h1>Create account</h1>
+        <h1>{t("Create account")}</h1>
         {!!message && (
           <div style={{color: "grey", marginBottom: 20}}>{message}</div>
         )}
 
         <div>
-          <TextInput style={{marginBottom: 8}} value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="Email" />
+          <TextInput style={{marginBottom: 8}} value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder={t("Email")} />
         </div>
         <div>
-          <TextInput style={{marginBottom: 8}} value={password} onChange={(e) => setPassword(e.target.value)} type="password" placeholder="Password" />
+          <TextInput style={{marginBottom: 8}} value={password} onChange={(e) => setPassword(e.target.value)} type="password" placeholder={t("Password")} />
         </div>
         <div>
-          <TextInput style={{marginBottom: 16}} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} type="password" placeholder="Confirm password" />
+          <TextInput style={{marginBottom: 16}} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} type="password" placeholder={t("Confirm password")} />
         </div>
         <button css={confirmBtnStyle} variant="primary" size="sm" onClick={onSubmit}
         >
-          Confirm
+          {t("Confirm")}
         </button>
-        <button css={closeBtnStyle} variant="secondary" size="md" onClick={onClose}>Cancel</button>
+        <button css={closeBtnStyle} variant="secondary" size="md" onClick={onClose}>{t("Cancel")}</button>
         <hr />
-        Have an account?&nbsp;<TextLink onClick={onRequestLogin}>Log in</TextLink>
+        {t("have-an-account")}&nbsp;<TextLink onClick={onRequestLogin}>{t("Log in")}</TextLink>
       </div>
     </div>
   )

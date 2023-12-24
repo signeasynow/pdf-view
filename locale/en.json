@@ -40,5 +40,23 @@
   "Search": "Search",
   "Extract": "Extract",
   "Page manipulation": "Page manipulation",
-  "Delete": "Delete"
+  "Delete": "Delete",
+
+  "email-required": "Email is required",
+  "email-invalid": "Email is invalid",
+  "password-required": "Password is required",
+  "password-6-min": "Password must be at least 6 characters long",
+  "password-confirmation-required": "Password confirmation is required",
+  "passwords-dont-match": "Passwords don't match",
+  "Something went wrong": "Something went wrong",
+  "Log in": "Log in",
+  "Email": "Email",
+  "Password": "Password",
+  "Confirm": "Confirm",
+  "Cancel": "Cancel",
+  "dont-have-account": "Don't have an account?",
+  "Create account": "Create account",
+  "email-verification-subscription": "Email Verification and Subscription Selection",
+  "please-check-email": "Please check your email to verify your address and choose a subscription plan. After completing these steps, you can log in using the form below:",
+  
 }
