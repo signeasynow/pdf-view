@@ -9,6 +9,7 @@ import ChevronLeft from '../../../../assets/chevron-left-svgrepo-com.svg';
 import { AnnotationsContext } from '../../../Contexts/AnnotationsContext';
 import { supabase } from '../../../utils/supabase';
 import { isValidEmail } from '../../../utils/isValidEmail';
+import { useTranslation } from 'react-i18next';
 
 async function getUserIP() {
 	try {
@@ -147,12 +148,14 @@ const TagSection = ({
 
 	const { annotationsRef } = useContext(AnnotationsContext);
 
+	const { t } = useTranslation();
+
 	const [emailInput, setEmailInput] = useState('');
 	const [nameInput, setNameInput] = useState('');
 	const [recipientEmail, setRecipientEmail] = useState('');
-	const [subject, setSubject] = useState('Document Ready for Signing');
+	const [subject, setSubject] = useState(t("doc-ready-signing"));
 	const [subjectModified, setSubjectModified] = useState(false);
-	const [message, setMessage] = useState(`Hello,\n\nPlease sign the document attached.\n\nThank you,\n\n${customData?.name}`);
+	const [message, setMessage] = useState(`${t("Hello")},\n\n${t("please-sign")}\n\n${t("thank-you")},\n\n${customData?.name}`);
 	const [messageModified, setMessageModified] = useState(false);
 	const [loadingSend, setLoadingSend] = useState(false);
 
@@ -160,14 +163,14 @@ const TagSection = ({
 		if (subjectModified) {
 			return;
 		}
-		setSubject(`Document Ready for Signing: ${nameInput}`);
+		setSubject(`${t("doc-ready-signing")}: ${nameInput}`);
 	}, [nameInput]);
 
 	useEffect(() => {
 		if (messageModified) {
 			return;
 		}
-		setMessage(`Hello ${nameInput},\n\nPlease sign the document attached.\n\nThank you,\n\n${customData?.name}`);
+		setMessage(`${t("Hello")} ${nameInput},\n\n${t("please-sign")}\n\n${t("thank-you")},\n\n${customData?.name}`);
 	}, [nameInput]);
 
 	const getWrapperClass = () => {
@@ -180,8 +183,6 @@ const TagSection = ({
 	const hasNameTag = () => annotationsRef.current.some((ann) => ann.overlayText === 'Name');
 
 	const hasEmailTag = () => annotationsRef.current.some((ann) => ann.overlayText === 'Email');
-
-	console.log(customData, 'custom444');
 
 	const [ip, setIp] = useState('');
 
@@ -196,15 +197,15 @@ const TagSection = ({
 
 	const onSend = async () => {
 		if (!subject) {
-			alert('Subject is required');
+			alert(t("subject-required"));
 			return;
 		}
 		if (!recipientEmail) {
-			alert('Email is required');
+			alert(t("email-required"));
 			return;
 		}
 		if (!isValidEmail(recipientEmail)) {
-			alert('Email is invalid');
+			alert(t("email-invalid"));
 			return;
 		}
 		setLoadingSend(true);
@@ -214,7 +215,7 @@ const TagSection = ({
 		// console.log(doc, 'doc33', uuid, buffer)
 		if (!doc) {
 			setLoadingSend(false);
-			alert('Something went wrong. We were unable to upload your PDF.');
+			alert(t("something-wrong-upload-pdf"));
 			return;
 		}
 		const { data, error } = await supabase.functions.invoke('create-signing-room', {
@@ -235,11 +236,11 @@ const TagSection = ({
 		});
 
 		if (error) {
-			alert('Something went wrong sending the email');
+			alert(t("something-wrong-email"));
 			setLoadingSend(false);
 			return;
 		}
-		alert('Your document has been sent successfully! Track & edit your document under Account > Documents.');
+		alert(t("doc-sent-success"));
 		// leave this to true to avoid abuse.
 		setLoadingSend(true);
 	};
@@ -293,15 +294,15 @@ const TagSection = ({
 
 	const onSubmitStage1 = () => {
 		if (hasNameTag() && !nameInput) {
-			alert('Name is required');
+			alert(t("name-required"));
 			return;
 		}
 		if (hasEmailTag() && !emailInput) {
-			alert('Email is required');
+			alert(t("email-required"));
 			return;
 		}
 		if (hasEmailTag() && !isValidEmail(emailInput)) {
-			alert('Email is invalid');
+			alert(t("email-invalid"));
 			return;
 		}
 		setStage(2);
@@ -312,21 +313,15 @@ const TagSection = ({
 			<div>
 				<div css={getWrapperClass()}>
 					<div style={{ margin: '12px 4px 8px' }}><ProgressBar completed={33} customLabel="&nbsp;" bgColor="#d9b432" /></div>
-					<div style={{ margin: '4px' }}>Add markers to the document for your client to click and auto-fill their signature, name, date, and other details.</div>
-					<button css={tagBtnStyle} onClick={() => onClickField('Sign')}>Signature</button>
-					<button css={tagBtnStyle} onClick={() => onClickField('Name')}>Name</button>
-					<button css={tagBtnStyle} onClick={() => onClickField('Email')}>Email</button>
-					<button css={tagBtnStyle} onClick={() => onClickField('Date')}>Date</button>
-					{
-
-						/*
-            <button css={tagBtnStyle} onClick={onEnableClickTagMode}>Turn off edit mode</button>
-            */
-					}
+					<div style={{ margin: '4px' }}>{t("add-markers-doc")}</div>
+					<button css={tagBtnStyle} onClick={() => onClickField('Sign')}>{t("Signature")}</button>
+					<button css={tagBtnStyle} onClick={() => onClickField('Name')}>{t("Name")}</button>
+					<button css={tagBtnStyle} onClick={() => onClickField('Email')}>{t("Email")}</button>
+					<button css={tagBtnStyle} onClick={() => onClickField('Date')}>{t("Date")}</button>
 				</div>
 				<div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 4px', background: '#f1f3f5' }}>
 					<div />
-					<button css={nextBtn} onClick={onProceedToStep1}><div>Next</div><Icon src={ChevronRight} alt="Right" /></button>
+					<button css={nextBtn} onClick={onProceedToStep1}><div>{t("Next")}</div><Icon src={ChevronRight} alt={t("Next")} /></button>
 				</div>
 			</div>
 		);
@@ -337,31 +332,24 @@ const TagSection = ({
 			<div>
 				<div css={getWrapperClass()}>
 					<div style={{ margin: '12px 4px 8px' }}><ProgressBar completed={67} customLabel="&nbsp;" bgColor="#d9b432" /></div>
-					<div style={{ margin: '4px' }}>When a marker is clicked, the following fields will auto-populate with these values:</div>
+					<div style={{ margin: '4px' }}>{t("when-marker-clicked")}</div>
 					{
 						hasNameTag() && (
 							<input
 								onKeyDown={handleKeyDown}
-								value={nameInput} onChange={(e) => setNameInput(e.target.value)} style={{ margin: '4px', width: '260px' }} type="text" placeholder="Name"
+								value={nameInput} onChange={(e) => setNameInput(e.target.value)} style={{ margin: '4px', width: '260px' }} type="text" placeholder={t("Name")}
 							/>
 						)
 					}
 					{
 						hasEmailTag() && (
-							<input value={emailInput} onChange={onChangeEmailTag} style={{ margin: '4px', width: '260px' }} type="email" placeholder="Email" />
+							<input value={emailInput} onChange={onChangeEmailTag} style={{ margin: '4px', width: '260px' }} type="email" placeholder={t("Email")} />
 						)
-					}
-         
-					{
-
-						/*
-            <button css={tagBtnStyle} onClick={onEnableClickTagMode}>Turn off edit mode</button>
-            */
 					}
 				</div>
 				<div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 4px', background: '#f1f3f5' }}>
-					<button css={backBtn} onClick={() => setStage(0)}><Icon src={ChevronLeft} alt="Right" /><div>Back</div></button>
-					<button css={nextBtn} onClick={onSubmitStage1}><div>Next</div><Icon src={ChevronRight} alt="Right" /></button>
+					<button css={backBtn} onClick={() => setStage(0)}><Icon src={ChevronLeft} alt={t("Back")} /><div>{t("Back")}</div></button>
+					<button css={nextBtn} onClick={onSubmitStage1}><div>{t("Next")}</div><Icon src={ChevronRight} alt={t("Next")} /></button>
 				</div>
 			</div>
 		);
@@ -371,30 +359,30 @@ const TagSection = ({
 		<div>
 			<div css={getWrapperClass()}>
 				<div style={{ margin: '12px 4px 8px' }}><ProgressBar completed={98} customLabel="&nbsp;" bgColor="#d9b432" /></div>
-				<div style={{ margin: '4px' }}>Your document is ready to send.</div>
+				<div style={{ margin: '4px' }}>{t("doc-ready-send")}</div>
 				<br />
-				<div style={{ margin: '4px' }}>Recipient's email address</div>
-				<input value={recipientEmail} onChange={(e) => setRecipientEmail(e.target.value)} style={{ margin: '4px', width: '260px' }} type="email" placeholder="Email" />
+				<div style={{ margin: '4px' }}>{t("recipient-email")}</div>
+				<input value={recipientEmail} onChange={(e) => setRecipientEmail(e.target.value)} style={{ margin: '4px', width: '260px' }} type="email" placeholder={t("Email")} />
 				<br />
 				{
 					!hasNameTag() && (
 						<>
-							<div style={{ margin: '4px' }}>Recipient's name</div>
+							<div style={{ margin: '4px' }}>{t("recipient-name")}</div>
 							<input value={nameInput} onChange={(e) => setNameInput(e.target.value)} style={{ margin: '4px', width: '260px' }} type="text" placeholder="" />
 							<br />
 						</>
 					)
 				}
-				<div style={{ margin: '4px' }}>Email subject line</div>
+				<div style={{ margin: '4px' }}>{t("email-subject")}</div>
 				<input value={subject} onChange={onChangeSubject} style={{ margin: '4px', width: '260px' }} type="email" placeholder="" />
 				<br />
-				<div style={{ margin: '4px' }}>Add a custom message</div>
+				<div style={{ margin: '4px' }}>{t("add-custom-message")}</div>
 
 				<textarea minLength={4} value={message} onChange={onChangeMessage} style={{ margin: '4px', width: '260px', height: 80 }} type="email" placeholder="" />
 			</div>
 			<div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 4px', background: '#f1f3f5' }}>
-				<button css={backBtn} onClick={onRevertFromStage2}><Icon src={ChevronLeft} alt="Right" /><div>Back</div></button>
-				<button disabled={loadingSend} css={loadingSend ? loadingSendBtn : sendBtn} onClick={onSend}><div>Send</div><Icon src={SendIcon} alt="Right" /></button>
+				<button css={backBtn} onClick={onRevertFromStage2}><Icon src={ChevronLeft} alt={t("Back")} /><div>{t("Back")}</div></button>
+				<button disabled={loadingSend} css={loadingSend ? loadingSendBtn : sendBtn} onClick={onSend}><div>{t("Send")}</div><Icon src={SendIcon} alt={t("Send")} /></button>
 			</div>
 		</div>
 	);

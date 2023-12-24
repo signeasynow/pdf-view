@@ -2,6 +2,7 @@
 import { css } from '@emotion/react';
 import { useAnnotations } from '../../hooks/useAnnotations';
 import { useCallback } from 'preact/hooks';
+import { useTranslation } from 'react-i18next';
 
 const wrapper = css`
 	color: white;
@@ -27,14 +28,6 @@ const doneWrapper = css`
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.25);
 `;
 
-const emptyWrapper = css`
-  width: 140px;
-  text-align: center;
-  padding: 4px;
-  margin-right: 8px;
-  border-radius: 4px;
-`;
-
 const overlayMap = {
 	Sign: 'signature',
 	Name: 'name',
@@ -47,6 +40,8 @@ export const GoToNextTag = ({
 }) => {
 
 	const { annotations } = useAnnotations();
+
+	const { t } = useTranslation();
 
 	const nextAnnotation = useCallback(() => {
 		// Filter annotations for those with name 'stampEditor' and having overlayText
@@ -68,10 +63,10 @@ export const GoToNextTag = ({
 	const nextAnnotationType = () => {
 		const annotation = nextAnnotation();
 		if (!annotation) {
-			return 'Save & Finish';
+			return t("save-and-finish");
 		}
 
-		return `Go to ${overlayMap[annotation.overlayText]}`;
+		return `${t("go-to")} ${t(overlayMap[annotation.overlayText])}`;
 	};
 
 	const isDone = () => !nextAnnotation();

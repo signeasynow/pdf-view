@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import {  css } from '@emotion/react';
+import { useTranslation } from 'react-i18next';
 
 const overlayStyle = css`
   position: fixed;
@@ -48,22 +49,25 @@ const closeBtnStyle = css`
   cursor: pointer;
 `;
 
-export const ConfirmationModal = ({ onConfirm, message, onClose }) => (
-	<div css={overlayStyle}>
-		<div css={modalContentStyle}>
-			<span css={topCloseBtnStyle} onClick={onClose}>&times;</span>
-			<p>{message}</p>
-			<button css={confirmBtnStyle} variant="primary" size="sm" onClick={() => {
-				// Handle confirm action here
-				onConfirm?.();
-				onClose?.();
-			}}
-			>
-          Confirm
-			</button>
-			<button css={closeBtnStyle} variant="secondary" size="md" onClick={onClose}>Cancel</button>
-		</div>
-	</div>
-);
+export const ConfirmationModal = ({ onConfirm, message, onClose }) => {
+  const { t } = useTranslation();
+  return (
+    <div css={overlayStyle}>
+      <div css={modalContentStyle}>
+        <span css={topCloseBtnStyle} onClick={onClose}>&times;</span>
+        <p>{message}</p>
+        <button css={confirmBtnStyle} variant="primary" size="sm" onClick={() => {
+          // Handle confirm action here
+          onConfirm?.();
+          onClose?.();
+        }}
+        >
+          {t("Confirm")}
+        </button>
+        <button css={closeBtnStyle} variant="secondary" size="md" onClick={onClose}>{t("Cancel")}</button>
+      </div>
+    </div>
+  )
+}
 
 export default ConfirmationModal;

@@ -8,6 +8,7 @@ import Split from '../../../assets/split-svgrepo-com.svg';
 import HeaderBtn from '../../Header/HeaderBtn';
 import { Icon, Tooltip } from 'alien35_pdf_ui_lib_2';
 import AccessibleButton from '../AccessibleButton';
+import { useTranslation } from 'react-i18next';
 
 const wrapperStyle = css`
   position: relative;
@@ -77,6 +78,8 @@ const FullScreenThumbnails = ({
 	const [dragRect, setDragRect] = useState(null);
 	const [selectedIndexes, setSelectedIndexes] = useState([]);
 	const [mouseUp, setMouseUp] = useState(new Date().toISOString());
+
+	const { t } = useTranslation();
 
 	const onMouseDown = (e) => {
 		if (e.target.closest('.canvas-page')) {
@@ -276,7 +279,7 @@ const FullScreenThumbnails = ({
 					<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
 						<div style={{ marginTop: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
 							<LoadingSpinner />
-							<div style={{ color: 'white' }}>Loading...</div>
+							<div style={{ color: 'white' }}>{t("loading")}...</div>
 						</div>
 					</div>
 				</div>
