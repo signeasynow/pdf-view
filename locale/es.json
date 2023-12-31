@@ -113,6 +113,8 @@
   "internet-connection": "No pudimos encontrar una conexión a internet activa. Por favor, asegúrate de estar conectado a internet para continuar.",
   "License Key Invalid": "Clave de licencia inválida",
   "provided-license-key": "Tu clave de licencia proporcionada parece ser inválida. Para resolver este problema, por favor contacta a tu administrador de cuenta.",
-  "Account": "Cuenta"
+  "Account": "Cuenta",
+  "one-page-min": "Un PDF debe contener al menos una página."
+
 
 }

@@ -113,7 +113,8 @@
   "internet-connection": "Wir konnten keine aktive Internetverbindung finden. Bitte stellen Sie sicher, dass Sie mit dem Internet verbunden sind, um fortzufahren.",
   "License Key Invalid": "Lizenzschlüssel ungültig",
   "provided-license-key": "Ihr bereitgestellter Lizenzschlüssel scheint ungültig zu sein. Um dieses Problem zu lösen, wenden Sie sich bitte an Ihren Kontoadministrator.",
-  "Account": "Konto"
+  "Account": "Konto",
+  "one-page-min": "Ein PDF muss mindestens eine Seite enthalten."
 
 
 }

@@ -839,12 +839,15 @@ const App = () => {
 	const showSubheader = () => (!!tools?.editing?.length || tools?.general?.includes('thumbnails')) && !showFullScreenSearch();
 
 
+	const doneCalculatingAnnotationsRef = useRef(false);
+
 	const undoLastAction = async () => {
+		doneCalculatingAnnotationsRef.current = false;
 		usingUndoRedoRef.current = true;
 		if (operations[activePageIndex]?.length === 0) return;
 		const lastOperation = operations[activePageIndex]?.[operations[activePageIndex].length - 1];
 		// Start with the original PDF
-		console.log('ttt_0');
+		// console.log('ttt_0');
 		let buffer;
 		try {
 			buffer = await storage?.retrieve(originalPdfId);
@@ -852,17 +855,35 @@ const App = () => {
 		catch (err) {
 			console.log(err, 'err33');
 		}
-		console.log('ttt_1');
+		// console.log('ttt_1');
 		setAnnotations([]);
+
+		const filteredOperations = [];
+    const updateAnnotationMap = new Map(); // Map to track the last update operation for each ID
+
+    for (let i = 0; i < operations[activePageIndex]?.length - 1; i++) {
+        const operation = operations[activePageIndex][i];
+
+        if (operation.action === "update-annotation") {
+            updateAnnotationMap.set(operation.data.id, operation);
+        } else {
+            // If it's not an "update-annotation", add it directly to the filtered list
+            filteredOperations.push(operation);
+        }
+    }
+
+    // Add the last update operations for each annotation
+    updateAnnotationMap.forEach((op) => filteredOperations.push(op));
+		console.log(filteredOperations, 'filteredOperations')
 		// Replay all operations except for the last one
-		for (let i = 0; i < operations[activePageIndex]?.length - 1; i++) {
-			const operation = operations[activePageIndex][i];
+		for (const operation of filteredOperations) {
 			buffer = await applyOperation(operation, buffer); // Assuming applyOperation returns the updated buffer
 		}
-		console.log('ttt_2');
+		doneCalculatingAnnotationsRef.current = true;
+		// console.log('ttt_2');
 		// Save the buffer after undo as the current state
 		await storage?.save(buffer, pdfId);
-		console.log('ttt_3');
+		// console.log('ttt_3');
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
@@ -887,7 +908,25 @@ const App = () => {
 		let buffer = await storage?.retrieve(originalPdfId);
 		// Replay all operations including the redo operation
 		const allOperationsUpToRedo = [...operations[activePageIndex], lastRedoOperation];
-		for (const operation of allOperationsUpToRedo) {
+
+		const filteredOperations = [];
+    const updateAnnotationMap = new Map(); // Map to track the last update operation for each ID
+
+    for (let i = 0; i < allOperationsUpToRedo.length; i++) {
+        const operation = allOperationsUpToRedo[i];
+
+        if (operation.action === "update-annotation") {
+            updateAnnotationMap.set(operation.data.id, operation);
+        } else {
+            // If it's not an "update-annotation", add it directly to the filtered list
+            filteredOperations.push(operation);
+        }
+    }
+
+    // Add the last update operations for each annotation
+    updateAnnotationMap.forEach((op) => filteredOperations.push(op));
+
+		for (const operation of filteredOperations) {
 			buffer = await applyOperation(operation, buffer); // Assuming applyOperation returns the updated buffer
 		}
 	
