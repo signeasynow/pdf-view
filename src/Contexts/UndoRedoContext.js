@@ -27,7 +27,7 @@ export const UndoRedoProvider = ({ children }) => {
 	const [operations, setOperations] = useState(initialRedoUndoObject(files));
 	const [redoStack, setRedoStack] = useState(initialRedoUndoObject(files));
 
-	console.log('operations: ', operations, 'redoStack: ', redoStack);
+	// console.log('operations: ', operations, 'redoStack: ', redoStack);
 	const operationsRef = useRef(operations);
 	const redoStackRef = useRef(redoStack);
 
