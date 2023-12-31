@@ -56,7 +56,6 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
 	};
 
 	const updateFreeTextAnnotation = (data, text) => {
-		// console.log(data, 'data444', data.content, 'dd', data?.source?.content, 'dg', text)
 		let newData = JSON.parse(JSON.stringify(annotationsRef.current));
 		const existingAnnotation = newData.find((e) => e.id === data.id);
 		activeAnnotationRef.current = data.id;
@@ -84,28 +83,27 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
 	};
 
 	const updateSignatureAnnotation = (data) => {
-		console.log("updating signature")
-		let newData = JSON.parse(JSON.stringify(annotationsRef.current));
-		const existingAnnotation = newData.find((e) => e.id === data.id);
+		let updatedAnnotations = JSON.parse(JSON.stringify(annotationsRef.current));
+		const existingAnnotation = updatedAnnotations.find((e) => e.id === data.id);
 		activeAnnotationRef.current = data.id;
 		if (!existingAnnotation) {
 			// TOTALLY FINE FOR THERE TO BE NONE.
 		}
-		newData = newData.filter((e) => e.id !== data.id);
+		const pastAnnotations = updatedAnnotations.filter((e) => e.id !== data.id);
 		const dataPayload = {
-			height: existingAnnotation ? existingAnnotation.height : data.height,
-			width: existingAnnotation ? existingAnnotation.width : data.width,
+			height: typeof data.height === "number" ? data.height : existingAnnotation?.height,
+			width: typeof data.width === "number" ? data.width : existingAnnotation?.width,
 			id: data.id,
 			pageNumber: data.pageIndex + 1,
-			x: existingAnnotation ? existingAnnotation.x : data.x,
-			y: existingAnnotation ? existingAnnotation.y : data.y,
+			x: typeof data.x === "number" ? data.x : existingAnnotation?.x,
+			y: typeof data.y === "number" ? data.y : existingAnnotation?.y,
 			urlPath: data.urlPath,
-			overlayText: existingAnnotation ? existingAnnotation.overlayText : data.overlayText,
-			moveDisabled: existingAnnotation ? existingAnnotation.moveDisabled : data.moveDisabled,
+			overlayText: data.overlayText ? data.overlayText : existingAnnotation?.overlayText,
+			moveDisabled: data.moveDisabled ? data.moveDisabled : existingAnnotation?.moveDisabled,
 			name: 'stampEditor'
 		};
-		newData = [
-			...newData,
+		updatedAnnotations = [
+			...pastAnnotations,
 			dataPayload
 		];
 		const operationPayload = {
@@ -117,11 +115,7 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
 			addOperation(operation);
 			isManuallyAddingImageRef.current = false;
 		}
-		
-		// console.log("add222", isManuallyAddingImageRef.current)
-		
-		
-		setAnnotations(newData);
+		setAnnotations(updatedAnnotations);
 	};
 
 	const [updateQueue, setUpdateQueue] = useState([]);
@@ -159,35 +153,9 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
 		if (!data) {
 			return;
 		}
-		console.log(data, 'data 222', data?.height);
 		const type = data.name;
 		// Add to queue
 		addToQueue(data, text, type);
-
-		const payload = {
-			height: data.height,
-			width: data.width,
-			id: data.id,
-			pageIndex: data.pageIndex,
-			pageNumber: data.pageIndex + 1,
-			x: data.x,
-			y: data.y,
-			urlPath: data.urlPath,
-			name: data.name,
-			content: data.content,
-			color: data.color,
-			fontSize: data.fontSize,
-			fontFamily: data.fontFamily,
-			overlayText: data.overlayText,
-			moveDisabled: data.moveDisabled
-		};
-		const operation = { action: 'update-annotation', data: payload };
-		// we are adding an excessive operation here when it's due to a redo
-		
-		// if (isManuallyAddingImageRef.current) {
-			// addOperation(operation);
-			// isManuallyAddingImageRef.current = false;
-		// }
 	};
 
 	const updateAnnotationParam = (id, ...params) => {
@@ -204,6 +172,13 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
 		newData = newData.map(annotation =>
 			annotation.id === id ? { ...annotation, ...updatedParams } : annotation
 		);
+		const payload = {
+			pageIndex: typeof updatedParams?.pageNumber === "number" ? updatedParams.pageNumber - 1 : existingAnnotation.pageNumber - 1,
+			...existingAnnotation,
+			...updatedParams
+		}
+		const operation = { action: 'update-annotation', data: payload };
+		addOperation(operation);
 		setAnnotations(newData);
 	};
 
@@ -216,7 +191,6 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
 		});
 	}, 50);
 
-	console.log(annotations, 'annotations321');
 
 	return {
 		annotations,

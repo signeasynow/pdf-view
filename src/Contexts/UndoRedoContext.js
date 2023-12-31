@@ -56,7 +56,6 @@ export const UndoRedoProvider = ({ children }) => {
 	};
 
 	const getTopOperation = () => {
-		console.log(operationsRef?.current?.[activePageIndex], 'compare 2225')
 		const activePageOps = operationsRef?.current?.[activePageIndex];
 		if (activePageOps && activePageOps.length > 0) {
 			return activePageOps[activePageOps.length - 1];
@@ -68,7 +67,6 @@ export const UndoRedoProvider = ({ children }) => {
 		if (!op1 || !op2) return false;
 
 		const stringifySorted = (obj) => JSON.stringify(obj, Object.keys(obj).sort());
-		console.log(stringifySorted(op1), 'compare sort', stringifySorted(op2));
 		return stringifySorted(op1) === stringifySorted(op2);
 	};
 
