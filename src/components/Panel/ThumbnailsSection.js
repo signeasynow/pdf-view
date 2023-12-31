@@ -78,7 +78,7 @@ const ThumbnailsSection = ({
 							)
 						}
 						{
-							tools?.thumbnails?.includes('zoom') && (
+							tools?.thumbnails?.includes('sidebar-zoom') && (
 								<Slider
 									value={thumbnailScale}
 									onChange={handleInputChange}

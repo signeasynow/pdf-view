@@ -144,6 +144,7 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
 		if (!data) {
 			return;
 		}
+		console.log(data, 'data 222', data?.height);
 		const type = data.name;
 		// Add to queue
 		addToQueue(data, text, type);
@@ -199,7 +200,6 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
 			y: data.source.y
 		});
 	}, 50);
-
 
 	return {
 		annotations,

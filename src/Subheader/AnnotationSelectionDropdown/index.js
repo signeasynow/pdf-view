@@ -1,9 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import ChevronDown from '../../../assets/chevron-down-svgrepo-com.svg';
+import Checkmark from '../../../assets/checkmark-svgrepo-com.svg';
 import Dropdown from '../../components/Dropdown';
 import { useContext } from 'preact/hooks';
-import { Icon } from 'alien35_pdf_ui_lib_2';
 import { useTranslation } from 'react-i18next';
 import { useModal } from '../../Contexts/ModalProvider';
 import HeaderBtn from '../../Header/HeaderBtn';
@@ -12,7 +12,7 @@ import SignatureIcon from '../../../assets/signature-solid-svgrepo-com.svg';
 import TextIcon from '../../../assets/text-svgrepo-com.svg';
 import EditTextIcon from '../../../assets/edit-text-bar-svgrepo-com.svg';
 import SignatureRemoveIcon from '../../../assets/signature-svgrepo-com.svg';
-
+import { Icon, Tooltip } from 'alien35_pdf_ui_lib_2';
 import { SignaturesContext } from '../../Contexts/SignaturesContext';
 import { AnnotationsContext } from '../../Contexts/AnnotationsContext';
 
@@ -55,6 +55,7 @@ const AnnotationSelectionDropdown = ({
 	onClickSignature,
 	onChangeActiveToolbarItem,
 	annotationMode,
+	activeToolbarItem,
 	tools
 }) => {
 
@@ -75,7 +76,10 @@ const AnnotationSelectionDropdown = ({
 
 	const onSelectSignature = () => {
 		if (!fullSignature && !initialsSignature) {
-			showSignatureModal('Test', () => {});
+			showSignatureModal('Test', () => {
+				onClickSignature('signatureImage');
+				onChangeActiveToolbarItem({ tooltype: 'signature' });	
+			});
 			return;
 		}
 		if (fullSignature) {
@@ -108,6 +112,16 @@ const AnnotationSelectionDropdown = ({
 
 	if (!tools?.editing?.includes('signature')) {
 		return;
+	}
+
+	if (annotationsEnabled()) {
+		return (
+			<Tooltip offsetX={0} title={activeToolbarItem !== 'signature' ? "Finish adding text" : "Finish adding signatures"}>
+				<div style={{cursor: "pointer", padding: "2px", background: "#85ff61", borderRadius: "4px"}} onClick={onSelectNone}>
+					<Icon size="lg" src={Checkmark} alt={t('arrowDown')} />
+				</div>
+			</Tooltip>
+		)
 	}
 
 	return (

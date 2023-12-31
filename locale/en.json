@@ -114,7 +114,9 @@
   "internet-connection": "We couldn't find an active internet connection. Please ensure you're connected to the internet to continue.",
   "License Key Invalid": "License Key Invalid",
   "provided-license-key": "Your provided license key appears to be invalid. To resolve this issue, please reach out to your account administrator.",
-  "Account": "Account"
+  "Account": "Account",
+
+  "one-page-min": "A PDF must contain at least one page."
   
   
 }

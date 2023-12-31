@@ -51,6 +51,8 @@ export const UndoRedoProvider = ({ children }) => {
 		setRedoStack(initialRedoUndoObject());
 	};
 
+	console.log(operations, 'operations22', redoStack);
+
 	return (
 		<UndoRedoContext.Provider value={{ operations, setOperations, redoStack, setRedoStack, addOperation }}>
 			{children}

@@ -289,8 +289,16 @@ const App = () => {
 
 	const pdfProxyObjRef = useRef(null);
 
+	const checkForBlankPage = async () => {
+		if (pdfProxyObj?.numPages === 0) {
+			alert("EMPTY")
+		}
+	}
+
 	useEffect(() => {
 		pdfProxyObjRef.current = pdfProxyObj;
+
+		checkForBlankPage();
 	}, [pdfProxyObj]);
 	
 	useListenForAiQuestionCount(conversation, setAiLimitReached);
@@ -1135,8 +1143,12 @@ const App = () => {
 			console.log('No PDF loaded to download');
 			return;
 		}
+
 		const buffer = await pdfProxyObj.getData();
 		const pagesToRemove = multiPageSelections?.length ? multiPageSelections : [activePage];
+		if (pagesToRemove.length >= pdfProxyObj.numPages) {
+			return alert(t("one-page-min"));
+		}
 		const operation = { action: 'delete', pages: pagesToRemove };
 		setMultiPageSelections([]);
 		const bufferResult = await applyOperation(operation, buffer);
@@ -1385,8 +1397,7 @@ const App = () => {
 		activeAnnotationRef.current = id;
 		setEditableAnnotationId(id);
 		updateAnnotation(data);
-		console.log(data, 'data over here', data.height);
-		
+		// console.log(data, 'data over here', data.height);
 		// addOperation(operation);
 	};
 

@@ -96,6 +96,20 @@ const Subheader = ({
 
 	const showUndoRedo = () => !!tools?.editing?.length;
 
+	const showExtract = () => {
+		if (annotationMode === "freetext" || annotationMode === "signature") {
+			return false;
+		}
+		return tools?.editing?.includes('extract');
+	};
+
+	const showRemove = () => {
+		if (annotationMode === "freetext" || annotationMode === "signature") {
+			return false;
+		}
+		return tools?.editing?.includes('remove');
+	}
+
 	const onChangeActiveToolbarItem = ({
 		tooltype
 	}) => {
@@ -118,8 +132,9 @@ const Subheader = ({
 		<Wrapper>
 			<div css={contentLeftStyle}>
 			  <div style={{ display: 'flex', alignItems: 'center' }}>
-					<AnnotationSelectionDropdown
+				  <AnnotationSelectionDropdown
 						tools={tools}
+						activeToolbarItem={activeToolbarItem}
 						annotationMode={annotationMode}
 						onClickSignature={onAddImage}
 						onChangeActiveToolbarItem={onChangeActiveToolbarItem}
@@ -263,7 +278,7 @@ const Subheader = ({
 						)
 					}
 					{
-						tools?.editing?.includes('extract') && (
+						showExtract() && (
 							<div style={{ position: 'relative' }}>
 								<AccessibleButton
 									onClick={onExtract}
@@ -299,7 +314,7 @@ const Subheader = ({
 						)
 					}
 					{
-						tools?.editing?.includes('remove') && (
+						showRemove() && (
 							<div style={{ position: 'relative' }}>
 								<AccessibleButton
 									onClick={onDelete}
