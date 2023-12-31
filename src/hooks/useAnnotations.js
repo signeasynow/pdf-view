@@ -16,7 +16,7 @@ const debounce = (func, delay) => {
 
 export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) => {
 	const { annotations, setAnnotations, annotationsRef } = useContext(AnnotationsContext);
-	const { addOperation, getTopOperation, areOperationsIdentical } = useContext(UndoRedoContext);
+	const { addOperation } = useContext(UndoRedoContext);
 	// not used
 	const getActiveAnnotation = (id) => annotationsRef.current.find((e) => e.id === id);
 
@@ -113,7 +113,13 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
 			...dataPayload
 		};
 		const operation = { action: 'update-annotation', data: operationPayload };
-		addOperation(operation);
+		if (isManuallyAddingImageRef.current) {
+			addOperation(operation);
+			isManuallyAddingImageRef.current = false;
+		}
+		
+		// console.log("add222", isManuallyAddingImageRef.current)
+		
 		
 		setAnnotations(newData);
 	};
@@ -178,10 +184,10 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
 		const operation = { action: 'update-annotation', data: payload };
 		// we are adding an excessive operation here when it's due to a redo
 		
-		if (isManuallyAddingImageRef.current) {
+		// if (isManuallyAddingImageRef.current) {
 			// addOperation(operation);
-			isManuallyAddingImageRef.current = false;
-		}
+			// isManuallyAddingImageRef.current = false;
+		// }
 	};
 
 	const updateAnnotationParam = (id, ...params) => {
