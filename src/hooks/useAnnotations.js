@@ -14,7 +14,7 @@ const debounce = (func, delay) => {
 	};
 };
 
-export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) => {
+export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, usingUndoRedoRef) => {
 	const { annotations, setAnnotations, annotationsRef } = useContext(AnnotationsContext);
 	const { addOperation } = useContext(UndoRedoContext);
 	// not used
@@ -56,39 +56,40 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
 	};
 
 	const updateFreeTextAnnotation = (data, text) => {
-		let newData = JSON.parse(JSON.stringify(annotationsRef.current));
-		const existingAnnotation = newData.find((e) => e.id === data.id);
+		let pastAnnotations = JSON.parse(JSON.stringify(annotationsRef.current));
+		const existingAnnotation = pastAnnotations.find((e) => e.id === data.id);
 		activeAnnotationRef.current = data.id;
 		if (!existingAnnotation) {
 			// TOTALLY FINE FOR THERE TO BE NONE.
 		}
-		newData = newData.filter((e) => e.id !== data.id);
+		pastAnnotations = pastAnnotations.filter((e) => e.id !== data.id);
 		const dataPayload = {
 			id: data.id,
 			pageNumber: data.pageIndex + 1,
-			x: existingAnnotation ? existingAnnotation.x : data.x,
-			y: existingAnnotation ? existingAnnotation.y : data.y,
-			content: text,
-			moveDisabled: existingAnnotation ? existingAnnotation.moveDisabled : data.moveDisabled,
-			color: existingAnnotation ? existingAnnotation.color : data.color,
-			fontSize: existingAnnotation ? existingAnnotation.fontSize : data.fontSize,
-			fontFamily: existingAnnotation ? existingAnnotation.fontFamily : data.fontFamily,
+			x: typeof data.x === "number" ? data.x : existingAnnotation?.x,
+			y: typeof data.y === "number" ? data.y : existingAnnotation?.y,
+			content: text ? text : data?.content || existingAnnotation?.content,
+			moveDisabled: typeof data?.moveDisabled === "boolean" ? data?.moveDisabled : existingAnnotation?.moveDisabled,
+			color: data.color ? data.color : existingAnnotation.color,
+			fontSize: data.fontSize ? data.fontSize : existingAnnotation?.fontSize,
+			fontFamily: data.fontFamily ? data.fontFamily : existingAnnotation?.fontFamily,
 			name: 'freeTextEditor'
 		}
-		newData = [
-			...newData,
+		let updatedAnnotations = [
+			...pastAnnotations,
 			dataPayload
 		];
+		updatedAnnotations = updatedAnnotations.filter((e) => !!e.content);
 		const operationPayload = {
 			pageIndex: data.pageIndex,
 			...dataPayload
 		};
 		const operation = { action: 'update-annotation', data: operationPayload };
-		if (isManuallyAddingImageRef.current) {
-			// addOperation(operation);
-			isManuallyAddingImageRef.current = false;
+		if (!usingUndoRedoRef.current) {
+			addOperation(operation);
 		}
-		setAnnotations(newData);
+		
+		setAnnotations(updatedAnnotations);
 	};
 
 	const updateSignatureAnnotation = (data) => {
@@ -108,7 +109,7 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
 			y: typeof data.y === "number" ? data.y : existingAnnotation?.y,
 			urlPath: data.urlPath,
 			overlayText: data.overlayText ? data.overlayText : existingAnnotation?.overlayText,
-			moveDisabled: data.moveDisabled ? data.moveDisabled : existingAnnotation?.moveDisabled,
+			moveDisabled: typeof data.moveDisabled === "boolean" ? data.moveDisabled : existingAnnotation?.moveDisabled,
 			name: 'stampEditor'
 		};
 		updatedAnnotations = [

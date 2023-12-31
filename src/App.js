@@ -840,6 +840,7 @@ const App = () => {
 
 
 	const undoLastAction = async () => {
+		usingUndoRedoRef.current = true;
 		if (operations[activePageIndex]?.length === 0) return;
 		const lastOperation = operations[activePageIndex]?.[operations[activePageIndex].length - 1];
 		// Start with the original PDF
@@ -879,6 +880,7 @@ const App = () => {
 	};
 	
 	const redoLastAction = async () => {
+		usingUndoRedoRef.current = true;
 		if (redoStack[activePageIndex]?.length === 0) return;
 		const lastRedoOperation = redoStack[activePageIndex]?.[redoStack[activePageIndex].length - 1];
 		// Start with the original PDF
@@ -1030,8 +1032,8 @@ const App = () => {
 	};
 
 	const isManuallyAddingImageRef = useRef(false);
-
-	const { updateAnnotation, moveAnnotation, updateAnnotationParam, resizeAnnotation, removeAnnotation } = useAnnotations(activeAnnotationRef, isManuallyAddingImageRef);
+	const usingUndoRedoRef = useRef(false);
+	const { updateAnnotation, moveAnnotation, updateAnnotationParam, resizeAnnotation, removeAnnotation } = useAnnotations(activeAnnotationRef, isManuallyAddingImageRef, usingUndoRedoRef);
 	const { annotations, setAnnotations } = useContext(AnnotationsContext);
 
 	useEffect(() => {
@@ -1217,6 +1219,7 @@ const App = () => {
 	const [annotationMode, setAnnotationMode] = useState('none');
 
 	const onEnableFreeTextMode = async () => {
+		usingUndoRedoRef.current = false;
 		pdfViewerRef.current.annotationEditorMode = {
 			isFromKeyboard: false,
 			mode: pdfjs.AnnotationEditorType.FREETEXT,
