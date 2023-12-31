@@ -85,7 +85,7 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
 		};
 		const operation = { action: 'update-annotation', data: operationPayload };
 		if (isManuallyAddingImageRef.current) {
-			addOperation(operation);
+			// addOperation(operation);
 			isManuallyAddingImageRef.current = false;
 		}
 		setAnnotations(newData);
