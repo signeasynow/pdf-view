@@ -16,7 +16,7 @@ const debounce = (func, delay) => {
 
 export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) => {
 	const { annotations, setAnnotations, annotationsRef } = useContext(AnnotationsContext);
-	const { addOperation } = useContext(UndoRedoContext);
+	const { addOperation, getTopOperation, areOperationsIdentical } = useContext(UndoRedoContext);
 	// not used
 	const getActiveAnnotation = (id) => annotationsRef.current.find((e) => e.id === id);
 
@@ -84,6 +84,7 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
 	};
 
 	const updateSignatureAnnotation = (data) => {
+		console.log("updating signature")
 		let newData = JSON.parse(JSON.stringify(annotationsRef.current));
 		const existingAnnotation = newData.find((e) => e.id === data.id);
 		activeAnnotationRef.current = data.id;
@@ -91,21 +92,29 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
 			// TOTALLY FINE FOR THERE TO BE NONE.
 		}
 		newData = newData.filter((e) => e.id !== data.id);
+		const dataPayload = {
+			height: existingAnnotation ? existingAnnotation.height : data.height,
+			width: existingAnnotation ? existingAnnotation.width : data.width,
+			id: data.id,
+			pageNumber: data.pageIndex + 1,
+			x: existingAnnotation ? existingAnnotation.x : data.x,
+			y: existingAnnotation ? existingAnnotation.y : data.y,
+			urlPath: data.urlPath,
+			overlayText: existingAnnotation ? existingAnnotation.overlayText : data.overlayText,
+			moveDisabled: existingAnnotation ? existingAnnotation.moveDisabled : data.moveDisabled,
+			name: 'stampEditor'
+		};
 		newData = [
 			...newData,
-			{
-				height: existingAnnotation ? existingAnnotation.height : data.height,
-				width: existingAnnotation ? existingAnnotation.width : data.width,
-				id: data.id,
-				pageNumber: data.pageIndex + 1,
-				x: existingAnnotation ? existingAnnotation.x : data.x,
-				y: existingAnnotation ? existingAnnotation.y : data.y,
-				urlPath: data.urlPath,
-				overlayText: existingAnnotation ? existingAnnotation.overlayText : data.overlayText,
-				moveDisabled: existingAnnotation ? existingAnnotation.moveDisabled : data.moveDisabled,
-				name: 'stampEditor'
-			}
+			dataPayload
 		];
+		const operationPayload = {
+			pageIndex: data.pageIndex,
+			...dataPayload
+		};
+		const operation = { action: 'update-annotation', data: operationPayload };
+		addOperation(operation);
+		
 		setAnnotations(newData);
 	};
 
@@ -170,7 +179,7 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
 		// we are adding an excessive operation here when it's due to a redo
 		
 		if (isManuallyAddingImageRef.current) {
-			addOperation(operation);
+			// addOperation(operation);
 			isManuallyAddingImageRef.current = false;
 		}
 	};
@@ -200,6 +209,8 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
 			y: data.source.y
 		});
 	}, 50);
+
+	console.log(annotations, 'annotations321');
 
 	return {
 		annotations,

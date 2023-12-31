@@ -43,7 +43,11 @@ export const UndoRedoProvider = ({ children }) => {
   
 	const addOperation = (operation) => {
 		const activePageOps = operationsRef.current?.[activePageIndex] || [];
-		// console.log(`activepageops`)
+
+		const topOperation = getTopOperation();
+		if (areOperationsIdentical(topOperation?.data, operation?.data)) {
+			return;
+		}
 		setOperations({
 			...operations,
 			[activePageIndex]: [...activePageOps, operation]
@@ -51,10 +55,25 @@ export const UndoRedoProvider = ({ children }) => {
 		setRedoStack(initialRedoUndoObject());
 	};
 
-	console.log(operations, 'operations22', redoStack);
+	const getTopOperation = () => {
+		console.log(operationsRef?.current?.[activePageIndex], 'compare 2225')
+		const activePageOps = operationsRef?.current?.[activePageIndex];
+		if (activePageOps && activePageOps.length > 0) {
+			return activePageOps[activePageOps.length - 1];
+		}
+		return null;
+	};
+
+	const areOperationsIdentical = (op1, op2) => {
+		if (!op1 || !op2) return false;
+
+		const stringifySorted = (obj) => JSON.stringify(obj, Object.keys(obj).sort());
+		console.log(stringifySorted(op1), 'compare sort', stringifySorted(op2));
+		return stringifySorted(op1) === stringifySorted(op2);
+	};
 
 	return (
-		<UndoRedoContext.Provider value={{ operations, setOperations, redoStack, setRedoStack, addOperation }}>
+		<UndoRedoContext.Provider value={{ operations, setOperations, redoStack, setRedoStack, addOperation, getTopOperation, areOperationsIdentical }}>
 			{children}
 		</UndoRedoContext.Provider>
 	);
