@@ -63,22 +63,31 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef) =>
 			// TOTALLY FINE FOR THERE TO BE NONE.
 		}
 		newData = newData.filter((e) => e.id !== data.id);
+		const dataPayload = {
+			id: data.id,
+			pageNumber: data.pageIndex + 1,
+			x: existingAnnotation ? existingAnnotation.x : data.x,
+			y: existingAnnotation ? existingAnnotation.y : data.y,
+			content: text,
+			moveDisabled: existingAnnotation ? existingAnnotation.moveDisabled : data.moveDisabled,
+			color: existingAnnotation ? existingAnnotation.color : data.color,
+			fontSize: existingAnnotation ? existingAnnotation.fontSize : data.fontSize,
+			fontFamily: existingAnnotation ? existingAnnotation.fontFamily : data.fontFamily,
+			name: 'freeTextEditor'
+		}
 		newData = [
 			...newData,
-			{
-				id: data.id,
-				pageNumber: data.pageIndex + 1,
-				x: existingAnnotation ? existingAnnotation.x : data.x,
-				y: existingAnnotation ? existingAnnotation.y : data.y,
-				content: text,
-				moveDisabled: existingAnnotation ? existingAnnotation.moveDisabled : data.moveDisabled,
-				color: existingAnnotation ? existingAnnotation.color : data.color,
-				fontSize: existingAnnotation ? existingAnnotation.fontSize : data.fontSize,
-				fontFamily: existingAnnotation ? existingAnnotation.fontFamily : data.fontFamily,
-				name: 'freeTextEditor'
-			}
+			dataPayload
 		];
-
+		const operationPayload = {
+			pageIndex: data.pageIndex,
+			...dataPayload
+		};
+		const operation = { action: 'update-annotation', data: operationPayload };
+		if (isManuallyAddingImageRef.current) {
+			addOperation(operation);
+			isManuallyAddingImageRef.current = false;
+		}
 		setAnnotations(newData);
 	};
 
