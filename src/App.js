@@ -33,6 +33,7 @@ import useListenForMergeFilesRequest from './hooks/useListenForMergeFilesRequest
 import useListenForCombineFilesRequest from './hooks/useListForCombineFilesRequest';
 import useListenForSplitPagesRequest from './hooks/useListenForSplitPagesRequest';
 import useListenForRemoveChatHistoryRequest from './hooks/useListenForRemoveChatHistoryRequest';
+import useListenForKeyClicks from './hooks/useListenForKeyClicks';
 import { PDFDocument, degrees } from 'pdf-lib';
 import { extractAllTextFromPDF } from './utils/extractAllTextFromPdf';
 import { ModalProvider, useModal } from './Contexts/ModalProvider';
@@ -1331,22 +1332,6 @@ const App = () => {
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 
-		/*
-		if (Array.isArray(startToUse)) {
-			const order = getArrayOrder(pdfProxyObj.numPages, startToUse, end);
-			console.log(order, 'order225', startToUse)
-			const newOrderSet = new Set(order);
-			const startToUseSet = new Set(startToUse);
-			const newIndexes = [];
-			for (let i = 0; i < order.length; i ++) {
-				if (startToUseSet.has(order[i])) {
-					newIndexes.push(i);
-				}
-			}
-			console.log(newIndexes, 'newIndexes')
-			// TODO: continue to consider benefit. especially when doing undo. setMultiPageSelections(newIndexes.map((e) => e + 1));
-		}
-		*/
 		setMultiPageSelections([]);
 		setModifiedFiles(newModifiedPayload);
 		
@@ -1769,6 +1754,14 @@ const App = () => {
 		updateAnnotation(data, text);
 
 	};
+
+	useListenForKeyClicks((which) => {
+		if (which === "redo") {
+			redoLastAction();
+		} else if (which === "undo") {
+			undoLastAction();
+		}
+	});
 
 	if (fileLoadFailError) {
 		return (

@@ -53,7 +53,6 @@ export class IndexedDBStorage extends StorageInterface {
 	}
 
 	async save(buffer, id) {
-		console.log("saving pdf")
 			// Implementation for saving a PDF
 			const db = await this.openDB();
 			return new Promise((resolve, reject) => {
@@ -115,7 +114,6 @@ export class ChromeStorage extends StorageInterface {
 	async retrieve(id, isBuffer = true) {
     return new Promise((resolve, reject) => {
         chrome.storage.local.get(id, function(result) {
-						console.log(result, 'result321')
             if (chrome.runtime.lastError) {
                 return reject(chrome.runtime.lastError);
             }
@@ -134,7 +132,6 @@ export class ChromeStorage extends StorageInterface {
 }
 
 	async delete(id) {
-		console.log('delete11')
 			// Implementation for deleting a PDF
 			return new Promise((resolve, reject) => {
 					chrome.storage.local.remove(id, function() {

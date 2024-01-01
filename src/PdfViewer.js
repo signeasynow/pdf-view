@@ -251,7 +251,7 @@ export const PdfViewer = ({
 				}
 				// If no modifiedFile, continue to set the loaded PDF document.
 				setPdfProxyObj(loadedPdfDocument);
-				console.log("setting doc2", annotationsRef.current)
+				// console.log("setting doc2", annotationsRef.current)
 				pdfViewerRef.current.setDocument(loadedPdfDocument, annotationsRef.current);
 				pdfLinkServiceRef.current.setDocument(loadedPdfDocument, null);
 				

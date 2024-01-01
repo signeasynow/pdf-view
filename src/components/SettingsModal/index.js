@@ -123,7 +123,6 @@ export const SettingsModal = ({ onClose }) => {
   const { locale, onChangeLocale } = useContext(LocaleContext);
 
   const onChooseLocale = (e) => {
-    console.log(e.target.value, 'huh2')
     onChangeLocale(e.target.value);
   }
 
