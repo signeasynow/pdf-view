@@ -172,14 +172,19 @@ export const SettingsModal = ({ onClose }) => {
         }
         <hr />
         <select onChange={onChooseLocale} value={locale}>
+          <option value="ar">العربية</option>
+          <option value="id">Bahasa Indonesia</option>
+          <option value="ms">Bahasa Melayu</option>
           <option value="de">Deutsch</option>
           <option value="en">English</option>
           <option value="es">Español</option>
           <option value="ko">한국어</option>
+          <option value="lt">Lietuvių</option>
           <option value="it">Italiano</option>
           <option value="ru">Русский</option>
           <option value="hi">हिंदी</option>
           <option value="pt">Português</option>
+          <option value="zh_CN">中文</option>
         </select>
       </div>
     </div>

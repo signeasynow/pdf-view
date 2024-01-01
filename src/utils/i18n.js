@@ -9,6 +9,11 @@ import hi from '../../locale/hi.json';
 import it from '../../locale/it.json';
 import pt from '../../locale/pt.json';
 import ko from '../../locale/ko.json';
+import zhCn from '../../locale/zh_CN.json';
+import id from '../../locale/id.json';
+import ar from '../../locale/ar.json';
+import lt from '../../locale/lt.json';
+import ms from '../../locale/ms.json';
 
 const resources = {
 	en: {
@@ -37,6 +42,21 @@ const resources = {
 	},
 	ko: {
 		translation: ko
+	},
+	zh_CN: {
+		translation: zhCn
+	},
+	id: {
+		translation: id
+	},
+	ar: {
+		translation: ar
+	},
+	lt: {
+		translation: lt
+	},
+	ms: {
+		translation: ms
 	}
 };
 
