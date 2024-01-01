@@ -262,6 +262,8 @@ const App = () => {
 	const pdfScriptingManagerRef = useRef(null);
 	const pdfViewerRef = useRef(null);
 
+	const panelRef = useRef(null);
+
 	const [pdfProxyObj, setPdfProxyObj] = useState(null);
 	const [pdfViewerObj, setPdfViewerObj] = useState(null);
 
@@ -310,6 +312,8 @@ const App = () => {
 	const [showPanel, setShowPanel] = useState(true);
 
 	const isSmallScreen = useMediaQuery('(max-width: 550px)');
+
+	const fullScreenThumbnailRef = useRef(null);
 
 	const [modifiedUiElements, setModifiedUiElements] = useState(null);
 
@@ -677,7 +681,7 @@ const App = () => {
 			hideSignatureModal();
 		}
 	});
-	useListenForThumbnailZoomRequest((v) => {
+	useListenForThumbnailZoomRequest(panelRef, thumbnailScale, (v) => {
 		setExpandedViewThumbnailScale(v);
 		setThumbnailScale(v);
 	});
@@ -1766,6 +1770,14 @@ const App = () => {
 
 	};
 
+	const onTouchStart = (e) => {
+		console.log("dd")
+	}
+
+	const onTouchMove = (e) => {
+		console.log("ee")
+	}
+
 	if (fileLoadFailError) {
 		return (
 			<div css={failWrap}>
@@ -1801,8 +1813,7 @@ const App = () => {
 
 	return (
 		<>
-			{/*<button onClick={onClickTestHandler}>Crazy btn</button>*/}
-			<div style={{ height: mainHeight() }}>
+			<div ref={panelRef} style={{ height: mainHeight() }}>
 				{
 					showHeader() && (
 						<Header
@@ -1870,10 +1881,11 @@ const App = () => {
 					activePageIndex={activePageIndex}
 					fileNames={fileNames}
 				/>
-				<div css={Flex}>
+				<div onTouchStart={onTouchStart} onTouchMove={onTouchMove}  css={Flex}>
 					{
 						tools?.general?.includes('thumbnails') && (
 							<Panel
+								fullScreenThumbnailRef={fullScreenThumbnailRef}
 								showSearch={showSearch}
 								splitMarkers={splitMarkers}
 								onClickSplit={onClickSplit}
@@ -1883,6 +1895,7 @@ const App = () => {
 								thumbnailScale={thumbnailScale}
 								setThumbnailScale={setThumbnailScale}
 								expandedViewThumbnailScale={expandedViewThumbnailScale}
+								setExpandedViewThumbnailScale={setExpandedViewThumbnailScale}
 								onRotate={onRotateThumbnail}
 								onDeleteThumbnail={onDeleteThumbnail}
 								onExtractThumbnail={onExtractThumbnail}

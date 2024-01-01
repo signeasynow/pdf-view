@@ -1,6 +1,6 @@
 import { useEffect } from 'preact/hooks';
 
-function useListenForThumbnailZoomRequest(callback) {
+function useListenForThumbnailZoomRequest(viewerContainerRef, currentScale, callback) {
 	useEffect(() => {
 		const messageFunc =  (event) => {
 			if (event.data && event.data.type === 'set-thumbnail-zoom') {

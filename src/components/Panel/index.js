@@ -32,6 +32,7 @@ const invisibleSearchWrapper = css`
 
 const Panel = ({
 	onClickSplit,
+	fullScreenThumbnailRef,
 	splitMarkers,
 	showPanel,
 	tools,
@@ -87,6 +88,7 @@ const Panel = ({
 			activePage={activePage}
 			pdf={pdf}
 			tools={tools}
+			fullScreenThumbnailRef={fullScreenThumbnailRef}
 			onThumbnailClick={onThumbnailClick}
 			pdfProxyObj={pdfProxyObj}
 			multiPageSelections={multiPageSelections}

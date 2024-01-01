@@ -165,7 +165,6 @@ const ZoomSection = ({
 				setZoomValue(RoundZoomValue(pdfViewerObj.currentScale));
 			}
 		};
-		console.log(viewerContainerRef?.current, 'viewerContainerRef?.current2')
 		if (!viewerContainerRef?.current) {
 			return;
 		}
@@ -179,70 +178,6 @@ const ZoomSection = ({
 		};
 	}, [pdfViewerObj, setZoomValue, viewerContainerRef]);
 	
-	/*
-  const [initialTouchDistance, setInitialTouchDistance] = useState(null);
-  const [scale, setScale] = useState(1);
-
-  useEffect(() => {
-
-    if (!viewer) {
-      return;
-    }
-    
-    const handleTouchStart = (event) => {
-      if (event.touches.length === 2) {
-        const touch1 = event.touches[0];
-        const touch2 = event.touches[1];
-  
-        const dx = touch1.clientX - touch2.clientX;
-        const dy = touch1.clientY - touch2.clientY;
-  
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        
-        setInitialTouchDistance(distance);
-      }
-    };
-  
-    const handleTouchMove = (event) => {
-      if (event.touches.length === 2 && initialTouchDistance !== null) {
-        const touch1 = event.touches[0];
-        const touch2 = event.touches[1];
-  
-        const dx = touch1.clientX - touch2.clientX;
-        const dy = touch1.clientY - touch2.clientY;
-  
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        const scaleChange = distance / initialTouchDistance;
-        
-        // Adjust this to change how much pinch affects zoom:
-        const sensitivity = 0.1;
-        const newScale = scale * (1 + (scaleChange - 1) * sensitivity);
-        
-        // Update the scale of your PDF viewer here:
-        viewer.currentScale = newScale;
-        setScale(newScale);
-        setInitialTouchDistance(distance);
-      }
-    };
-  
-    const handleTouchEnd = (event) => {
-      if (event.touches.length < 2) {
-        setInitialTouchDistance(null);
-      }
-    };
-    
-    viewer.addEventListener('touchstart', handleTouchStart, { passive: false });
-    viewer.addEventListener('touchmove', handleTouchMove, { passive: false });
-    viewer.addEventListener('touchend', handleTouchEnd, { passive: false });
-    
-    return () => {
-      viewer.removeEventListener('touchstart', handleTouchStart);
-      viewer.removeEventListener('touchmove', handleTouchMove);
-      viewer.removeEventListener('touchend', handleTouchEnd);
-    };
-  }, [initialTouchDistance, scale]);
-*/
-
 	const onFitWidth = () => {
 		pdfViewerObj.currentScaleValue = 'page-width';
 		setZoomValue(Math.round(pdfViewerObj.currentScale * 100));

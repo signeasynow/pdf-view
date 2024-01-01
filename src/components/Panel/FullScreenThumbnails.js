@@ -2,10 +2,8 @@
 import { css } from '@emotion/react';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { Thumbnail } from '../../Thumbnail';
-import Slider from '../Slider';
 import { LoadingSpinner } from '../LoadingSpinner';
 import Split from '../../../assets/split-svgrepo-com.svg';
-import HeaderBtn from '../../Header/HeaderBtn';
 import { Icon, Tooltip } from 'alien35_pdf_ui_lib_2';
 import AccessibleButton from '../AccessibleButton';
 import { useTranslation } from 'react-i18next';
@@ -54,9 +52,9 @@ const thumbnailStyle = css`
 
 const FullScreenThumbnails = ({
 	onDragEnd,
+	fullScreenThumbnailRef,
 	showSearch,
 	splitMarkers,
-	fileName,
 	documentLoading,
 	pdf,
 	isSplitting,
@@ -85,13 +83,13 @@ const FullScreenThumbnails = ({
 		if (e.target.closest('.canvas-page')) {
 			return;
 		}
-		const rect = containerRef.current.getBoundingClientRect();  // Get bounding box
+		const rect = fullScreenThumbnailRef.current.getBoundingClientRect();  // Get bounding box
 		setDragStart({ x: e.clientX - rect.left, y: e.clientY - rect.top });  // Correct for offset
 	};
 
 	const onMouseMove = (e) => {
 		if (dragStart) {
-			const rect = containerRef.current.getBoundingClientRect();  // Get bounding box
+			const rect = fullScreenThumbnailRef.current.getBoundingClientRect();  // Get bounding box
 			const width = (e.clientX - rect.left) - dragStart.x;  // Correct for offset
 			const height = (e.clientY - rect.top) - dragStart.y;  // Correct for offset
 			const newDragRect = {
@@ -110,7 +108,7 @@ const FullScreenThumbnails = ({
 			};
 
 			const newSelectedIndexes = [];
-			const thumbnailElements = containerRef.current.querySelectorAll('[data-type="regular-full-screen-thumbnail"]');
+			const thumbnailElements = fullScreenThumbnailRef.current.querySelectorAll('[data-type="regular-full-screen-thumbnail"]');
 			Array.from(thumbnailElements).forEach((child, index) => {
 				const childRect = child.getBoundingClientRect();
 				if (
@@ -182,6 +180,50 @@ const FullScreenThumbnails = ({
 			setDragOverIndex(null);
 		}
 	}, [dragOverIndex, pendingDragEnd]);
+
+	useEffect(() => {
+		let touchStartScale = 1;
+	
+		const handleTouchStart = (event) => {
+			if (event.touches.length === 2) {
+				const touch1 = event.touches[0];
+				const touch2 = event.touches[1];
+				touchStartScale = Math.hypot(
+					touch2.pageX - touch1.pageX,
+					touch2.pageY - touch1.pageY
+				);
+			}
+		};
+	
+		const handleTouchMove = (event) => {
+			console.log("MOVEE")
+			if (event.touches.length === 2) {
+				const touch1 = event.touches[0];
+				const touch2 = event.touches[1];
+				const touchMoveScale = Math.hypot(
+					touch2.pageX - touch1.pageX,
+					touch2.pageY - touch1.pageY
+				);
+				const scale = expandedViewThumbnailScale;
+				const newScale = scale * (touchMoveScale / touchStartScale);
+				touchStartScale = touchMoveScale;
+				setExpandedViewThumbnailScale(newScale);
+			}
+		};
+	
+		const viewerContainer = document.getElementById("thumbnail-2");
+		console.log(viewerContainer, 'viewerContainer22')
+		if (!viewerContainer) {
+			return;
+		}
+		viewerContainer.addEventListener('touchstart', handleTouchStart);
+		viewerContainer.addEventListener('touchmove', handleTouchMove, { passive: false, capture: true });
+	
+		return () => {
+			viewerContainer.removeEventListener('touchstart', handleTouchStart);
+			viewerContainer.removeEventListener('touchmove', handleTouchMove);
+		};
+	}, []);
 
 	// if (!numPages) return null;
 
@@ -289,7 +331,7 @@ const FullScreenThumbnails = ({
 
 	return (
 		<div
-			ref={containerRef}
+			ref={fullScreenThumbnailRef}
 			onMouseDown={onMouseDown}
 			onMouseUp={onMouseUp}
 			css={wrapperStyle}
@@ -307,7 +349,7 @@ const FullScreenThumbnails = ({
 				}}
 				/>
 			)}
-			<div style={{ width: getWidth() }} css={fullScreenWrapper}>
+			<div ref={containerRef} style={{ width: getWidth() }} css={fullScreenWrapper}>
 				{thumbnails}
 				{
 					dragOverIndex === numPages + 1 && (
