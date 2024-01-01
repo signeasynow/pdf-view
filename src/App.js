@@ -267,7 +267,6 @@ const App = () => {
 
 	const [buffer, setBuffer] = useState(1); // 1 for primary, 2 for secondary
 	const viewerContainerRef1 = useRef(null);
-	const viewerContainerRef2 = useRef(null);
 	const [searchBarView, setSearchBarView] = useState('chat');
 
 	const [pdfText, setPdfText] = useState('');
@@ -305,7 +304,6 @@ const App = () => {
 	
 	const switchBuffer = () => setBuffer(buffer === 1 ? 2 : 1);
 
-	const getTargetContainer = () => buffer === 1 ? viewerContainerRef2 : viewerContainerRef1;
 	const [isSandbox, setIsSandbox] = useState(false);
 
 	const [showSearch, setShowSearch] = useState(false);
@@ -1816,7 +1814,7 @@ const App = () => {
 							onDownload={onDownload}
 							pdfProxyObj={pdfProxyObj}
 							onRotate={onRotate}
-							viewerContainerRef={getTargetContainer()}
+							viewerContainerRef={viewerContainerRef1}
 							pdfViewerObj={pdfViewerObj}
 							onSearch={onSearchBtnClick}
 							onPanel={onPanelBtnClick}
@@ -1947,7 +1945,6 @@ const App = () => {
 							setMatchesCount={setMatchesCount}
 							eventBusRef={eventBusRef}
 							viewerContainerRef1={viewerContainerRef1}
-							viewerContainerRef2={viewerContainerRef2}
 							setPdfViewerObj={setPdfViewerObj}
 							files={files}
 						/>

@@ -137,6 +137,48 @@ const ZoomSection = ({
 		}
 	}, [zoomTextRef]);
 
+	useEffect(() => {
+		let touchStartScale = 1;
+	
+		const handleTouchStart = (event) => {
+			if (event.touches.length === 2) {
+				const touch1 = event.touches[0];
+				const touch2 = event.touches[1];
+				touchStartScale = Math.hypot(
+					touch2.pageX - touch1.pageX,
+					touch2.pageY - touch1.pageY
+				);
+			}
+		};
+	
+		const handleTouchMove = (event) => {
+			if (event.touches.length === 2) {
+				const touch1 = event.touches[0];
+				const touch2 = event.touches[1];
+				const touchMoveScale = Math.hypot(
+					touch2.pageX - touch1.pageX,
+					touch2.pageY - touch1.pageY
+				);
+				const scale = pdfViewerObj.currentScale;
+				pdfViewerObj.currentScale = scale * (touchMoveScale / touchStartScale);
+				touchStartScale = touchMoveScale;
+				setZoomValue(RoundZoomValue(pdfViewerObj.currentScale));
+			}
+		};
+		console.log(viewerContainerRef?.current, 'viewerContainerRef?.current2')
+		if (!viewerContainerRef?.current) {
+			return;
+		}
+		const viewerContainer = viewerContainerRef.current;
+		viewerContainer.addEventListener('touchstart', handleTouchStart);
+		viewerContainer.addEventListener('touchmove', handleTouchMove);
+	
+		return () => {
+			viewerContainer.removeEventListener('touchstart', handleTouchStart);
+			viewerContainer.removeEventListener('touchmove', handleTouchMove);
+		};
+	}, [pdfViewerObj, setZoomValue, viewerContainerRef]);
+	
 	/*
   const [initialTouchDistance, setInitialTouchDistance] = useState(null);
   const [scale, setScale] = useState(1);
