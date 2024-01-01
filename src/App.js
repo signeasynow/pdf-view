@@ -1770,14 +1770,6 @@ const App = () => {
 
 	};
 
-	const onTouchStart = (e) => {
-		console.log("dd")
-	}
-
-	const onTouchMove = (e) => {
-		console.log("ee")
-	}
-
 	if (fileLoadFailError) {
 		return (
 			<div css={failWrap}>
@@ -1881,7 +1873,7 @@ const App = () => {
 					activePageIndex={activePageIndex}
 					fileNames={fileNames}
 				/>
-				<div onTouchStart={onTouchStart} onTouchMove={onTouchMove}  css={Flex}>
+				<div css={Flex}>
 					{
 						tools?.general?.includes('thumbnails') && (
 							<Panel
