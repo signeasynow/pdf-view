@@ -116,7 +116,7 @@ const AnnotationSelectionDropdown = ({
 
 	if (annotationsEnabled()) {
 		return (
-			<Tooltip offsetX={0} title={activeToolbarItem !== 'signature' ? "Finish adding text" : "Finish adding signatures"}>
+			<Tooltip offsetX={0} title={activeToolbarItem !== 'signature' ? t("finish-text") : t("finish-sigs")}>
 				<div style={{cursor: "pointer", padding: "2px", background: "#85ff61", borderRadius: "4px"}} onClick={onSelectNone}>
 					<Icon size="lg" src={Checkmark} alt={t('arrowDown')} />
 				</div>

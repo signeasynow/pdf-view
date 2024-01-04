@@ -12,6 +12,17 @@ import { AnnotationEditorParamsType } from 'pdfjs-dist/build/pdf';
 
 const SANDBOX_BUNDLE_SRC = 'pdfjs-dist/build/pdf.sandbox.js';
 
+const extractTextFromFirstPage = async (pdfDocument) => {
+  try {
+    const page = await pdfDocument.getPage(1); // Get the first page
+    const textContent = await page.getTextContent();
+    // Process textContent as needed, e.g., console.log or set state
+    console.log(textContent, 'text content11');
+  } catch (error) {
+    console.error('Error extracting text from first page:', error);
+  }
+};
+
 const containerStyle = css`
 	overflow: auto;
 	position: absolute;
@@ -254,7 +265,7 @@ export const PdfViewer = ({
 				// console.log("setting doc2", annotationsRef.current)
 				pdfViewerRef.current.setDocument(loadedPdfDocument, annotationsRef.current);
 				pdfLinkServiceRef.current.setDocument(loadedPdfDocument, null);
-				
+				extractTextFromFirstPage(loadedPdfDocument);
 				if (!modifiedFiles[activePageIndex]) {
 					storage?.save(new Uint8Array(await loadedPdfDocument.getData()).slice(0), `original${activePageIndex}`);
 				}
