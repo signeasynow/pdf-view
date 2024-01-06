@@ -381,7 +381,7 @@ const App = () => {
 
 	const [fileNames, setFileNames] = useState([]);
 	const { triggerDownload: onDownload } = useDownload(files, isSandbox, fileNames, storage);
-
+	const [removedOriginalText, setRemovedOriginalText] = useState([]);
 
 	const initialRedoUndoObject = () => {
 		const result = {};
@@ -1279,6 +1279,15 @@ const App = () => {
 		// setAnnotationMode("freetext");
 	};
 
+	const onEnableTextEditMode = async () => {
+		pdfViewerRef.current.annotationEditorMode = {
+			isFromKeyboard: false,
+			mode: pdfjs.AnnotationEditorType.TEXTEDIT,
+			source: null
+		};
+		// setAnnotationMode("freetext");
+	};
+
 	const onDisableEditorMode = async () => {
 		pdfViewerRef.current.annotationEditorMode = {
 			isFromKeyboard: false,
@@ -1685,6 +1694,14 @@ const App = () => {
 		setAnnotationMode('signature');
 	};
 
+	const onEditOriginalTextSelected = (detail) => {
+		setRemovedOriginalText([
+			...removedOriginalText,
+			detail
+		]);
+	};
+
+	console.log(removedOriginalText, 'removede')
 
 	const onClickField = (type) => {
 		pdfViewerRef.current.annotationEditorMode = {
@@ -1818,6 +1835,7 @@ const App = () => {
 						/>
 					)
 				}
+				<button onClick={onEnableTextEditMode}>Enable edit text</button>
 				{
 					showSubheader() && (
 						<Subheader
@@ -1900,6 +1918,7 @@ const App = () => {
 					}
 					<div css={pdfViewerWrapper}>
 						<PdfViewer
+							onEditOriginalTextSelected={onEditOriginalTextSelected}
 							storage={storage}
 							initialAnnotations={initialAnnotations}
 							onTagClicked={onTagClicked}

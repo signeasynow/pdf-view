@@ -41068,6 +41068,7 @@ endcmap CMapName currentdict /CMap defineresource pop end end`;
 				exports.OperatorList = void 0;
 				let _util = __w_pdfjs_require__(2);
 				function addState(parentState, pattern, checkFn, iterateFn, processFn) {
+					console.log("addState called", pattern)
 					let state = parentState;
 					for (let i = 0, ii = pattern.length - 1; i < ii; i++) {
 						const item = pattern[i];

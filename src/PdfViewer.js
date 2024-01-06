@@ -2,7 +2,7 @@
 import { css } from '@emotion/react';
 import { useEffect, useRef } from 'preact/hooks';
 import * as pdfjs from 'pdfjs-dist';
-import { EventBus, PDFLinkService, PDFViewer, PDFFindController, PDFScriptingManager } from 'pdfjs-dist/web/pdf_viewer';
+import { EventBus, PDFLinkService, PDFViewer, PDFFindController, PDFScriptingManager, PDFRenderingQueue } from 'pdfjs-dist/web/pdf_viewer';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import { heightOffset0, heightOffset1, heightOffset3, heightOffsetTabs } from './constants';
 import { extractAllTextFromPDF } from './utils/extractAllTextFromPdf';
@@ -33,6 +33,7 @@ const containerStyle = css`
 
 export const PdfViewer = ({
 	storage,
+	onEditOriginalTextSelected,
 	activePageIndex,
 	initialAnnotations,
 	onAnnotationFocus,
@@ -115,7 +116,41 @@ export const PdfViewer = ({
 		});
 	}, [annotationColor]);
 
+	const refreshPage = async (pageNumber) => {
+    const pdf = pdfViewerRef.current.pdfDocument;
+    const page = await pdf.getPage(pageNumber);
+
+    // Original size of the PDF page
+    const originalViewport = page.getViewport({ scale: 1.0 });
+
+    const canvas = pdfViewerRef.current._pages[pageNumber - 1].canvas;
+    const ctx = canvas.getContext('2d');
+
+    // Calculate the scale factor based on the current size of the canvas
+    const scaleX = canvas.width / originalViewport.width;
+    const scaleY = canvas.height / originalViewport.height;
+    const scale = Math.min(scaleX, scaleY);  // Use the smaller scale to preserve aspect ratio
+
+    const viewport = page.getViewport({ scale: scale });
+
+    // Clear the existing canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Adjust canvas size if necessary
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+
+    // Render the page into the canvas context
+    let renderContext = {
+        canvasContext: ctx,
+        viewport: viewport,
+    };
+
+			await page.render(renderContext).promise;
+	};
+
 	const applyDocument = async (viewerContainer) => {
+		
 		await cleanupDocument();
 
 		const eventBus = new EventBus();
@@ -123,11 +158,13 @@ export const PdfViewer = ({
 		pdfLinkServiceRef.current = new PDFLinkService({ eventBus: eventBusRef.current, externalLinkTarget: 2 });
 		pdfFindControllerRef.current = new PDFFindController({ eventBus: eventBusRef.current, linkService: pdfLinkServiceRef.current });
 		pdfScriptingManagerRef.current = new PDFScriptingManager({ eventBus: eventBusRef.current, sandboxBundleSrc: SANDBOX_BUNDLE_SRC });
-		// const pdfRenderingQueue = new pdfjs.PDFRenderingQueue();
+		// @ts-ignore
+		// const pdfRenderingQueue = new PDFRenderingQueue();
 		pdfViewerRef.current = new PDFViewer({
 			container: viewerContainer,
 			viewer: document.getElementById('viewer'),
 			eventBus: eventBusRef.current,
+			// renderingQueue: pdfRenderingQueue,
 			linkService: pdfLinkServiceRef.current,
 			findController: pdfFindControllerRef.current,
 			scriptingManager: pdfScriptingManagerRef.current,
@@ -139,7 +176,7 @@ export const PdfViewer = ({
 
 		pdfLinkServiceRef.current.setViewer(pdfViewerRef.current);
 		pdfScriptingManagerRef.current.setViewer(pdfViewerRef.current);
-		
+
 		eventBus.on('pagesinit', () => {
 			pdfViewerRef.current.currentScaleValue = 'page-height';
 			updateCurrentScale(Math.round(pdfViewerRef.current.currentScale * 100));
@@ -169,6 +206,13 @@ export const PdfViewer = ({
 				};
 			}
 			onPagesLoaded();
+
+		});
+
+		eventBus.on('edit-original-text-selected', (event) => {
+			console.log(event, 'details 77855');
+			onEditOriginalTextSelected(event.detail);
+			refreshPage(1, event.detail);
 
 		});
 
@@ -251,7 +295,8 @@ export const PdfViewer = ({
 			}
 		}
 		const loadingTask = pdfjs.getDocument(modFile || files[activePageIndex]?.url);
-	
+		// return;
+		
 		loadingTask.promise.then(
 			async (loadedPdfDocument) => {
 				if (isSandbox) {
