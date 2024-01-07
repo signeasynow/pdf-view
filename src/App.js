@@ -134,40 +134,74 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 						return `(${replacement})${spacingNumber ? ' ' + spacingNumber : ''}`;
 				}).join('');
 		}
-		
-		const modifiedLines = lines.map(line => {
-				if (line.toUpperCase().endsWith('TJ')) {
-					const concatenatedText = extractTextFromLine(line);
-					const originalString = detail.str.replace(/-\s*$/, '');
 
-					if (concatenatedText.includes(originalString)) {
-							const replacedText = replaceTargetWithSpaces(concatenatedText, originalString);
-							const regex = /\((.*?)\)(\s*\d*\.?\d*\s*)?/g;
-							const matches = [...line.matchAll(regex)];
-							let modifiedLine = reconstructLine(matches, replacedText);
-
-							if (!modifiedLine.trim().endsWith('TJ')) {
-									modifiedLine += ' TJ';
-							}
-							console.log("*" + modifiedLine + "*", 'modifiedLine');
-							return modifiedLine;
-					}
-				}
-				return line;
-		});
-
-			// Reconstruct the modified content stream
-			const modifiedText = modifiedLines.join('\n');
-			console.log(modifiedText, 'modified', stream.dict.clone())
-			if (isRef) {
-					const newStream = PDFRawStream.of(stream.dict.clone(), pako.deflate(modifiedText));
-					pdfDoc.context.assign(streamRef, newStream);
-					return stream;
-			} else {
-					// Directly modify the PDFRawStream
-					stream.contents = pako.deflate(modifiedText);
-					return stream;
+		function processSingleTJCommand(line, targetString) {
+			const concatenatedText = extractTextFromLine(line);
+			if (concatenatedText.includes(targetString)) {
+					const replacedText = replaceTargetWithSpaces(concatenatedText, targetString);
+					const regex = /\((.*?)\)(\s*\d*\.?\d*\s*)?/g;
+					const matches = [...line.matchAll(regex)];
+					return reconstructLine(matches, replacedText);
 			}
+			return null; // Indicate no replacement was made
+	  }
+
+		let accumulatedText = '';
+		let accumulatedMatches = [];
+		let processingMultipleTJCommands = false;
+
+		function processAccumulatedLines(targetString) {
+			const replacedText = replaceTargetWithSpaces(accumulatedText, targetString);
+			return accumulatedMatches.map(match => reconstructLine(match, replacedText)).join('\n');
+	  }
+
+		const processLinesSingleCommand = (lines) => {
+				return lines.map(line => {
+						if (line.toUpperCase().endsWith('TJ')) {
+								const result = processSingleTJCommand(line, originalString);
+								if (result !== null) {
+										foundMatch = true;
+										return result + (result.trim().endsWith('TJ') ? '' : ' TJ');
+								}
+						}
+						return line;
+				}).filter(line => line);
+		};
+
+		const processLinesMultipleCommands = (lines) => {
+			let accumulatedText = '';
+			let accumulatedMatches = [];
+	
+			return lines.map(line => {
+					if (line.toUpperCase().endsWith('TJ')) {
+							accumulatedText += extractTextFromLine(line);
+							accumulatedMatches.push([...line.matchAll(/\((.*?)\)(\s*\d*\.?\d*\s*)?/g)]);
+							if (accumulatedText.includes(originalString)) {
+									return processAccumulatedLines(originalString);
+							}
+					}
+					return null; // Placeholder for non-matching lines
+			}).filter(line => line); // Remove placeholders
+	  };
+
+		const originalString = detail.str.replace(/-\s*$/, '');
+		let foundMatch = false;
+
+		let modifiedLines = processLinesSingleCommand(lines);
+
+
+		// Reconstruct the modified content stream
+		const modifiedText = modifiedLines.join('\n');
+		console.log(modifiedText, 'modified', stream.dict.clone())
+		if (isRef) {
+				const newStream = PDFRawStream.of(stream.dict.clone(), pako.deflate(modifiedText));
+				pdfDoc.context.assign(streamRef, newStream);
+				return stream;
+		} else {
+				// Directly modify the PDFRawStream
+				stream.contents = pako.deflate(modifiedText);
+				return stream;
+		}
 	}));
 
 	let newContentStreams = wasSingleStream ? modifiedStreams[0] : pdfDoc.context.obj(modifiedStreams);
