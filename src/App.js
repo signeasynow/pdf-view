@@ -111,57 +111,50 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 			// Split the stream by new lines and process only lines ending with 'TJ'
 			const lines = text.split('\n');
 			console.log(lines, 'lines')
-			const modifiedLines = lines.map(line => {
+
+		function extractTextFromLine(line) {
+				const matchResult = line.match(/\((.*?)\)/g);
+				return matchResult ? matchResult.map(t => t.slice(1, -1)).join('').trim() : '';
+		}
+		
+		function replaceTargetWithSpaces(concatenatedText, target) {
+				const spaceCount = target.length;
+				const replacementSpaces = ' '.repeat(spaceCount);
+				return concatenatedText.replace(target, replacementSpaces);
+		}
+		
+		function reconstructLine(matches, replacedText) {
+				let currentIndex = 0;
+				return matches.map(match => {
+						const textMatch = match[1];
+						const spacingNumber = match[2] ? match[2].trim() : '';
+						const segmentLength = textMatch.length;
+						const replacement = replacedText.substring(currentIndex, currentIndex + segmentLength);
+						currentIndex += segmentLength;
+						return `(${replacement})${spacingNumber ? ' ' + spacingNumber : ''}`;
+				}).join('');
+		}
+		
+		const modifiedLines = lines.map(line => {
 				if (line.toUpperCase().endsWith('TJ')) {
-					try {
-						// Extract and concatenate text segments within parentheses
-						const matchResult = line.match(/\((.*?)\)/g);
-						if (matchResult) {
-							const concatenatedText = line.match(/\((.*?)\)/g).map(t => t.slice(1, -1)).join('').trim();
-							console.log(concatenatedText, 'concatenatedText')
-							const originalString = detail.str.replace(/-\s*$/, '');
-			
-							if (concatenatedText.includes(originalString)) {
-									// Calculate the number of spaces needed to replace the original string
-									const spaceCount = originalString.length;
-									const replacementSpaces = ' '.repeat(spaceCount);
+					const concatenatedText = extractTextFromLine(line);
+					const originalString = detail.str.replace(/-\s*$/, '');
 
-									// Replace the target phrase in the concatenated text with spaces
-									const replacedText = concatenatedText.replace(originalString, replacementSpaces);
+					if (concatenatedText.includes(originalString)) {
+							const replacedText = replaceTargetWithSpaces(concatenatedText, originalString);
+							const regex = /\((.*?)\)(\s*\d*\.?\d*\s*)?/g;
+							const matches = [...line.matchAll(regex)];
+							let modifiedLine = reconstructLine(matches, replacedText);
 
-									// Reconstruct the TJ command by injecting the replaced text back into the line
-									let currentIndex = 0;
-									const regex = /\((.*?)\)(\s*\d*\.?\d*\s*)?/g;
-									const matches = [...line.matchAll(regex)];
-
-									let modifiedLine = matches.map(match => {
-											const textMatch = match[1]; // Text within parentheses
-											const spacingNumber = match[2] ? match[2].trim() : ''; // Spacing adjustment, trimmed
-									
-											const segmentLength = textMatch.length;
-											const replacement = replacedText.substring(currentIndex, currentIndex + segmentLength);
-											currentIndex += segmentLength;
-									
-											return `(${replacement})${spacingNumber ? ' ' + spacingNumber : ''}`;
-									}).join('');
-
-									if (!modifiedLine.trim().endsWith('TJ')) {
-											modifiedLine += ' TJ';
-									}
-									console.log("*" + modifiedLine + "*", 'modifiedLine')
-									return modifiedLine;
+							if (!modifiedLine.trim().endsWith('TJ')) {
+									modifiedLine += ' TJ';
 							}
-						}
-
-						
-					} catch (err) {
-						console.log(line, 'line error', err)
-						return line;
+							console.log("*" + modifiedLine + "*", 'modifiedLine');
+							return modifiedLine;
 					}
-						
 				}
 				return line;
-			});
+		});
 
 			// Reconstruct the modified content stream
 			const modifiedText = modifiedLines.join('\n');
