@@ -59,54 +59,63 @@ import fontkit from '@pdf-lib/fontkit';
 const isChromeExtension = process.env.NODE_CHROME === "true";
 let storage = isChromeExtension ? new ChromeStorage() : new IndexedDBStorage();
 
-const rules = [
-	{
-			pattern: 'y',
-			replacement: ''
-	}
-];
+const rule = {
+	pattern: "C",
+	replacement: ""
+};
 
 async function removeTextFromPdf(pdfBytes) {
 	const pdfDoc = await PDFDocument.load(pdfBytes);
-
-	// Get the first page
 	const firstPage = pdfDoc.getPages()[0];
-
-	// Access the content streams of the first page
 	const contentStreams = firstPage.node.Contents();
 
-	// In case the first page has multiple content streams
 	const modifiedStreams = await Promise.all(contentStreams.array.map(async (streamRef) => {
 			const stream = pdfDoc.context.lookup(streamRef);
-
 			if (!(stream instanceof PDFRawStream)) {
 					return streamRef;
 			}
 
-			let text = arrayAsString(decodePDFRawStream(stream).decode());
-			let modified = false;
+			const decoded = decodePDFRawStream(stream).decode();
+			let text = arrayAsString(decoded);
 
-			for (const rule of rules) {
-					const newText = text.replace(rule.pattern, rule.replacement);
-
-					if (newText !== text) {
-							text = newText;
-							modified = true;
+			// Split the stream by new lines and process only lines ending with 'TJ'
+			const lines = text.split('\n');
+			const modifiedLines = lines.map(line => {
+				if (line.endsWith('TJ')) {
+						// Extract and concatenate text segments within parentheses
+						const concatenatedText = line.match(/\((.*?)\)/g).map(t => t.slice(1, -1)).join('');
+						console.log(concatenatedText, 'concatenatedText')
+		
+						if (concatenatedText.includes('Choosing a PDF Library')) {
+					
+							// Replace the target phrase in the concatenated text
+							const replacedText = concatenatedText.replace('Choosing a PDF Library', '');
+					
+							// Reconstruct the TJ command by injecting the replaced text back into the line
+							let currentIndex = 0;
+							const modifiedLine = line.replace(/\((.*?)\)/g, () => {
+									const length = line.match(/\((.*?)\)/)[0].length - 2; // Length of the current segment
+									const replacement = replacedText.substring(currentIndex, currentIndex + length);
+									currentIndex += length;
+									return `(${replacement})`;
+							});
+					
+							return modifiedLine;
 					}
-			}
+				}
+				return line;
+		});
 
-			if (modified) {
-					const newStream = PDFRawStream.of(stream.dict.clone(), pako.deflate(text));
-					pdfDoc.context.assign(streamRef, newStream);
-			}
+			// Reconstruct the modified content stream
+			const modifiedText = modifiedLines.join('\n');
+			const newStream = PDFRawStream.of(stream.dict.clone(), pako.deflate(modifiedText));
+			pdfDoc.context.assign(streamRef, newStream);
 
 			return streamRef;
 	}));
 
 	firstPage.node.set(PDFName.of('Contents'), pdfDoc.context.obj(modifiedStreams));
-
-	const bytes = await pdfDoc.save();
-	return bytes;
+	return await pdfDoc.save();
 }
 
 

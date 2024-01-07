@@ -9835,6 +9835,7 @@ endcmap CMapName currentdict /CMap defineresource pop end end`;
 						initialState = null,
 						fallbackFontDict = null
 					}) {
+						// console.log(stream, 'stream2)
 						resources ||= _primitives.Dict.empty;
 						initialState ||= new EvalState();
 						if (!operatorList) {
@@ -10308,7 +10309,9 @@ endcmap CMapName currentdict /CMap defineresource pop end end`;
 							notASpace: -Infinity,
 							transform: null,
 							fontName: null,
-							hasEOL: false
+							hasEOL: false,
+							dog: "g32",
+							objIds: []
 						};
 						const twoLastChars = [' ', ' '];
 						let twoLastCharsPos = 0;
@@ -10339,6 +10342,7 @@ endcmap CMapName currentdict /CMap defineresource pop end end`;
 						const emptyXObjectCache = new _image_utils.LocalImageCache();
 						const emptyGStateCache = new _image_utils.LocalGStateCache();
 						const preprocessor = new EvaluatorPreprocessor(stream, xref, stateManager);
+						console.log(preprocessor, 'preprocessor')
 						let textState;
 						function pushWhitespace({
 							width = 0,
@@ -10353,7 +10357,8 @@ endcmap CMapName currentdict /CMap defineresource pop end end`;
 								height,
 								transform,
 								fontName,
-								hasEOL: false
+								hasEOL: false,
+								dog: "bie8"
 							});
 						}
 						function getCurrentTextTransform() {
@@ -10409,6 +10414,7 @@ endcmap CMapName currentdict /CMap defineresource pop end end`;
 							textContentItem.spaceInFlowMax = fontSize * SPACE_IN_FLOW_MAX_FACTOR;
 							textContentItem.hasEOL = false;
 							textContentItem.initialized = true;
+							textContentItem.dog = "v3i3"
 							return textContentItem;
 						}
 						function updateAdvanceScale() {
@@ -10436,6 +10442,7 @@ endcmap CMapName currentdict /CMap defineresource pop end end`;
 							if (!disableNormalization) {
 								text = (0, _util.normalizeUnicode)(text);
 							}
+							console.log(textChunk, 'textChunk')
 							const bidiResult = (0, _bidi.bidi)(text, -1, textChunk.vertical);
 							return {
 								str: bidiResult.str,
@@ -10444,7 +10451,9 @@ endcmap CMapName currentdict /CMap defineresource pop end end`;
 								height: Math.abs(textChunk.totalHeight),
 								transform: textChunk.transform,
 								fontName: textChunk.fontName,
-								hasEOL: textChunk.hasEOL
+								hasEOL: textChunk.hasEOL,
+								dog: "bbr3",
+								objIds: textChunk.objIds
 							};
 						}
 						function handleSetFont(fontName, fontRef) {
@@ -10621,6 +10630,7 @@ endcmap CMapName currentdict /CMap defineresource pop end end`;
 								return;
 							}
 							const glyphs = font.charsToGlyphs(chars);
+							console.log(glyphs, 'glyphs')
 							const scale = textState.fontMatrix[0] * textState.fontSize;
 							for (let i = 0, ii = glyphs.length; i < ii; i++) {
 								const glyph = glyphs[i];
@@ -10678,6 +10688,11 @@ endcmap CMapName currentdict /CMap defineresource pop end end`;
 								if (saveLastChar(glyphUnicode)) {
 									textChunk.str.push(' ');
 								}
+								// console.log('stream4', glyphUnicode, 'c', stream?.dict?.objId, 'vv', stream?.dict)
+								const objId = stream?.dict?.objId;
+								if (objId) {
+									textChunk.objIds.push(objId);
+								}
 								textChunk.str.push(glyphUnicode);
 								if (charSpacing) {
 									if (!font.vertical) {
@@ -10703,7 +10718,8 @@ endcmap CMapName currentdict /CMap defineresource pop end end`;
 									height: 0,
 									transform: getCurrentTextTransform(),
 									fontName: textState.loadedName,
-									hasEOL: true
+									hasEOL: true,
+									dog: "b332"
 								});
 							}
 						}
@@ -10740,6 +10756,10 @@ endcmap CMapName currentdict /CMap defineresource pop end end`;
 							}
 							else {
 								textContentItem.totalHeight += textContentItem.height * textContentItem.textAdvanceScale;
+							}
+							const objId = stream?.dict?.objId;
+							if (objId) {
+								textContentItem.objIds.push(stream?.dict?.objId);
 							}
 							textContent.items.push(runBidiTransform(textContentItem));
 							textContentItem.initialized = false;
@@ -23882,6 +23902,7 @@ endcmap CMapName currentdict /CMap defineresource pop end end`;
 								(0, _util.warn)(`charToGlyph - invalid fontCharCode: ${fontCharCode}`);
 							}
 						}
+						// console.log(stream, 'stream5')
 						glyph = new Glyph(charcode, fontChar, unicode, accent, width, vmetric, operatorListId, isSpace, isInFont);
 						return this._glyphCache[charcode] = glyph;
 					}
