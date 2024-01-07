@@ -34,7 +34,7 @@ import useListenForCombineFilesRequest from './hooks/useListForCombineFilesReque
 import useListenForSplitPagesRequest from './hooks/useListenForSplitPagesRequest';
 import useListenForRemoveChatHistoryRequest from './hooks/useListenForRemoveChatHistoryRequest';
 import useListenForKeyClicks from './hooks/useListenForKeyClicks';
-import { PDFDocument, degrees } from 'pdf-lib';
+import { PDFDocument, PDFName, PDFRawStream, arrayAsString, decodePDFRawStream, degrees } from 'pdf-lib';
 import { extractAllTextFromPDF } from './utils/extractAllTextFromPdf';
 import { ModalProvider, useModal } from './Contexts/ModalProvider';
 import { AnnotationsContext, AnnotationsProvider } from './Contexts/AnnotationsContext';
@@ -53,9 +53,55 @@ import useListenForStateChange from './hooks/useListenForStateChange';
 import { AuthInfoContext } from './Contexts/AuthInfoContext';
 import useListenForAiQuestionCount from './hooks/useListenForAiQuestionCount';
 import { LocaleContext } from './Contexts/LocaleContext';
+import pako from 'pako';
 
 const isChromeExtension = process.env.NODE_CHROME === "true";
 let storage = isChromeExtension ? new ChromeStorage() : new IndexedDBStorage();
+
+const rules = [
+	{
+			pattern: '/o/g',
+			replacement: ''
+	}
+];
+
+async function removeTextFromPdf(pdfBytes) {
+	const pdfDoc = await PDFDocument.load(pdfBytes);
+
+    const enumeratedIndirectObjects = pdfDoc.context.enumerateIndirectObjects();
+
+    enumeratedIndirectObjects.forEach(([pdfRef, pdfObject]) => {
+        if (!(pdfObject instanceof PDFRawStream)) {
+            return;
+        }
+
+        if (pdfObject?.dict?.get(PDFName.of('Subtype')) === PDFName.of('Image')) {
+            return;
+        }
+
+        let text = arrayAsString(decodePDFRawStream(pdfObject).decode());
+        let modified = false;
+
+        for (const rule of rules) {
+            const newText = text.replace(rule.pattern, rule.replacement);
+
+            if (newText !== text) {
+                text = newText;
+
+                modified = true;
+            }
+        }
+
+        if (modified) {
+            pdfObject.contents = pako.deflate(text);
+        }
+    });
+
+    const bytes = await pdfDoc.save();
+
+    return bytes;
+
+}
 
 async function splitPdfPages(pdfBytes, splitIndices) {
 	const originalPdfDoc = await PDFDocument.load(pdfBytes);
@@ -1694,11 +1740,19 @@ const App = () => {
 		setAnnotationMode('signature');
 	};
 
-	const onEditOriginalTextSelected = (detail) => {
+	console.log(pdfProxyObj, 'pdfProxyObj11')
+	const onEditOriginalTextSelected = async (detail) => {
 		setRemovedOriginalText([
 			...removedOriginalText,
 			detail
 		]);
+		console.log(pdfProxyObjRef.current, 'pdfProxyObj22')
+		const buffer = await pdfProxyObjRef.current.getData();
+		const bufferResult = await removeTextFromPdf(buffer);
+		await storage?.save(bufferResult, pdfId);
+		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
+		newModifiedPayload[activePageIndex] = new Date().toISOString();
+		setModifiedFiles(newModifiedPayload);
 	};
 
 	console.log(removedOriginalText, 'removede')

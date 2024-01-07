@@ -116,7 +116,7 @@ export const PdfViewer = ({
 		});
 	}, [annotationColor]);
 
-	const refreshPage = async (pageNumber) => {
+	const refreshPage = async (pageNumber, textToRemove) => {
     const pdf = pdfViewerRef.current.pdfDocument;
     const page = await pdf.getPage(pageNumber);
 
@@ -142,11 +142,12 @@ export const PdfViewer = ({
 
     // Render the page into the canvas context
     let renderContext = {
-        canvasContext: ctx,
-        viewport: viewport,
+			canvasContext: ctx,
+			viewport,
+			textToRemove
     };
 
-			await page.render(renderContext).promise;
+		await page.render(renderContext).promise;
 	};
 
 	const applyDocument = async (viewerContainer) => {
@@ -300,10 +301,12 @@ export const PdfViewer = ({
 		loadingTask.promise.then(
 			async (loadedPdfDocument) => {
 				if (isSandbox) {
+					/* TODO:
 					const pdfData = new Uint8Array(await loadedPdfDocument.getData()).slice(0);
 					const pdfWithWatermark = await addSandboxWatermark(new Uint8Array(pdfData));
 					loadedPdfDocument = await pdfjs.getDocument({data: pdfWithWatermark}).promise;
 					hasWatermarkAdded.current = true;
+					*/
 				}
 				// If no modifiedFile, continue to set the loaded PDF document.
 				setPdfProxyObj(loadedPdfDocument);

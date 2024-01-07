@@ -47019,6 +47019,7 @@ endcmap CMapName currentdict /CMap defineresource pop end end`;
 						return this.form;
 					}
 					getData() {
+					  console.log("getting data22");
 						return this.data;
 					}
 					_bindValue(formNode, data, picture) {
