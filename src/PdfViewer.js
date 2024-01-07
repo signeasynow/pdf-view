@@ -116,40 +116,6 @@ export const PdfViewer = ({
 		});
 	}, [annotationColor]);
 
-	const refreshPage = async (pageNumber, textToRemove) => {
-    const pdf = pdfViewerRef.current.pdfDocument;
-    const page = await pdf.getPage(pageNumber);
-
-    // Original size of the PDF page
-    const originalViewport = page.getViewport({ scale: 1.0 });
-
-    const canvas = pdfViewerRef.current._pages[pageNumber - 1].canvas;
-    const ctx = canvas.getContext('2d');
-
-    // Calculate the scale factor based on the current size of the canvas
-    const scaleX = canvas.width / originalViewport.width;
-    const scaleY = canvas.height / originalViewport.height;
-    const scale = Math.min(scaleX, scaleY);  // Use the smaller scale to preserve aspect ratio
-
-    const viewport = page.getViewport({ scale: scale });
-
-    // Clear the existing canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Adjust canvas size if necessary
-    canvas.width = viewport.width;
-    canvas.height = viewport.height;
-
-    // Render the page into the canvas context
-    let renderContext = {
-			canvasContext: ctx,
-			viewport,
-			textToRemove
-    };
-
-		await page.render(renderContext).promise;
-	};
-
 	const applyDocument = async (viewerContainer) => {
 		
 		await cleanupDocument();
@@ -212,8 +178,7 @@ export const PdfViewer = ({
 
 		eventBus.on('edit-original-text-selected', (event) => {
 			console.log(event, 'details 77855');
-			onEditOriginalTextSelected(event.detail);
-			refreshPage(1, event.detail);
+			onEditOriginalTextSelected(event.detail, event.pageNumber);
 
 		});
 

@@ -34,7 +34,7 @@ import useListenForCombineFilesRequest from './hooks/useListForCombineFilesReque
 import useListenForSplitPagesRequest from './hooks/useListenForSplitPagesRequest';
 import useListenForRemoveChatHistoryRequest from './hooks/useListenForRemoveChatHistoryRequest';
 import useListenForKeyClicks from './hooks/useListenForKeyClicks';
-import { PDFDocument, PDFName, PDFRawStream, arrayAsString, decodePDFRawStream, degrees } from 'pdf-lib';
+import { PDFDocument, PDFName, PDFRawStream, PDFRef, arrayAsString, decodePDFRawStream, degrees } from 'pdf-lib';
 import { extractAllTextFromPDF } from './utils/extractAllTextFromPdf';
 import { ModalProvider, useModal } from './Contexts/ModalProvider';
 import { AnnotationsContext, AnnotationsProvider } from './Contexts/AnnotationsContext';
@@ -64,58 +64,111 @@ const rule = {
 	replacement: ""
 };
 
-async function removeTextFromPdf(pdfBytes) {
+async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
+	console.log(detail, 'detail')
 	const pdfDoc = await PDFDocument.load(pdfBytes);
-	const firstPage = pdfDoc.getPages()[0];
-	const contentStreams = firstPage.node.Contents();
+	const pages = pdfDoc.getPages();
+	console.log(pages, 'pagesbro')
+	const targetPage = pages[pageNumber - 1];
 
-	const modifiedStreams = await Promise.all(contentStreams.array.map(async (streamRef) => {
-			const stream = pdfDoc.context.lookup(streamRef);
-			if (!(stream instanceof PDFRawStream)) {
-					return streamRef;
-			}
+	if (!targetPage) {
+		throw new Error(`Page number ${pageNumber} does not exist in the document.`);
+  }
+
+
+	let contentStreams = targetPage.node.Contents();
+
+	let wasSingleStream = false;  // Variable to track if the original format was a single stream
+
+	// Check if contentStreams is a single stream (PDFRawStream) or an array of streams (PDFArray)
+	if (contentStreams instanceof PDFRawStream) {
+	  	wasSingleStream = true;
+			contentStreams = [contentStreams]; // Wrap it in an array for uniform processing
+	} else if (!contentStreams.array) {
+			throw new Error(`No content streams found on page number ${pageNumber}.`);
+	} else {
+			contentStreams = contentStreams.array;
+	}
+	console.log(contentStreams, 'stream4')
+
+	const modifiedStreams = await Promise.all(contentStreams.map(async (streamRef) => {
+		console.log(streamRef, 'streamRef')
+		let stream;
+    let isRef = false;
+
+    if (streamRef instanceof PDFRef) {
+        stream = pdfDoc.context.lookup(streamRef);
+        isRef = true;
+    } else if (streamRef instanceof PDFRawStream) {
+        stream = streamRef;
+    } else {
+        throw new Error("Unrecognized stream type.");
+    }
 
 			const decoded = decodePDFRawStream(stream).decode();
 			let text = arrayAsString(decoded);
-
+			console.log(text, 'text 22')
 			// Split the stream by new lines and process only lines ending with 'TJ'
 			const lines = text.split('\n');
+			console.log(lines, 'lines')
 			const modifiedLines = lines.map(line => {
 				if (line.endsWith('TJ')) {
+					try {
 						// Extract and concatenate text segments within parentheses
-						const concatenatedText = line.match(/\((.*?)\)/g).map(t => t.slice(1, -1)).join('');
-						console.log(concatenatedText, 'concatenatedText')
-		
-						if (concatenatedText.includes('Choosing a PDF Library')) {
-					
-							// Replace the target phrase in the concatenated text
-							const replacedText = concatenatedText.replace('Choosing a PDF Library', '');
-					
-							// Reconstruct the TJ command by injecting the replaced text back into the line
-							let currentIndex = 0;
-							const modifiedLine = line.replace(/\((.*?)\)/g, () => {
-									const length = line.match(/\((.*?)\)/)[0].length - 2; // Length of the current segment
-									const replacement = replacedText.substring(currentIndex, currentIndex + length);
-									currentIndex += length;
-									return `(${replacement})`;
-							});
-					
-							return modifiedLine;
+						const matchResult = line.match(/\((.*?)\)/g);
+						if (matchResult) {
+							const concatenatedText = line.match(/\((.*?)\)/g).map(t => t.slice(1, -1)).join('');
+							// console.log(concatenatedText, 'concatenatedText')
+			
+							if (concatenatedText.includes(detail.str)) {
+						
+								// Replace the target phrase in the concatenated text
+								const replacedText = concatenatedText.replace(detail.str, '');
+						
+								// Reconstruct the TJ command by injecting the replaced text back into the line
+								let currentIndex = 0;
+								const modifiedLine = line.replace(/\((.*?)\)/g, () => {
+										const length = line.match(/\((.*?)\)/)[0].length - 2; // Length of the current segment
+										const replacement = replacedText.substring(currentIndex, currentIndex + length);
+										currentIndex += length;
+										return `(${replacement})`;
+								});
+						
+								return modifiedLine;
+							}
+						}
+
+						
+					} catch (err) {
+						console.log(line, 'line error', err)
+						return line;
 					}
+						
 				}
 				return line;
-		});
+			});
 
 			// Reconstruct the modified content stream
-			const modifiedText = modifiedLines.join('\n');
-			const newStream = PDFRawStream.of(stream.dict.clone(), pako.deflate(modifiedText));
-			pdfDoc.context.assign(streamRef, newStream);
-
-			return streamRef;
+			const modifiedText = text || modifiedLines.join('\n');
+			console.log(modifiedText, 'modified', stream.dict.clone())
+			if (isRef) {
+					const newStream = PDFRawStream.of(stream.dict.clone(), pako.deflate(modifiedText));
+					pdfDoc.context.assign(stream, newStream);
+					return stream;
+			} else {
+					// Directly modify the PDFRawStream
+					stream.contents = pako.deflate(modifiedText);
+					return stream;
+			}
 	}));
 
-	firstPage.node.set(PDFName.of('Contents'), pdfDoc.context.obj(modifiedStreams));
-	return await pdfDoc.save();
+	let newContentStreams = wasSingleStream ? modifiedStreams[0] : pdfDoc.context.obj(modifiedStreams);
+
+	// targetPage.node.set(PDFName.of('Contents'), newContentStreams);
+	console.log("set contents")
+	const saved = await pdfDoc.save();
+	console.log(saved, 'saved well')
+	return saved;
 }
 
 
@@ -1757,14 +1810,14 @@ const App = () => {
 	};
 
 	console.log(pdfProxyObj, 'pdfProxyObj11')
-	const onEditOriginalTextSelected = async (detail) => {
+	const onEditOriginalTextSelected = async (detail, pageNumber) => {
 		setRemovedOriginalText([
 			...removedOriginalText,
 			detail
 		]);
 		console.log(pdfProxyObjRef.current, 'pdfProxyObj22')
 		const buffer = await pdfProxyObjRef.current.getData();
-		const bufferResult = await removeTextFromPdf(buffer);
+		const bufferResult = await removeTextFromPdf(buffer, detail, pageNumber);
 		await storage?.save(bufferResult, pdfId);
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
