@@ -54,13 +54,14 @@ import { AuthInfoContext } from './Contexts/AuthInfoContext';
 import useListenForAiQuestionCount from './hooks/useListenForAiQuestionCount';
 import { LocaleContext } from './Contexts/LocaleContext';
 import pako from 'pako';
+import fontkit from '@pdf-lib/fontkit';
 
 const isChromeExtension = process.env.NODE_CHROME === "true";
 let storage = isChromeExtension ? new ChromeStorage() : new IndexedDBStorage();
 
 const rules = [
 	{
-			pattern: '/o/g',
+			pattern: 'y',
 			replacement: ''
 	}
 ];
@@ -68,40 +69,46 @@ const rules = [
 async function removeTextFromPdf(pdfBytes) {
 	const pdfDoc = await PDFDocument.load(pdfBytes);
 
-    const enumeratedIndirectObjects = pdfDoc.context.enumerateIndirectObjects();
+	// Get the first page
+	const firstPage = pdfDoc.getPages()[0];
 
-    enumeratedIndirectObjects.forEach(([pdfRef, pdfObject]) => {
-        if (!(pdfObject instanceof PDFRawStream)) {
-            return;
-        }
+	// Access the content streams of the first page
+	const contentStreams = firstPage.node.Contents();
 
-        if (pdfObject?.dict?.get(PDFName.of('Subtype')) === PDFName.of('Image')) {
-            return;
-        }
+	// In case the first page has multiple content streams
+	const modifiedStreams = await Promise.all(contentStreams.array.map(async (streamRef) => {
+			const stream = pdfDoc.context.lookup(streamRef);
 
-        let text = arrayAsString(decodePDFRawStream(pdfObject).decode());
-        let modified = false;
+			if (!(stream instanceof PDFRawStream)) {
+					return streamRef;
+			}
 
-        for (const rule of rules) {
-            const newText = text.replace(rule.pattern, rule.replacement);
+			let text = arrayAsString(decodePDFRawStream(stream).decode());
+			let modified = false;
 
-            if (newText !== text) {
-                text = newText;
+			for (const rule of rules) {
+					const newText = text.replace(rule.pattern, rule.replacement);
 
-                modified = true;
-            }
-        }
+					if (newText !== text) {
+							text = newText;
+							modified = true;
+					}
+			}
 
-        if (modified) {
-            pdfObject.contents = pako.deflate(text);
-        }
-    });
+			if (modified) {
+					const newStream = PDFRawStream.of(stream.dict.clone(), pako.deflate(text));
+					pdfDoc.context.assign(streamRef, newStream);
+			}
 
-    const bytes = await pdfDoc.save();
+			return streamRef;
+	}));
 
-    return bytes;
+	firstPage.node.set(PDFName.of('Contents'), pdfDoc.context.obj(modifiedStreams));
 
+	const bytes = await pdfDoc.save();
+	return bytes;
 }
+
 
 async function splitPdfPages(pdfBytes, splitIndices) {
 	const originalPdfDoc = await PDFDocument.load(pdfBytes);
