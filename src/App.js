@@ -118,23 +118,36 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 						const matchResult = line.match(/\((.*?)\)/g);
 						if (matchResult) {
 							const concatenatedText = line.match(/\((.*?)\)/g).map(t => t.slice(1, -1)).join('');
+
 							// console.log(concatenatedText, 'concatenatedText')
+							const originalString = detail.str.replace(/-\s*$/, '');
 			
-							if (concatenatedText.includes(detail.str)) {
-						
-								// Replace the target phrase in the concatenated text
-								const replacedText = concatenatedText.replace(detail.str, '');
-						
-								// Reconstruct the TJ command by injecting the replaced text back into the line
-								let currentIndex = 0;
-								const modifiedLine = line.replace(/\((.*?)\)/g, () => {
-										const length = line.match(/\((.*?)\)/)[0].length - 2; // Length of the current segment
-										const replacement = replacedText.substring(currentIndex, currentIndex + length);
-										currentIndex += length;
-										return `(${replacement})`;
-								});
-						
-								return modifiedLine;
+							if (concatenatedText.includes(originalString)) {
+									// Calculate the number of spaces needed to replace the original string
+									const spaceCount = originalString.length;
+									const replacementSpaces = ' '.repeat(spaceCount);
+
+									// Replace the target phrase in the concatenated text with spaces
+									const replacedText = concatenatedText.replace(originalString, replacementSpaces);
+
+									// Reconstruct the TJ command by injecting the replaced text back into the line
+									let currentIndex = 0;
+									const modifiedLine = line.replace(/\((.*?)\)(\s*\d*\.?\d*\s*)?/g, () => {
+											const match = line.match(/\((.*?)\)(\s*\d*\.?\d*\s*)?/)[0];
+											const test = line.match(/\((.*?)\)(\s*\d*\.?\d*\s*)?/);
+											console.log(test, 'test2')
+											const textMatch = match.match(/\((.*?)\)/)[0];
+											const spacingNumber = match.match(/(\s*\d*\.?\d*\s*)?$/)[0]; // Captures the spacing adjustment
+									
+											const segmentLength = textMatch.length - 2; // Length of the current text segment
+											const replacement = replacedText.substring(currentIndex, currentIndex + segmentLength);
+											console.log(replacement.length, 'replacement.length', replacement, 't', textMatch, 'mm', match)
+											currentIndex += segmentLength;
+									
+											return `(${replacement})${spacingNumber}`; // Preserve the spacing adjustment
+									});
+									console.log(modifiedLine, 'modifiedLine')
+									return modifiedLine;
 							}
 						}
 
