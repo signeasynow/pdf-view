@@ -112,14 +112,13 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 			const lines = text.split('\n');
 			console.log(lines, 'lines')
 			const modifiedLines = lines.map(line => {
-				if (line.endsWith('TJ')) {
+				if (line.toUpperCase().endsWith('TJ')) {
 					try {
 						// Extract and concatenate text segments within parentheses
 						const matchResult = line.match(/\((.*?)\)/g);
 						if (matchResult) {
-							const concatenatedText = line.match(/\((.*?)\)/g).map(t => t.slice(1, -1)).join('');
-
-							// console.log(concatenatedText, 'concatenatedText')
+							const concatenatedText = line.match(/\((.*?)\)/g).map(t => t.slice(1, -1)).join('').trim();
+							console.log(concatenatedText, 'concatenatedText')
 							const originalString = detail.str.replace(/-\s*$/, '');
 			
 							if (concatenatedText.includes(originalString)) {
@@ -132,21 +131,24 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 
 									// Reconstruct the TJ command by injecting the replaced text back into the line
 									let currentIndex = 0;
-									const modifiedLine = line.replace(/\((.*?)\)(\s*\d*\.?\d*\s*)?/g, () => {
-											const match = line.match(/\((.*?)\)(\s*\d*\.?\d*\s*)?/)[0];
-											const test = line.match(/\((.*?)\)(\s*\d*\.?\d*\s*)?/);
-											console.log(test, 'test2')
-											const textMatch = match.match(/\((.*?)\)/)[0];
-											const spacingNumber = match.match(/(\s*\d*\.?\d*\s*)?$/)[0]; // Captures the spacing adjustment
+									const regex = /\((.*?)\)(\s*\d*\.?\d*\s*)?/g;
+									const matches = [...line.matchAll(regex)];
+
+									let modifiedLine = matches.map(match => {
+											const textMatch = match[1]; // Text within parentheses
+											const spacingNumber = match[2] ? match[2].trim() : ''; // Spacing adjustment, trimmed
 									
-											const segmentLength = textMatch.length - 2; // Length of the current text segment
+											const segmentLength = textMatch.length;
 											const replacement = replacedText.substring(currentIndex, currentIndex + segmentLength);
-											console.log(replacement.length, 'replacement.length', replacement, 't', textMatch, 'mm', match)
 											currentIndex += segmentLength;
 									
-											return `(${replacement})${spacingNumber}`; // Preserve the spacing adjustment
-									});
-									console.log(modifiedLine, 'modifiedLine')
+											return `(${replacement})${spacingNumber ? ' ' + spacingNumber : ''}`;
+									}).join('');
+
+									if (!modifiedLine.trim().endsWith('TJ')) {
+											modifiedLine += ' TJ';
+									}
+									console.log("*" + modifiedLine + "*", 'modifiedLine')
 									return modifiedLine;
 							}
 						}
