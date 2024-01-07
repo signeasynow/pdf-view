@@ -149,11 +149,11 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 			});
 
 			// Reconstruct the modified content stream
-			const modifiedText = text || modifiedLines.join('\n');
+			const modifiedText = modifiedLines.join('\n');
 			console.log(modifiedText, 'modified', stream.dict.clone())
 			if (isRef) {
 					const newStream = PDFRawStream.of(stream.dict.clone(), pako.deflate(modifiedText));
-					pdfDoc.context.assign(stream, newStream);
+					pdfDoc.context.assign(streamRef, newStream);
 					return stream;
 			} else {
 					// Directly modify the PDFRawStream
