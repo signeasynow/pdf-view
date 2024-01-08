@@ -117,12 +117,6 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 				return matchResult ? matchResult.map(t => t.slice(1, -1)).join('').trim() : '';
 		}
 		
-		function replaceTargetWithSpaces(concatenatedText, target) {
-				const spaceCount = target.length;
-				const replacementSpaces = ' '.repeat(spaceCount);
-				return concatenatedText.replace(target, replacementSpaces);
-		}
-		
 		function reconstructLine(matches, replacedText) {
 				let currentIndex = 0;
 				return matches.map(match => {
@@ -202,7 +196,9 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 		  });
 		};
 
-		const originalString = detail.str.replace(/-\s*$/, '');
+		const originalString = detail.str.replace(/-\s*$/, '')
+			.replace(/\(/g, '\\(')
+			.replace(/\)/g, '\\)');
 
 		const {lines: singleLines, foundMatch } = processLinesSingleCommand(lines);
 		let modifiedLines = singleLines;
@@ -224,12 +220,7 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 		}
 	}));
 
-	let newContentStreams = wasSingleStream ? modifiedStreams[0] : pdfDoc.context.obj(modifiedStreams);
-
-	// targetPage.node.set(PDFName.of('Contents'), newContentStreams);
-	console.log("set contents")
 	const saved = await pdfDoc.save();
-	console.log(saved, 'saved well')
 	return saved;
 }
 
