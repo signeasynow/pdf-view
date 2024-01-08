@@ -150,15 +150,6 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 			return null; // Indicate no replacement was made
 	  }
 
-		let accumulatedText = '';
-		let accumulatedMatches = [];
-		let processingMultipleTJCommands = false;
-
-		function processAccumulatedLines(targetString) {
-			const replacedText = replaceTargetWithSpaces(accumulatedText, targetString);
-			return accumulatedMatches.map(match => reconstructLine(match, replacedText)).join('\n');
-	  }
-
 		const processLinesSingleCommand = (lines) => {
 				let _foundMatch = false;
 				const result = lines.map(line => {
