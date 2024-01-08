@@ -138,8 +138,24 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 	  }
 
 		function processSingleTJCommand(line, targetString) {
-			const concatenatedText = extractTextFromLine(line);
-			if (concatenatedText.includes(targetString)) {
+			const modLine = line.replace(/\\\(/g, 'PLACEHOLDER_PARENTHESIS_OPEN')
+					.replace(/\\\)/g, 'PLACEHOLDER_PARENTHESIS_CLOSE');
+			const modTarget = targetString
+					.replace(/\\\(/g, 'PLACEHOLDER_PARENTHESIS_OPEN')
+					.replace(/\\\)/g, 'PLACEHOLDER_PARENTHESIS_CLOSE')
+					.replace(/\(/g, 'PLACEHOLDER_PARENTHESIS_OPEN')
+					.replace(/\)/g, 'PLACEHOLDER_PARENTHESIS_CLOSE')
+					.trim()
+	
+			const concatenatedText = extractTextFromLine(modLine).trim();
+	
+			// Debug log
+			if (concatenatedText.includes("Inc")) {
+					console.log("*" + concatenatedText + "*", 'concatenatedText', "*" +  modTarget + "*", 'comp', concatenatedText === modTarget);
+			}
+	
+			if (concatenatedText.includes(modTarget)) {
+					console.log("Match found", line);
 					return replaceTextWithSpacesInTJCommand(line);
 			}
 			return null; // Indicate no replacement was made
