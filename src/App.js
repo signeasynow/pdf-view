@@ -135,17 +135,18 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 				}).join('');
 		}
 
-		function replaceTextInTJCommand(line, targetString) {
-				const replacedText = replaceTargetWithSpaces(extractTextFromLine(line), targetString);
-				const regex = /\((.*?)\)(\s*\d*\.?\d*\s*)?/g;
-				const matches = [...line.matchAll(regex)];
-				return reconstructLine(matches, replacedText);
-		}
+		function replaceTextWithSpacesInTJCommand(line) {
+			const textLength = extractTextFromLine(line).length;
+			const whitespaceReplacement = ' '.repeat(textLength);
+			const regex = /\((.*?)\)(\s*\d*\.?\d*\s*)?/g;
+			const matches = [...line.matchAll(regex)];
+			return reconstructLine(matches, whitespaceReplacement);
+	  }
 
 		function processSingleTJCommand(line, targetString) {
 			const concatenatedText = extractTextFromLine(line);
 			if (concatenatedText.includes(targetString)) {
-					return replaceTextInTJCommand(line, targetString);
+					return replaceTextWithSpacesInTJCommand(line);
 			}
 			return null; // Indicate no replacement was made
 	  }
@@ -164,14 +165,6 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 				});
 				return { lines: result, foundMatch: _foundMatch}
 		};
-
-		function replaceTextWithSpacesInTJCommand(line) {
-				const textLength = extractTextFromLine(line).length;
-				const whitespaceReplacement = ' '.repeat(textLength);
-				const regex = /\((.*?)\)(\s*\d*\.?\d*\s*)?/g;
-				const matches = [...line.matchAll(regex)];
-				return reconstructLine(matches, whitespaceReplacement);
-		}
 		
 		const processLinesMultipleCommands = (lines, originalString) => {
 			let accumulatedText = '';
