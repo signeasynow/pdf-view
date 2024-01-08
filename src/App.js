@@ -135,13 +135,17 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 				}).join('');
 		}
 
+		function replaceTextInTJCommand(line, targetString) {
+				const replacedText = replaceTargetWithSpaces(extractTextFromLine(line), targetString);
+				const regex = /\((.*?)\)(\s*\d*\.?\d*\s*)?/g;
+				const matches = [...line.matchAll(regex)];
+				return reconstructLine(matches, replacedText);
+		}
+
 		function processSingleTJCommand(line, targetString) {
 			const concatenatedText = extractTextFromLine(line);
 			if (concatenatedText.includes(targetString)) {
-					const replacedText = replaceTargetWithSpaces(concatenatedText, targetString);
-					const regex = /\((.*?)\)(\s*\d*\.?\d*\s*)?/g;
-					const matches = [...line.matchAll(regex)];
-					return reconstructLine(matches, replacedText);
+					return replaceTextInTJCommand(line, targetString);
 			}
 			return null; // Indicate no replacement was made
 	  }
@@ -156,39 +160,71 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 	  }
 
 		const processLinesSingleCommand = (lines) => {
-				return lines.map(line => {
+				let _foundMatch = false;
+				const result = lines.map(line => {
 						if (line.toUpperCase().endsWith('TJ')) {
 								const result = processSingleTJCommand(line, originalString);
 								if (result !== null) {
-										foundMatch = true;
-										return result + (result.trim().endsWith('TJ') ? '' : ' TJ');
+									_foundMatch = true;
+									return result + (result.trim().endsWith('TJ') ? '' : ' TJ');
 								}
 						}
 						return line;
-				}).filter(line => line);
+				});
+				return { lines: result, foundMatch: _foundMatch}
 		};
 
-		const processLinesMultipleCommands = (lines) => {
+		function replaceTextWithSpacesInTJCommand(line) {
+				const textLength = extractTextFromLine(line).length;
+				const whitespaceReplacement = ' '.repeat(textLength);
+				const regex = /\((.*?)\)(\s*\d*\.?\d*\s*)?/g;
+				const matches = [...line.matchAll(regex)];
+				return reconstructLine(matches, whitespaceReplacement);
+		}
+		
+		const processLinesMultipleCommands = (lines, originalString) => {
 			let accumulatedText = '';
 			let accumulatedMatches = [];
+			let matchingIndexes = [];
+			let fullMatchFound = false;
 	
-			return lines.map(line => {
-					if (line.toUpperCase().endsWith('TJ')) {
-							accumulatedText += extractTextFromLine(line);
-							accumulatedMatches.push([...line.matchAll(/\((.*?)\)(\s*\d*\.?\d*\s*)?/g)]);
-							if (accumulatedText.includes(originalString)) {
-									return processAccumulatedLines(originalString);
-							}
-					}
-					return null; // Placeholder for non-matching lines
-			}).filter(line => line); // Remove placeholders
-	  };
+			for (const [index, line] of lines.entries()) {
+				if (fullMatchFound) break; // Break out of the loop if full match is found
+		
+				if (line.toUpperCase().endsWith('TJ')) {
+						const currentText = extractTextFromLine(line);
+						if (originalString.includes(currentText)) {
+								accumulatedText += currentText;
+								accumulatedMatches.push(line);
+								matchingIndexes.push(index);
+								if (accumulatedText.replace(/\s+/g, '').includes(originalString.replace(/\s+/g, ''))) {
+										fullMatchFound = true;  // Set the flag when full match is found
+										// Process your matches here if needed
+										break; // Break out of the loop after processing
+								}
+						} else {
+								accumulatedText = '';
+								accumulatedMatches = [];
+								matchingIndexes = [];
+						}
+				}
+			}
+			return lines.map((line, index) => {
+				if (matchingIndexes.includes(index)) {
+					const result = replaceTextWithSpacesInTJCommand(line);
+					return result + (result.trim().endsWith('TJ') ? '' : ' TJ');	
+				}
+				return line;
+		  });
+		};
 
 		const originalString = detail.str.replace(/-\s*$/, '');
-		let foundMatch = false;
 
-		let modifiedLines = processLinesSingleCommand(lines);
-
+		const {lines: singleLines, foundMatch } = processLinesSingleCommand(lines);
+		let modifiedLines = singleLines;
+		if (!foundMatch) {
+			modifiedLines = processLinesMultipleCommands(lines, originalString);
+	  }
 
 		// Reconstruct the modified content stream
 		const modifiedText = modifiedLines.join('\n');
