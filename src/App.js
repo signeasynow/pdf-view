@@ -112,10 +112,13 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 			const lines = text.split('\n');
 			console.log(lines, 'lines')
 
-		function extractTextFromLine(line) {
-				const matchResult = line.match(/\((.*?)\)/g);
-				return matchResult ? matchResult.map(t => t.slice(1, -1)).join('').trim() : '';
-		}
+			function extractTextFromLine(line) {
+					// Replace occurrences of \2 followed by numbers or letters with +++++
+
+					// Extract text within parentheses
+					const matchResult = line.match(/\((.*?)\)/g);
+					return matchResult ? matchResult.map(t => t.slice(1, -1)).join('').trim() : '';
+			}
 		
 		function reconstructLine(matches, replacedText) {
 				let currentIndex = 0;
@@ -145,19 +148,26 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 					.replace(/\\\)/g, 'PLACEHOLDER_PARENTHESIS_CLOSE')
 					.replace(/\(/g, 'PLACEHOLDER_PARENTHESIS_OPEN')
 					.replace(/\)/g, 'PLACEHOLDER_PARENTHESIS_CLOSE')
-					.trim()
+					.trim();
 	
 			const concatenatedText = extractTextFromLine(modLine).trim();
 	
 			// Debug log
-			if (concatenatedText.includes("Inc")) {
+			if (concatenatedText.includes("ement")) {
 					console.log("*" + concatenatedText + "*", 'concatenatedText', "*" +  modTarget + "*", 'comp', concatenatedText === modTarget);
 			}
 	
-			if (concatenatedText.includes(modTarget)) {
+			
+			let regexPattern = concatenatedText.replace(/\\2[0-9]{2}/g, '.');
+
+			// Create a RegExp object
+			const regex = new RegExp(regexPattern);
+
+			if (regex.test(modTarget)) {
 					console.log("Match found", line);
 					return replaceTextWithSpacesInTJCommand(line);
 			}
+
 			return null; // Indicate no replacement was made
 	  }
 
