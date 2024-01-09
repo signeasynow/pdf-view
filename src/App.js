@@ -55,6 +55,7 @@ import useListenForAiQuestionCount from './hooks/useListenForAiQuestionCount';
 import { LocaleContext } from './Contexts/LocaleContext';
 import pako from 'pako';
 import fontkit from '@pdf-lib/fontkit';
+import { generateUUID } from './utils/generateUuid';
 
 const isChromeExtension = process.env.NODE_CHROME === "true";
 let storage = isChromeExtension ? new ChromeStorage() : new IndexedDBStorage();
@@ -1875,14 +1876,28 @@ const App = () => {
 		};
 		setAnnotationMode('signature');
 	};
-
-	console.log(pdfProxyObj, 'pdfProxyObj11')
+	
 	const onEditOriginalTextSelected = async (detail, pageNumber) => {
 		setRemovedOriginalText([
 			...removedOriginalText,
 			detail
 		]);
-		console.log(pdfProxyObjRef.current, 'pdfProxyObj22')
+		console.log(detail, 'detail22', detail.textState?.font?.name)
+		setAnnotations([
+			...annotations,
+			{
+				color:  "#000000",
+				content: detail.str,
+				fontFamily: detail.textState?.font?.name,
+				fontSize: detail?.textDivProperties?.fontSize,
+				id: generateUUID(),
+				name: "freeTextEditor",
+				pageNumber: pageNumber,
+				x: detail.x,
+				y: detail.y
+			}
+		])
+	
 		const buffer = await pdfProxyObjRef.current.getData();
 		const bufferResult = await removeTextFromPdf(buffer, detail, pageNumber);
 		await storage?.save(bufferResult, pdfId);
