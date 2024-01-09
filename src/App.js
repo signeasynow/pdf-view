@@ -160,10 +160,15 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 			
 			let regexPattern = concatenatedText.replace(/\\2[0-9]{2}/g, '.');
 
+			regexPattern = '^' + regexPattern + '$';
+			console.log(regexPattern, 'regexPattern2')
+
 			// Create a RegExp object
 			const regex = new RegExp(regexPattern);
 
-			if (regex.test(modTarget)) {
+			if (regex.test(modTarget)
+				// this is too much of a cop out
+				&& regex.toString() !== "/^.$/" && regex.toString() !== "/^$/") {
 					console.log("Match found", line);
 					return replaceTextWithSpacesInTJCommand(line);
 			}
