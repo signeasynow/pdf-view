@@ -65,10 +65,9 @@ const rule = {
 };
 
 async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
-	console.log(detail, 'detail')
 	const pdfDoc = await PDFDocument.load(pdfBytes);
 	const pages = pdfDoc.getPages();
-	console.log(pages, 'pagesbro')
+
 	const targetPage = pages[pageNumber - 1];
 
 	if (!targetPage) {
@@ -89,10 +88,8 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 	} else {
 			contentStreams = contentStreams.array;
 	}
-	console.log(contentStreams, 'stream4')
 
 	const modifiedStreams = await Promise.all(contentStreams.map(async (streamRef) => {
-		console.log(streamRef, 'streamRef')
 		let stream;
     let isRef = false;
 
@@ -107,10 +104,9 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 
 			const decoded = decodePDFRawStream(stream).decode();
 			let text = arrayAsString(decoded);
-			console.log(text, 'text 22')
+
 			// Split the stream by new lines and process only lines ending with 'TJ'
 			const lines = text.split('\n');
-			console.log(lines, 'lines')
 
 			function extractTextFromLine(line) {
 					// Replace occurrences of \2 followed by numbers or letters with +++++
@@ -151,17 +147,10 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 					.trim();
 	
 			const concatenatedText = extractTextFromLine(modLine).trim();
-	
-			// Debug log
-			if (concatenatedText.includes("ement")) {
-					console.log("*" + concatenatedText + "*", 'concatenatedText', "*" +  modTarget + "*", 'comp', concatenatedText === modTarget);
-			}
-	
-			
+
 			let regexPattern = concatenatedText.replace(/\\2[0-9]{2}/g, '.');
 
 			regexPattern = '^' + regexPattern + '$';
-			console.log(regexPattern, 'regexPattern2')
 
 			// Create a RegExp object
 			const regex = new RegExp(regexPattern);
@@ -169,7 +158,6 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 			if (regex.test(modTarget)
 				// this is too much of a cop out
 				&& regex.toString() !== "/^.$/" && regex.toString() !== "/^$/") {
-					console.log("Match found", line);
 					return replaceTextWithSpacesInTJCommand(line);
 			}
 
@@ -239,7 +227,6 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 
 		// Reconstruct the modified content stream
 		const modifiedText = modifiedLines.join('\n');
-		console.log(modifiedText, 'modified', stream.dict.clone())
 		if (isRef) {
 				const newStream = PDFRawStream.of(stream.dict.clone(), pako.deflate(modifiedText));
 				pdfDoc.context.assign(streamRef, newStream);
@@ -1032,7 +1019,6 @@ const App = () => {
 		};
 	}, []);
 
-	console.log(tools, 'tools');
 
 	const showHeader = () => tools?.general?.includes('download') || tools?.general?.includes('panel-toggle')
 		|| tools?.general?.includes('zoom') || tools?.general?.includes('search')
@@ -1076,7 +1062,6 @@ const App = () => {
 
     // Add the last update operations for each annotation
     updateAnnotationMap.forEach((op) => filteredOperations.push(op));
-		console.log(filteredOperations, 'filteredOperations')
 		// Replay all operations except for the last one
 		for (const operation of filteredOperations) {
 			buffer = await applyOperation(operation, buffer); // Assuming applyOperation returns the updated buffer
@@ -1268,7 +1253,6 @@ const App = () => {
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
-		console.log("test")
 		addOperation(operation);
 	};
 
@@ -1285,7 +1269,6 @@ const App = () => {
 		if (!initialAnnotations) {
 			return;
 		}
-		console.log(pdfViewerRef.current, 'pdfViewerRef.current2');
 		// onEnableClickTagMode();
 		setAnnotations(initialAnnotations);
 	}, [initialAnnotations]);
