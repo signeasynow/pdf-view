@@ -68,6 +68,7 @@ const rule = {
 async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 	const pdfDoc = await PDFDocument.load(pdfBytes);
 	const pages = pdfDoc.getPages();
+	let color;
 
 	const targetPage = pages[pageNumber - 1];
 
@@ -105,7 +106,7 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 
 			const decoded = decodePDFRawStream(stream).decode();
 			let text = arrayAsString(decoded);
-
+			console.log(text, 'text22')
 			// Split the stream by new lines and process only lines ending with 'TJ'
 			const lines = text.split('\n');
 
@@ -165,19 +166,35 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 			return null; // Indicate no replacement was made
 	  }
 
+		function findHexColor(lines, startIndex) {
+			for (let i = startIndex - 1; i >= 0; i--) {
+					if (lines[i]?.toLowerCase().trim().endsWith('scn')) {
+							const colorValues = lines[i].match(/([\d.]+) {1,}([\d.]+) {1,}([\d.]+) {1,}scn/);
+							if (colorValues && colorValues.length === 4) {
+									const hexColor = colorValues.slice(1, 4)
+											.map(v => parseInt(parseFloat(v) * 255).toString(16).padStart(2, '0'))
+											.join('');
+									return `#${hexColor}`;
+							}
+					}
+			}
+			return null; // Return null if no color command is found
+	  }
+
 		const processLinesSingleCommand = (lines) => {
 				let _foundMatch = false;
-				const result = lines.map(line => {
+				const result = lines.map((line, index) => {
 						if (line.toUpperCase().endsWith('TJ')) {
 								const result = processSingleTJCommand(line, originalString);
 								if (result !== null) {
 									_foundMatch = true;
-									return result + (result.trim().endsWith('TJ') ? '' : ' TJ');
+									color = findHexColor(lines, index);
+									return result + (result.trim().toUpperCase().endsWith('TJ') ? '' : ' TJ');
 								}
 						}
 						return line;
 				});
-				return { lines: result, foundMatch: _foundMatch}
+				return { lines: result, foundMatch: _foundMatch, color }
 		};
 		
 		const processLinesMultipleCommands = (lines, originalString) => {
@@ -185,7 +202,7 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 			let accumulatedMatches = [];
 			let matchingIndexes = [];
 			let fullMatchFound = false;
-	
+
 			for (const [index, line] of lines.entries()) {
 				if (fullMatchFound) break; // Break out of the loop if full match is found
 		
@@ -197,7 +214,7 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 								matchingIndexes.push(index);
 								if (accumulatedText.replace(/\s+/g, '').includes(originalString.replace(/\s+/g, ''))) {
 										fullMatchFound = true;  // Set the flag when full match is found
-										// Process your matches here if needed
+										color = findHexColor(lines, index);
 										break; // Break out of the loop after processing
 								}
 						} else {
@@ -207,23 +224,30 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 						}
 				}
 			}
-			return lines.map((line, index) => {
-				if (matchingIndexes.includes(index)) {
-					const result = replaceTextWithSpacesInTJCommand(line);
-					return result + (result.trim().endsWith('TJ') ? '' : ' TJ');	
-				}
-				return line;
-		  });
+			return {
+				lines: lines.map((line, index) => {
+					if (matchingIndexes.includes(index)) {
+						const result = replaceTextWithSpacesInTJCommand(line);
+						return result + (result.trim().endsWith('TJ') ? '' : ' TJ');	
+					}
+					return line;
+				}),
+				color
+			};
 		};
 
 		const originalString = detail.str.replace(/-\s*$/, '')
 			.replace(/\(/g, '\\(')
 			.replace(/\)/g, '\\)');
 
-		const {lines: singleLines, foundMatch } = processLinesSingleCommand(lines);
+		
+		const {lines: singleLines, foundMatch, color: singleColor } = processLinesSingleCommand(lines);
 		let modifiedLines = singleLines;
+		color = singleColor;
 		if (!foundMatch) {
-			modifiedLines = processLinesMultipleCommands(lines, originalString);
+			const { lines: multiLines, color: multiColor } = processLinesMultipleCommands(lines, originalString);
+			modifiedLines = multiLines;
+			color = multiColor;
 	  }
 
 		// Reconstruct the modified content stream
@@ -240,7 +264,10 @@ async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 	}));
 
 	const saved = await pdfDoc.save();
-	return saved;
+	return {
+		document: saved,
+		color
+	}
 }
 
 
@@ -663,7 +690,6 @@ const App = () => {
 				setModifiedUiElements(event.data.modifiedUiElements);
 			}
 			if (typeof event.data === 'object' && !!event.data.authInfo && event.data.authInfo?.token !== authInfo?.token) {
-				console.log("setting auth info", event.data.authInfo)
 				setAuthInfo(event.data.authInfo);
 			}
 			if (event.data?.type === 'fromCore') {
@@ -1883,12 +1909,17 @@ const App = () => {
 			detail
 		]);
 		console.log(detail, 'detail22', detail.textState?.font?.name)
+
+	
+		const buffer = await pdfProxyObjRef.current.getData();
+		const { document: bufferResult, color } = await removeTextFromPdf(buffer, detail, pageNumber);
+		console.log(color, 'colorliber')
 		setAnnotations([
 			...annotations,
 			{
-				color:  "#000000",
+				color: color || "#000000",
 				content: detail.str,
-				fontFamily: detail.textState?.font?.name,
+				fontFamily: detail.styleFontFamily || detail.textState?.font?.name,
 				fontSize: detail?.textDivProperties?.fontSize,
 				id: generateUUID(),
 				name: "freeTextEditor",
@@ -1897,16 +1928,11 @@ const App = () => {
 				y: detail.y
 			}
 		])
-	
-		const buffer = await pdfProxyObjRef.current.getData();
-		const bufferResult = await removeTextFromPdf(buffer, detail, pageNumber);
 		await storage?.save(bufferResult, pdfId);
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
 	};
-
-	console.log(removedOriginalText, 'removede')
 
 	const onClickField = (type) => {
 		pdfViewerRef.current.annotationEditorMode = {
