@@ -11771,6 +11771,7 @@ endcmap CMapName currentdict /CMap defineresource pop end end`;
 							}
 						}
 						fontName ||= baseFont;
+						console.log(fontName, 'fontName22')
 						if (!(fontName instanceof _primitives.Name)) {
 							throw new _util.FormatError('invalid font name');
 						}

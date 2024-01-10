@@ -1908,18 +1908,20 @@ const App = () => {
 			...removedOriginalText,
 			detail
 		]);
-		console.log(detail, 'detail22', detail.textState?.font?.name)
+		// console.log(detail, 'detail22', detail.textState?.font?.name)
 
 	
 		const buffer = await pdfProxyObjRef.current.getData();
 		const { document: bufferResult, color } = await removeTextFromPdf(buffer, detail, pageNumber);
-		console.log(color, 'colorliber')
+		// console.log(color, 'colorliber')
+		// Arial-BoldMT works...
+		// Courier-Bold, Times-Bold, "TimesNewRomanPSMT-Bold", TimesNewRomanPS-Bold, TimesNewRoman-Bold failed
 		setAnnotations([
 			...annotations,
 			{
 				color: color || "#000000",
 				content: detail.str,
-				fontFamily: detail.styleFontFamily || detail.textState?.font?.name,
+				fontFamily: "Courier" || detail.styleFontFamily || detail.textState?.font?.name,
 				fontSize: detail?.textDivProperties?.fontSize,
 				id: generateUUID(),
 				name: "freeTextEditor",
