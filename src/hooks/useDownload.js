@@ -52,7 +52,6 @@ async function getFontForAnnotation(pdfDoc, annotation) {
 		helvetica: StandardFonts.HelveticaBold,
 		timesroman: StandardFonts.TimesRomanBold
 	};
-	console.log(annotation, 'annotation24')
 	let fontName;
 	if (annotation.fontWeight === 600) {
 		fontName = boldFontMap[annotation.fontFamily?.toLowerCase()] || StandardFonts.TimesRomanBold; // Default font
