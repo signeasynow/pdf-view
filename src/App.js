@@ -69,6 +69,17 @@ function isFontBold(font) {
 	return fontNameParts.some(part => part.toLowerCase().includes("bold"));
 }
 
+function isFontItalicOrOblique(font) {
+	if (!font || !font.name) {
+			return false;
+	}
+	const fontNameParts = font.name.split('-');
+	return fontNameParts.some(part => {
+			const lowerCasePart = part.toLowerCase();
+			return lowerCasePart.includes("italic") || lowerCasePart.includes("oblique");
+	});
+}
+
 async function splitPdfPages(pdfBytes, splitIndices) {
 	const originalPdfDoc = await PDFDocument.load(pdfBytes);
 	const numPages = originalPdfDoc.getPageCount();
@@ -1708,7 +1719,7 @@ const App = () => {
 		]);
 		console.log(detail, 'detail22', detail.textState?.font?.name)
 		const isBold = isFontBold(detail.textState?.font);
-	
+		const isItalic = isFontItalicOrOblique(detail.textState?.font);
 		const buffer = await pdfProxyObjRef.current.getData();
 		const { document: bufferResult, color } = await removeTextFromPdf(buffer, detail, pageNumber);
 		// console.log(color, 'colorliber')
@@ -1722,6 +1733,7 @@ const App = () => {
 				fontWeight: isBold ? 600 : 400,
 				fontFamily: detail.styleFontFamily || detail.textState?.font?.name,
 				fontSize: detail?.textDivProperties?.fontSize,
+				fontStyle: isItalic ? "italic": "",
 				id: generateUUID(),
 				name: "freeTextEditor",
 				pageNumber: pageNumber,
