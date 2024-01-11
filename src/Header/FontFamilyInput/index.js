@@ -90,7 +90,6 @@ const FontFamilyInput = ({
 
 	const onSelectValue = (v) => {
 		setFontFamilyValue(v);
-		// console.log(pdfViewerRef.current, 'pdfViewerRef.current')
 		pdfViewerRef.current.annotationEditorParams = {
 			type: AnnotationEditorParamsType.FREETEXT_FONT,
 			value: v.value

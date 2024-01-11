@@ -193,7 +193,7 @@ export const PdfViewer = ({
 		});
 
 		eventBus.on('annotationchanged', ({ details }) => {
-			// console.log(details, 'details r44', details.text)
+			console.log(details, 'details r44', details.text)
 			updateAnnotation(details.current, details.text);
 		});
 

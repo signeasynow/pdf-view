@@ -62,6 +62,7 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, us
 		if (!existingAnnotation) {
 			// TOTALLY FINE FOR THERE TO BE NONE.
 		}
+		console.log(data, 'data 333')
 		pastAnnotations = pastAnnotations.filter((e) => e.id !== data.id);
 		const dataPayload = {
 			id: data.id,
@@ -73,6 +74,7 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, us
 			color: data.color ? data.color : existingAnnotation.color,
 			fontSize: data.fontSize ? data.fontSize : existingAnnotation?.fontSize,
 			fontFamily: data.fontFamily ? data.fontFamily : existingAnnotation?.fontFamily,
+			fontWeight: data.fontWeight ? data.fontWeight : existingAnnotation?.fontWeight,
 			name: 'freeTextEditor'
 		}
 		let updatedAnnotations = [
@@ -201,7 +203,7 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, us
 		});
 	}, 50);
 
-
+	console.log(annotations, 'annotations2')
 	return {
 		annotations,
 		annotationsRef,

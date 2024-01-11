@@ -1,8 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 
-import ZoomIn from '../../assets/minus-circle-svgrepo-com.svg';
-import ZoomOut from '../../assets/add-circle-svgrepo-com.svg';
 import ChevronDown from '../../assets/chevron-down-svgrepo-com.svg';
 import Dropdown from '../components/Dropdown';
 import { useDebounce } from '../utils/useDebounce';
@@ -10,7 +8,6 @@ import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { Icon, Tooltip } from 'alien35_pdf_ui_lib_2';
 import { useTranslation } from 'react-i18next';
 import { AnnotationEditorParamsType } from 'pdfjs-dist/build/pdf';
-import { useAnnotations } from '../hooks/useAnnotations';
 
 function generateNumbers() {
 	let numbers = [];
@@ -95,8 +92,6 @@ const FontSizeInput = ({
 
 	const { t } = useTranslation();
   
-	// const { annotations } = useAnnotations();
-
 	const fontSizeTextRef = useRef(fontSizeValue);
 
 	const _onChangeFontSizeByText = (e) => {

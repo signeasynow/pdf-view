@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { ColorWheel } from '../../components/ColorWheel';
 import FontSizeInput from '../../Header/FontSizeInput';
 import FontFamilyInput from '../../Header/FontFamilyInput';
+import FontBoldInput from '../FontBoldInput';
+import FontItalicInput from '../FontItalicInput';
 
 const AnnotationTextSettings = ({
 	activeToolbarItem,
@@ -17,8 +19,11 @@ const AnnotationTextSettings = ({
 	pdfViewerRef,
 	fontFamilyValue,
 	setFontFamilyValue,
-	onUpdateFontFamily
-
+	onUpdateFontFamily,
+	fontWeightBold,
+	onUpdateFontWeight,
+	onUpdateFontItalic,
+	fontItalic
 }) => {
 
 	if (activeToolbarItem !== 'text') {
@@ -36,13 +41,23 @@ const AnnotationTextSettings = ({
 				fontSizeValue={fontSizeValue}
 				setFontSizeValue={setFontSizeValue}
 				editableAnnotationId={editableAnnotationId}
-				onUpdateFontSize={onUpdateFontSize} pdfViewerRef={pdfViewerRef}
+				onUpdateFontSize={onUpdateFontSize}
+				pdfViewerRef={pdfViewerRef}
 			/>
 			<FontFamilyInput
 				fontFamilyValue={fontFamilyValue}
 				setFontFamilyValue={setFontFamilyValue}
 				editableAnnotationId={editableAnnotationId}
 				onUpdateFontFamily={onUpdateFontFamily} pdfViewerRef={pdfViewerRef}
+			/>
+			<FontBoldInput
+				onUpdateFontWeight={onUpdateFontWeight}
+				fontWeightBold={fontWeightBold}
+				pdfViewerRef={pdfViewerRef}
+			/>
+			<FontItalicInput
+				onUpdateFontItalic={onUpdateFontItalic}
+				fontItalic={fontItalic}
 			/>
 		</>
 	);

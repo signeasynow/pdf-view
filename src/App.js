@@ -2000,10 +2000,27 @@ const App = () => {
 	};
 
 	const onUpdateAnnotation = (data, text) => {
-		// console.log(data, 'data643')
 		updateAnnotation(data, text);
 
 	};
+
+	const [fontWeightBold, setFontWeightBold] = useState(false);
+	const onUpdateFontWeight = () => {
+		const newValue = !fontWeightBold ? 600 : 400;
+		pdfViewerRef.current.annotationEditorParams = {
+			type: AnnotationEditorParamsType.FREETEXT_THICKNESS,
+			value: newValue
+		};
+		updateAnnotationParam(activeAnnotationRef.current, {
+			fontWeight: newValue
+		});
+		setFontWeightBold((prev) => !prev);
+	}
+
+	const [fontItalic, setFontItalic] = useState(false);
+	const onUpdateFontItalic = () => {
+		setFontItalic((prev) => !prev);
+	}
 
 	useListenForKeyClicks((which) => {
 		if (which === "redo") {
@@ -2109,6 +2126,10 @@ const App = () => {
 							onDownload={onDownload}
 							onDelete={onDelete}
 							onRotate={onRotateFullScreenThumbnails}
+							fontWeightBold={fontWeightBold}
+							onUpdateFontWeight={onUpdateFontWeight}
+							onUpdateFontItalic={onUpdateFontItalic}
+							fontItalic={fontItalic}
 						/>
 					)
 				}

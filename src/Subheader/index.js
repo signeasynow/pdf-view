@@ -56,7 +56,6 @@ const Subheader = ({
 	editableAnnotationId,
 	onUpdateFontSize,
 	onUpdateFontFamily,
-	onEnableClickTagMode,
 	onEnableFreeTextMode,
 	handleChooseColor,
 	onDisableEditorMode,
@@ -76,7 +75,11 @@ const Subheader = ({
 	expandedViewThumbnailScale,
 	setExpandedViewThumbnailScale,
 	onExtract,
-	pdfViewerRef
+	pdfViewerRef,
+	fontWeightBold,
+	onUpdateFontWeight,
+	onUpdateFontItalic,
+	fontItalic
 }) => {
 	
 	const { t } = useTranslation();
@@ -158,6 +161,10 @@ const Subheader = ({
 						fontFamilyValue={fontFamilyValue}
 						setFontFamilyValue={setFontFamilyValue}
 						onUpdateFontFamily={onUpdateFontFamily}
+						fontWeightBold={fontWeightBold}
+						onUpdateFontWeight={onUpdateFontWeight}
+						onUpdateFontItalic={onUpdateFontItalic}
+						fontItalic={fontItalic}
 					/>
 				</div>
 				{

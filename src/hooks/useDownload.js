@@ -42,13 +42,23 @@ const downloadAll = async (pdfBuffers) => {
 };
 
 async function getFontForAnnotation(pdfDoc, annotation) {
-	const fontMap = {
+	const standardFontMap = {
 		courier: StandardFonts.Courier,
 		helvetica: StandardFonts.Helvetica,
 		timesroman: StandardFonts.TimesRoman
 	};
-
-	const fontName = fontMap[annotation.fontFamily?.toLowerCase()] || StandardFonts.TimesRoman; // Default font
+	const boldFontMap = {
+		courier: StandardFonts.CourierBold,
+		helvetica: StandardFonts.HelveticaBold,
+		timesroman: StandardFonts.TimesRomanBold
+	};
+	console.log(annotation, 'annotation24')
+	let fontName;
+	if (annotation.fontWeight === 600) {
+		fontName = boldFontMap[annotation.fontFamily?.toLowerCase()] || StandardFonts.TimesRomanBold; // Default font
+	} else {
+		fontName = standardFontMap[annotation.fontFamily?.toLowerCase()] || StandardFonts.TimesRoman; // Default font
+	}
 	return await pdfDoc.embedFont(fontName);
 }
 
@@ -127,7 +137,7 @@ function useDownload(files, isSandbox, fileNames, storage) {
 
 	const triggerDownload = async () => {
 		try {
-			if (!hasValidSubscription) {
+			if (!hasValidSubscription && process.env.NODE_ENV !== "development") {
 				await checkAndRecordDownloadAttempt();
 			}
 		} catch (error) {
