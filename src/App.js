@@ -2019,6 +2019,14 @@ const App = () => {
 
 	const [fontItalic, setFontItalic] = useState(false);
 	const onUpdateFontItalic = () => {
+		const newValue = fontItalic ? "": "italic";
+		pdfViewerRef.current.annotationEditorParams = {
+			type: AnnotationEditorParamsType.FREETEXT_ITALIC,
+			value: newValue
+		};
+		updateAnnotationParam(activeAnnotationRef.current, {
+			fontStyle: newValue
+		});
 		setFontItalic((prev) => !prev);
 	}
 

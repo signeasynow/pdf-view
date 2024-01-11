@@ -203,7 +203,6 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, us
 		});
 	}, 50);
 
-	console.log(annotations, 'annotations2')
 	return {
 		annotations,
 		annotationsRef,
