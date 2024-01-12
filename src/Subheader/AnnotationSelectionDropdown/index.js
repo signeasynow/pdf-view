@@ -105,7 +105,8 @@ const AnnotationSelectionDropdown = ({
 		onChangeActiveToolbarItem({ tooltype: 'none' });
 	};
 
-	const annotationsEnabled = () => annotationMode === pdfjs.AnnotationEditorType.FREETEXT || annotationMode === pdfjs.AnnotationEditorType.STAMP;
+	const annotationsEnabled = () => annotationMode === pdfjs.AnnotationEditorType.FREETEXT 
+	|| annotationMode === pdfjs.AnnotationEditorType.STAMP;
 
 	const hasSignature = () => annotations?.some((ann) => ann.name === 'stampEditor');
 

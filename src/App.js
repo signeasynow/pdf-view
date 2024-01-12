@@ -1933,7 +1933,6 @@ const App = () => {
 						/>
 					)
 				}
-				<button onClick={onEnableTextEditMode}>Enable edit text</button>
 				{
 					showSubheader() && (
 						<Subheader

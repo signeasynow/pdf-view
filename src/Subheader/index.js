@@ -101,14 +101,19 @@ const Subheader = ({
 	const showUndoRedo = () => !!tools?.editing?.length;
 
 	const showExtract = () => {
-		if (annotationMode === pdfjs.AnnotationEditorType.FREETEXT || annotationMode === pdfjs.AnnotationEditorType.STAMP) {
+		if (annotationMode === pdfjs.AnnotationEditorType.FREETEXT
+			|| annotationMode === pdfjs.AnnotationEditorType.STAMP
+			|| annotationMode === pdfjs.AnnotationEditorType.TEXTEDIT) {
 			return false;
 		}
 		return tools?.editing?.includes('extract');
 	};
 
 	const showRemove = () => {
-		if (annotationMode === pdfjs.AnnotationEditorType.FREETEXT || annotationMode === pdfjs.AnnotationEditorType.STAMP) {
+		if (annotationMode === pdfjs.AnnotationEditorType.FREETEXT
+			|| annotationMode === pdfjs.AnnotationEditorType.STAMP
+			|| annotationMode === pdfjs.AnnotationEditorType.TEXTEDIT
+			) {
 			return false;
 		}
 		return tools?.editing?.includes('remove');
@@ -150,6 +155,7 @@ const Subheader = ({
 						activeToolbarItem={activeToolbarItem}
 					/>
 					<AnnotationTextSettings
+						annotationMode={annotationMode}
 						activeToolbarItem={activeToolbarItem}
 						annotationColor={annotationColor}
 						setAnnotationColor={setAnnotationColor}

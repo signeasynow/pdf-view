@@ -6,6 +6,7 @@ import FontSizeInput from '../../Header/FontSizeInput';
 import FontFamilyInput from '../../Header/FontFamilyInput';
 import FontBoldInput from '../FontBoldInput';
 import FontItalicInput from '../FontItalicInput';
+import * as pdfjs from 'pdfjs-dist';
 
 const AnnotationTextSettings = ({
 	activeToolbarItem,
@@ -23,10 +24,12 @@ const AnnotationTextSettings = ({
 	fontWeightBold,
 	onUpdateFontWeight,
 	onUpdateFontItalic,
-	fontItalic
+	fontItalic,
+	annotationMode
 }) => {
 
-	if (activeToolbarItem !== 'text') {
+	if (annotationMode !== pdfjs.AnnotationEditorType.FREETEXT &&
+		  annotationMode !== pdfjs.AnnotationEditorType.TEXTEDIT) {
 		return;
 	}
   
