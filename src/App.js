@@ -58,6 +58,17 @@ import fontkit from '@pdf-lib/fontkit';
 import { generateUUID } from './utils/generateUuid';
 import { removeTextFromPdf } from './utils/removeTextFromPdf';
 
+const flipMap = (map) => {
+  const flipped = {};
+  for (const key in map) {
+    if (map.hasOwnProperty(key)) {
+      flipped[map[key]] = parseInt(key);
+    }
+  }
+  return flipped;
+};
+
+
 const isChromeExtension = process.env.NODE_CHROME === "true";
 let storage = isChromeExtension ? new ChromeStorage() : new IndexedDBStorage();
 
@@ -467,6 +478,7 @@ const App = () => {
 	const { setAuthInfo, authInfo } = useContext(AuthInfoContext);
 
 	const { onChangeLocale } = useContext(LocaleContext);
+	const [defaultAnnotationMode, setDefaultAnnotationMode] = useState(null);
 
 	useEffect(() => {
 		window.addEventListener('message', (event) => {
@@ -501,6 +513,9 @@ const App = () => {
 			if (typeof event.data === 'object' && !!event.data.authInfo && event.data.authInfo?.token !== authInfo?.token) {
 				setAuthInfo(event.data.authInfo);
 			}
+			if (typeof event.data === 'object' && !!event.data.defaultAnnotationEditorMode) {
+				setDefaultAnnotationMode(event.data.defaultAnnotationEditorMode);
+			}
 			if (event.data?.type === 'fromCore') {
 				const id = event.data.id;
 				if (pendingRequests[id]) {
@@ -512,6 +527,7 @@ const App = () => {
 			}
 		}, false);
 	}, []);
+	console.log(defaultAnnotationMode, 'defaultAnnotationMode')
 
 	// console.log(modifiedUiElements, 'modifiedUiElements')
 
@@ -1276,7 +1292,7 @@ const App = () => {
 		});
 	};
 
-	const [annotationMode, setAnnotationMode] = useState('none');
+	const [annotationMode, setAnnotationMode] = useState(null);
 
 	const onEnableFreeTextMode = async () => {
 		usingUndoRedoRef.current = false;
@@ -1285,7 +1301,7 @@ const App = () => {
 			mode: pdfjs.AnnotationEditorType.FREETEXT,
 			source: null
 		};
-		setAnnotationMode('freetext');
+		setAnnotationMode(pdfjs.AnnotationEditorType.FREETEXT);
 	};
 
 	const onEnableClickTagMode = async () => {
@@ -1294,7 +1310,7 @@ const App = () => {
 			mode: pdfjs.AnnotationEditorType.CLICKTAG,
 			source: null
 		};
-		// setAnnotationMode("freetext");
+		setAnnotationMode(pdfjs.AnnotationEditorType.CLICKTAG);
 	};
 
 	const onEnableTextEditMode = async () => {
@@ -1303,16 +1319,25 @@ const App = () => {
 			mode: pdfjs.AnnotationEditorType.TEXTEDIT,
 			source: null
 		};
-		// setAnnotationMode("freetext");
+		setAnnotationMode(pdfjs.AnnotationEditorType.TEXTEDIT);
 	};
 
 	const onDisableEditorMode = async () => {
+		if (defaultAnnotationMode) {
+			pdfViewerRef.current.annotationEditorMode = {
+				isFromKeyboard: false,
+				mode: defaultAnnotationMode,
+				source: null
+			};
+			setAnnotationMode(defaultAnnotationMode);
+			return;
+		}
 		pdfViewerRef.current.annotationEditorMode = {
 			isFromKeyboard: false,
 			mode: pdfjs.AnnotationEditorType.NONE,
 			source: null
 		};
-		setAnnotationMode('none');
+		setAnnotationMode(pdfjs.AnnotationEditorType.NONE);
 		// const bufferResult = await pdfProxyObj.getData();
 		// await storage?.save(bufferResult, pdfId);
 		// setModifiedFiles(new Date().toISOString());
@@ -1709,7 +1734,7 @@ const App = () => {
 				initialHeight: 0.04
 			}
 		};
-		setAnnotationMode('signature');
+		setAnnotationMode(pdfjs.AnnotationEditorType.STAMP);
 	};
 	
 	const onEditOriginalTextSelected = async (detail, pageNumber) => {
@@ -1848,6 +1873,26 @@ const App = () => {
 			undoLastAction();
 		}
 	});
+
+	const onPagesLoaded = () => {
+
+		if (annotationMode) {
+			pdfViewerRef.current.annotationEditorMode = {
+				isFromKeyboard: false,
+				mode: defaultAnnotationMode,
+				source: null
+			};
+			return;
+		}
+		if (defaultAnnotationMode) {
+			pdfViewerRef.current.annotationEditorMode = {
+				isFromKeyboard: false,
+				mode: defaultAnnotationMode,
+				source: null
+			};
+			setAnnotationMode(defaultAnnotationMode);
+		}
+	}
 
 	if (fileLoadFailError) {
 		return (
@@ -1991,6 +2036,7 @@ const App = () => {
 					}
 					<div css={pdfViewerWrapper}>
 						<PdfViewer
+							defaultAnnotationMode={defaultAnnotationMode}
 							onEditOriginalTextSelected={onEditOriginalTextSelected}
 							storage={storage}
 							initialAnnotations={initialAnnotations}
@@ -2010,7 +2056,7 @@ const App = () => {
 							annotationEditorUIManagerRef={annotationEditorUIManagerRef}
 							setCurrentAiDocHash={setCurrentAiDocHash}
 							setPdfText={setPdfText}
-							onPagesLoaded={() => {}}
+							onPagesLoaded={onPagesLoaded}
 							setDocumentLoading={setDocumentLoading}
 							setModifiedFiles={setModifiedFiles}
 							modifiedFiles={modifiedFiles}

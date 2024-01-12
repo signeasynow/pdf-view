@@ -22,6 +22,7 @@ import FontFamilyInput from '../Header/FontFamilyInput';
 import AnnotationSelectionDropdown from './AnnotationSelectionDropdown';
 import Signatures from './Signatures';
 import AnnotationTextSettings from './AnnotationTextSettings';
+import * as pdfjs from 'pdfjs-dist';
 
 const Wrapper = ({ children }) => (
 	<div css={css({
@@ -100,14 +101,14 @@ const Subheader = ({
 	const showUndoRedo = () => !!tools?.editing?.length;
 
 	const showExtract = () => {
-		if (annotationMode === "freetext" || annotationMode === "signature") {
+		if (annotationMode === pdfjs.AnnotationEditorType.FREETEXT || annotationMode === pdfjs.AnnotationEditorType.STAMP) {
 			return false;
 		}
 		return tools?.editing?.includes('extract');
 	};
 
 	const showRemove = () => {
-		if (annotationMode === "freetext" || annotationMode === "signature") {
+		if (annotationMode === pdfjs.AnnotationEditorType.FREETEXT || annotationMode === pdfjs.AnnotationEditorType.STAMP) {
 			return false;
 		}
 		return tools?.editing?.includes('remove');

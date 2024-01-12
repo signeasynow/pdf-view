@@ -15,6 +15,7 @@ import SignatureRemoveIcon from '../../../assets/signature-svgrepo-com.svg';
 import { Icon, Tooltip } from 'alien35_pdf_ui_lib_2';
 import { SignaturesContext } from '../../Contexts/SignaturesContext';
 import { AnnotationsContext } from '../../Contexts/AnnotationsContext';
+import * as pdfjs from 'pdfjs-dist';
 
 const wrapper = css`
   display: flex;
@@ -104,7 +105,7 @@ const AnnotationSelectionDropdown = ({
 		onChangeActiveToolbarItem({ tooltype: 'none' });
 	};
 
-	const annotationsEnabled = () => annotationMode === 'freetext' || annotationMode === 'signature';
+	const annotationsEnabled = () => annotationMode === pdfjs.AnnotationEditorType.FREETEXT || annotationMode === pdfjs.AnnotationEditorType.STAMP;
 
 	const hasSignature = () => annotations?.some((ann) => ann.name === 'stampEditor');
 
