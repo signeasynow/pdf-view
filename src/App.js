@@ -428,7 +428,6 @@ const App = () => {
 	const [documentLoading, setDocumentLoading] = useState(true);
 
 	const { operations, setOperations, redoStack, setRedoStack, addOperation } = useContext(UndoRedoContext);
-	// console.log(redoStack, 'redoStack', operations)
 	const [activeToolbarItem, setActiveToolbarItem] = useState('');
 	const activeToolbarItemRef = useRef(null);
 	const [customData, setCustomData] = useState({});
@@ -527,9 +526,6 @@ const App = () => {
 			}
 		}, false);
 	}, []);
-	console.log(defaultAnnotationMode, 'defaultAnnotationMode')
-
-	// console.log(modifiedUiElements, 'modifiedUiElements')
 
 	async function doMerge(pdfList) {
 		const mergedPdf = await PDFDocument.create();
@@ -712,7 +708,6 @@ const App = () => {
 		}
 	});
 	useListenForSignatureModalRequest((enable) => {
-		// console.log(enable, 'enable bro3')
 		if (enable === true) {
 			showSignatureModal();
 		}
@@ -887,7 +882,6 @@ const App = () => {
 		if (operations[activePageIndex]?.length === 0) return;
 		const lastOperation = operations[activePageIndex]?.[operations[activePageIndex].length - 1];
 		// Start with the original PDF
-		// console.log('ttt_0');
 		let buffer;
 		try {
 			buffer = await storage?.retrieve(originalPdfId);
@@ -895,7 +889,6 @@ const App = () => {
 		catch (err) {
 			console.log(err, 'err33');
 		}
-		// console.log('ttt_1');
 		setAnnotations([]);
 
 		const filteredOperations = [];
@@ -919,10 +912,8 @@ const App = () => {
 			buffer = await applyOperation(operation, buffer); // Assuming applyOperation returns the updated buffer
 		}
 		doneCalculatingAnnotationsRef.current = true;
-		// console.log('ttt_2');
 		// Save the buffer after undo as the current state
 		await storage?.save(buffer, pdfId);
-		// console.log('ttt_3');
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
@@ -974,7 +965,6 @@ const App = () => {
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
-		// console.log("redoing", operations)
 		// Update undo and redo stacks
 		setOperations({
 			...operations,
@@ -1111,7 +1101,7 @@ const App = () => {
 	const isManuallyAddingImageRef = useRef(false);
 	const usingUndoRedoRef = useRef(false);
 	const { updateAnnotation, moveAnnotation, updateAnnotationParam, resizeAnnotation, removeAnnotation } = useAnnotations(activeAnnotationRef, isManuallyAddingImageRef, usingUndoRedoRef);
-	const { annotations, setAnnotations } = useContext(AnnotationsContext);
+	const { annotations, setAnnotations, annotationsRef } = useContext(AnnotationsContext);
 
 	useEffect(() => {
 		window.parent.postMessage({ type: 'annotations-change', message: annotations }, '*');
@@ -1121,6 +1111,7 @@ const App = () => {
 		if (!initialAnnotations) {
 			return;
 		}
+		console.log(initialAnnotations, 'initialAnnotations22')
 		// onEnableClickTagMode();
 		setAnnotations(initialAnnotations);
 	}, [initialAnnotations]);
@@ -1421,7 +1412,6 @@ const App = () => {
 	};
 
 	const forceFullThumbnailsView = () => isSmallScreen && shouldShowPanel() && !showSearch && !showFullScreenSearch();
-	// console.log(pdfText, 'pdfText', inputtedUuid)
 	const [aiDocId, setAiDocId] = useState(localStorage.getItem('aiDocId') || '');
 
 	const [embeddingKey, setEmbeddingKey] = useState(localStorage.getItem('embeddingKey') || '');
@@ -1475,12 +1465,9 @@ const App = () => {
 	};
 
 	const onSignatureAnnotationFocus = (id, data) => {
-		// console.log(id, data, 'id, data', isManuallyAddingImageRef)
 		activeAnnotationRef.current = id;
 		setEditableAnnotationId(id);
 		updateAnnotation(data);
-		// console.log(data, 'data over here', data.height);
-		// addOperation(operation);
 	};
 
 	const onAnnotationFocus = (id, data) => {
@@ -1742,16 +1729,14 @@ const App = () => {
 			...removedOriginalText,
 			detail
 		]);
-		console.log(detail, 'detail22', detail.textState?.font?.name)
 		const isBold = isFontBold(detail.textState?.font);
 		const isItalic = isFontItalicOrOblique(detail.textState?.font);
 		const buffer = await pdfProxyObjRef.current.getData();
 		const { document: bufferResult, color } = await removeTextFromPdf(buffer, detail, pageNumber);
-		// console.log(color, 'colorliber')
 		// Arial-BoldMT works...
 		// Courier-Bold, Times-Bold, "TimesNewRomanPSMT-Bold", TimesNewRomanPS-Bold, TimesNewRoman-Bold failed
 		setAnnotations([
-			...annotations,
+			...annotationsRef.current,
 			{
 				color: color || "#000000",
 				content: detail.str,
@@ -1828,7 +1813,6 @@ const App = () => {
 	};
 
 	const onRemoveAnnotation = (data) => {
-		// console.log(data, 'data here3')
 		removeAnnotation(data);
 		const operation = { action: 'remove-annotation', data };
 		addOperation(operation);

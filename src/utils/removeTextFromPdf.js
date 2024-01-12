@@ -42,7 +42,6 @@ export async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 
 			const decoded = decodePDFRawStream(stream).decode();
 			let text = arrayAsString(decoded);
-			console.log(text, 'text22')
 			// Split the stream by new lines and process only lines ending with 'TJ'
 			const lines = text.split('\n');
 

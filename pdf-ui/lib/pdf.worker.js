@@ -9835,7 +9835,6 @@ endcmap CMapName currentdict /CMap defineresource pop end end`;
 						initialState = null,
 						fallbackFontDict = null
 					}) {
-						// console.log(stream, 'stream2)
 						resources ||= _primitives.Dict.empty;
 						initialState ||= new EvalState();
 						if (!operatorList) {
@@ -10342,7 +10341,6 @@ endcmap CMapName currentdict /CMap defineresource pop end end`;
 						const emptyXObjectCache = new _image_utils.LocalImageCache();
 						const emptyGStateCache = new _image_utils.LocalGStateCache();
 						const preprocessor = new EvaluatorPreprocessor(stream, xref, stateManager);
-						console.log(preprocessor, 'preprocessor')
 						let textState;
 						function pushWhitespace({
 							width = 0,
@@ -10441,7 +10439,6 @@ endcmap CMapName currentdict /CMap defineresource pop end end`;
 							if (!disableNormalization) {
 								text = (0, _util.normalizeUnicode)(text);
 							}
-							// console.log(textChunk, 'textChunk')
 							const bidiResult = (0, _bidi.bidi)(text, -1, textChunk.vertical);
 							return {
 								str: bidiResult.str,
@@ -10632,7 +10629,6 @@ endcmap CMapName currentdict /CMap defineresource pop end end`;
 								return;
 							}
 							const glyphs = font.charsToGlyphs(chars);
-							// console.log(glyphs, 'glyphs')
 							const scale = textState.fontMatrix[0] * textState.fontSize;
 							for (let i = 0, ii = glyphs.length; i < ii; i++) {
 								const glyph = glyphs[i];
@@ -10690,7 +10686,6 @@ endcmap CMapName currentdict /CMap defineresource pop end end`;
 								if (saveLastChar(glyphUnicode)) {
 									textChunk.str.push(' ');
 								}
-								// console.log('stream4', glyphUnicode, 'c', stream?.dict?.objId, 'vv', stream?.dict)
 								const objId = stream?.dict?.objId;
 								if (objId) {
 									textChunk.objIds.push(objId);
@@ -11771,7 +11766,6 @@ endcmap CMapName currentdict /CMap defineresource pop end end`;
 							}
 						}
 						fontName ||= baseFont;
-						console.log(fontName, 'fontName22')
 						if (!(fontName instanceof _primitives.Name)) {
 							throw new _util.FormatError('invalid font name');
 						}
@@ -23905,7 +23899,6 @@ endcmap CMapName currentdict /CMap defineresource pop end end`;
 								(0, _util.warn)(`charToGlyph - invalid fontCharCode: ${fontCharCode}`);
 							}
 						}
-						// console.log(stream, 'stream5')
 						glyph = new Glyph(charcode, fontChar, unicode, accent, width, vmetric, operatorListId, isSpace, isInFont);
 						return this._glyphCache[charcode] = glyph;
 					}
@@ -41092,7 +41085,6 @@ endcmap CMapName currentdict /CMap defineresource pop end end`;
 				exports.OperatorList = void 0;
 				let _util = __w_pdfjs_require__(2);
 				function addState(parentState, pattern, checkFn, iterateFn, processFn) {
-					// console.log("addState called", pattern)
 					let state = parentState;
 					for (let i = 0, ii = pattern.length - 1; i < ii; i++) {
 						const item = pattern[i];
@@ -47043,7 +47035,6 @@ endcmap CMapName currentdict /CMap defineresource pop end end`;
 						return this.form;
 					}
 					getData() {
-					  // console.log("getting data22");
 						return this.data;
 					}
 					_bindValue(formNode, data, picture) {
