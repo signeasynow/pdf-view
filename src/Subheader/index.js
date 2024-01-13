@@ -51,6 +51,7 @@ const Subheader = ({
 	editableAnnotationId,
 	onUpdateFontSize,
 	onUpdateFontFamily,
+	onEnableEditTextMode,
 	onEnableFreeTextMode,
 	handleChooseColor,
 	onDisableEditorMode,
@@ -123,6 +124,9 @@ const Subheader = ({
 				break;
 			case 'signature':
 				onEnableFreeTextMode();
+				break;
+			case 'edit-text':
+				onEnableEditTextMode();
 				break;
 			case 'none':
 				handleChangeActiveToolbarItem('');

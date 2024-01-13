@@ -98,8 +98,11 @@ const AnnotationSelectionDropdown = ({
 
 	const onSelectFreeText = () => {
 		onChangeActiveToolbarItem({ tooltype: 'text' });
-
 	};
+
+	const onSelectTextEdit = () => {
+		onChangeActiveToolbarItem({ tooltype: 'edit-text' });
+	}
 
 	const onSelectNone = () => {
 		onChangeActiveToolbarItem({ tooltype: 'none' });
@@ -141,6 +144,7 @@ const AnnotationSelectionDropdown = ({
 					child={<div css={childStyle}>
 						<div css={zoomOptionStyle} onClick={onSelectSignature}><img height={24} width={24} src={SignatureIcon} />{t('Add signature')}</div>
 						<div css={zoomOptionStyle} onClick={onSelectFreeText}><img height={24} width={24} src={TextIcon} />{t('Add text')}</div>
+						<div css={zoomOptionStyle} onClick={onSelectTextEdit}><img height={24} width={24} src={TextIcon} />{t('Edit original text')}</div>
 						{
 							hasSignature() && (
 								<div css={zoomOptionStyle} onClick={onSelectEditSignature}><img height={24} width={24} src={SignatureRemoveIcon} />{t('Edit signature')}</div>

@@ -1908,11 +1908,10 @@ const App = () => {
 	});
 
 	const onPagesLoaded = () => {
-
 		if (annotationMode) {
 			pdfViewerRef.current.annotationEditorMode = {
 				isFromKeyboard: false,
-				mode: defaultAnnotationMode,
+				mode: annotationMode,
 				source: null
 			};
 			return;
@@ -2004,6 +2003,7 @@ const App = () => {
 							onDisableEditorMode={onDisableEditorMode}
 							onEnableFreeTextMode={onEnableFreeTextMode}
 							onEnableClickTagMode={onEnableClickTagMode}
+							onEnableEditTextMode={onEnableTextEditMode}
 							pdfProxyObj={pdfProxyObj}
 							canExtract={canExtract()}
 							onExtract={onExtract}
