@@ -62,15 +62,19 @@ async function getFontForAnnotation(pdfDoc, annotation) {
 		helvetica: StandardFonts.HelveticaBoldOblique,
 		timesroman: StandardFonts.TimesRomanBoldItalic
 	};
+	let fontFamily = annotation.fontFamily?.toLowerCase();
+	if (fontFamily === "sans-serif") {
+		fontFamily = "helvetica";
+	}
 	let fontName;
 	if (annotation.fontWeight === 600 && annotation.fontStyle === "italic") {
-		fontName = boldItalicFontMap[annotation.fontFamily?.toLowerCase()] || StandardFonts.TimesRomanBoldItalic; // Default font
+		fontName = boldItalicFontMap[fontFamily] || StandardFonts.TimesRomanBoldItalic; // Default font
 	} else if (annotation.fontWeight === 600) {
-		fontName = boldFontMap[annotation.fontFamily?.toLowerCase()] || StandardFonts.TimesRomanBold; // Default font
+		fontName = boldFontMap[fontFamily] || StandardFonts.TimesRomanBold; // Default font
 	} else if (annotation.fontStyle === "italic") {
-		fontName = italicFontMap[annotation.fontFamily?.toLowerCase()] || StandardFonts.TimesRomanItalic; // Default font
+		fontName = italicFontMap[fontFamily] || StandardFonts.TimesRomanItalic; // Default font
 	} else {
-		fontName = standardFontMap[annotation.fontFamily?.toLowerCase()] || StandardFonts.TimesRoman; // Default font
+		fontName = standardFontMap[fontFamily] || StandardFonts.TimesRoman; // Default font
 	}
 	return await pdfDoc.embedFont(fontName);
 }
