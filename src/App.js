@@ -415,7 +415,6 @@ const App = () => {
 
 	const [fileNames, setFileNames] = useState([]);
 	const { triggerDownload: onDownload } = useDownload(files, isSandbox, fileNames, storage);
-	const [removedOriginalText, setRemovedOriginalText] = useState([]);
 
 	const initialRedoUndoObject = () => {
 		const result = {};
@@ -1727,10 +1726,6 @@ const App = () => {
 	};
 	
 	const onEditOriginalTextSelected = async (detail, pageNumber) => {
-		setRemovedOriginalText([
-			...removedOriginalText,
-			detail
-		]);
 		const isBold = isFontBold(detail.textState?.font);
 		const isItalic = isFontItalicOrOblique(detail.textState?.font);
 		const buffer = await pdfProxyObjRef.current.getData();
