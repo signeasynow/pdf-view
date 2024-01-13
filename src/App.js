@@ -1038,6 +1038,22 @@ const App = () => {
 		return;
 	};
 
+	const doEditText = async ({
+		pageNumber,
+		detail,
+		annotation
+	}, buffer) => {
+		const { document: bufferResult, color } = await removeTextFromPdf(buffer, detail, pageNumber);
+		setAnnotations([
+			...annotationsRef.current,
+			{
+				...annotation,
+				color
+			}
+		]);
+		return bufferResult;
+	};
+
 	const doUpdateAnnotations = async (data) => {
 		updateAnnotation(data);
 		return await pdfProxyObj.getData();
@@ -1073,6 +1089,9 @@ const App = () => {
 			case 'remove-annotation': {
 				return await doRemoveAnnotations(operation.data);
 			}
+			case 'edit-text': {
+				return await doEditText(operation.data, buffer);
+			}
 		}
 	};
 
@@ -1088,7 +1107,6 @@ const App = () => {
 			return;
 		}
 		const operation = { action: 'rotate', pages: pagesToRotate, clockwise };
-		// setMultiPageSelections([]);
 		const bufferResult = await applyOperation(operation, buffer);
 		await storage?.save(bufferResult, pdfId);
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
@@ -1110,8 +1128,6 @@ const App = () => {
 		if (!initialAnnotations) {
 			return;
 		}
-		console.log(initialAnnotations, 'initialAnnotations22')
-		// onEnableClickTagMode();
 		setAnnotations(initialAnnotations);
 	}, [initialAnnotations]);
 
@@ -1125,7 +1141,6 @@ const App = () => {
 		const numPages = pdfProxyObj?.numPages;
 		const pagesToRotate = Array.from({ length: numPages }).map((_, i) => i + 1);
 		const operation = { action: 'rotate', pages: pagesToRotate, clockwise };
-		// setMultiPageSelections([]);
 		const bufferResult = await applyOperation(operation, buffer);
 		await storage?.save(bufferResult, pdfId);
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
@@ -1726,12 +1741,40 @@ const App = () => {
 	};
 	
 	const onEditOriginalTextSelected = async (detail, pageNumber) => {
+		if (!pdfProxyObjRef.current) {
+			console.log('No PDF loaded to download');
+			return;
+		}
 		const isBold = isFontBold(detail.textState?.font);
 		const isItalic = isFontItalicOrOblique(detail.textState?.font);
+
 		const buffer = await pdfProxyObjRef.current.getData();
+		const annotationDetail = {
+			color: "#000000",
+			content: detail.str,
+			fontWeight: isBold ? 600 : 400,
+			fontFamily: detail.styleFontFamily || detail.textState?.font?.name,
+			fontSize: detail?.textDivProperties?.fontSize,
+			fontStyle: isItalic ? "italic": "",
+			id: generateUUID(),
+			name: "freeTextEditor",
+			pageNumber,
+			x: detail.x,
+			y: detail.y
+		}
+		const operation = { action: 'edit-text', data: {
+			pageNumber,
+			detail,
+			annotation: annotationDetail
+		} };
+		const bufferResult = await applyOperation(operation, buffer);
+		await storage?.save(bufferResult, pdfId);
+		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
+		newModifiedPayload[activePageIndex] = new Date().toISOString();
+		setModifiedFiles(newModifiedPayload);
+		addOperation(operation);
+		/*
 		const { document: bufferResult, color } = await removeTextFromPdf(buffer, detail, pageNumber);
-		// Arial-BoldMT works...
-		// Courier-Bold, Times-Bold, "TimesNewRomanPSMT-Bold", TimesNewRomanPS-Bold, TimesNewRoman-Bold failed
 		setAnnotations([
 			...annotationsRef.current,
 			{
@@ -1752,6 +1795,7 @@ const App = () => {
 		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
+		*/
 	};
 
 	const onClickField = (type) => {
