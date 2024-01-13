@@ -9,7 +9,6 @@ import FontItalicInput from '../FontItalicInput';
 import * as pdfjs from 'pdfjs-dist';
 
 const AnnotationTextSettings = ({
-	activeToolbarItem,
 	annotationColor,
 	setAnnotationColor,
 	handleChooseColor,

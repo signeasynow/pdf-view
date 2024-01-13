@@ -1447,6 +1447,8 @@ const App = () => {
 		activeAnnotationRef.current = id;
 		setEditableAnnotationId(id);
 		setFontSizeValue(data.fontSize);
+		setFontWeightBold(data.fontWeight === 600);
+		setFontItalic(data.fontStyle === "italic");
 		const map = {
 			courier: {
 				value: 'courier',
