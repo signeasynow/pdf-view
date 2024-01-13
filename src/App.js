@@ -1298,6 +1298,11 @@ const App = () => {
 	};
 
 	const [annotationMode, setAnnotationMode] = useState(null);
+	const annotationModeRef = useRef(null);
+
+	useEffect(() => {
+		annotationModeRef.current = annotationMode;
+	}, [annotationMode]);
 
 	const onEnableFreeTextMode = async () => {
 		usingUndoRedoRef.current = false;
@@ -1743,6 +1748,9 @@ const App = () => {
 	const onEditOriginalTextSelected = async (detail, pageNumber) => {
 		if (!pdfProxyObjRef.current) {
 			console.log('No PDF loaded to download');
+			return;
+		}
+		if (annotationModeRef.current !== pdfjs.AnnotationEditorType.TEXTEDIT) {
 			return;
 		}
 		const isBold = isFontBold(detail.textState?.font);

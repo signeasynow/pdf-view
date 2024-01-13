@@ -4,7 +4,6 @@ import Redo from '../../assets/arrow-undo-down-right-svgrepo-com.svg';
 import Undo from '../../assets/arrow-undo-up-left-svgrepo-com.svg';
 import Minimize from '../../assets/minimize-svgrepo-com.svg';
 import RemoveSelection from '../../assets/notification-remove-svgrepo-com.svg';
-import TextIcon from '../../assets/text-svgrepo-com.svg';
 import Trash from '../../assets/trash-svgrepo-com.svg';
 import RotateRight from '../../assets/rotate-right-svgrepo-com.svg';
 import RotateLeft from '../../assets/rotate-left-svgrepo-com.svg';
