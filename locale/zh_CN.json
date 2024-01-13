@@ -114,5 +114,10 @@
   "License Key Invalid": "许可证密钥无效",
   "provided-license-key": "您提供的许可证密钥似乎无效。要解决此问题，请联系您的账户管理员。",
   "Account": "账户",
-  "one-page-min": "PDF必须至少包含一页。"
+  "one-page-min": "PDF必须至少包含一页。",
+  "finish-sigs": "完成添加签名",
+  "finish-text": "完成添加文本",
+  "Bold": "粗体",
+  "Italic": "斜体"
+
 }

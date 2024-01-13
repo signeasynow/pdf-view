@@ -114,7 +114,12 @@
   "License Key Invalid": "Chave de Licença Inválida",
   "provided-license-key": "Sua chave de licença fornecida parece ser inválida. Para resolver este problema, por favor, entre em contato com o administrador da sua conta.",
   "Account": "Conta",
-  "one-page-min": "Um PDF deve conter pelo menos uma página."
+  "one-page-min": "Um PDF deve conter pelo menos uma página.",
+  "finish-sigs": "Finalizar adição de assinaturas",
+  "finish-text": "Finalizar adição de texto",
+  "Bold": "Negrito",
+  "Italic": "Itálico"
+
 
 
 

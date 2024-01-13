@@ -114,7 +114,12 @@
   "License Key Invalid": "Chiave di licenza non valida",
   "provided-license-key": "La chiave di licenza fornita sembra essere non valida. Per risolvere questo problema, contatta l'amministratore del tuo account.",
   "Account": "Conto",
-  "one-page-min": "Un PDF deve contenere almeno una pagina."
+  "one-page-min": "Un PDF deve contenere almeno una pagina.",
+  "finish-sigs": "Termina di aggiungere firme",
+  "finish-text": "Termina di aggiungere testo",
+  "Bold": "Grassetto",
+  "Italic": "Corsivo"
+
 
 
 

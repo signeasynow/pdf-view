@@ -22,7 +22,7 @@ const FontItalicInput = ({
   `;
 
 	return (
-		<Tooltip title={"Italic"}>
+		<Tooltip title={t("Italic")}>
 			<div css={textStyle} onClick={onUpdateFontItalic} style={{
 				fontSize: 24,
 				fontWeight: 600,

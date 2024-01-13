@@ -114,5 +114,10 @@
   "License Key Invalid": "Kunci Lesen Tidak Sah",
   "provided-license-key": "Kunci lesen yang anda sediakan kelihatannya tidak sah. Untuk menyelesaikan isu ini, sila hubungi pentadbir akaun anda.",
   "Account": "Akaun",
-  "one-page-min": "PDF mesti mengandungi sekurang-kurangnya satu halaman."
+  "one-page-min": "PDF mesti mengandungi sekurang-kurangnya satu halaman.",
+  "finish-sigs": "Selesai menambah tanda tangan",
+  "finish-text": "Selesai menambah teks",
+  "Bold": "Tebal",
+  "Italic": "Condong"
+
 }

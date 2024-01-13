@@ -2,12 +2,10 @@
 import { css } from '@emotion/react';
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'alien35_pdf_ui_lib_2';
-import { AnnotationEditorParamsType } from 'pdfjs-dist/build/pdf';
 
 const FontBoldInput = ({
 	onUpdateFontWeight,
-	fontWeightBold,
-	pdfViewerRef
+	fontWeightBold
 }) => {
 
 	const { t } = useTranslation();
@@ -27,7 +25,7 @@ const FontBoldInput = ({
 	}
 
 	return (
-		<Tooltip title={"Bold"}>
+		<Tooltip title={t("Bold")}>
 			<div css={textStyle} onClick={onClick} style={{
 				fontSize: 24,
 				fontWeight: 600,

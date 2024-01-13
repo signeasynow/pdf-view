@@ -114,7 +114,12 @@
   "License Key Invalid": "라이선스 키가 유효하지 않습니다",
   "provided-license-key": "제공된 라이선스 키가 유효하지 않은 것으로 보입니다. 이 문제를 해결하려면 계정 관리자에게 연락하세요.",
   "Account": "계정",
-  "one-page-min": "PDF는 적어도 한 페이지를 포함해야 합니다."
+  "one-page-min": "PDF는 적어도 한 페이지를 포함해야 합니다.",
+  "finish-sigs": "서명 추가 완료",
+  "finish-text": "텍스트 추가 완료",
+  "Bold": "굵게",
+  "Italic": "기울임꼴"
+
 
 
 }

@@ -114,7 +114,12 @@
   "License Key Invalid": "Lizenzschlüssel ungültig",
   "provided-license-key": "Ihr bereitgestellter Lizenzschlüssel scheint ungültig zu sein. Um dieses Problem zu lösen, wenden Sie sich bitte an Ihren Kontoadministrator.",
   "Account": "Konto",
-  "one-page-min": "Ein PDF muss mindestens eine Seite enthalten."
+  "one-page-min": "Ein PDF muss mindestens eine Seite enthalten.",
+  "finish-sigs": "Beenden Sie das Hinzufügen von Unterschriften",
+  "finish-text": "Beenden Sie das Hinzufügen von Text",
+  "Bold": "Fett",
+  "Italic": "Kursiv"
+
 
 
 }

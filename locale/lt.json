@@ -114,5 +114,10 @@
   "License Key Invalid": "Licencijos raktas negalioja",
   "provided-license-key": "Jūsų pateiktas licencijos raktas atrodo negaliojantis. Norėdami išspręsti šią problemą, susisiekite su savo paskyros administratoriumi.",
   "Account": "Paskyra",
-  "one-page-min": "PDF turi turėti bent vieną puslapį."
+  "one-page-min": "PDF turi turėti bent vieną puslapį.",
+  "finish-sigs": "Baigti pridėti parašus",
+  "finish-text": "Baigti rašyti tekstą",
+  "Bold": "Paryškintas",
+  "Italic": "Pasviręs"
+
 }

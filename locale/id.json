@@ -114,5 +114,9 @@
   "License Key Invalid": "Kunci Lisensi Tidak Sah",
   "provided-license-key": "Kunci lisensi yang Anda berikan tampaknya tidak valid. Untuk menyelesaikan masalah ini, silakan hubungi administrator akun Anda.",
   "Account": "Akun",
-  "one-page-min": "PDF harus mengandung setidaknya satu halaman."
+  "one-page-min": "PDF harus mengandung setidaknya satu halaman.",
+  "finish-sigs": "Selesai menambahkan tanda tangan",
+  "finish-text": "Selesai menambahkan teks",
+  "Bold": "Tebal",
+  "Italic": "Miring"
 }
