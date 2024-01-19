@@ -11,12 +11,13 @@ const tabStyle = css`
 const Wrapper = ({ children }) => (
 	<div css={css({
 		display: 'flex',
-		background: 'white',
+		background: '#f1f3f5',
 		height: heightOffsetTabs,
 		alignItems: 'center',
 		padding: '0 12px',
 		justifyContent: 'flex-start',
-		borderTop: '1px solid #ccc'
+		borderTop: '1px solid #ccc',
+		borderBottom: '1px solid #ccc'
 	})}
 	>
 		{children}
@@ -33,6 +34,9 @@ const Tabs = ({
 		{
 			fileNames.map((name, idx) => (
 				<span key={idx} onClick={() => onClick(idx)} style={{
+					whiteSpace: "nowrap",
+					overflow: "hidden",
+					textOverflow: "ellipsis",
 					cursor: activePageIndex === idx ? '' : 'pointer',
 					border: activePageIndex !== idx ? '1px solid #1c1c1c' : '1px solid #cccccc',
 					background: activePageIndex !== idx ? '#e4e4e4' : ''

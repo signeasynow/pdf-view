@@ -246,7 +246,9 @@ const ZoomSection = ({
 				/>
 				<div css={zoomLeft}>
 					<Tooltip title={t('zoomOut')}>
-						<Icon onClick={onZoomOut} src={ZoomIn} alt={t('zoomOut')} />
+						<div style={{marginTop: 4}}>
+							<Icon onClick={onZoomOut} src={ZoomIn} alt={t('zoomOut')} />
+						</div>
 					</Tooltip>
 				</div>
 				<Tooltip title={t('zoomIn')}>

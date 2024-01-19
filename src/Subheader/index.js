@@ -17,6 +17,7 @@ import AnnotationSelectionDropdown from './AnnotationSelectionDropdown';
 import Signatures from './Signatures';
 import AnnotationTextSettings from './AnnotationTextSettings';
 import * as pdfjs from 'pdfjs-dist';
+import SubheaderZoomSlider from './SubheaderZoomSlider';
 
 const Wrapper = ({ children }) => (
 	<div css={css({
@@ -201,18 +202,11 @@ const Subheader = ({
 					)
 				}
 			</div>
-			{
-				showFullScreenThumbnails && (
-					<div style={{ display: 'flex', alignItems: 'center' }}>
-						<div>
-							<Slider
-								value={expandedViewThumbnailScale}
-								onChange={handleInputChange}
-							/>
-						</div>
-					</div>
-				)
-			}
+			<SubheaderZoomSlider
+				showFullScreenThumbnails={showFullScreenThumbnails}
+				handleInputChange={handleInputChange}
+				expandedViewThumbnailScale={expandedViewThumbnailScale}
+			/>
 			<div css={contentLeftStyle}>
 				<>
 					{

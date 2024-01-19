@@ -23,7 +23,6 @@ import useDownload, { modifyPdfBuffer } from './hooks/useDownload';
 import useListenForDownloadRequest from './hooks/useListenForDownloadRequest';
 import usePropageClickEvents from './hooks/usePropagateClickEvents';
 import { supabase } from './utils/supabase';
-import generateRandomKey from './utils/generateRandomKey';
 import simpleHash from './utils/simpleHash';
 import * as amplitude from '@amplitude/analytics-browser';
 import useListenForThumbnailFullScreenRequest from './hooks/useListenForThumbnailFullScreenRequest';
@@ -34,10 +33,9 @@ import useListenForCombineFilesRequest from './hooks/useListForCombineFilesReque
 import useListenForSplitPagesRequest from './hooks/useListenForSplitPagesRequest';
 import useListenForRemoveChatHistoryRequest from './hooks/useListenForRemoveChatHistoryRequest';
 import useListenForKeyClicks from './hooks/useListenForKeyClicks';
-import { PDFDocument, PDFName, PDFRawStream, PDFRef, arrayAsString, decodePDFRawStream, degrees } from 'pdf-lib';
-import { extractAllTextFromPDF } from './utils/extractAllTextFromPdf';
-import { ModalProvider, useModal } from './Contexts/ModalProvider';
-import { AnnotationsContext, AnnotationsProvider } from './Contexts/AnnotationsContext';
+import { PDFDocument, degrees } from 'pdf-lib';
+import { useModal } from './Contexts/ModalProvider';
+import { AnnotationsContext } from './Contexts/AnnotationsContext';
 import useListenForSearchbarRequest from './hooks/useListenForSearchbarRequest';
 import useListenForSignatureModalRequest from './hooks/useListenForSignatureModalRequest';
 import * as pdfjs from 'pdfjs-dist';
@@ -53,21 +51,8 @@ import useListenForStateChange from './hooks/useListenForStateChange';
 import { AuthInfoContext } from './Contexts/AuthInfoContext';
 import useListenForAiQuestionCount from './hooks/useListenForAiQuestionCount';
 import { LocaleContext } from './Contexts/LocaleContext';
-import pako from 'pako';
-import fontkit from '@pdf-lib/fontkit';
 import { generateUUID } from './utils/generateUuid';
 import { removeTextFromPdf } from './utils/removeTextFromPdf';
-
-const flipMap = (map) => {
-  const flipped = {};
-  for (const key in map) {
-    if (map.hasOwnProperty(key)) {
-      flipped[map[key]] = parseInt(key);
-    }
-  }
-  return flipped;
-};
-
 
 const isChromeExtension = process.env.NODE_CHROME === "true";
 let storage = isChromeExtension ? new ChromeStorage() : new IndexedDBStorage();

@@ -14,7 +14,7 @@ const SearchbarTools = ({
 	const { showModal } = useModal();
 
 	return (
-		<div style={{ display: 'flex' }}>
+		<div style={{ display: 'flex', marginTop: 4, marginBottom: 4 }}>
 			<div onClick={() => onToggle('chat')} style={{ fontWeight: '800', cursor: 'pointer', padding: 4, fontSize: 16, textDecoration: searchBarView === 'chat' ? 'underline' : '' }}>{t('Chat')}</div>
 			<div onClick={() => onToggle('search')} style={{ fontWeight: '800', cursor: 'pointer', padding: 4, fontSize: 16, textDecoration: searchBarView !== 'chat' ? 'underline' : '' }}>{t('Search')}</div>
 			{

@@ -231,7 +231,23 @@ const ConversationSection = ({
 							onChange={handleChange}
 							placeholder={aiLimitReached ? t('daily-limit-warning') : t('ask-doc-question')}
 						/>
-						<button disabled={loading || aiLimitReached} style={{ cursor: aiLimitReached ? 'not-allowed' : 'pointer', fontSize: 16, border: 'none', borderBottomRightRadius: '2px', borderTopRightRadius: '2px', color: 'white', background: (loading || aiLimitReached) ? 'white' : '#3183c8' }} onClick={handleSubmit}>{loading ? <LoadingSpinner size="sm" /> : '>'}</button>
+						<button
+							disabled={loading || aiLimitReached}
+							style={{
+								cursor: aiLimitReached ? 'not-allowed' : 'pointer',
+								fontSize: 16,
+								border: 'none',
+								borderBottomRightRadius: '2px',
+								borderTopRightRadius: '2px',
+								color: 'white',
+								background: (loading || aiLimitReached) ? 'white' : '#3183c8',
+								width: 48,
+								display: "flex",
+								justifyContent: "center",
+								alignItems: "center"
+							}}
+							onClick={handleSubmit}
+						>{loading ? <LoadingSpinner size="sm" /> : '>'}</button>
 					</div>
 					<p css={disclaimerStyle}>{t('wrong-answers-warning')}</p>
 				</div>

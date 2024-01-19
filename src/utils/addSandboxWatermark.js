@@ -61,7 +61,7 @@ async function addWatermark(pdfBytes, copy) {
 }
 
 export const addSandboxWatermark = async (buffer) => {
-	const modifiedPdfArray = await addWatermark(buffer, 'Demo - ProdFox.com');
+	const modifiedPdfArray = await addWatermark(buffer, 'Demo - SmartPriceDoc.com');
 
 	return modifiedPdfArray;
 };

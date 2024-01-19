@@ -27,10 +27,7 @@ module.exports = {
 				test: /\.(png|jpe?g|gif)$/i,
 				use: [
 					{
-						loader: 'file-loader',
-						options: {
-							name: '[path][name].[ext]' // This will retain the original file path and name
-						}
+						loader: 'file-loader'
 					}
 				]
 			},
@@ -46,12 +43,12 @@ module.exports = {
 		]
 	},
 	resolve: {
-		alias: {
+    alias: {
 			react: 'preact/compat',
 			'react-dom/test-utils': 'preact/test-utils',
 			'react-dom': 'preact/compat'
-		},
-		extensions: ['.js']
+    },
+    extensions: ['.js']
 	},
 	plugins: [
 		new webpack.DefinePlugin({
