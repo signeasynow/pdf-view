@@ -18,8 +18,9 @@ import Signatures from './Signatures';
 import AnnotationTextSettings from './AnnotationTextSettings';
 import * as pdfjs from 'pdfjs-dist';
 import SubheaderZoomSlider from './SubheaderZoomSlider';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 
-const Wrapper = ({ children }) => (
+const Wrapper = ({ children, isSmallScreen }) => (
 	<div css={css({
 		display: 'flex',
 		background: 'white',
@@ -27,7 +28,9 @@ const Wrapper = ({ children }) => (
 		alignItems: 'center',
 		padding: '0 12px',
 		justifyContent: 'space-between',
-		borderTop: '1px solid #ccc'
+		borderTop: '1px solid #ccc',
+		overflowY: isSmallScreen ? 'auto' : 'initial',
+		position: 'relative'
 	})}
 	>
 		{children}
@@ -36,6 +39,25 @@ const Wrapper = ({ children }) => (
 
 const contentLeftStyle = css`
 	display: flex;
+	align-items: center;
+`;
+
+const gradientLeft = css`
+	position: fixed;
+	z-index: 99999;
+	height: 48px;
+	left: -1px;
+	width: 24px;
+	background: linear-gradient(to left, rgba(255, 255, 255, 0)20%, rgba(255, 255, 255, 1)70%);
+`;
+
+const gradientRight = css`
+	position: fixed;
+	z-index: 99999;
+	height: 48px;
+	right: -1px;
+	width: 24px;
+	background: linear-gradient(to right, rgba(255, 255, 255, 0) 20%, rgba(255, 255, 255, 1) 70%);
 `;
 
 const Subheader = ({
@@ -136,8 +158,18 @@ const Subheader = ({
 		}
 	};
 
+	const isSmallScreen = useMediaQuery('(max-width: 550px)');
+
 	return (
-		<Wrapper>
+		<Wrapper isSmallScreen={isSmallScreen}>
+			{
+				isSmallScreen && (
+					<>
+						<div css={gradientLeft} />
+						<div css={gradientRight} />
+					</>
+				)
+			}
 			<div css={contentLeftStyle}>
 			  <div style={{ display: 'flex', alignItems: 'center' }}>
 				  <AnnotationSelectionDropdown
@@ -175,16 +207,18 @@ const Subheader = ({
 				</div>
 				{
 					showFullScreenThumbnails && (
-						<AccessibleButton
-							onClick={onMinimize}
-							ariaLabel={t('minimize')}
-						>
-							<HeaderBtn title={t('minimize')} iconAlt={t('minimize')} icon={Minimize} />
-						</AccessibleButton>
+						<div style={{marginRight: 4}}>
+							<AccessibleButton
+								onClick={onMinimize}
+								ariaLabel={t('minimize')}
+							>
+								<HeaderBtn title={t('minimize')} iconAlt={t('minimize')} icon={Minimize} />
+							</AccessibleButton>
+						</div>
 					)
 				}
 				{
-					multiPageSelections?.length ? (
+					!!multiPageSelections?.length && (
 						<div style={{
 							display: 'flex',
 							alignItems: 'center'
@@ -197,7 +231,10 @@ const Subheader = ({
 								<HeaderBtn title={'Clear selection'} iconAlt={t('redo')} icon={RemoveSelection} />
 							</AccessibleButton>
 						</div>
-					) : (
+					)
+				}
+				{
+					!isSmallScreen && (
 						<div style={{ width: '37px' }} />
 					)
 				}

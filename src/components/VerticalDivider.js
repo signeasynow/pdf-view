@@ -5,7 +5,7 @@ const VerticalDivider = () => (
 	<div css={css`
     width: 1px;
     background-color: #ccc;
-    margin: 12px 12px;
+    margin: 12px 8px;
     color: transparent;
     pointer-events: none;
   `}

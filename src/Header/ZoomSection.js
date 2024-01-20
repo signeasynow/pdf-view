@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 
 const inputStyles = css`
   font-size: 16px;
-  height: 12px;
+  height: 100%;
   border: none;
   font-weight: 600;
   color: #5b5b5b;

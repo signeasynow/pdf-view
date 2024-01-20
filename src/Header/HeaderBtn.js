@@ -16,7 +16,7 @@ export const MySVGIcon = ({ strokeColor }) => (
 );
 
 const wrapper = css`
-  padding: 4px;
+  padding: 2px;
   cursor: pointer;
   display: flex;
   align-items: center;
