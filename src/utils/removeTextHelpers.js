@@ -112,7 +112,7 @@ function processSingleTJCommand(line, targetString) {
 	return null; // Indicate no replacement was made
 }
 
-const processLinesSingleCommand = (lines, clickedTextString) => {
+function processLinesSingleCommand(lines, clickedTextString) {
 	let _foundMatch = false;
 	let color;
 	const result = lines.map((line, index) => {
