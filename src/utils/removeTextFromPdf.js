@@ -2,18 +2,6 @@ import { PDFDocument, PDFRawStream, PDFRef, arrayAsString, decodePDFRawStream } 
 import pako from 'pako';
 import { extractTextFromLine, findHexColor, replaceTextWithSpacesInTJCommand } from './removeTextHelpers';
 
-export function reconstructLine(matches, replacedText) {
-	let currentIndex = 0;
-	return matches.map(match => {
-			const textMatch = match[1];
-			const spacingNumber = match[2] ? match[2].trim() : '';
-			const segmentLength = textMatch.length;
-			const replacement = replacedText.substring(currentIndex, currentIndex + segmentLength);
-			currentIndex += segmentLength;
-			return `(${replacement})${spacingNumber ? ' ' + spacingNumber : ''}`;
-	}).join('');
-}
-
 export const processLinesMultipleCommands = (lines, originalString) => {
 	let accumulatedText = '';
 	let accumulatedMatches = [];
