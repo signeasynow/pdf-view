@@ -15,6 +15,6 @@ describe('findHexColor', () => {
   it('should work with other text at beginning', () => {
     const lines = ['/CS0 cs 0.267 0.267 0.267  scn'];
     const startIndex = 1;
-    expect(findHexColor(lines, startIndex)).to.equal('#ff0000');
+    expect(findHexColor(lines, startIndex)).to.equal('#444444');
   });
 });
