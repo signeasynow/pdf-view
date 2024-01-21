@@ -1,5 +1,6 @@
 import { PDFDocument, PDFRawStream, PDFRef, arrayAsString, decodePDFRawStream } from 'pdf-lib';
 import pako from 'pako';
+import { extractTextFromLine, replaceTextWithSpacesInTJCommand } from './removeTextHelpers';
 
 export function reconstructLine(matches, replacedText) {
 	let currentIndex = 0;
@@ -11,14 +12,6 @@ export function reconstructLine(matches, replacedText) {
 			currentIndex += segmentLength;
 			return `(${replacement})${spacingNumber ? ' ' + spacingNumber : ''}`;
 	}).join('');
-}
-
-export function replaceTextWithSpacesInTJCommand(line) {
-	const textLength = extractTextFromLine(line).length;
-	const whitespaceReplacement = ' '.repeat(textLength);
-	const regex = /\((.*?)\)(\s*\d*\.?\d*\s*)?/g;
-	const matches = [...line.matchAll(regex)];
-	return reconstructLine(matches, whitespaceReplacement);
 }
 
 export function findHexColor(lines, startIndex) {
@@ -34,14 +27,6 @@ export function findHexColor(lines, startIndex) {
 			}
 	}
 	return null; // Return null if no color command is found
-}
-
-export function extractTextFromLine(line) {
-	// Replace occurrences of \2 followed by numbers or letters with +++++
-
-	// Extract text within parentheses
-	const matchResult = line.match(/\((.*?)\)/g);
-	return matchResult ? matchResult.map(t => t.slice(1, -1)).join('').trim() : '';
 }
 
 export const processLinesMultipleCommands = (lines, originalString) => {
