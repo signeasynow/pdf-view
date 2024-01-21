@@ -1,7 +1,7 @@
 function extractTextFromLine(line) {
 	// Extract text within parentheses
 	const matchResult = line.match(/\((.*?)\)/g);
-	return matchResult ? matchResult.map(t => t.slice(1, -1)).join('').trim() : '';
+	return matchResult ? matchResult.map(t => t.slice(1, -1)).join('') : '';
 }
 
 function reconstructLine(matches, replacedText) {
