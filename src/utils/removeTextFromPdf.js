@@ -47,13 +47,14 @@ export async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 			.replace(/\)/g, '\\)');
 
 		
+		// TODO: Test that things don't get overwritten
 		const {lines: singleLines, foundMatch, color: singleColor } = processLinesSingleCommand(lines, clickedTextString);
 		let modifiedLines = singleLines;
-		color = singleColor;
+		color ||= singleColor;
 		if (!foundMatch) {
 			const { lines: multiLines, color: multiColor } = processLinesMultipleCommands(lines, clickedTextString);
 			modifiedLines = multiLines;
-			color = multiColor;
+			color ||= multiColor;
 	  }
 
 		// Reconstruct the modified content stream
@@ -68,7 +69,7 @@ export async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 				return stream;
 		}
 	}));
-
+	// console.log(color, 'color to use')
 	const saved = await pdfDoc.save();
 	return {
 		document: saved,

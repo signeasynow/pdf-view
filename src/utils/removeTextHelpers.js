@@ -32,6 +32,7 @@ function findHexColor(lines, startIndex) {
 	for (let i = startIndex - 1; i >= 0; i--) {
 			if (lines[i]?.toLowerCase().trim().endsWith('scn')) {
 					const colorValues = lines[i].match(/([\d.]+) {1,}([\d.]+) {1,}([\d.]+) {1,}scn/);
+					// console.log(colorValues, 'colorValues test', lines[i])
 					if (colorValues && colorValues.length === 4) {
 							const hexColor = colorValues.slice(1, 4)
 									.map(v => parseInt(parseFloat(v) * 255).toString(16).padStart(2, '0'))
@@ -112,20 +113,22 @@ function processSingleTJCommand(line, targetString) {
 }
 
 const processLinesSingleCommand = (lines, clickedTextString) => {
-	console.log(lines, 'lines', clickedTextString, 'or')
 	let _foundMatch = false;
 	let color;
 	const result = lines.map((line, index) => {
 			if (line.toUpperCase().endsWith('TJ')) {
 					const result = processSingleTJCommand(line, clickedTextString);
 					if (result !== null) {
+						// console.log(line, clickedTextString, 'huh fo')
 						_foundMatch = true;
 						color = findHexColor(lines, index);
+						// console.log(color, 'color start')
 						return result + (result.trim().toUpperCase().endsWith('TJ') ? '' : ' TJ');
 					}
 			}
 			return line;
 	});
+	// console.log(color, 'color here3')
 	return { lines: result, foundMatch: _foundMatch, color }
 };
 
