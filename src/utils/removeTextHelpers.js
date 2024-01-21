@@ -4,24 +4,10 @@ function extractTextFromLine(line) {
 	return matchResult ? matchResult.map(t => t.slice(1, -1)).join('') : '';
 }
 
-function reconstructLine(matches, replacedText) {
-	let currentIndex = 0;
-	return matches.map(match => {
-			const textMatch = match[1];
-			const spacingNumber = match[2] ? match[2].trim() : '';
-			const segmentLength = textMatch.length;
-			const replacement = replacedText.substring(currentIndex, currentIndex + segmentLength);
-			currentIndex += segmentLength;
-			return `(${replacement})${spacingNumber ? ' ' + spacingNumber : ''}`;
-	}).join('');
-}
-
 function replaceTextWithSpacesInTJCommand(line) {
 	const textLength = extractTextFromLine(line).length;
-	const whitespaceReplacement = ' '.repeat(textLength);
-	const regex = /\((.*?)\)(\s*\d*\.?\d*\s*)?/g;
-	const matches = [...line.matchAll(regex)];
-	return reconstructLine(matches, whitespaceReplacement);
+	// -1 is a thousandth of a unit. we are averaging for half of a unit per character.
+	return `[() -${textLength * 500} ()]`;
 }
 
 /**
@@ -113,22 +99,27 @@ function processSingleTJCommand(line, targetString) {
 }
 
 function processLinesSingleCommand(lines, clickedTextString) {
+	console.log(clickedTextString, 'clicked', lines)
 	let _foundMatch = false;
 	let color;
 	const result = lines.map((line, index) => {
 			if (line.toUpperCase().endsWith('TJ')) {
+					// console.log(line, 'line6')
 					const result = processSingleTJCommand(line, clickedTextString);
 					if (result !== null) {
 						// console.log(line, clickedTextString, 'huh fo')
 						_foundMatch = true;
 						color = findHexColor(lines, index);
 						// console.log(color, 'color start')
-						return result + (result.trim().toUpperCase().endsWith('TJ') ? '' : ' TJ');
+						// console.log(result, 'result 44')
+						const final = result + (result.trim().toUpperCase().endsWith('TJ') ? '' : ' TJ');
+						// console.log(final, 'final 3')
+						return final;
 					}
 			}
 			return line;
 	});
-	// console.log(color, 'color here3')
+	// console.log(lines, 'lines here3')
 	return { lines: result, foundMatch: _foundMatch, color }
 };
 
@@ -137,7 +128,6 @@ module.exports = {
 	processLinesSingleCommand,
 	processLinesMultipleCommands,
   extractTextFromLine,
-  reconstructLine,
   replaceTextWithSpacesInTJCommand,
 	findHexColor
 };
