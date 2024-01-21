@@ -24,6 +24,10 @@ function replaceTextWithSpacesInTJCommand(line) {
 	return reconstructLine(matches, whitespaceReplacement);
 }
 
+/**
+ * Searches for the first color definition in 'lines' array from 'startIndex' backwards and converts it to a hex color code.
+ * Returns the hex color code if found, otherwise null.
+ */
 function findHexColor(lines, startIndex) {
 	for (let i = startIndex - 1; i >= 0; i--) {
 			if (lines[i]?.toLowerCase().trim().endsWith('scn')) {
@@ -36,7 +40,7 @@ function findHexColor(lines, startIndex) {
 					}
 			}
 	}
-	return null; // Return null if no color command is found
+	return null;
 }
 
 module.exports = {
