@@ -1,6 +1,4 @@
 function extractTextFromLine(line) {
-	// Replace occurrences of \2 followed by numbers or letters with +++++
-
 	// Extract text within parentheses
 	const matchResult = line.match(/\((.*?)\)/g);
 	return matchResult ? matchResult.map(t => t.slice(1, -1)).join('').trim() : '';

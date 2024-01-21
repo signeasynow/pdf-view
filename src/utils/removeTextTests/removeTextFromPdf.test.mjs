@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import {replaceTextWithSpacesInTJCommand} from './removeTextHelpers.js';
+import {replaceTextWithSpacesInTJCommand} from '../removeTextHelpers.js';
 
 describe('replaceTextWithSpacesInTJCommand', () => {
 
