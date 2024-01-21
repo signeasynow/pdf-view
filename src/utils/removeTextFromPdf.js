@@ -1,7 +1,7 @@
 import { PDFDocument, PDFRawStream, PDFRef, arrayAsString, decodePDFRawStream } from 'pdf-lib';
 import pako from 'pako';
 
-function reconstructLine(matches, replacedText) {
+export function reconstructLine(matches, replacedText) {
 	let currentIndex = 0;
 	return matches.map(match => {
 			const textMatch = match[1];
@@ -13,7 +13,7 @@ function reconstructLine(matches, replacedText) {
 	}).join('');
 }
 
-function replaceTextWithSpacesInTJCommand(line) {
+export function replaceTextWithSpacesInTJCommand(line) {
 	const textLength = extractTextFromLine(line).length;
 	const whitespaceReplacement = ' '.repeat(textLength);
 	const regex = /\((.*?)\)(\s*\d*\.?\d*\s*)?/g;
@@ -21,7 +21,7 @@ function replaceTextWithSpacesInTJCommand(line) {
 	return reconstructLine(matches, whitespaceReplacement);
 }
 
-function findHexColor(lines, startIndex) {
+export function findHexColor(lines, startIndex) {
 	for (let i = startIndex - 1; i >= 0; i--) {
 			if (lines[i]?.toLowerCase().trim().endsWith('scn')) {
 					const colorValues = lines[i].match(/([\d.]+) {1,}([\d.]+) {1,}([\d.]+) {1,}scn/);
@@ -36,7 +36,7 @@ function findHexColor(lines, startIndex) {
 	return null; // Return null if no color command is found
 }
 
-function extractTextFromLine(line) {
+export function extractTextFromLine(line) {
 	// Replace occurrences of \2 followed by numbers or letters with +++++
 
 	// Extract text within parentheses
@@ -44,7 +44,7 @@ function extractTextFromLine(line) {
 	return matchResult ? matchResult.map(t => t.slice(1, -1)).join('').trim() : '';
 }
 
-const processLinesMultipleCommands = (lines, originalString) => {
+export const processLinesMultipleCommands = (lines, originalString) => {
 	let accumulatedText = '';
 	let accumulatedMatches = [];
 	let matchingIndexes = [];
@@ -85,7 +85,7 @@ const processLinesMultipleCommands = (lines, originalString) => {
 };
 
 
-function processSingleTJCommand(line, targetString) {
+export function processSingleTJCommand(line, targetString) {
 	const modLine = line.replace(/\\\(/g, 'PLACEHOLDER_PARENTHESIS_OPEN')
 			.replace(/\\\)/g, 'PLACEHOLDER_PARENTHESIS_CLOSE');
 	const modTarget = targetString
@@ -113,7 +113,7 @@ function processSingleTJCommand(line, targetString) {
 	return null; // Indicate no replacement was made
 }
 
-const processLinesSingleCommand = (lines, originalString) => {
+export const processLinesSingleCommand = (lines, originalString) => {
 	let _foundMatch = false;
 	let color;
 	const result = lines.map((line, index) => {
@@ -201,5 +201,5 @@ export async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 	return {
 		document: saved,
 		color
-	}
+	};
 }
