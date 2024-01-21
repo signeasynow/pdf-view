@@ -42,16 +42,16 @@ export async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 		// Split the stream by new lines and process only lines ending with 'TJ'
 		const lines = text.split('\n');
 		
-		const originalString = detail.str.replace(/-\s*$/, '')
+		const clickedTextString = detail.str.replace(/-\s*$/, '')
 			.replace(/\(/g, '\\(')
 			.replace(/\)/g, '\\)');
 
 		
-		const {lines: singleLines, foundMatch, color: singleColor } = processLinesSingleCommand(lines, originalString);
+		const {lines: singleLines, foundMatch, color: singleColor } = processLinesSingleCommand(lines, clickedTextString);
 		let modifiedLines = singleLines;
 		color = singleColor;
 		if (!foundMatch) {
-			const { lines: multiLines, color: multiColor } = processLinesMultipleCommands(lines, originalString);
+			const { lines: multiLines, color: multiColor } = processLinesMultipleCommands(lines, clickedTextString);
 			modifiedLines = multiLines;
 			color = multiColor;
 	  }

@@ -43,7 +43,7 @@ function findHexColor(lines, startIndex) {
 	return null;
 }
 
-function processLinesMultipleCommands(lines, originalString) {
+function processLinesMultipleCommands(lines, clickedTextString) {
 	let accumulatedText = '';
 	let accumulatedMatches = [];
 	let matchingIndexes = [];
@@ -55,11 +55,11 @@ function processLinesMultipleCommands(lines, originalString) {
 
 		if (line.toUpperCase().endsWith('TJ')) {
 				const currentText = extractTextFromLine(line);
-				if (originalString.includes(currentText)) {
+				if (clickedTextString.includes(currentText)) {
 						accumulatedText += currentText;
 						accumulatedMatches.push(line);
 						matchingIndexes.push(index);
-						if (accumulatedText.replace(/\s+/g, '').includes(originalString.replace(/\s+/g, ''))) {
+						if (accumulatedText.replace(/\s+/g, '').includes(clickedTextString.replace(/\s+/g, ''))) {
 								fullMatchFound = true;  // Set the flag when full match is found
 								color = findHexColor(lines, index);
 								break; // Break out of the loop after processing
@@ -75,7 +75,7 @@ function processLinesMultipleCommands(lines, originalString) {
 		lines: lines.map((line, index) => {
 			if (matchingIndexes.includes(index)) {
 				const result = replaceTextWithSpacesInTJCommand(line);
-				return result + (result.trim().endsWith('TJ') ? '' : ' TJ');	
+				return result + (result.trim().endsWith('TJ') ? '' : ' TJ');
 			}
 			return line;
 		}),
@@ -111,12 +111,13 @@ function processSingleTJCommand(line, targetString) {
 	return null; // Indicate no replacement was made
 }
 
-const processLinesSingleCommand = (lines, originalString) => {
+const processLinesSingleCommand = (lines, clickedTextString) => {
+	console.log(lines, 'lines', clickedTextString, 'or')
 	let _foundMatch = false;
 	let color;
 	const result = lines.map((line, index) => {
 			if (line.toUpperCase().endsWith('TJ')) {
-					const result = processSingleTJCommand(line, originalString);
+					const result = processSingleTJCommand(line, clickedTextString);
 					if (result !== null) {
 						_foundMatch = true;
 						color = findHexColor(lines, index);
