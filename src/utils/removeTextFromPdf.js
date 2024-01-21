@@ -1,6 +1,6 @@
 import { PDFDocument, PDFRawStream, PDFRef, arrayAsString, decodePDFRawStream } from 'pdf-lib';
 import pako from 'pako';
-import { extractTextFromLine, replaceTextWithSpacesInTJCommand } from './removeTextHelpers';
+import { extractTextFromLine, findHexColor, replaceTextWithSpacesInTJCommand } from './removeTextHelpers';
 
 export function reconstructLine(matches, replacedText) {
 	let currentIndex = 0;
@@ -12,21 +12,6 @@ export function reconstructLine(matches, replacedText) {
 			currentIndex += segmentLength;
 			return `(${replacement})${spacingNumber ? ' ' + spacingNumber : ''}`;
 	}).join('');
-}
-
-export function findHexColor(lines, startIndex) {
-	for (let i = startIndex - 1; i >= 0; i--) {
-			if (lines[i]?.toLowerCase().trim().endsWith('scn')) {
-					const colorValues = lines[i].match(/([\d.]+) {1,}([\d.]+) {1,}([\d.]+) {1,}scn/);
-					if (colorValues && colorValues.length === 4) {
-							const hexColor = colorValues.slice(1, 4)
-									.map(v => parseInt(parseFloat(v) * 255).toString(16).padStart(2, '0'))
-									.join('');
-							return `#${hexColor}`;
-					}
-			}
-	}
-	return null; // Return null if no color command is found
 }
 
 export const processLinesMultipleCommands = (lines, originalString) => {

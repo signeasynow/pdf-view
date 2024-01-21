@@ -24,8 +24,24 @@ function replaceTextWithSpacesInTJCommand(line) {
 	return reconstructLine(matches, whitespaceReplacement);
 }
 
+function findHexColor(lines, startIndex) {
+	for (let i = startIndex - 1; i >= 0; i--) {
+			if (lines[i]?.toLowerCase().trim().endsWith('scn')) {
+					const colorValues = lines[i].match(/([\d.]+) {1,}([\d.]+) {1,}([\d.]+) {1,}scn/);
+					if (colorValues && colorValues.length === 4) {
+							const hexColor = colorValues.slice(1, 4)
+									.map(v => parseInt(parseFloat(v) * 255).toString(16).padStart(2, '0'))
+									.join('');
+							return `#${hexColor}`;
+					}
+			}
+	}
+	return null; // Return null if no color command is found
+}
+
 module.exports = {
   extractTextFromLine,
   reconstructLine,
-  replaceTextWithSpacesInTJCommand
+  replaceTextWithSpacesInTJCommand,
+	findHexColor
 };
