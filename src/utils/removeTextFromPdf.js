@@ -1,6 +1,6 @@
 import { PDFDict, PDFDocument, PDFName, PDFRawStream, PDFRef, arrayAsString, decodePDFRawStream } from 'pdf-lib';
 import pako from 'pako';
-import { processLinesMultipleCommands, processLinesSingleCommand } from './removeTextHelpers';
+import { formatHexadecimalString, processLinesMultipleCommands, processLinesSingleCommand } from './removeTextHelpers';
 
 async function getToUnicodeStream(pdfDoc, fontObj) {
 	const toUnicodeRef = fontObj.get(PDFName.of('ToUnicode'));
@@ -113,7 +113,7 @@ export async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 		const decoded = decodePDFRawStream(stream).decode();
 		let text = arrayAsString(decoded);
 		// Split the stream by new lines and process only lines ending with 'TJ'
-		const lines = text.split('\n').map((line) => formatHexStrings(line, allCMaps, lines));
+		const lines = text.split('\n').map((line) => formatHexadecimalString(line, allCMaps, lines, detail.textState.fontName));
 		
 		const clickedTextString = detail.str.replace(/-\s*$/, '')
 			.replace(/\(/g, '\\(')

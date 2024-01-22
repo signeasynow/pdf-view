@@ -132,17 +132,20 @@ function checkIsHexadecimalString(line) {
 	return hexStringPattern.test(line);
 }
 
-function formatHexadecimalStrings(line, allCMaps, lines) {
+function formatHexadecimalString(line, allCMaps, lines, defaultFont) {
 	if (!isTextCommand(line)) {
 		return line;
 	}
 	const isHexString = checkIsHexadecimalString(line);
-	return isHexString
+	if (!isHexString) {
+		return line;
+	}
+	return isHexString;
 }
 
 module.exports = {
 	checkIsHexadecimalString,
-	formatHexadecimalStrings,
+	formatHexadecimalString,
 	processSingleTJCommand,
 	processLinesSingleCommand,
 	processLinesMultipleCommands,
