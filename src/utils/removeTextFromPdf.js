@@ -80,11 +80,6 @@ export async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 	// then proceed as usual
 	if (fontDict instanceof PDFDict) {
 		allCMaps = await getCMapsForAllFonts(fontDict, pdfDoc);
-		const fontRef = fontDict.get(PDFName.of(fontNameFromOriginalString));
-    const fontObj = pdfDoc.context.lookup(fontRef);
-		const unicodeStream = await getToUnicodeStream(pdfDoc, fontObj);
-		const decoded = decodeStream(unicodeStream);
-		const cmap = parseCMap(decoded);
   }
 
 	if (!targetPage) {
@@ -118,7 +113,7 @@ export async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 		const decoded = decodePDFRawStream(stream).decode();
 		let text = arrayAsString(decoded);
 		// Split the stream by new lines and process only lines ending with 'TJ'
-		const lines = text.split('\n');
+		const lines = text.split('\n').map((line) => formatHexStrings(line, allCMaps, lines));
 		
 		const clickedTextString = detail.str.replace(/-\s*$/, '')
 			.replace(/\(/g, '\\(')

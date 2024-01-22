@@ -98,12 +98,16 @@ function processSingleTJCommand(line, targetString) {
 	return null; // Indicate no replacement was made
 }
 
+function isTextCommand(line) {
+	return line.toUpperCase().endsWith('TJ');
+}
+
 function processLinesSingleCommand(lines, clickedTextString) {
 	console.log(clickedTextString, 'clicked', lines)
 	let _foundMatch = false;
 	let color;
 	const result = lines.map((line, index) => {
-			if (line.toUpperCase().endsWith('TJ')) {
+			if (isTextCommand(line)) {
 					// console.log(line, 'line6')
 					const result = processSingleTJCommand(line, clickedTextString);
 					if (result !== null) {
@@ -123,7 +127,22 @@ function processLinesSingleCommand(lines, clickedTextString) {
 	return { lines: result, foundMatch: _foundMatch, color }
 };
 
+function checkIsHexadecimalString(line) {
+	const hexStringPattern = /<([0-9A-Fa-f]+)>/;
+	return hexStringPattern.test(line);
+}
+
+function formatHexadecimalStrings(line, allCMaps, lines) {
+	if (!isTextCommand(line)) {
+		return line;
+	}
+	const isHexString = checkIsHexadecimalString(line);
+	return isHexString
+}
+
 module.exports = {
+	checkIsHexadecimalString,
+	formatHexadecimalStrings,
 	processSingleTJCommand,
 	processLinesSingleCommand,
 	processLinesMultipleCommands,
