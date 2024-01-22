@@ -10,24 +10,6 @@ async function getToUnicodeStream(pdfDoc, fontObj) {
 	return toUnicodeStream;
 }
 
-function convertHexToString(hexString) {
-	let unicodeString = '';
-
-	for (let i = 0; i < hexString.length; i += 4) {
-			const code = hexString.substring(i, i + 4);
-			const unicodeHex = cmap[code];
-			
-			if (unicodeHex) {
-					for (let j = 0; j < unicodeHex.length; j += 4) {
-							const unicodeChar = parseInt(unicodeHex.substring(j, j + 4), 16);
-							unicodeString += String.fromCharCode(unicodeChar);
-					}
-			}
-	}
-
-	return unicodeString;
-}
-
 function parseCMap(cmapData) {
 	const cmap = {};
 	const bfCharRegex = /<([0-9A-F]+)> <([0-9A-F]+)>/g;
@@ -66,38 +48,20 @@ function decodeStream(toUnicodeStream) {
 	return decodedContent;
 }
 
-function convertPdfHexStringToUnicode(pdfHexString, pdfCMap) {
-	let unicodeString = '';
-
-	// Standard ASCII mappings for basic Latin letters and numbers
-	const standardCMap = {};
-	for (let i = 32; i < 127; i++) {
-			const hex = i.toString(16).padStart(4, '0').toUpperCase();
-			standardCMap[hex] = String.fromCharCode(i);
+async function getCMapsForAllFonts(fontDict, pdfDoc) {
+	const cmaps = {};
+	for (const fontName of fontDict.keys()) {
+			const fontRef = fontDict.get(fontName);
+			const fontObj = pdfDoc.context.lookup(fontRef);
+			const unicodeStream = await getToUnicodeStream(pdfDoc, fontObj);
+			const decoded = decodeStream(unicodeStream);
+			const cmap = parseCMap(decoded);
+			cmaps[fontName.encodedName] = cmap;
 	}
-
-	// Merge the PDF-specific CMap with the standard CMap
-	const combinedCMap = { ...standardCMap, ...pdfCMap };
-
-	// Remove <, > and split by spaces
-	const hexCodes = pdfHexString.replace(/[<>]/g, '').split(/\s+/);
-	for (const hexCode of hexCodes) {
-			if (hexCode.length === 4) { // Check for length of 4 for each character code
-					const unicodeChar = combinedCMap[hexCode.toUpperCase()];
-					if (unicodeChar) {
-							unicodeString += unicodeChar;
-					} else {
-							// Handle missing mapping
-							console.log(`No mapping for code: ${hexCode}`);
-					}
-			}
-	}
-
-	return unicodeString;
+	return cmaps;
 }
 
 export async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
-	console.log(detail, 'detail22')
 	const pdfDoc = await PDFDocument.load(pdfBytes);
 	const pages = pdfDoc.getPages();
 
@@ -107,27 +71,21 @@ export async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 
 	const resources = targetPage.node.Resources();
 
-	const fontNameFromOriginalString = detail.textState.fontName; // TT2
-	console.log(fontNameFromOriginalString, 'fontNameFromOriginalString')
+	let fontNameFromOriginalString = detail.textState.fontName; // TT2
 	const fontDict = resources.get(PDFName.of('Font'));
+	let allCMaps = {};
+	// TODO: first clean up each hexadecimal string
+	// map through, if hexadecimal, find last font command (TF) and if not found, use detail.textState.fontName
+	// reconstruct text to right format [(my text)] TJ.
+	// then proceed as usual
 	if (fontDict instanceof PDFDict) {
+		allCMaps = await getCMapsForAllFonts(fontDict, pdfDoc);
 		const fontRef = fontDict.get(PDFName.of(fontNameFromOriginalString));
-		console.log(fontRef, 'fontRef2')
     const fontObj = pdfDoc.context.lookup(fontRef);
 		const unicodeStream = await getToUnicodeStream(pdfDoc, fontObj);
-		console.log(unicodeStream, 'uni stream')
 		const decoded = decodeStream(unicodeStream);
-		// console.log(decoded, 'decoded2')
-		// TODO: this above info can be used to better construct the actual font-family
-		console.log(fontObj, 'compare2');
 		const cmap = parseCMap(decoded);
-		console.log(cmap, 'cmap2')
-		console.log(decoded, 'decoded');
-		const uniString = convertPdfHexStringToUnicode("<0057004B00480003005700520053000301060059>", cmap)
-		console.log(uniString, 'uniString')
   }
-	console.log(fontDict, 'fontDict');
-	console.log(resources, 'resources2');
 
 	if (!targetPage) {
 		throw new Error(`Page number ${pageNumber} does not exist in the document.`);
@@ -189,7 +147,6 @@ export async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 				return stream;
 		}
 	}));
-	// console.log(color, 'color to use')
 	const saved = await pdfDoc.save();
 	return {
 		document: saved,
