@@ -134,11 +134,12 @@ function checkIsHexadecimalString(line) {
 
 function extractFontFromLine(line) {
 	// Regular expression to match the PDF font setting command
-	const fontRegex = /\/([A-Za-z0-9_]+)\s+\d+\s+Tf/;
+	// Adjusted to capture the leading '/'
+	const fontRegex = /(\/[A-Za-z0-9_]+)\s+\d+\s+Tf/;
 	const match = line.match(fontRegex);
 
 	if (match && match.length > 1) {
-			// The font name is captured in the first group of the regex
+			// The font name, including the leading '/', is captured in the first group of the regex
 			return match[1];
 	}
 
@@ -158,6 +159,25 @@ function findFont(lines, startIndex) {
 	return null;
 }
 
+function mapHexadecimalToUnicode(line, cMap) {
+	return line.replace(/<([0-9A-Fa-f]+)>/g, (match, hexString) => {
+			let unicodeString = '';
+			const codes = hexString.match(/.{1,4}/g);
+
+			if (codes) {
+					for (const code of codes) {
+							if (cMap[code]) {
+									unicodeString += cMap[code];
+							} else {
+									console.log(`No mapping found for code: ${code}`);
+									unicodeString += '?'; // or some other placeholder
+							}
+					}
+			}
+			return '(' + unicodeString + ')';
+	});
+}
+
 function formatHexadecimalString(line, allCMaps, lines, defaultFont, lineIndex) {
 	if (!isTextCommand(line)) {
 		return line;
@@ -166,7 +186,9 @@ function formatHexadecimalString(line, allCMaps, lines, defaultFont, lineIndex) 
 	if (!isHexString) {
 		return line;
 	}
-	return isHexString;
+	const font = findFont(lines, lineIndex) || (defaultFont.startsWith("/") ? defaultFont : "/" + defaultFont);
+	const cMap = allCMaps[font];
+	return mapHexadecimalToUnicode(line, cMap);
 }
 
 module.exports = {
@@ -179,5 +201,6 @@ module.exports = {
 	processLinesMultipleCommands,
   extractTextFromLine,
   replaceTextWithSpacesInTJCommand,
-	findHexColor
+	findHexColor,
+	mapHexadecimalToUnicode
 };
