@@ -99,7 +99,7 @@ function processSingleTJCommand(line, targetString) {
 }
 
 function isTextCommand(line) {
-	return line.toUpperCase().endsWith('TJ');
+	return line.trim().toUpperCase().endsWith('TJ');
 }
 
 function processLinesSingleCommand(lines, clickedTextString) {
@@ -132,7 +132,29 @@ function checkIsHexadecimalString(line) {
 	return hexStringPattern.test(line);
 }
 
-function formatHexadecimalString(line, allCMaps, lines, defaultFont) {
+function extractFontFromLine(line) {
+	// Regular expression to match the PDF font setting command
+	const fontRegex = /\/([A-Za-z0-9_]+)\s+\d+\s+Tf/;
+	const match = line.match(fontRegex);
+
+	if (match && match.length > 1) {
+			// The font name is captured in the first group of the regex
+			return match[1];
+	}
+
+	// Return null or a default value if no font is found
+	return null;
+}
+
+function findFont(lines, startIndex) {
+	for (let i = startIndex - 1; i >= 0; i--) {
+		if (lines[i]?.toLowerCase().trim().endsWith('tf')) {
+			const font = extractFontFromLine(lines[i]);
+		}
+	}
+}
+
+function formatHexadecimalString(line, allCMaps, lines, defaultFont, lineIndex) {
 	if (!isTextCommand(line)) {
 		return line;
 	}
@@ -144,6 +166,7 @@ function formatHexadecimalString(line, allCMaps, lines, defaultFont) {
 }
 
 module.exports = {
+	extractFontFromLine,
 	checkIsHexadecimalString,
 	formatHexadecimalString,
 	processSingleTJCommand,
