@@ -103,7 +103,6 @@ function isTextCommand(line) {
 }
 
 function processLinesSingleCommand(lines, clickedTextString) {
-	console.log(clickedTextString, 'clicked', lines)
 	let _foundMatch = false;
 	let color;
 	const result = lines.map((line, index) => {
@@ -178,7 +177,7 @@ function mapHexadecimalToUnicode(line, cMap) {
 	});
 }
 
-function formatHexadecimalString(line, allCMaps, lines, defaultFont, lineIndex) {
+function formatHexadecimalString(line, allCMaps, lines, defaultFont, lineIndex, targetText) {
 	if (!isTextCommand(line)) {
 		return line;
 	}
@@ -186,9 +185,17 @@ function formatHexadecimalString(line, allCMaps, lines, defaultFont, lineIndex) 
 	if (!isHexString) {
 		return line;
 	}
+	// TODO: inspect if it's what we're targeting. if not, leave alone as not
+	// worth the risk.
 	const font = findFont(lines, lineIndex) || (defaultFont.startsWith("/") ? defaultFont : "/" + defaultFont);
 	const cMap = allCMaps[font];
-	return mapHexadecimalToUnicode(line, cMap);
+	const res = mapHexadecimalToUnicode(line, cMap);
+	const extractedUnicode = extractTextFromLine(res).trim();
+	if (extractedUnicode === targetText) {
+		return res;
+	}
+	// opting out of fixing it if it's not this anyways.
+	return line;
 }
 
 module.exports = {
