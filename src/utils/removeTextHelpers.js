@@ -150,8 +150,12 @@ function findFont(lines, startIndex) {
 	for (let i = startIndex - 1; i >= 0; i--) {
 		if (lines[i]?.toLowerCase().trim().endsWith('tf')) {
 			const font = extractFontFromLine(lines[i]);
+			if (!!font) {
+				return font;
+			}
 		}
 	}
+	return null;
 }
 
 function formatHexadecimalString(line, allCMaps, lines, defaultFont, lineIndex) {
@@ -166,6 +170,7 @@ function formatHexadecimalString(line, allCMaps, lines, defaultFont, lineIndex) 
 }
 
 module.exports = {
+	findFont,
 	extractFontFromLine,
 	checkIsHexadecimalString,
 	formatHexadecimalString,
