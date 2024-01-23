@@ -13,6 +13,9 @@ import id from '../../locale/id.json';
 import ar from '../../locale/ar.json';
 import lt from '../../locale/lt.json';
 import ms from '../../locale/ms.json';
+import ro from '../../locale/ro.json';
+import no from '../../locale/no.json';
+import fr from '../../locale/fr.json';
 
 const resources = {
 	en: {
@@ -53,6 +56,15 @@ const resources = {
 	},
 	ms: {
 		translation: ms
+	},
+	fr: {
+		translation: fr
+	},
+	no: {
+		translation: no
+	},
+	ro: {
+		translation: ro
 	}
 };
 

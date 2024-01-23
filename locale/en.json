@@ -41,7 +41,6 @@
   "Extract": "Extract",
   "Page manipulation": "Page manipulation",
   "Delete": "Delete",
-
   "email-required": "Email is required",
   "email-invalid": "Email is invalid",
   "password-required": "Password is required",
@@ -120,6 +119,5 @@
   "finish-text": "Finish adding text",
   "Bold": "Bold",
   "Italic": "Italic",
-  
   "Edit original text": "Edit original text"
 }
