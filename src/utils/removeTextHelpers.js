@@ -165,10 +165,11 @@ function mapHexadecimalToUnicode(line, cMap) {
 
 			if (codes) {
 					for (const code of codes) {
-							if (cMap[code]) {
-									unicodeString += cMap[code];
+							const upperCode = code.toUpperCase(); // Ensure the code is in uppercase
+							if (cMap?.[upperCode]) {
+									unicodeString += cMap[upperCode];
 							} else {
-									console.log(`No mapping found for code: ${code}`);
+									console.log(`No mapping found for code: ${upperCode}`);
 									unicodeString += '?'; // or some other placeholder
 							}
 					}
@@ -191,7 +192,6 @@ function formatHexadecimalString(line, allCMaps, lines, defaultFont, lineIndex, 
 	const cMap = allCMaps[font];
 	const res = mapHexadecimalToUnicode(line, cMap);
 	const extractedUnicode = extractTextFromLine(res).trim();
-	console.log(extractedUnicode, 'extractedUnicode22', line, 'line', cMap);
 	if (extractedUnicode === targetText) {
 		return res;
 	}
