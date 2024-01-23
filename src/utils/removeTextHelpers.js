@@ -188,7 +188,7 @@ function formatHexadecimalString(line, allCMaps, lines, defaultFont, lineIndex, 
 	}
 	// TODO: inspect if it's what we're targeting. if not, leave alone as not
 	// worth the risk.
-	const font = findFont(lines, lineIndex) || (defaultFont.startsWith("/") ? defaultFont : "/" + defaultFont);
+	const font = findFont(lines, lineIndex) || (defaultFont?.startsWith("/") ? defaultFont : "/" + defaultFont);
 	const cMap = allCMaps[font];
 	const res = mapHexadecimalToUnicode(line, cMap);
 	const extractedUnicode = extractTextFromLine(res).trim();

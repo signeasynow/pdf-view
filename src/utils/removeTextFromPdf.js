@@ -4,9 +4,10 @@ import { formatHexadecimalString, processLinesMultipleCommands, processLinesSing
 
 async function getToUnicodeStream(pdfDoc, fontObj) {
 	const toUnicodeRef = fontObj.get(PDFName.of('ToUnicode'));
+	if (!toUnicodeRef) {
+			return null; // Return null if ToUnicode stream is not present
+	}
 	const toUnicodeStream = pdfDoc.context.lookup(toUnicodeRef);
-
-	// toUnicodeStream is the stream object you need
 	return toUnicodeStream;
 }
 
@@ -28,21 +29,19 @@ function parseCMap(cmapData) {
 }
 
 function decodeStream(toUnicodeStream) {
+	if (!toUnicodeStream) {
+			console.log('No ToUnicode stream available');
+			return ''; // Return empty string if stream is not available
+	}
+
 	let decodedContent = '';
-
-	// Access the stream's filter from its dictionary
-	const filter = toUnicodeStream.dict.get(PDFName.of('Filter'));
-
 	try {
-			// Access the raw bytes of the stream
+			const filter = toUnicodeStream.dict.get(PDFName.of('Filter'));
 			const streamBytes = toUnicodeStream.contents;
 
 			if (filter && filter.toString() === '/FlateDecode') {
-					// Decompress the stream using pako if it's FlateDecoded
 					decodedContent = pako.inflate(streamBytes, { to: 'string' });
 			} else {
-					// If the stream is not compressed or uses an unknown filter
-					// You might need to convert the byte array to a string
 					decodedContent = new TextDecoder().decode(streamBytes);
 			}
 	} catch (error) {
