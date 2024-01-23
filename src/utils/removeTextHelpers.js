@@ -191,6 +191,7 @@ function formatHexadecimalString(line, allCMaps, lines, defaultFont, lineIndex, 
 	const cMap = allCMaps[font];
 	const res = mapHexadecimalToUnicode(line, cMap);
 	const extractedUnicode = extractTextFromLine(res).trim();
+	console.log(extractedUnicode, 'extractedUnicode22', line, 'line', cMap);
 	if (extractedUnicode === targetText) {
 		return res;
 	}

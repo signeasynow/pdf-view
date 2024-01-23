@@ -17,7 +17,11 @@ function parseCMap(cmapData) {
 
 	while ((match = bfCharRegex.exec(cmapData)) !== null) {
 			const [fullMatch, pdfCharCode, unicodeCharCode] = match;
-			cmap[pdfCharCode] = String.fromCharCode(parseInt(unicodeCharCode, 16));
+			// Convert each pair of characters in the unicodeCharCode to a unicode character
+			const charStr = unicodeCharCode.match(/.{1,4}/g)
+											.map(code => String.fromCharCode(parseInt(code, 16)))
+											.join('');
+			cmap[pdfCharCode] = charStr;
 	}
 
 	return cmap;
@@ -71,7 +75,6 @@ export async function removeTextFromPdf(pdfBytes, detail, pageNumber) {
 
 	const resources = targetPage.node.Resources();
 
-	let fontNameFromOriginalString = detail.textState.fontName; // TT2
 	const fontDict = resources.get(PDFName.of('Font'));
 	let allCMaps = {};
 	// TODO: first clean up each hexadecimal string
