@@ -294,8 +294,22 @@ const TagSection = ({
 	};
 
 	const onChangeName = (e) => {
-		console.log(e.target.value, 'value 444')
 		setNameInput(e.target.value);
+	}
+
+	const onInputFocus = () => {
+		var event = new KeyboardEvent('keydown', {
+				key: 'Escape',
+				keyCode: 27, // the keyCode for Escape
+				code: 'Escape',
+				which: 27,
+				shiftKey: false,
+				ctrlKey: false,
+				metaKey: false
+		});
+		
+		// Dispatch it on the desired element, for example, the document
+		document.dispatchEvent(event);
 	}
 
 	if (stage === 0) {
@@ -326,6 +340,7 @@ const TagSection = ({
 					{
 						hasNameTag() && (
 							<input
+								onFocus={onInputFocus}
 								onKeyDown={handleKeyDown}
 								value={nameInput} onChange={onChangeName} style={{ margin: '4px', width: '260px' }} type="text" placeholder={t("Name")}
 							/>
@@ -333,7 +348,9 @@ const TagSection = ({
 					}
 					{
 						hasEmailTag() && (
-							<input value={emailInput} onChange={onChangeEmailTag} style={{ margin: '4px', width: '260px' }} type="email" placeholder={t("Email")} />
+							<input
+								onFocus={onInputFocus}
+								value={emailInput} onChange={onChangeEmailTag} style={{ margin: '4px', width: '260px' }} type="email" placeholder={t("Email")} />
 						)
 					}
 				</div>
@@ -352,23 +369,31 @@ const TagSection = ({
 				<div style={{ margin: '4px' }}>{t("doc-ready-send")}</div>
 				<br />
 				<div style={{ margin: '4px' }}>{t("recipient-email")}</div>
-				<input value={recipientEmail} onChange={(e) => setRecipientEmail(e.target.value)} style={{ margin: '4px', width: '260px' }} type="email" placeholder={t("Email")} />
+				<input
+					onFocus={onInputFocus}
+					value={recipientEmail} onChange={(e) => setRecipientEmail(e.target.value)} style={{ margin: '4px', width: '260px' }} type="email" placeholder={t("Email")} />
 				<br />
 				{
 					!hasNameTag() && (
 						<>
 							<div style={{ margin: '4px' }}>{t("recipient-name")}</div>
-							<input value={nameInput} onChange={(e) => setNameInput(e.target.value)} style={{ margin: '4px', width: '260px' }} type="text" placeholder="" />
+							<input
+								onFocus={onInputFocus}
+								value={nameInput} onChange={(e) => setNameInput(e.target.value)} style={{ margin: '4px', width: '260px' }} type="text" placeholder="" />
 							<br />
 						</>
 					)
 				}
 				<div style={{ margin: '4px' }}>{t("email-subject")}</div>
-				<input value={subject} onChange={onChangeSubject} style={{ margin: '4px', width: '260px' }} type="email" placeholder="" />
+				<input
+					onFocus={onInputFocus}
+					value={subject} onChange={onChangeSubject} style={{ margin: '4px', width: '260px' }} type="email" placeholder="" />
 				<br />
 				<div style={{ margin: '4px' }}>{t("add-custom-message")}</div>
 
-				<textarea minLength={4} value={message} onChange={onChangeMessage} style={{ margin: '4px', width: '260px', height: 80 }} type="email" placeholder="" />
+				<textarea
+					onFocus={onInputFocus}
+					minLength={4} value={message} onChange={onChangeMessage} style={{ margin: '4px', width: '260px', height: 80 }} type="email" placeholder="" />
 			</div>
 			<div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 4px', background: '#f1f3f5' }}>
 				<button css={backBtn} onClick={onRevertFromStage2}><Icon src={ChevronLeft} alt={t("Back")} /><div>{t("Back")}</div></button>
