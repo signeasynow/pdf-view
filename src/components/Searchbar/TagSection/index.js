@@ -238,8 +238,9 @@ const TagSection = ({
 	};
 
 	const handleKeyDown = (e) => {
+		console.log("key down bro", e.key)
 		if (e.key === 'Delete') {
-			e.stopPropagation();
+			// e.stopPropagation();
 		}
 	};
 
@@ -292,6 +293,11 @@ const TagSection = ({
 		setStage(2);
 	};
 
+	const onChangeName = (e) => {
+		console.log(e.target.value, 'value 444')
+		setNameInput(e.target.value);
+	}
+
 	if (stage === 0) {
 		return (
 			<div>
@@ -321,7 +327,7 @@ const TagSection = ({
 						hasNameTag() && (
 							<input
 								onKeyDown={handleKeyDown}
-								value={nameInput} onChange={(e) => setNameInput(e.target.value)} style={{ margin: '4px', width: '260px' }} type="text" placeholder={t("Name")}
+								value={nameInput} onChange={onChangeName} style={{ margin: '4px', width: '260px' }} type="text" placeholder={t("Name")}
 							/>
 						)
 					}
