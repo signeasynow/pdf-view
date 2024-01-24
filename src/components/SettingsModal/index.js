@@ -8,6 +8,7 @@ import { useModal } from '../../Contexts/ModalProvider';
 import { Button } from '../Button';
 import { useTranslation } from 'react-i18next';
 import { LocaleContext } from '../../Contexts/LocaleContext';
+import { useClerk } from '@clerk/clerk-react';
 
 const overlayStyle = css`
   position: fixed;
@@ -40,15 +41,6 @@ const topCloseBtnStyle = css`
 async function signInWithEmail({email, password}) {
 
   const { data, error } = await supabase.auth.signUp({
-    email,
-    password
-  })
-	return {data, error}
-}
-
-async function logInWithEmail({email, password}) {
-
-  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password
   })
@@ -112,8 +104,10 @@ export const SettingsModal = ({ onClose }) => {
     onClose();
   }
 
+  const { signOut } = useClerk();
+
   const onLogout = async () => {
-    const { error } = await supabase.auth.signOut();
+    const { error } = signOut();
     if (error) {
       alert(t("Something went wrong"));
       return;
@@ -125,6 +119,7 @@ export const SettingsModal = ({ onClose }) => {
   const onChooseLocale = (e) => {
     onChangeLocale(e.target.value);
   }
+
 
   return (
     <div css={overlayStyle}>
