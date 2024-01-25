@@ -1569,16 +1569,22 @@ const App = () => {
 		const aspectRatio = naturalWidth / naturalHeight;
     const calculatedWidth = targetHeight * aspectRatio;
 
+		const payload = {
+			id: details.id,
+			pageNumber: details.source.pageIndex + 1,
+			pageIndex: details.source.pageIndex,
+			bitmapUrl: signatureImageUrl,
+			initialWidth: calculatedWidth,
+			initialHeight: targetHeight,
+			initialX: details.x + (details.source.width / 2),
+			initialY: details.y + (targetHeight / 2),
+			name: 'stampEditor',
+			moveDisabled: true
+		};
+
 		pdfViewerRef.current.annotationEditorParams = {
 			type: AnnotationEditorParamsType.CREATE,
-			value: {
-				bitmapUrl: signatureImageUrl,
-				initialWidth: calculatedWidth,
-				initialHeight: targetHeight,
-				initialX: details.x + (details.source.width / 2),
-				initialY: details.y + (targetHeight / 2),
-				moveDisabled: true
-			}
+			value: payload
 		};
 		// maintains the mode.
 		if (editorMode === 'click-tag') {
@@ -1588,6 +1594,7 @@ const App = () => {
 				source: null
 			};
 		}
+		updateAnnotation(payload);
 	};
 
 	const handleNameTagClicked = async (details) => {
@@ -1627,6 +1634,7 @@ const App = () => {
 				source: null
 			};
 		}
+		console.log(annotationsRef.current, 'cur332')
 		updateAnnotation(payload, text);
 	};
 
@@ -2076,6 +2084,7 @@ const App = () => {
 					}
 					<div css={pdfViewerWrapper}>
 						<PdfViewer
+							annotationsRef={annotationsRef}
 							defaultAnnotationMode={defaultAnnotationMode}
 							onEditOriginalTextSelected={onEditOriginalTextSelected}
 							storage={storage}

@@ -16,7 +16,11 @@ export const AnnotationsProvider = ({ children }) => {
 	}, [annotations]);
 
 	return (
-		<AnnotationsContext.Provider value={{ annotations, setAnnotations, annotationsRef }}>
+		<AnnotationsContext.Provider value={{
+			annotations,
+			setAnnotations,
+			annotationsRef
+		}}>
 			{children}
 		</AnnotationsContext.Provider>
 	);

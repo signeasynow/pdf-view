@@ -39,6 +39,7 @@ export const PdfViewer = ({
 	onAnnotationFocus,
 	activeToolbarItemRef,
 	annotations,
+	annotationsRef,
 	annotationColor,
 	updateAnnotation,
 	resizeAnnotation,
@@ -84,14 +85,6 @@ export const PdfViewer = ({
 		}
 		return result;
 	};
-
-	const annotationsRef = useRef(null);
-
-	useEffect(() => {
-		console.log(annotations, 'annotations 444')
-		annotationsRef.current = annotations;
-	}, [annotations]);
-
 
 	const hasWatermarkAdded = useRef(false);
 
