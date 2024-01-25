@@ -53,6 +53,16 @@ import useListenForAiQuestionCount from './hooks/useListenForAiQuestionCount';
 import { LocaleContext } from './Contexts/LocaleContext';
 import { generateUUID } from './utils/generateUuid';
 import { removeTextFromPdf } from './utils/removeTextFromPdf';
+import { calculateFontSize } from './utils/calculateFontSize';
+
+function loadImage(url) {
+	return new Promise((resolve, reject) => {
+			let img = new Image();
+			img.onload = () => resolve({ naturalWidth: img.naturalWidth, naturalHeight: img.naturalHeight });
+			img.onerror = reject;
+			img.src = url;
+	});
+}
 
 const isChromeExtension = process.env.NODE_CHROME === "true";
 let storage = isChromeExtension ? new ChromeStorage() : new IndexedDBStorage();
@@ -1545,22 +1555,28 @@ const App = () => {
 		});
 	};
 
-	const handleSignTagClicked = (details) => {
+	const handleSignTagClicked = async (details) => {
+		// console.log(details, 'details2')
 		isManuallyAddingImageRef.current = true;
 		pdfViewerRef.current.annotationEditorMode = {
 			isFromKeyboard: false,
 			mode: pdfjs.AnnotationEditorType.STAMP,
 			source: null
 		};
-		const height = 0.05;
+		const signatureImageUrl = localStorage.getItem('signatureImage');
+		const { naturalWidth, naturalHeight } = await loadImage(signatureImageUrl);
+		const targetHeight = details.source.height;
+		const aspectRatio = naturalWidth / naturalHeight;
+    const calculatedWidth = targetHeight * aspectRatio;
+
 		pdfViewerRef.current.annotationEditorParams = {
 			type: AnnotationEditorParamsType.CREATE,
 			value: {
-				bitmapUrl: localStorage.getItem('signatureImage'),
-				// initialWidth: 0.1,
-				initialHeight: height,
+				bitmapUrl: signatureImageUrl,
+				initialWidth: calculatedWidth,
+				initialHeight: targetHeight,
 				initialX: details.x + (details.source.width / 2),
-				initialY: details.y + (details.source.height) - height,
+				initialY: details.y + (targetHeight / 2),
 				moveDisabled: true
 			}
 		};
@@ -1576,12 +1592,15 @@ const App = () => {
 
 	const handleNameTagClicked = async (details) => {
 		const text = customData?.nameTagValue;
+
+		const dynamicFontSize = calculateFontSize(details.source.height);
+
 		pdfViewerRef.current.annotationEditorMode = {
 			isFromKeyboard: false,
 			mode: pdfjs.AnnotationEditorType.FREETEXT,
 			source: null
 		};
-		const dog = {
+		const payload = {
 			id: details.id,
 			pageNumber: details.source.pageIndex + 1,
 			pageIndex: details.source.pageIndex,
@@ -1591,14 +1610,14 @@ const App = () => {
 			initialX: details.x,
 			initialY: details.y,
 			color: '#080808',
-			fontSize: 16,
+			fontSize: dynamicFontSize,
 			fontFamily: 'helvetica',
 			name: 'freeTextEditor',
 			moveDisabled: true
 		};
 		pdfViewerRef.current.annotationEditorParams = {
 			type: AnnotationEditorParamsType.CREATE,
-			value: dog
+			value: payload
 		};
 		// maintains the mode.
 		if (editorMode === 'click-tag') {
@@ -1608,17 +1627,19 @@ const App = () => {
 				source: null
 			};
 		}
-		updateAnnotation(dog, text);
+		updateAnnotation(payload, text);
 	};
 
 	const handleEmailTagClicked = async (details) => {
+		const dynamicFontSize = calculateFontSize(details.source.height);
+
 		const text = customData?.emailTagValue;
 		pdfViewerRef.current.annotationEditorMode = {
 			isFromKeyboard: false,
 			mode: pdfjs.AnnotationEditorType.FREETEXT,
 			source: null
 		};
-		const dog = {
+		const payload = {
 			id: details.id,
 			pageNumber: details.source.pageIndex + 1,
 			pageIndex: details.source.pageIndex,
@@ -1628,14 +1649,14 @@ const App = () => {
 			initialX: details.x,
 			initialY: details.y,
 			color: '#080808',
-			fontSize: 16,
+			fontSize: dynamicFontSize,
 			fontFamily: 'helvetica',
 			name: 'freeTextEditor',
 			moveDisabled: true
 		};
 		pdfViewerRef.current.annotationEditorParams = {
 			type: AnnotationEditorParamsType.CREATE,
-			value: dog
+			value: payload
 		};
 		// maintains the mode.
 		if (editorMode === 'click-tag') {
@@ -1645,17 +1666,19 @@ const App = () => {
 				source: null
 			};
 		}
-		updateAnnotation(dog, text);
+		updateAnnotation(payload, text);
 	};
 
 	const handleDateTagClicked = async (details) => {
+		const dynamicFontSize = calculateFontSize(details.source.height);
+
 		const text = customData?.dateTagValue;
 		pdfViewerRef.current.annotationEditorMode = {
 			isFromKeyboard: false,
 			mode: pdfjs.AnnotationEditorType.FREETEXT,
 			source: null
 		};
-		const dog = {
+		const payload = {
 			id: details.id,
 			pageNumber: details.source.pageIndex + 1,
 			pageIndex: details.source.pageIndex,
@@ -1665,14 +1688,14 @@ const App = () => {
 			initialX: details.x,
 			initialY: details.y,
 			color: '#080808',
-			fontSize: 16,
+			fontSize: dynamicFontSize,
 			fontFamily: 'helvetica',
 			name: 'freeTextEditor',
 			moveDisabled: true
 		};
 		pdfViewerRef.current.annotationEditorParams = {
 			type: AnnotationEditorParamsType.CREATE,
-			value: dog
+			value: payload
 		};
 		// maintains the mode.
 		if (editorMode === 'click-tag') {
@@ -1682,7 +1705,7 @@ const App = () => {
 				source: null
 			};
 		}
-		updateAnnotation(dog, text);
+		updateAnnotation(payload, text);
 	};
 
 	const onTagClicked = (details) => {
