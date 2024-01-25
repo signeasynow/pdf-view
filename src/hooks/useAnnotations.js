@@ -43,6 +43,7 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, us
 			}
 		];
 		setAnnotations(newData);
+		annotationsRef.current = newData;
 		cb(newData);
 	};
 
@@ -53,6 +54,7 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, us
 		let newData = JSON.parse(JSON.stringify(annotationsRef.current));
 		newData = newData.filter((e) => e.id !== id);
 		setAnnotations(newData);
+		annotationsRef.current = newData;
 	};
 	
 	console.log(annotationsRef.current, 'cur24')
@@ -60,7 +62,7 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, us
 	const updateFreeTextAnnotation = (data, text) => {
 		console.log(annotationsRef.current, 'pass33')
 		let pastAnnotations = JSON.parse(JSON.stringify(annotationsRef.current));
-		// console.log(pastAnnotations, 'pastAnnotations22')
+		console.log(pastAnnotations, 'pastAnnotations22')
 		const existingAnnotation = pastAnnotations.find((e) => e.id === data.id);
 		activeAnnotationRef.current = data.id;
 		if (!existingAnnotation) {
@@ -85,7 +87,7 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, us
 			...pastAnnotations,
 			dataPayload
 		];
-		updatedAnnotations = updatedAnnotations.filter((e) => !!e.content);
+		// updatedAnnotations = updatedAnnotations.filter((e) => !!e.content);
 		const operationPayload = {
 			pageIndex: data.pageIndex,
 			...dataPayload
@@ -94,8 +96,9 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, us
 		if (!usingUndoRedoRef.current) {
 			addOperation(operation);
 		}
-		
+		console.log(updatedAnnotations, 'updatedAnnotations35')
 		setAnnotations(updatedAnnotations);
+		annotationsRef.current = updatedAnnotations;
 	};
 
 	const updateSignatureAnnotation = (data) => {
@@ -132,6 +135,7 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, us
 			isManuallyAddingImageRef.current = false;
 		}
 		setAnnotations(updatedAnnotations);
+		annotationsRef.current = updatedAnnotations;
 	};
 
 	const [updateQueue, setUpdateQueue] = useState([]);
@@ -198,6 +202,7 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, us
 		const operation = { action: 'update-annotation', data: payload };
 		addOperation(operation);
 		setAnnotations(newData);
+		annotationsRef.current = newData;
 	};
 
 	const throttledResizeAnnotation = debounce((data) => {

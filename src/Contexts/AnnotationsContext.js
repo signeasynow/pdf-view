@@ -12,7 +12,7 @@ export const AnnotationsProvider = ({ children }) => {
 	const annotationsRef = useRef([]);
 
 	useEffect(() => {
-		annotationsRef.current = annotations;
+		// annotationsRef.current = annotations;
 	}, [annotations]);
 
 	return (

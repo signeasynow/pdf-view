@@ -1124,6 +1124,7 @@ const App = () => {
 			return;
 		}
 		setAnnotations(initialAnnotations);
+		annotationsRef.current = initialAnnotations;
 	}, [initialAnnotations]);
 
 	const onRotate = async (clockwise) => {
