@@ -57,18 +57,13 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, us
 		annotationsRef.current = newData;
 	};
 	
-	console.log(annotationsRef.current, 'cur24')
-
 	const updateFreeTextAnnotation = (data, text) => {
-		console.log(annotationsRef.current, 'pass33')
 		let pastAnnotations = JSON.parse(JSON.stringify(annotationsRef.current));
-		console.log(pastAnnotations, 'pastAnnotations22')
 		const existingAnnotation = pastAnnotations.find((e) => e.id === data.id);
 		activeAnnotationRef.current = data.id;
 		if (!existingAnnotation) {
 			// TOTALLY FINE FOR THERE TO BE NONE.
 		}
-		console.log(data, 'data 333')
 		pastAnnotations = pastAnnotations.filter((e) => e.id !== data.id);
 		const dataPayload = {
 			id: data.id,
@@ -96,7 +91,6 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, us
 		if (!usingUndoRedoRef.current) {
 			addOperation(operation);
 		}
-		console.log(updatedAnnotations, 'updatedAnnotations35')
 		setAnnotations(updatedAnnotations);
 		annotationsRef.current = updatedAnnotations;
 	};
@@ -148,7 +142,6 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, us
 		if (updateQueue.length === 0) return;
 
 		const { data, text, type } = updateQueue[0];
-		console.log(annotationsRef.current, 'curr38')
 		switch (type) {
 			case 'freeTextEditor':
 				updateFreeTextAnnotation(data, text);
@@ -174,7 +167,6 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, us
 		if (!data) {
 			return;
 		}
-		console.log(annotationsRef.current, 'cit8')
 		const type = data.name;
 		// Add to queue
 		addToQueue(data, text, type);
