@@ -50,6 +50,7 @@ const Header = ({
 
 	const { showSettingsModal } = useModal();
 	const onSettings = () => {
+		console.log("showing set")
 		showSettingsModal();
 	}
 

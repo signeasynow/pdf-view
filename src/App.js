@@ -1800,9 +1800,9 @@ const App = () => {
 		pdfViewerRef.current.annotationEditorParams = {
 			type: AnnotationEditorParamsType.CREATE,
 			value: {
-				bitmapUrl: type === 'Sign' ? SignatureIcon54Png : SignatureIconPng,
-				initialWidth: type === 'Sign' ? 0.18 : undefined,
-				initialHeight: type === 'Sign' ? undefined : 0.04,
+				bitmapUrl: SignatureIconPng,
+				initialWidth: undefined,
+				initialHeight: 0.04,
 				// imageType, deprecated
 				// initialWidth: typeMap[type] || 0.1,
 				overlayText: type

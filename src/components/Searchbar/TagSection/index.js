@@ -24,10 +24,10 @@ async function getUserIP() {
 	}
 }
 
-async function uploadPDF(file, uid, userId) {
+async function uploadPDF(file, uid, organizationId) {
 	try {
 		let bucketName = 'sign-document'; // Replace with your bucket name
-		let filePath = `${userId}/${uid}.pdf`; // Replace with desired path in the bucket
+		let filePath = `${organizationId}/${uid}.pdf`; // Replace with desired path in the bucket
 
 		let { data, error } = await supabase.storage
 			.from(bucketName)
@@ -195,7 +195,7 @@ const TagSection = ({
 		setLoadingSend(true);
 		const buffer = await pdfProxyObj.getData();
 		const uuid = generateUUID();
-		const doc = await uploadPDF(buffer, uuid, customData?.userId);
+		const doc = await uploadPDF(buffer, uuid, customData?.organizationId);
 		// console.log(doc, 'doc33', uuid, buffer)
 		if (!doc) {
 			setLoadingSend(false);
@@ -207,7 +207,7 @@ const TagSection = ({
 				senderEmail: customData.email,
 				receiverEmail: recipientEmail,
 				message,
-				pdfDocumentPath: `${customData?.userId}/${uuid}.pdf`,
+				pdfDocumentPath: `${customData?.organizationId}/${uuid}.pdf`,
 				annotations: annotationsRef.current,
 				emailField: emailInput,
 				nameField: nameInput,
