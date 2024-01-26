@@ -79,11 +79,14 @@ async function getFontForAnnotation(pdfDoc, annotation) {
 	return await pdfDoc.embedFont(fontName);
 }
 
-export const modifyPdfBuffer = async (buffer, annotations) => {
+export const modifyPdfBuffer = async (buffer, _annotations) => {
+	const annotations = JSON.parse(JSON.stringify(_annotations));
+	console.log(annotations, 'annot443')
 	const pdfDoc = await PDFDocument.load(buffer);
 
 	// Apply annotations
 	for (const annotation of annotations) {
+		console.log(annotation, 'annotation45')
 		const page = pdfDoc.getPage(annotation.pageNumber - 1);
 
 		switch (annotation.name) {
@@ -101,6 +104,10 @@ export const modifyPdfBuffer = async (buffer, annotations) => {
 				});
 				break;
 			case 'stampEditor':
+				if (!annotation.urlPath) {
+					continue;
+				}
+				console.log(annotation, 'annotation432')
 				// Example for stamp annotation
 				const jpgImage = await pdfDoc.embedPng(annotation.urlPath);
 				page.drawImage(jpgImage, {

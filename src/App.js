@@ -639,7 +639,8 @@ const App = () => {
 		if (!successfulBuffers.length) {
 			return alert(t("Something went wrong"));
 		}
-		const modifiedPdfBuffer = await modifyPdfBuffer(successfulBuffers[0], annotations);
+		console.log(annotationsRef.current, 'annotationsRef.current2')
+		const modifiedPdfBuffer = await modifyPdfBuffer(successfulBuffers[0], annotationsRef.current);
 		window.parent.postMessage({ type: 'request-buffer-completed', message: modifiedPdfBuffer });
 	};
 

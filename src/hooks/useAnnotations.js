@@ -82,7 +82,7 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, us
 			...pastAnnotations,
 			dataPayload
 		];
-		// updatedAnnotations = updatedAnnotations.filter((e) => !!e.content);
+		// updatedAnnotations = updatedAnnotations.filter((e) => !!e.content && e.name === "freeTextEditor");
 		const operationPayload = {
 			pageIndex: data.pageIndex,
 			...dataPayload
@@ -102,6 +102,7 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, us
 		if (!existingAnnotation) {
 			// TOTALLY FINE FOR THERE TO BE NONE.
 		}
+		console.log(data, 'data4443')
 		const pastAnnotations = updatedAnnotations.filter((e) => e.id !== data.id);
 		const dataPayload = {
 			height: typeof data.height === "number" ? data.height : existingAnnotation?.height,
@@ -119,6 +120,7 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, us
 			...pastAnnotations,
 			dataPayload
 		];
+		// updatedAnnotations = updatedAnnotations.filter((e) => !!e.urlPath && e.name === "stampEditor");
 		const operationPayload = {
 			pageIndex: data.pageIndex,
 			...dataPayload

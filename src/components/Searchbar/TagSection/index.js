@@ -204,6 +204,7 @@ const TagSection = ({
 		}
 		const { data, error } = await supabase.functions.invoke('create-signing-room', {
 			body: {
+				organizationId: customData?.organizationId,
 				senderEmail: customData.email,
 				receiverEmail: recipientEmail,
 				message,
