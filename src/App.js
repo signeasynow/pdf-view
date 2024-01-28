@@ -44,8 +44,6 @@ import { AnnotationEditorParamsType } from 'pdfjs-dist/build/pdf';
 import { FilesContext } from './Contexts/FilesContext';
 import { UndoRedoContext } from './Contexts/UndoRedoContext';
 import { ActivePageContext } from './Contexts/ActivePageContext';
-import SignatureIconPng from '../assets/yellow-bg-500-150.png';
-import SignatureIcon54Png from '../assets/yellow-bg-5-4.png';
 import useListenForRequestBufferRequest from './hooks/useListenForRequestBufferRequest';
 import useListenForStateChange from './hooks/useListenForStateChange';
 import { AuthInfoContext } from './Contexts/AuthInfoContext';
@@ -54,6 +52,8 @@ import { LocaleContext } from './Contexts/LocaleContext';
 import { generateUUID } from './utils/generateUuid';
 import { removeTextFromPdf } from './utils/removeTextFromPdf';
 import { calculateFontSize } from './utils/calculateFontSize';
+
+const SignatureIconPng = 'https://www.smartpricedoc.com/yellow-bg-500-150.png';
 
 function loadImage(url) {
 	return new Promise((resolve, reject) => {
@@ -639,7 +639,6 @@ const App = () => {
 		if (!successfulBuffers.length) {
 			return alert(t("Something went wrong"));
 		}
-		console.log(annotationsRef.current, 'annotationsRef.current2')
 		const modifiedPdfBuffer = await modifyPdfBuffer(successfulBuffers[0], annotationsRef.current);
 		window.parent.postMessage({ type: 'request-buffer-completed', message: modifiedPdfBuffer });
 	};
@@ -1427,7 +1426,6 @@ const App = () => {
 		setActivePageIndex(idx);
 	};
 
-	const forceFullThumbnailsView = () => isSmallScreen && shouldShowPanel() && !showSearch && !showFullScreenSearch();
 	const [aiDocId, setAiDocId] = useState(localStorage.getItem('aiDocId') || '');
 
 	const [embeddingKey, setEmbeddingKey] = useState(localStorage.getItem('embeddingKey') || '');
@@ -1558,7 +1556,6 @@ const App = () => {
 	};
 
 	const handleSignTagClicked = async (details) => {
-		// console.log(details, 'details2')
 		isManuallyAddingImageRef.current = true;
 		pdfViewerRef.current.annotationEditorMode = {
 			isFromKeyboard: false,
@@ -1636,7 +1633,6 @@ const App = () => {
 				source: null
 			};
 		}
-		console.log(annotationsRef.current, 'cur332')
 		updateAnnotation(payload, text);
 	};
 
@@ -1985,7 +1981,7 @@ const App = () => {
 						<Header
 							showFullScreenSearch={showFullScreenSearch()}
 							showSearch={showSearch}
-							showFullScreenThumbnails={shouldShowFullScreenThumbnails() || forceFullThumbnailsView()}
+							showFullScreenThumbnails={shouldShowFullScreenThumbnails()}
 							defaultZoom={defaultZoom}
 							tools={tools}
 							onDownload={onDownload}
@@ -2033,7 +2029,7 @@ const App = () => {
 							expandedViewThumbnailScale={expandedViewThumbnailScale}
 							setMultiPageSelections={setMultiPageSelections}
 							multiPageSelections={multiPageSelections}
-							showFullScreenThumbnails={shouldShowFullScreenThumbnails() || forceFullThumbnailsView()}
+							showFullScreenThumbnails={shouldShowFullScreenThumbnails()}
 							onMinimize={onMinimize}
 							undoLastAction={undoLastAction}
 							redoLastAction={redoLastAction}
@@ -2080,7 +2076,7 @@ const App = () => {
 								pdfProxyObj={pdfProxyObj}
 								pdf={pdfViewerObj}
 								showPanel={shouldShowPanel()}
-								showFullScreenThumbnails={shouldShowFullScreenThumbnails() || forceFullThumbnailsView()}
+								showFullScreenThumbnails={shouldShowFullScreenThumbnails()}
 							/>
 						)
 					}
@@ -2167,7 +2163,7 @@ const App = () => {
 						matchWholeWord={matchWholeWord}
 						onChange={onSearchText}
 						onFindCitation={onSearchText}
-						showSearch={showSearch}
+						showSearch={showSearch || true}
 						caseSensitive={caseSensitive}
 						onToggleCaseSensitive={onToggleCaseSensitive}
 					/>

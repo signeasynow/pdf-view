@@ -72,7 +72,7 @@ const conversationEntryStyle = css`
 const inputContainerStyle = css`
   flex-shrink: 0; /* Prevents the input from shrinking */
   position: absolute;
-  bottom: 0;
+  bottom: 80px;
   left: 0;
   right: 0;
 `;
