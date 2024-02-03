@@ -9,6 +9,7 @@ import SearchbarTools from './SearchbarTools';
 import ConversationSection from './ConversationSection';
 import { extractLastThreeQA } from '../../utils/extractLastQaQuestions';
 import TagSection from './TagSection';
+import FormFillSection from './FormFillSection';
 import { useUserData } from '../../hooks/useUserData';
 
 const confirmBtnStyle = css`
@@ -154,6 +155,7 @@ const SearchBar = ({
 		onAskQuestion(questionText, extractLastThreeQA(conversation)).then((answerText) => {
 			if (answerText?.error === 'document purged') {
 				alert(t("document-metadata-removed"));
+				setLoading(false);
 				return;
 			}
 			setConversation([
@@ -202,6 +204,20 @@ const SearchBar = ({
 	if (editorMode === 'tag') {
 		return (
 			<TagSection
+				onDisableEditorMode={onDisableEditorMode}
+				fileName={fileName}
+				customData={customData}
+				pdfProxyObj={pdfProxyObj}
+				showFullScreenSearch={showFullScreenSearch}
+				onClickField={onClickField}
+				showSearch={showSearch}
+			/>
+		);
+	}
+
+	if (editorMode === 'form-fill') {
+		return (
+			<FormFillSection
 				onDisableEditorMode={onDisableEditorMode}
 				fileName={fileName}
 				customData={customData}

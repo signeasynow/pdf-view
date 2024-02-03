@@ -53,7 +53,7 @@ import { generateUUID } from './utils/generateUuid';
 import { removeTextFromPdf } from './utils/removeTextFromPdf';
 import { calculateFontSize } from './utils/calculateFontSize';
 
-const SignatureIconPng = 'https://www.smartpricedoc.com/yellow-bg-500-150.png';
+const SignatureIconPng = 'https://www.signeasynow.com/yellow-bg-500-150.png';
 
 function loadImage(url) {
 	return new Promise((resolve, reject) => {
@@ -884,6 +884,7 @@ const App = () => {
 			console.log(err, 'err33');
 		}
 		setAnnotations([]);
+		annotationsRef.current = [];
 
 		const filteredOperations = [];
     const updateAnnotationMap = new Map(); // Map to track the last update operation for each ID
@@ -1039,13 +1040,15 @@ const App = () => {
 		annotation
 	}, buffer) => {
 		const { document: bufferResult, color } = await removeTextFromPdf(buffer, detail, pageNumber);
-		setAnnotations([
+		const newState = [
 			...annotationsRef.current,
 			{
 				...annotation,
 				color
 			}
-		]);
+		]
+		setAnnotations(newState);
+		annotationsRef.current = newState;
 		return bufferResult;
 	};
 
@@ -1555,14 +1558,7 @@ const App = () => {
 		});
 	};
 
-	const handleSignTagClicked = async (details) => {
-		isManuallyAddingImageRef.current = true;
-		pdfViewerRef.current.annotationEditorMode = {
-			isFromKeyboard: false,
-			mode: pdfjs.AnnotationEditorType.STAMP,
-			source: null
-		};
-		const signatureImageUrl = localStorage.getItem('signatureImage');
+	const completeAddingSignatureFromTag = async ({signatureImageUrl, details}) => {
 		const { naturalWidth, naturalHeight } = await loadImage(signatureImageUrl);
 		const targetHeight = details.source.height;
 		const aspectRatio = naturalWidth / naturalHeight;
@@ -1594,6 +1590,30 @@ const App = () => {
 			};
 		}
 		updateAnnotation(payload);
+	}
+
+	const handleSignTagClicked = async (details) => {
+		isManuallyAddingImageRef.current = true;
+		pdfViewerRef.current.annotationEditorMode = {
+			isFromKeyboard: false,
+			mode: pdfjs.AnnotationEditorType.STAMP,
+			source: null
+		};
+		const signatureImageUrl = localStorage.getItem('signatureImage');
+		if (!signatureImageUrl) {
+			// TODO: open sig modal
+			showSignatureModal(null, (sigUrl) => {
+				completeAddingSignatureFromTag({
+					signatureImageUrl: sigUrl,
+					details
+				});
+			});
+			return;
+		}
+		completeAddingSignatureFromTag({
+			signatureImageUrl,
+			details
+		});
 	};
 
 	const handleNameTagClicked = async (details) => {
@@ -1795,32 +1815,11 @@ const App = () => {
 		newModifiedPayload[activePageIndex] = new Date().toISOString();
 		setModifiedFiles(newModifiedPayload);
 		addOperation(operation);
-		/*
-		const { document: bufferResult, color } = await removeTextFromPdf(buffer, detail, pageNumber);
-		setAnnotations([
-			...annotationsRef.current,
-			{
-				color: color || "#000000",
-				content: detail.str,
-				fontWeight: isBold ? 600 : 400,
-				fontFamily: detail.styleFontFamily || detail.textState?.font?.name,
-				fontSize: detail?.textDivProperties?.fontSize,
-				fontStyle: isItalic ? "italic": "",
-				id: generateUUID(),
-				name: "freeTextEditor",
-				pageNumber: pageNumber,
-				x: detail.x,
-				y: detail.y
-			}
-		])
-		await storage?.save(bufferResult, pdfId);
-		let newModifiedPayload = JSON.parse(JSON.stringify(modifiedFiles));
-		newModifiedPayload[activePageIndex] = new Date().toISOString();
-		setModifiedFiles(newModifiedPayload);
-		*/
 	};
 
-	const onClickField = (type) => {
+	console.log(annotations, 'not333')
+
+	const onClickField = (type, isAutoFill) => {
 		pdfViewerRef.current.annotationEditorMode = {
 			isFromKeyboard: false,
 			mode: pdfjs.AnnotationEditorType.STAMP,
@@ -1834,7 +1833,8 @@ const App = () => {
 				initialHeight: 0.04,
 				// imageType, deprecated
 				// initialWidth: typeMap[type] || 0.1,
-				overlayText: type
+				overlayText: type,
+				isAutoFill
 			}
 		};
 		if (editorMode === 'click-tag') {
@@ -1850,7 +1850,6 @@ const App = () => {
 	const onMoveAnnotation = (data) => {
 		moveAnnotation(data, () => {
 			const payload = {
-				// ...data.source,
 				height: data.source.height,
 				width: data.source.width,
 				id: data.source.id,
@@ -2163,7 +2162,7 @@ const App = () => {
 						matchWholeWord={matchWholeWord}
 						onChange={onSearchText}
 						onFindCitation={onSearchText}
-						showSearch={showSearch || true}
+						showSearch={showSearch}
 						caseSensitive={caseSensitive}
 						onToggleCaseSensitive={onToggleCaseSensitive}
 					/>

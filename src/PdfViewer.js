@@ -138,7 +138,7 @@ export const PdfViewer = ({
 		pdfScriptingManagerRef.current.setViewer(pdfViewerRef.current);
 
 		eventBus.on('pagesinit', () => {
-			pdfViewerRef.current.currentScaleValue = 'page-height';
+			pdfViewerRef.current.currentScaleValue = 'page-width';
 			updateCurrentScale(Math.round(pdfViewerRef.current.currentScale * 100));
 		});
 

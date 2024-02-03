@@ -113,6 +113,7 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, us
 			y: typeof data.y === "number" ? data.y : existingAnnotation?.y,
 			urlPath: data.urlPath,
 			overlayText: data.overlayText ? data.overlayText : existingAnnotation?.overlayText,
+			isAutoFill: data.isAutoFill ? data.isAutoFill : existingAnnotation?.isAutoFill,
 			moveDisabled: typeof data.moveDisabled === "boolean" ? data.moveDisabled : existingAnnotation?.moveDisabled,
 			name: 'stampEditor'
 		};
@@ -166,6 +167,7 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, us
 	}, [updateQueue]);
 
 	const throttledUpdateAnnotation = (data, text) => {
+		console.log(data, 'datadogg')
 		if (!data) {
 			return;
 		}

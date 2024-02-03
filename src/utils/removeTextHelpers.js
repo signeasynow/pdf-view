@@ -106,6 +106,7 @@ function processLinesSingleCommand(lines, clickedTextString) {
 	let _foundMatch = false;
 	let color;
 	const result = lines.map((line, index) => {
+			// console.log(line, 'line7')
 			if (isTextCommand(line)) {
 					// console.log(line, 'line6')
 					const result = processSingleTJCommand(line, clickedTextString);

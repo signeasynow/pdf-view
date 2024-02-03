@@ -46,7 +46,7 @@ export const GoToNextTag = ({
 	const nextAnnotation = useCallback(() => {
 		// Filter annotations for those with name 'stampEditor' and having overlayText
 		const clickableAnnotations = annotations.filter(annotation =>
-			annotation.name === 'stampEditor' && annotation.overlayText
+			annotation.name === 'stampEditor' && annotation.overlayText && !annotation.isAutoFill
 		);
 
 		// Sort annotations by pageNumber to find the next one

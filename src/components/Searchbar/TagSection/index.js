@@ -11,6 +11,7 @@ import { supabase } from '../../../utils/supabase';
 import { isValidEmail } from '../../../utils/isValidEmail';
 import { useTranslation } from 'react-i18next';
 import { generateUUID } from '../../../utils/generateUuid';
+import { modifyPdfBuffer } from '../../../hooks/useDownload';
 
 async function getUserIP() {
 	try {
@@ -138,6 +139,7 @@ const TagSection = ({
 	const [nameInput, setNameInput] = useState('');
 	const [recipientEmail, setRecipientEmail] = useState('');
 	const [subject, setSubject] = useState(t("doc-ready-signing"));
+	const [replyTo, setReplyTo] = useState(customData?.email);
 	const [subjectModified, setSubjectModified] = useState(false);
 	const [message, setMessage] = useState(`${t("Hello")},\n\n${t("please-sign")}\n\n${t("thank-you")},\n\n${customData?.name}`);
 	const [messageModified, setMessageModified] = useState(false);
@@ -193,41 +195,70 @@ const TagSection = ({
 			return;
 		}
 		setLoadingSend(true);
-		const buffer = await pdfProxyObj.getData();
-		const uuid = generateUUID();
-		const doc = await uploadPDF(buffer, uuid, customData?.organizationId);
-		// console.log(doc, 'doc33', uuid, buffer)
-		if (!doc) {
-			setLoadingSend(false);
-			alert(t("something-wrong-upload-pdf"));
-			return;
-		}
-		const { data, error } = await supabase.functions.invoke('create-signing-room', {
-			body: {
-				organizationId: customData?.organizationId,
-				senderEmail: customData.email,
-				receiverEmail: recipientEmail,
-				message,
-				pdfDocumentPath: `${customData?.organizationId}/${uuid}.pdf`,
-				annotations: annotationsRef.current,
-				emailField: emailInput,
-				nameField: nameInput,
-				senderName: customData?.name,
-				documentName: fileName,
-				subject,
-				userIp: ip,
-				userAgent: navigator.userAgent
-			}
-		});
+		try {
+			const originalBuffer = await pdfProxyObj.getData();
+			const regularAnnotations = annotationsRef.current.filter((e) => !e.overlayText);
+			const buffer = await modifyPdfBuffer(originalBuffer, regularAnnotations);
 
-		if (error) {
+			const uuid = generateUUID();
+			const doc = await uploadPDF(buffer, uuid, customData?.organizationId);
+			if (!doc) {
+				setLoadingSend(false);
+				alert(t("something-wrong-upload-pdf"));
+				return;
+			}
+			const { data, error } = await supabase.functions.invoke('create-signing-room', {
+				body: {
+					organizationId: customData?.organizationId,
+					senderEmail: replyTo,
+					receiverEmail: recipientEmail,
+					message,
+					pdfDocumentPath: `${customData?.organizationId}/${uuid}.pdf`,
+					annotations: annotationsRef.current.filter((e) => !!e.overlayText),
+					emailField: emailInput,
+					nameField: nameInput,
+					senderName: customData?.name,
+					documentName: fileName,
+					subject,
+					userIp: ip,
+					userAgent: navigator.userAgent
+				}
+			});
+
+			const formData = new FormData();
+			formData.append('pdf', new Blob([buffer], { type: 'application/pdf' }));
+			formData.append('document_name', fileName);
+			formData.append('receiver_name', nameInput);
+			formData.append('receiver_email', recipientEmail);
+			formData.append('document_id', data.id);
+			formData.append('entity_id', customData?.organizationId);
+			formData.append('created_at', new Date().toISOString());
+			formData.append('status', "pending")
+
+			const result = await fetch('https://extractindexfromdoc-wmzdda57qq-uc.a.run.app/', {
+					method: 'POST',
+					body: formData,
+			});
+
+			if (result?.status !== 200) {
+				alert("Something went wrong. The signer has received the document but our system was unable to save parts of the data. Please reach out to alex@signeasynow.com to correct this issue.");
+				// setLoadingSend(false);
+				return;
+			}
+
+			if (error) {
+				alert(t("something-wrong-email"));
+				setLoadingSend(false);
+				return;
+			}
+			alert(t("doc-sent-success"));
+			// leave this to true to avoid abuse.
+			setLoadingSend(true);
+		} catch (err) {
 			alert(t("something-wrong-email"));
+			console.log(err, 'err333')
 			setLoadingSend(false);
-			return;
 		}
-		alert(t("doc-sent-success"));
-		// leave this to true to avoid abuse.
-		setLoadingSend(true);
 	};
   
 
@@ -239,7 +270,6 @@ const TagSection = ({
 	};
 
 	const handleKeyDown = (e) => {
-		console.log("key down bro", e.key)
 		if (e.key === 'Delete') {
 			// e.stopPropagation();
 		}
@@ -318,6 +348,7 @@ const TagSection = ({
 			<div>
 				<div css={getWrapperClass()}>
 					<div style={{ margin: '12px 4px 8px' }}><ProgressBar completed={33} customLabel="&nbsp;" bgColor="#d9b432" /></div>
+					<h3 style={{marginLeft: '4px'}}>Add clickable markers</h3>
 					<div style={{ margin: '4px' }}>{t("add-markers-doc")}</div>
 					<button css={tagBtnStyle} onClick={() => onClickField('Sign')}>{t("Signature")}</button>
 					<button css={tagBtnStyle} onClick={() => onClickField('Name')}>{t("Name")}</button>
@@ -394,7 +425,17 @@ const TagSection = ({
 
 				<textarea
 					onFocus={onInputFocus}
-					minLength={4} value={message} onChange={onChangeMessage} style={{ margin: '4px', width: '260px', height: 80 }} type="email" placeholder="" />
+					minLength={4} value={message} onChange={onChangeMessage} style={{ margin: '4px', width: '260px', height: 80 }} type="email" placeholder=""
+				/>
+				<div style={{ margin: '4px' }}>Reply to</div>
+				<input
+					onFocus={onInputFocus}
+					value={replyTo}
+					onChange={(e) => setReplyTo(e.target.value)}
+					style={{ margin: '4px', width: '260px' }}
+					type="email"
+					placeholder=""
+				/>
 			</div>
 			<div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 4px', background: '#f1f3f5' }}>
 				<button css={backBtn} onClick={onRevertFromStage2}><Icon src={ChevronLeft} alt={t("Back")} /><div>{t("Back")}</div></button>

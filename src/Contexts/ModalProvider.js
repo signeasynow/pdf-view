@@ -28,6 +28,7 @@ export const ModalProvider = ({ children }) => {
 
 	const showSignatureModal = (msg, onConfirm) => {
 		setMessage(msg);
+		window.parent.postMessage({ type: 'annotation-modal-open-change', message: true }, '*');
 		setIsSignatureVisible(true);
 		setOnConfirmCallback(() => onConfirm); // Storing the callback
 	};
@@ -50,6 +51,7 @@ export const ModalProvider = ({ children }) => {
 	};
 
 	const hideSignatureModal = () => {
+		window.parent.postMessage({ type: 'annotation-modal-open-change', message: false }, '*');
 		setIsSignatureVisible(false);
 	};
 	

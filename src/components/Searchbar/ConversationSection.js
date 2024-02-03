@@ -60,6 +60,7 @@ const inputWrapperStyle = css`
 
 const conversationContentStyle = css`
   flex-grow: 1;
+	margin-bottom: 80px;
 `;
 
 const conversationEntryStyle = css`
@@ -194,6 +195,7 @@ const ConversationSection = ({
 			</div>
 		);
 	}
+	console.log(conversation, 'conversation2')
 	return (
 		<div css={aiWrapperStyle}>
 			<div>

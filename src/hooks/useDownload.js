@@ -86,12 +86,13 @@ export const modifyPdfBuffer = async (buffer, _annotations) => {
 
 	// Apply annotations
 	for (const annotation of annotations) {
-		console.log(annotation, 'annotation45')
 		const page = pdfDoc.getPage(annotation.pageNumber - 1);
 
 		switch (annotation.name) {
 			case 'freeTextEditor':
-						  // TODO: Enable helvetica
+				if (!annotation.content) {
+					continue;
+				}
 				const font = await getFontForAnnotation(pdfDoc, annotation);
 				const color = parseColor(annotation.color);
 				const textHeight = annotation.fontSize; // Approximate text height
@@ -107,7 +108,7 @@ export const modifyPdfBuffer = async (buffer, _annotations) => {
 				if (!annotation.urlPath) {
 					continue;
 				}
-				console.log(annotation, 'annotation432')
+				// console.log(annotation, 'annotation432')
 				// Example for stamp annotation
 				const jpgImage = await pdfDoc.embedPng(annotation.urlPath);
 				page.drawImage(jpgImage, {
