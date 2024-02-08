@@ -126,22 +126,18 @@ const FormFillSection = ({
 	onDisableEditorMode,
 	pdfProxyObj,
 	customData,
-	fileName
+	fileName,
+	isEdit
 }) => {
-
-	const [stage, setStage] = useState(0);
 
 	const { annotationsRef } = useContext(AnnotationsContext);
 
 	const { t } = useTranslation();
 
-	const [emailInput, setEmailInput] = useState('');
 	const [nameInput, setNameInput] = useState('');
 	const [autoFillInput, setAutoFillInput] = useState('');
 	const [templateName, setTemplateName] = useState('');
-	const [recipientEmail, setRecipientEmail] = useState('');
 	const [subject, setSubject] = useState(t("doc-ready-signing"));
-	const [replyTo, setReplyTo] = useState(customData?.email);
 	const [subjectModified, setSubjectModified] = useState(false);
 	const [message, setMessage] = useState(`${t("Hello")},\n\n${t("please-sign")}\n\n${t("thank-you")},\n\n${customData?.name}`);
 	const [messageModified, setMessageModified] = useState(false);
@@ -168,10 +164,6 @@ const FormFillSection = ({
 		return showSearch ? visibleSearchWrapper : invisibleSearchWrapper;
 	};
 
-	const hasNameTag = () => annotationsRef.current.some((ann) => ann.overlayText === 'Name');
-
-	const hasEmailTag = () => annotationsRef.current.some((ann) => ann.overlayText === 'Email');
-
 	const [ip, setIp] = useState('');
 
 	const fetchIp = async () => {
@@ -182,6 +174,34 @@ const FormFillSection = ({
 	useEffect(() => {
 		fetchIp();
 	}, []);
+
+	const onEditChanges = async () => {
+		setLoadingSend(true);
+		try {
+			const { data, error } = await supabase.functions.invoke('create-signing-room', {
+				body: {
+					actionType: 'update_template',
+					id: customData?.templateId,
+					annotations: annotationsRef.current.filter((e) => !!e.overlayText && !e.isAutoFill),
+					fillableAnnotations: annotationsRef.current.filter((e) => !!e.overlayText && !!e.isAutoFill),
+				}
+			});
+
+			if (error) {
+				alert(t("something-wrong-email"));
+				setLoadingSend(false);
+				return;
+			}
+
+			alert(t("doc-sent-success"));
+			// leave this to true to avoid abuse.
+			setLoadingSend(true);
+		} catch (err) {
+			alert(t("something-wrong-email"));
+			console.log(err, 'err333')
+			setLoadingSend(false);
+		}
+	}
 
 	const onSaveChanges = async () => {
 		setLoadingSend(true);
@@ -215,9 +235,9 @@ const FormFillSection = ({
 				return;
 			}
 
-			alert(t("doc-sent-success"));
+			alert("Your changes were saved!");
 			// leave this to true to avoid abuse.
-			setLoadingSend(true);
+			setLoadingSend(false);
 		} catch (err) {
 			alert(t("something-wrong-email"));
 			console.log(err, 'err333')
@@ -295,7 +315,7 @@ const FormFillSection = ({
 			</div>
 			<div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 4px', background: '#f1f3f5' }}>
 				<div />
-				<button disabled={loadingSend} css={nextBtn} onClick={onSaveChanges}><div>Save</div></button>
+				<button disabled={loadingSend} css={nextBtn} onClick={isEdit ? onEditChanges : onSaveChanges}><div>Save</div></button>
 			</div>
 		</div>
 	)

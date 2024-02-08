@@ -215,7 +215,7 @@ const SearchBar = ({
 		);
 	}
 
-	if (editorMode === 'form-fill') {
+	if (editorMode === 'form-fill' || editorMode === 'form-fill-edit') {
 		return (
 			<FormFillSection
 				onDisableEditorMode={onDisableEditorMode}
@@ -225,6 +225,7 @@ const SearchBar = ({
 				showFullScreenSearch={showFullScreenSearch}
 				onClickField={onClickField}
 				showSearch={showSearch}
+				isEdit={editorMode === 'form-fill-edit'}
 			/>
 		);
 	}

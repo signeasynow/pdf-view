@@ -209,6 +209,8 @@ const TagSection = ({
 			}
 			const { data, error } = await supabase.functions.invoke('create-signing-room', {
 				body: {
+					doc_type: "pdf",
+					status: "pending",
 					organizationId: customData?.organizationId,
 					senderEmail: replyTo,
 					receiverEmail: recipientEmail,
@@ -225,19 +227,20 @@ const TagSection = ({
 				}
 			});
 
-			const formData = new FormData();
-			formData.append('pdf', new Blob([buffer], { type: 'application/pdf' }));
-			formData.append('document_name', fileName);
-			formData.append('receiver_name', nameInput);
-			formData.append('receiver_email', recipientEmail);
-			formData.append('document_id', data.id);
-			formData.append('entity_id', customData?.organizationId);
-			formData.append('created_at', new Date().toISOString());
-			formData.append('status', "pending")
+			const formData = {
+				document_name: fileName,
+				receiver_name: nameInput,
+				receiver_email: recipientEmail,
+				document_id: data.id,
+				entity_id: customData?.organizationId,
+				created_at: new Date().toISOString(),
+				status: "pending",
+				doc_type: "pdf"
+			};
 
-			const result = await fetch('https://extractindexfromdoc-wmzdda57qq-uc.a.run.app/', {
+			const result = await fetch('https://storenewpayload-aobn3y2eda-uc.a.run.app/', {
 					method: 'POST',
-					body: formData,
+					body: JSON.stringify(formData),
 			});
 
 			if (result?.status !== 200) {
@@ -437,9 +440,9 @@ const TagSection = ({
 					placeholder=""
 				/>
 			</div>
-			<div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 4px', background: '#f1f3f5' }}>
+			<div style={{ display: 'flex', justifyContent: 'flex-start', padding: '8px 4px', background: '#f1f3f5' }}>
 				<button css={backBtn} onClick={onRevertFromStage2}><Icon src={ChevronLeft} alt={t("Back")} /><div>{t("Back")}</div></button>
-				<button disabled={loadingSend} css={loadingSend ? loadingSendBtn : sendBtn} onClick={onSend}><div>{t("Send")}</div><Icon src={SendIcon} alt={t("Send")} /></button>
+				<button style={{marginLeft: 12}} disabled={loadingSend} css={loadingSend ? loadingSendBtn : sendBtn} onClick={onSend}><div>{t("Send")}</div><Icon src={SendIcon} alt={t("Send")} /></button>
 			</div>
 		</div>
 	);
