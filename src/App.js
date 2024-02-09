@@ -796,6 +796,7 @@ const App = () => {
 	const [isInValidDomain, setIsInValidDomain] = useState(null);
 
 	const checkLicense = async () => {
+		/*
 		const { data, error } = await supabase.functions.invoke('verify-license-key', {
 			body: { licenseKey: inputtedLicenseKey, origin: window.origin }
 		});
@@ -825,6 +826,7 @@ const App = () => {
 			// not sure what this is actually
 			setHasValidLicense(false);
 		}
+		*/
 	};
 
 	const annotationEditorUIManagerRef = useRef(null);
