@@ -10,5 +10,6 @@ const params = {
     key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlndm14eXFsbmdnYnZpd25oamp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTI2NjM3MDksImV4cCI6MjAwODIzOTcwOX0.6WZKWt1dNaS2S4bU4YqlpVGwWy19EWZojVw8oJv9OX0'
   }
 }
-
-export const supabase = createClient(params[process.env.NODE_ENV].url, params[process.env.NODE_ENV].key);
+const URL = params[process.env.NODE_ENV].url;
+console.log(URL, 'url bro2')
+export const supabase = createClient(URL, params[process.env.NODE_ENV].key);

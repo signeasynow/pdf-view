@@ -53,6 +53,7 @@ const zoomOptionStyle = css`
 `;
 
 const AnnotationSelectionDropdown = ({
+	editorMode,
 	onClickSignature,
 	onChangeActiveToolbarItem,
 	annotationMode,
@@ -117,6 +118,10 @@ const AnnotationSelectionDropdown = ({
 
 	if (!tools?.editing?.includes('signature')) {
 		return;
+	}
+
+	if (annotationsEnabled() && editorMode === "form-fill" || editorMode === "form-fill-edit") {
+		return null;
 	}
 
 	if (annotationsEnabled()) {

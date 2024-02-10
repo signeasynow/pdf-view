@@ -1,14 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import ProgressBar from '@ramonak/react-progress-bar';
 import { useContext, useEffect, useState } from 'preact/hooks';
-import { Icon } from 'alien35_pdf_ui_lib_2';
-import ChevronRight from '../../../../assets/chevron-right-svgrepo-com.svg';
-import SendIcon from '../../../../assets/send-alt-1-svgrepo-com.svg';
-import ChevronLeft from '../../../../assets/chevron-left-svgrepo-com.svg';
 import { AnnotationsContext } from '../../../Contexts/AnnotationsContext';
 import { supabase } from '../../../utils/supabase';
-import { isValidEmail } from '../../../utils/isValidEmail';
 import { useTranslation } from 'react-i18next';
 import { generateUUID } from '../../../utils/generateUuid';
 import { modifyPdfBuffer } from '../../../hooks/useDownload';
@@ -79,39 +73,14 @@ const tagBtnStyle = css`
 	margin: 4px;
 `;
 
+const fillBtnStyle = css`
+  background: #98F3F6;
+	margin: 4px;
+`
+
 const nextBtn = css`
   display: flex;
   padding: 8px;
-  background: #a5bfd7;
-  border-radius: 4px;
-  border: none;
-  align-items: center;
-  cursor: pointer;
-`;
-
-const sendBtn = css`
-  display: flex;
-  padding: 0 0 0 8px;
-  background: #6ce906;
-  border-radius: 4px;
-  border: none;
-  align-items: center;
-  cursor: pointer;
-`;
-
-const loadingSendBtn = css`
-  display: flex;
-  padding: 0 0 0 8px;
-  background: #d8d8d8;
-  border-radius: 4px;
-  border: none;
-  align-items: center;
-  cursor: not-allowed;
-`;
-
-const backBtn = css`
-  display: flex;
-  padding: 0 8px 0 0;
   background: #a5bfd7;
   border-radius: 4px;
   border: none;
@@ -136,7 +105,7 @@ const FormFillSection = ({
 
 	const [nameInput, setNameInput] = useState('');
 	const [autoFillInput, setAutoFillInput] = useState('');
-	const [templateName, setTemplateName] = useState('');
+	const [templateName, setTemplateName] = useState(customData?.templateName || '');
 	const [subject, setSubject] = useState(t("doc-ready-signing"));
 	const [subjectModified, setSubjectModified] = useState(false);
 	const [message, setMessage] = useState(`${t("Hello")},\n\n${t("please-sign")}\n\n${t("thank-you")},\n\n${customData?.name}`);
@@ -176,12 +145,19 @@ const FormFillSection = ({
 	}, []);
 
 	const onEditChanges = async () => {
+		if (!templateName) {
+			return alert("Template name is required")
+		}
+		if (!annotationsRef.current?.length) {
+			return alert("At least one clickable or auto-fill marker is required");
+		}
 		setLoadingSend(true);
 		try {
 			const { data, error } = await supabase.functions.invoke('create-signing-room', {
 				body: {
 					actionType: 'update_template',
-					id: customData?.templateId,
+					id: customData?.templateId || newTemplateId,
+					documentName: templateName,
 					annotations: annotationsRef.current.filter((e) => !!e.overlayText && !e.isAutoFill),
 					fillableAnnotations: annotationsRef.current.filter((e) => !!e.overlayText && !!e.isAutoFill),
 				}
@@ -193,17 +169,28 @@ const FormFillSection = ({
 				return;
 			}
 
-			alert(t("doc-sent-success"));
+			alert("Your changes were saved.");
 			// leave this to true to avoid abuse.
 			setLoadingSend(true);
 		} catch (err) {
 			alert(t("something-wrong-email"));
-			console.log(err, 'err333')
 			setLoadingSend(false);
 		}
 	}
 
+	const [newTemplateId, setNewTemplateId] = useState('');
+
 	const onSaveChanges = async () => {
+		if (!templateName) {
+			return alert("Template name is required")
+		}
+		if (!annotationsRef.current?.length) {
+			return alert("At least one clickable or auto-fill marker is required");
+		}
+		if (newTemplateId) {
+			onEditChanges();
+			return;
+		}
 		setLoadingSend(true);
 		try {
 			const originalBuffer = await pdfProxyObj.getData();
@@ -234,13 +221,12 @@ const FormFillSection = ({
 				setLoadingSend(false);
 				return;
 			}
-
+			setNewTemplateId(data.id)
 			alert("Your changes were saved!");
 			// leave this to true to avoid abuse.
 			setLoadingSend(false);
 		} catch (err) {
 			alert(t("something-wrong-email"));
-			console.log(err, 'err333')
 			setLoadingSend(false);
 		}
 	};
@@ -287,7 +273,6 @@ const FormFillSection = ({
 	return (
 		<div>
 			<div css={getWrapperClass()}>
-				<div style={{ margin: '12px 4px 8px' }}><ProgressBar completed={33} customLabel="&nbsp;" bgColor="#d9b432" /></div>
 				<h3 style={{marginLeft: '4px'}}>Template name</h3>
 				<input
 					onFocus={onInputFocus}
@@ -296,25 +281,25 @@ const FormFillSection = ({
 					onChange={(e) => setTemplateName(e.target.value)}
 					style={{ margin: '4px', width: '260px' }} type="text" placeholder={"Name your template"}
 				/>
+				<hr />
 				<h3 style={{marginLeft: '4px'}}>Add clickable markers</h3>
 				<div style={{ margin: '4px' }}>{t("add-markers-doc")}</div>
 				<button css={tagBtnStyle} onClick={() => onClickField('Sign')}>{t("Signature")}</button>
 				<button css={tagBtnStyle} onClick={() => onClickField('Name')}>{t("Name")}</button>
 				<button css={tagBtnStyle} onClick={() => onClickField('Email')}>{t("Email")}</button>
 				<button css={tagBtnStyle} onClick={() => onClickField('Date')}>{t("Date")}</button>
-
+				<hr />
 				<h3 style={{marginLeft: '4px'}}>Add auto-fill marker</h3>
-				<div style={{margin: 4}}>Name your marker and click to place it on the document. You'll specify the data to auto-fill when you're ready to send the template.</div>
+				<div style={{margin: 4}}>Name your marker and click to place it on the document. You'll specify the data to auto-fill when you're ready to send the document.</div>
 				<input
 					onFocus={onInputFocus}
 					onKeyDown={handleKeyDown}
 					value={autoFillInput}
 					onChange={onChangeAutoFill} style={{ margin: '4px', width: '260px' }} type="text" placeholder={"Marker name, ie. First Name"}
 				/>
-				<button disabled={!autoFillInput} css={tagBtnStyle} onClick={onSubmitAutoFill}>Add {autoFillInput || "Auto-fill marker"}</button>
+				<button disabled={!autoFillInput} css={fillBtnStyle} onClick={onSubmitAutoFill}>Add {autoFillInput || "Auto-fill marker"}</button>
 			</div>
-			<div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 4px', background: '#f1f3f5' }}>
-				<div />
+			<div style={{ display: 'flex', justifyContent: 'flex-start', padding: '8px 4px', background: '#f1f3f5' }}>
 				<button disabled={loadingSend} css={nextBtn} onClick={isEdit ? onEditChanges : onSaveChanges}><div>Save</div></button>
 			</div>
 		</div>

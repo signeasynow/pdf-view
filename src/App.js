@@ -54,6 +54,7 @@ import { removeTextFromPdf } from './utils/removeTextFromPdf';
 import { calculateFontSize } from './utils/calculateFontSize';
 
 const SignatureIconPng = 'https://www.signeasynow.com/yellow-bg-500-150.png';
+const TemplateIconPng = 'https://www.signeasynow.com/lightblue-bg-500-150.png';
 
 function loadImage(url) {
 	return new Promise((resolve, reject) => {
@@ -1830,7 +1831,7 @@ const App = () => {
 		pdfViewerRef.current.annotationEditorParams = {
 			type: AnnotationEditorParamsType.CREATE,
 			value: {
-				bitmapUrl: SignatureIconPng,
+				bitmapUrl: isAutoFill ? TemplateIconPng : SignatureIconPng,
 				initialWidth: undefined,
 				initialHeight: 0.04,
 				// imageType, deprecated
@@ -1999,6 +2000,7 @@ const App = () => {
 				{
 					showSubheader() && (
 						<Subheader
+							editorMode={editorMode}
 							annotationMode={annotationMode}
 							onAddImage={onAddImage}
 							annotationColor={annotationColor}

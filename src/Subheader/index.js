@@ -61,6 +61,7 @@ const gradientRight = css`
 `;
 
 const Subheader = ({
+	editorMode,
 	fontFamilyValue,
 	annotationColor,
 	setAnnotationColor,
@@ -173,6 +174,7 @@ const Subheader = ({
 			<div css={contentLeftStyle}>
 			  <div style={{ display: 'flex', alignItems: 'center' }}>
 				  <AnnotationSelectionDropdown
+						editorMode={editorMode}
 						tools={tools}
 						activeToolbarItem={activeToolbarItem}
 						annotationMode={annotationMode}
