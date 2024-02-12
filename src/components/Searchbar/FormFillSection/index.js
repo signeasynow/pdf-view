@@ -282,7 +282,7 @@ const FormFillSection = ({
 					style={{ margin: '4px', width: '260px' }} type="text" placeholder={"Name your template"}
 				/>
 				<hr />
-				<h3 style={{marginLeft: '4px'}}>Add clickable markers</h3>
+				<h3 style={{marginLeft: '4px'}}>Click to add clickable markers</h3>
 				<div style={{ margin: '4px' }}>{t("add-markers-doc")}</div>
 				<button css={tagBtnStyle} onClick={() => onClickField('Sign')}>{t("Signature")}</button>
 				<button css={tagBtnStyle} onClick={() => onClickField('Name')}>{t("Name")}</button>

@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { generateUUID } from '../../../utils/generateUuid';
 import { modifyPdfBuffer } from '../../../hooks/useDownload';
 import AddSigners from './AddSigners';
+import ClickableMarkers from './ClickableMarkers';
 
 async function getUserIP() {
 	try {
@@ -73,11 +74,6 @@ const fullSearchWrapper = css`
 
 const invisibleSearchWrapper = css`
   display: none;
-`;
-
-const tagBtnStyle = css`
-  background: #fee179;
-	margin: 4px;
 `;
 
 const nextBtn = css`
@@ -145,6 +141,8 @@ const TagSection = ({
 	const [message, setMessage] = useState(`${t("Hello")},\n\n${t("please-sign")}\n\n${t("thank-you")},\n\n${customData?.name}`);
 	const [messageModified, setMessageModified] = useState(false);
 	const [loadingSend, setLoadingSend] = useState(false);
+
+	const [signers, setSigners] = useState([{ name: '', email: '' }]);
 
 	useEffect(() => {
 		if (subjectModified) {
@@ -300,8 +298,16 @@ const TagSection = ({
 	const onProceedToStep = (num) => {
 		switch (num) {
 			case 1: {
-				onDisableEditorMode();
-				onCompleteStageZero();
+				if (!signers.length) {
+					return alert("At least one signer is required");
+				}
+				if (signers.some((signer) => {
+					return !signer.name?.trim() || !signer.email?.trim();
+				})) {
+					return alert("Please set the name and email for every signer")
+				}
+				// onDisableEditorMode();
+				setStage(1);
 				break;
 			}
 		}
@@ -357,12 +363,10 @@ const TagSection = ({
 		document.dispatchEvent(event);
 	}
 
-	const onAddSigner = () => {
-		
-	}
-
 	if (stage === 0) {
 		return <AddSigners
+			signers={signers}
+			setSigners={setSigners}
 			showFullScreenSearch={showFullScreenSearch}
 			showSearch={showSearch}
 			onNext={() => onProceedToStep(1)}
@@ -371,21 +375,13 @@ const TagSection = ({
 
 	if (stage === 1) {
 		return (
-			<div>
-				<div css={getWrapperClass()}>
-					<div style={{ margin: '12px 4px 8px' }}><ProgressBar completed={33} customLabel="&nbsp;" bgColor="#d9b432" /></div>
-					<h3 style={{marginLeft: '4px'}}>Add clickable markers</h3>
-					<div style={{ margin: '4px' }}>{t("add-markers-doc")}</div>
-					<button css={tagBtnStyle} onClick={() => onClickField('Sign')}>{t("Signature")}</button>
-					<button css={tagBtnStyle} onClick={() => onClickField('Name')}>{t("Name")}</button>
-					<button css={tagBtnStyle} onClick={() => onClickField('Email')}>{t("Email")}</button>
-					<button css={tagBtnStyle} onClick={() => onClickField('Date')}>{t("Date")}</button>
-				</div>
-				<div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 4px', background: '#f1f3f5' }}>
-					<div />
-					<button css={nextBtn} onClick={onProceedToStep1}><div>{t("Next")}</div><Icon src={ChevronRight} alt={t("Next")} /></button>
-				</div>
-			</div>
+			<ClickableMarkers
+				showFullScreenSearch={showFullScreenSearch}
+				showSearch={showSearch}
+				onClickField={onClickField}
+				onBack={() => setStage(0)}
+				onNext={() => onProceedToStep(2)}
+			/>
 		);
 	}
 

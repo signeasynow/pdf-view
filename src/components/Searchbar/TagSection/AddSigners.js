@@ -5,6 +5,7 @@ import { Icon } from 'alien35_pdf_ui_lib_2';
 import ChevronRight from '../../../../assets/chevron-right-svgrepo-com.svg';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'preact/hooks';
+import { generateUUID } from '../../../utils/generateUuid';
 
 const visibleSearchWrapper = css`
   background: #f1f3f5;
@@ -47,12 +48,13 @@ const nextBtn = css`
 const AddSigners = ({
 	showFullScreenSearch,
 	showSearch,
-  onNext
+  onNext,
+  signers,
+  setSigners
 }) => {
 
 	const { t } = useTranslation();
 
-  const [signers, setSigners] = useState([{ name: '', email: '' }]);
 
 	const getWrapperClass = () => {
 		if (showFullScreenSearch) {
@@ -83,15 +85,26 @@ const AddSigners = ({
 	}
 
   
-  const handleDeleteSigner = (index) => {
+  const handleDeleteSigner = (id) => {
     // Remove the signer from the state
-    const newSigners = signers.filter((_, idx) => idx !== index);
+    const newSigners = signers.filter((signer) => signer.id !== id);
     setSigners(newSigners);
   };
 
 	const onAddSigner = () => {
     // Add a new signer to the state
-    setSigners([...signers, { name: '', email: '' }]);
+    setSigners([...signers, { id: generateUUID(), name: '', email: '' }]);
+  };
+
+  const handleSignerChange = (id, field, value) => {
+    // Update the signer details in the state
+    const newSigners = signers.map((signer) => {
+      if (signer.id === id) {
+        return { ...signer, [field]: value };
+      }
+      return signer;
+    });
+    setSigners(newSigners);
   };
 
 	return (
@@ -101,13 +114,13 @@ const AddSigners = ({
         <h3 style={{marginLeft: '4px'}}>Add signers</h3>
         <div style={{ margin: '4px' }}>Add the people who will sign the document in order from first to last.</div>
         {signers.map((signer, index) => (
-          <div key={index} style={{ display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+          <div key={signer.id} style={{ display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
             <input
               onFocus={onInputFocus}
               onKeyDown={handleKeyDown}
               style={{flex: "1 1 auto", minWidth: "0", margin: "4px"}}          
               value={signer.name}
-              onChange={(e) => handleSignerChange(index, 'name', e.target.value)}
+              onChange={(e) => handleSignerChange(signer.id, 'name', e.target.value)}
               placeholder='Name'
             />
             <input
@@ -115,11 +128,11 @@ const AddSigners = ({
               onKeyDown={handleKeyDown}
               style={{flex: "1 1 auto", minWidth: "0", margin: "4px"}}          
               value={signer.email}
-              onChange={(e) => handleSignerChange(index, 'email', e.target.value)}
+              onChange={(e) => handleSignerChange(signer.id, 'email', e.target.value)}
               placeholder='Email'
             />
             <button
-              onClick={() => handleDeleteSigner(index)}
+              onClick={() => handleDeleteSigner(signer.id)}
               style={{
                 margin: "4px",
                 color: "#fff", /* White text color */
