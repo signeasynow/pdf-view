@@ -376,6 +376,7 @@ const TagSection = ({
 	if (stage === 1) {
 		return (
 			<ClickableMarkers
+				signers={signers}
 				showFullScreenSearch={showFullScreenSearch}
 				showSearch={showSearch}
 				onClickField={onClickField}
