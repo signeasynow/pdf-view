@@ -123,7 +123,8 @@ const TagSection = ({
 	onDisableEditorMode,
 	pdfProxyObj,
 	customData,
-	fileName
+	fileName,
+	forceRefreshView
 }) => {
 
 	const [stage, setStage] = useState(0);
@@ -142,7 +143,7 @@ const TagSection = ({
 	const [messageModified, setMessageModified] = useState(false);
 	const [loadingSend, setLoadingSend] = useState(false);
 
-	const [signers, setSigners] = useState([{ name: '', email: '' }]);
+	const [signers, setSigners] = useState([{ name: '', email: '', id: generateUUID() }]);
 
 	useEffect(() => {
 		if (subjectModified) {
@@ -263,7 +264,6 @@ const TagSection = ({
 		}
 	};
   
-
 	const onChangeEmailTag = (e) => {
 		if (emailInput === recipientEmail) {
 			setRecipientEmail(e.target.value);
@@ -315,6 +315,9 @@ const TagSection = ({
 				// onDisableEditorMode();
 				setStage(1);
 				break;
+			}
+			case 2: {
+				setStage(3);
 			}
 		}
 	}
@@ -382,6 +385,7 @@ const TagSection = ({
 	if (stage === 1) {
 		return (
 			<ClickableMarkers
+				forceRefreshView={forceRefreshView}
 				signers={signers}
 				showFullScreenSearch={showFullScreenSearch}
 				showSearch={showSearch}
@@ -392,61 +396,12 @@ const TagSection = ({
 		);
 	}
 
-	if (stage === 2) {
-		return (
-			<div>
-				<div css={getWrapperClass()}>
-					<div style={{ margin: '12px 4px 8px' }}><ProgressBar completed={67} customLabel="&nbsp;" bgColor="#d9b432" /></div>
-					<div style={{ margin: '4px' }}>{t("when-marker-clicked")}</div>
-					{
-						hasNameTag() && (
-							<input
-								onFocus={onInputFocus}
-								onKeyDown={handleKeyDown}
-								value={nameInput}
-								onChange={onChangeName}
-								style={{ margin: '4px', width: '260px' }} type="text" placeholder={t("Name")}
-							/>
-						)
-					}
-					{
-						hasEmailTag() && (
-							<input
-								onFocus={onInputFocus}
-								value={emailInput} onChange={onChangeEmailTag} style={{ margin: '4px', width: '260px' }} type="email" placeholder={t("Email")} />
-						)
-					}
-				</div>
-				<div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 4px', background: '#f1f3f5' }}>
-					<button css={backBtn} onClick={() => setStage(0)}><Icon src={ChevronLeft} alt={t("Back")} /><div>{t("Back")}</div></button>
-					<button css={nextBtn} onClick={onSubmitStage1}><div>{t("Next")}</div><Icon src={ChevronRight} alt={t("Next")} /></button>
-				</div>
-			</div>
-		);
-	}
-
 	return (
 		<div>
 			<div css={getWrapperClass()}>
 				<div style={{ margin: '12px 4px 8px' }}><ProgressBar completed={98} customLabel="&nbsp;" bgColor="#d9b432" /></div>
 				<div style={{ margin: '4px' }}>{t("doc-ready-send")}</div>
 				<br />
-				<div style={{ margin: '4px' }}>{t("recipient-email")}</div>
-				<input
-					onFocus={onInputFocus}
-					value={recipientEmail} onChange={(e) => setRecipientEmail(e.target.value)} style={{ margin: '4px', width: '260px' }} type="email" placeholder={t("Email")} />
-				<br />
-				{
-					!hasNameTag() && (
-						<>
-							<div style={{ margin: '4px' }}>{t("recipient-name")}</div>
-							<input
-								onFocus={onInputFocus}
-								value={nameInput} onChange={(e) => setNameInput(e.target.value)} style={{ margin: '4px', width: '260px' }} type="text" placeholder="" />
-							<br />
-						</>
-					)
-				}
 				<div style={{ margin: '4px' }}>{t("email-subject")}</div>
 				<input
 					onFocus={onInputFocus}
@@ -469,7 +424,7 @@ const TagSection = ({
 				/>
 			</div>
 			<div style={{ display: 'flex', justifyContent: 'flex-start', padding: '8px 4px', background: '#f1f3f5' }}>
-				<button css={backBtn} onClick={onRevertFromStage2}><Icon src={ChevronLeft} alt={t("Back")} /><div>{t("Back")}</div></button>
+				<button css={backBtn} onClick={() => setStage(1)}><Icon src={ChevronLeft} alt={t("Back")} /><div>{t("Back")}</div></button>
 				<button style={{marginLeft: 12}} disabled={loadingSend} css={loadingSend ? loadingSendBtn : sendBtn} onClick={onSend}><div>{t("Send")}</div><Icon src={SendIcon} alt={t("Send")} /></button>
 			</div>
 		</div>

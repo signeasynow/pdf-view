@@ -138,7 +138,8 @@ const SearchBar = ({
 	onClear,
 	onNoToAiWarning,
 	conversation,
-	setConversation
+	setConversation,
+	forceRefreshView
 }) => {
 
 	const { hasValidSubscription } = useUserData();
@@ -219,6 +220,7 @@ const SearchBar = ({
 	if (editorMode === 'tag') {
 		return (
 			<TagSection
+				forceRefreshView={forceRefreshView}
 				onDisableEditorMode={onDisableEditorMode}
 				fileName={fileName}
 				customData={customData}

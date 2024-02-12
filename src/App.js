@@ -1405,6 +1405,8 @@ const App = () => {
 
 	const [splitMarkers, setSplitMarkers] = useState([]);
 
+	console.log(annotationsRef?.current, 'annotationsRef.current')
+
 	const onClickSplit = (idx) => {
 		if (splitMarkers.includes(idx)) {
 			setSplitMarkers(splitMarkers.filter((each) => each !== idx));
@@ -1822,7 +1824,8 @@ const App = () => {
 
 	console.log(annotations, 'not333')
 
-	const onClickField = (type, isAutoFill) => {
+	const onClickField = (type, isAutoFill, userId) => {
+		console.log(isAutoFill, 'isAutoFill22')
 		pdfViewerRef.current.annotationEditorMode = {
 			isFromKeyboard: false,
 			mode: pdfjs.AnnotationEditorType.STAMP,
@@ -1837,7 +1840,8 @@ const App = () => {
 				// imageType, deprecated
 				// initialWidth: typeMap[type] || 0.1,
 				overlayText: type,
-				isAutoFill
+				isAutoFill,
+				userId
 			}
 		};
 		if (editorMode === 'click-tag') {
@@ -1886,8 +1890,11 @@ const App = () => {
 
 	const onUpdateAnnotation = (data, text) => {
 		updateAnnotation(data, text);
-
 	};
+
+	const forceRefreshView = () => {
+		
+	}
 
 	const [fontWeightBold, setFontWeightBold] = useState(false);
 	const onUpdateFontWeight = () => {
@@ -2136,6 +2143,7 @@ const App = () => {
 						/>
 					</div>
 					<SearchBar
+						forceRefreshView={forceRefreshView}
 						onDisableEditorMode={onDisableEditorMode}
 						fileName={fileNames[activePageIndex]}
 						customData={customData}

@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { useEffect, useRef } from 'preact/hooks';
+import { useContext, useEffect, useRef } from 'preact/hooks';
 import * as pdfjs from 'pdfjs-dist';
 import { EventBus, PDFLinkService, PDFViewer, PDFFindController, PDFScriptingManager, PDFRenderingQueue } from 'pdfjs-dist/web/pdf_viewer';
 import 'pdfjs-dist/web/pdf_viewer.css';
@@ -9,6 +9,8 @@ import { extractAllTextFromPDF } from './utils/extractAllTextFromPdf';
 import { addSandboxWatermark } from './utils/addSandboxWatermark';
 import simpleHash from './utils/simpleHash';
 import { AnnotationEditorParamsType } from 'pdfjs-dist/build/pdf';
+import { useAnnotations } from './hooks/useAnnotations';
+import { AnnotationsContext } from './Contexts/AnnotationsContext';
 
 const SANDBOX_BUNDLE_SRC = 'pdfjs-dist/build/pdf.sandbox.js';
 
@@ -38,7 +40,6 @@ export const PdfViewer = ({
 	initialAnnotations,
 	onAnnotationFocus,
 	activeToolbarItemRef,
-	annotations,
 	annotationsRef,
 	annotationColor,
 	updateAnnotation,
@@ -51,11 +52,10 @@ export const PdfViewer = ({
 	showHeader,
 	showSubheader,
 	setPdfProxyObj,
-	pdfProxyObj,
 	pdfLinkServiceRef,
 	pdfFindControllerRef,
 	pdfScriptingManagerRef,
-	annotationEditorUIManagerRef,
+	editorMode,
 	setCurrentAiDocHash,
 	tools,
 	setPdfViewerObj,
@@ -86,6 +86,8 @@ export const PdfViewer = ({
 		return result;
 	};
 
+	const { activeSignerId } = useContext(AnnotationsContext);
+
 	const hasWatermarkAdded = useRef(false);
 
 	const cleanupDocument = async () => {
@@ -102,7 +104,6 @@ export const PdfViewer = ({
 		if (!eventBusRef.current) {
 			return;
 		}
-		console.log(annotationColor, 'annotationColor');
 		eventBusRef.current.dispatch('switchannotationeditorparams', {
 			type: AnnotationEditorParamsType.FREETEXT_COLOR,
 			value: annotationColor
@@ -176,43 +177,34 @@ export const PdfViewer = ({
 		});
 
 		eventBus.on('tagclicked', (details) => {
-			// console.log(details, 'details 778')
 			onTagClicked(details);
 		});
 
 		eventBus.on('annotationfocused', ({ details }) => {
-			// console.log(details, 'details r48')
 			onAnnotationFocus(details.current.id, details.current);
 		});
 
 		eventBus.on('annotationchanged', ({ details }) => {
-			console.log(details, 'details r44', details.text)
 			updateAnnotation(details.current, details.text);
 		});
 
 		eventBus.on('annotationeditorresized', (details) => {
-			// console.log(details, 'details annotationeditorresized')
 		  resizeAnnotation(details);
-			// first, need initial width set.
 		});
 
 		eventBus.on('annotationeditormoved', (details) => {
-			// console.log(details, 'details r455')
 			moveAnnotation(details);
 		});
 
 		eventBus.on('annotationremoved', (details) => {
-			// console.log(details, 'details r422')
 			removeAnnotation(details.details);
 		});
 
 		eventBus.on('updatefindmatchescount', ({ matchesCount }) => {
-			// console.log(matchesCount, 'matchesCount44')
 			setMatchesCount(matchesCount?.total);
 		});
 
 		eventBus.on('pagechanging', ({ pageNumber }) => {
-			// Set the active page
 			setActivePage(pageNumber);
 		
 			// Get the target thumbnail element
@@ -268,8 +260,20 @@ export const PdfViewer = ({
 				}
 				// If no modifiedFile, continue to set the loaded PDF document.
 				setPdfProxyObj(loadedPdfDocument);
-				// console.log("setting doc2", annotationsRef.current)
-				pdfViewerRef.current.setDocument(loadedPdfDocument, annotationsRef.current);
+				console.log(activeSignerId, 'activeSignerId24', editorMode)
+				let filteredBySignerAnnotations = annotationsRef.current;
+				if (activeSignerId) {
+					filteredBySignerAnnotations = annotationsRef.current.filter((annot) => {
+						if (!annot.overlayText) {
+							return true;
+						}
+						if (!annot.userId) {
+							return true;
+						}
+						return annot.userId === activeSignerId;
+					})
+				}
+				pdfViewerRef.current.setDocument(loadedPdfDocument, filteredBySignerAnnotations);
 				pdfLinkServiceRef.current.setDocument(loadedPdfDocument, null);
 				extractTextFromFirstPage(loadedPdfDocument);
 				if (!modifiedFiles[activePageIndex]) {
@@ -292,7 +296,7 @@ export const PdfViewer = ({
 		if (!files?.length || !viewerContainerRef1.current) return;
 		const targetContainer = viewerContainerRef1;
 		applyDocument(targetContainer.current); // assume applyDocument is async
-	}, [files, modifiedFiles, activePageIndex]);
+	}, [files, modifiedFiles, activePageIndex, activeSignerId]);
 
 
 	useEffect(() => {
@@ -312,7 +316,7 @@ export const PdfViewer = ({
 	
 		document.addEventListener('visibilitychange', handleVisibilityChange);
 		return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-	}, [modifiedFiles, files]);
+	}, [modifiedFiles, files, activeSignerId]);
 
 	const width = () => {
 		if (!tools?.general?.includes('thumbnails')) {

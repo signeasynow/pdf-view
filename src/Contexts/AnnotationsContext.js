@@ -10,6 +10,7 @@ export const AnnotationsContext = createContext({
 export const AnnotationsProvider = ({ children }) => {
 	const [annotations, setAnnotations] = useState([]);
 	const annotationsRef = useRef([]);
+	const [activeSignerId, setActiveSignerId] = useState(null);
 
 	useEffect(() => {
 		// annotationsRef.current = annotations;
@@ -19,7 +20,9 @@ export const AnnotationsProvider = ({ children }) => {
 		<AnnotationsContext.Provider value={{
 			annotations,
 			setAnnotations,
-			annotationsRef
+			annotationsRef,
+			activeSignerId,
+			setActiveSignerId
 		}}>
 			{children}
 		</AnnotationsContext.Provider>

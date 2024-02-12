@@ -107,6 +107,8 @@ const AddSigners = ({
     setSigners(newSigners);
   };
 
+  console.log(signers, 'signer33')
+
 	return (
     <div>
       <div css={getWrapperClass()}>

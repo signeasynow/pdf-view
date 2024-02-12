@@ -15,7 +15,13 @@ const debounce = (func, delay) => {
 };
 
 export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, usingUndoRedoRef) => {
-	const { annotations, setAnnotations, annotationsRef } = useContext(AnnotationsContext);
+	const {
+		annotations,
+		setAnnotations,
+		annotationsRef,
+		activeSignerId,
+		setActiveSignerId
+	} = useContext(AnnotationsContext);
 	const { addOperation } = useContext(UndoRedoContext);
 	// not used
 	const getActiveAnnotation = (id) => annotationsRef.current.find((e) => e.id === id);
@@ -102,7 +108,6 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, us
 		if (!existingAnnotation) {
 			// TOTALLY FINE FOR THERE TO BE NONE.
 		}
-		console.log(data, 'data4443')
 		const pastAnnotations = updatedAnnotations.filter((e) => e.id !== data.id);
 		const dataPayload = {
 			height: typeof data.height === "number" ? data.height : existingAnnotation?.height,
@@ -115,7 +120,8 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, us
 			overlayText: data.overlayText ? data.overlayText : existingAnnotation?.overlayText,
 			isAutoFill: data.isAutoFill ? data.isAutoFill : existingAnnotation?.isAutoFill,
 			moveDisabled: typeof data.moveDisabled === "boolean" ? data.moveDisabled : existingAnnotation?.moveDisabled,
-			name: 'stampEditor'
+			name: 'stampEditor',
+			userId: data.userId ? data.userId : existingAnnotation?.userId
 		};
 		updatedAnnotations = [
 			...pastAnnotations,
@@ -211,6 +217,8 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, us
 	}, 50);
 
 	return {
+		setActiveSignerId,
+		activeSignerId,
 		annotations,
 		annotationsRef,
 		updateAnnotation: throttledUpdateAnnotation,
