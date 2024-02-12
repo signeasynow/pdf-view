@@ -104,10 +104,10 @@ const ClickableMarkers = ({
             ))}
           </select>
         </div>
-        <button css={tagBtnStyle} onClick={() => onClickField('Sign')}>{t("Signature")}</button>
-        <button css={tagBtnStyle} onClick={() => onClickField('Name')}>{t("Name")}</button>
-        <button css={tagBtnStyle} onClick={() => onClickField('Email')}>{t("Email")}</button>
-        <button css={tagBtnStyle} onClick={() => onClickField('Date')}>{t("Date")}</button>
+        <button css={tagBtnStyle} onClick={() => onClickField('Sign', signer.id)}>{t("Signature")}</button>
+        <button css={tagBtnStyle} onClick={() => onClickField('Name', signer.id)}>{t("Name")}</button>
+        <button css={tagBtnStyle} onClick={() => onClickField('Email', signer.id)}>{t("Email")}</button>
+        <button css={tagBtnStyle} onClick={() => onClickField('Date', signer.id)}>{t("Date")}</button>
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 4px', background: '#f1f3f5' }}>
         <button css={backBtn} onClick={onBack}><Icon src={ChevronLeft} alt={t("Back")} /><div>{t("Back")}</div></button>

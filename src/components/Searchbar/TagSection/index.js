@@ -306,6 +306,12 @@ const TagSection = ({
 				})) {
 					return alert("Please set the name and email for every signer")
 				}
+				const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+				if (signers.some((signer) => {
+						return !emailRegex.test(signer.email);
+				})) {
+						return alert("Please enter a valid email address for every signer");
+				}
 				// onDisableEditorMode();
 				setStage(1);
 				break;
