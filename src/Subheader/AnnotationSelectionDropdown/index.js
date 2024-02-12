@@ -120,7 +120,7 @@ const AnnotationSelectionDropdown = ({
 		return;
 	}
 
-	if (annotationsEnabled() && editorMode === "form-fill" || editorMode === "form-fill-edit") {
+	if (annotationsEnabled() && (editorMode === "form-fill" || editorMode === "form-fill-edit" || editorMode === "tag")) {
 		return null;
 	}
 

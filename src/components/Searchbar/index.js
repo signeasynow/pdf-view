@@ -9,6 +9,7 @@ import SearchbarTools from './SearchbarTools';
 import ConversationSection from './ConversationSection';
 import { extractLastThreeQA } from '../../utils/extractLastQaQuestions';
 import TagSection from './TagSection';
+import TagFillSection from './TagFillSection';
 import FormFillSection from './FormFillSection';
 import { useUserData } from '../../hooks/useUserData';
 
@@ -200,6 +201,20 @@ const SearchBar = ({
 		}
 		return showSearch ? visibleSearchWrapper : invisibleSearchWrapper;
 	};
+
+	if (editorMode === 'tag-fill') {
+		return (
+			<TagFillSection
+				onDisableEditorMode={onDisableEditorMode}
+				fileName={fileName}
+				customData={customData}
+				pdfProxyObj={pdfProxyObj}
+				showFullScreenSearch={showFullScreenSearch}
+				onClickField={onClickField}
+				showSearch={showSearch}
+			/>
+		);
+	}
 
 	if (editorMode === 'tag') {
 		return (

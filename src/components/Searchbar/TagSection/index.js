@@ -12,6 +12,7 @@ import { isValidEmail } from '../../../utils/isValidEmail';
 import { useTranslation } from 'react-i18next';
 import { generateUUID } from '../../../utils/generateUuid';
 import { modifyPdfBuffer } from '../../../hooks/useDownload';
+import AddSigners from './AddSigners';
 
 async function getUserIP() {
 	try {
@@ -296,6 +297,16 @@ const TagSection = ({
 		}
 	};
 
+	const onProceedToStep = (num) => {
+		switch (num) {
+			case 1: {
+				onDisableEditorMode();
+				onCompleteStageZero();
+				break;
+			}
+		}
+	}
+
 	const onProceedToStep1 = () => {
 		onDisableEditorMode();
 		onCompleteStageZero();
@@ -346,7 +357,19 @@ const TagSection = ({
 		document.dispatchEvent(event);
 	}
 
+	const onAddSigner = () => {
+		
+	}
+
 	if (stage === 0) {
+		return <AddSigners
+			showFullScreenSearch={showFullScreenSearch}
+			showSearch={showSearch}
+			onNext={() => onProceedToStep(1)}
+		/>
+	}
+
+	if (stage === 1) {
 		return (
 			<div>
 				<div css={getWrapperClass()}>
@@ -366,7 +389,7 @@ const TagSection = ({
 		);
 	}
 
-	if (stage === 1) {
+	if (stage === 2) {
 		return (
 			<div>
 				<div css={getWrapperClass()}>
@@ -377,7 +400,9 @@ const TagSection = ({
 							<input
 								onFocus={onInputFocus}
 								onKeyDown={handleKeyDown}
-								value={nameInput} onChange={onChangeName} style={{ margin: '4px', width: '260px' }} type="text" placeholder={t("Name")}
+								value={nameInput}
+								onChange={onChangeName}
+								style={{ margin: '4px', width: '260px' }} type="text" placeholder={t("Name")}
 							/>
 						)
 					}

@@ -81,7 +81,6 @@ async function getFontForAnnotation(pdfDoc, annotation) {
 
 export const modifyPdfBuffer = async (buffer, _annotations) => {
 	const annotations = JSON.parse(JSON.stringify(_annotations));
-	console.log(annotations, 'annot443')
 	const pdfDoc = await PDFDocument.load(buffer);
 
 	// Apply annotations
