@@ -4,8 +4,18 @@ import ProgressBar from '@ramonak/react-progress-bar';
 import { Icon } from 'alien35_pdf_ui_lib_2';
 import ChevronRight from '../../../../assets/chevron-right-svgrepo-com.svg';
 import { useTranslation } from 'react-i18next';
-import { useState } from 'preact/hooks';
 import { generateUUID } from '../../../utils/generateUuid';
+import ChevronLeft from '../../../../assets/chevron-left-svgrepo-com.svg';
+
+const backBtn = css`
+  display: flex;
+  padding: 0 8px 0 0;
+  background: #a5bfd7;
+  border-radius: 4px;
+  border: none;
+  align-items: center;
+  cursor: pointer;
+`;
 
 const visibleSearchWrapper = css`
   background: #f1f3f5;
@@ -50,11 +60,11 @@ const AddSigners = ({
 	showSearch,
   onNext,
   signers,
-  setSigners
+  setSigners,
+  onBack
 }) => {
 
 	const { t } = useTranslation();
-
 
 	const getWrapperClass = () => {
 		if (showFullScreenSearch) {
@@ -107,12 +117,10 @@ const AddSigners = ({
     setSigners(newSigners);
   };
 
-  console.log(signers, 'signer33')
-
 	return (
     <div>
       <div css={getWrapperClass()}>
-        <div style={{ margin: '12px 4px 8px' }}><ProgressBar completed={33} customLabel="&nbsp;" bgColor="#d9b432" /></div>
+        <div style={{ margin: '12px 4px 8px' }}><ProgressBar completed={50} customLabel="&nbsp;" bgColor="#d9b432" /></div>
         <h3 style={{marginLeft: '4px'}}>Add signers</h3>
         <div style={{ margin: '4px' }}>Add the people who will sign the document in order from first to last.</div>
         {signers.map((signer, index) => (
@@ -169,9 +177,9 @@ const AddSigners = ({
           + Add signer
         </button>
       </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 4px', background: '#f1f3f5' }}>
-        <div />
-        <button css={nextBtn} onClick={onNext}><div>{t("Next")}</div><Icon src={ChevronRight} alt={t("Next")} /></button>
+      <div style={{ display: 'flex', justifyContent: 'flex-start', padding: '8px 4px', background: '#f1f3f5' }}>
+        <button css={backBtn} onClick={onBack}><Icon src={ChevronLeft} alt={t("Back")} /><div>{t("Back")}</div></button>
+        <button style={{marginLeft: 8}} css={nextBtn} onClick={onNext}><div>{t("Next")}</div><Icon src={ChevronRight} alt={t("Next")} /></button>
       </div>
     </div>
   );

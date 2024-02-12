@@ -14,6 +14,7 @@ import { generateUUID } from '../../../utils/generateUuid';
 import { modifyPdfBuffer } from '../../../hooks/useDownload';
 import AddSigners from './AddSigners';
 import ClickableMarkers from './ClickableMarkers';
+import AddTitle from './AddTitle';
 
 async function getUserIP() {
 	try {
@@ -120,7 +121,6 @@ const TagSection = ({
 	showFullScreenSearch,
 	onClickField,
 	showSearch,
-	onDisableEditorMode,
 	pdfProxyObj,
 	customData,
 	fileName,
@@ -144,7 +144,7 @@ const TagSection = ({
 	const [loadingSend, setLoadingSend] = useState(false);
 
 	const [signers, setSigners] = useState([{ name: '', email: '', id: generateUUID() }]);
-
+	const [title, setTitle] = useState(fileName);
 	useEffect(() => {
 		if (subjectModified) {
 			return;
@@ -165,10 +165,6 @@ const TagSection = ({
 		}
 		return showSearch ? visibleSearchWrapper : invisibleSearchWrapper;
 	};
-
-	const hasNameTag = () => annotationsRef.current.some((ann) => ann.overlayText === 'Name');
-
-	const hasEmailTag = () => annotationsRef.current.some((ann) => ann.overlayText === 'Email');
 
 	const [ip, setIp] = useState('');
 
@@ -264,40 +260,16 @@ const TagSection = ({
 		}
 	};
   
-	const onChangeEmailTag = (e) => {
-		if (emailInput === recipientEmail) {
-			setRecipientEmail(e.target.value);
-		}
-		setEmailInput(e.target.value);
-	};
-
-	const handleKeyDown = (e) => {
-		if (e.key === 'Delete') {
-			// e.stopPropagation();
-		}
-	};
-
-	const onCompleteStageZero = () => {
-		if (hasNameTag() || hasEmailTag()) {
-			setStage(1);
-		}
-		else {
-			setStage(2);
-		}
-	};
-
-	const onRevertFromStage2 = () => {
-		if (hasNameTag() || hasEmailTag()) {
-			setStage(1);
-		}
-		else {
-			setStage(0);
-		}
-	};
-
 	const onProceedToStep = (num) => {
 		switch (num) {
 			case 1: {
+				if (!title?.trim()) {
+					return alert("Title is required");
+				}
+				setStage(1);
+				break;
+			}
+			case 2: {
 				if (!signers.length) {
 					return alert("At least one signer is required");
 				}
@@ -313,19 +285,15 @@ const TagSection = ({
 						return alert("Please enter a valid email address for every signer");
 				}
 				// onDisableEditorMode();
-				setStage(1);
+				setStage(2);
 				break;
 			}
-			case 2: {
+			case 3: {
 				setStage(3);
+				break;
 			}
 		}
 	}
-
-	const onProceedToStep1 = () => {
-		onDisableEditorMode();
-		onCompleteStageZero();
-	};
 
 	const onChangeSubject = (e) => {
 		setSubject(e.target.value);
@@ -336,26 +304,6 @@ const TagSection = ({
 		setMessage(e.target.value);
 		setMessageModified(true);
 	};
-
-	const onSubmitStage1 = () => {
-		if (hasNameTag() && !nameInput) {
-			alert(t("name-required"));
-			return;
-		}
-		if (hasEmailTag() && !emailInput) {
-			alert(t("email-required"));
-			return;
-		}
-		if (hasEmailTag() && !isValidEmail(emailInput)) {
-			alert(t("email-invalid"));
-			return;
-		}
-		setStage(2);
-	};
-
-	const onChangeName = (e) => {
-		setNameInput(e.target.value);
-	}
 
 	const onInputFocus = () => {
 		var event = new KeyboardEvent('keydown', {
@@ -373,16 +321,29 @@ const TagSection = ({
 	}
 
 	if (stage === 0) {
+		return (
+			<AddTitle
+				title={title}
+				setTitle={setTitle}
+				showFullScreenSearch={showFullScreenSearch}
+				showSearch={showSearch}
+				onNext={() => onProceedToStep(1)}
+			/>
+		)
+	}
+
+	if (stage === 1) {
 		return <AddSigners
 			signers={signers}
 			setSigners={setSigners}
 			showFullScreenSearch={showFullScreenSearch}
 			showSearch={showSearch}
-			onNext={() => onProceedToStep(1)}
+			onBack={() => setStage(0)}
+			onNext={() => onProceedToStep(2)}
 		/>
 	}
 
-	if (stage === 1) {
+	if (stage === 2) {
 		return (
 			<ClickableMarkers
 				forceRefreshView={forceRefreshView}
@@ -390,8 +351,8 @@ const TagSection = ({
 				showFullScreenSearch={showFullScreenSearch}
 				showSearch={showSearch}
 				onClickField={onClickField}
-				onBack={() => setStage(0)}
-				onNext={() => onProceedToStep(2)}
+				onBack={() => setStage(1)}
+				onNext={() => onProceedToStep(3)}
 			/>
 		);
 	}

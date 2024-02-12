@@ -106,7 +106,7 @@ const ClickableMarkers = ({
 	return (
     <div>
       <div css={getWrapperClass()}>
-        <div style={{ margin: '12px 4px 8px' }}><ProgressBar completed={10} customLabel="&nbsp;" bgColor="#d9b432" /></div>
+        <div style={{ margin: '12px 4px 8px' }}><ProgressBar completed={75} customLabel="&nbsp;" bgColor="#d9b432" /></div>
         <h3 style={{marginLeft: '4px'}}>Click to add clickable markers for:</h3>
         <div style={{marginBottom: 8}}>
           <select
