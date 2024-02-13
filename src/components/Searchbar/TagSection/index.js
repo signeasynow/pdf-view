@@ -145,6 +145,17 @@ const TagSection = ({
 
 	const [signers, setSigners] = useState([{ name: '', email: '', id: generateUUID() }]);
 	const [title, setTitle] = useState(fileName);
+
+	useEffect(() => {
+		if (!!title) {
+			return;
+		}
+		if (!fileName) {
+			return;
+		}
+		setTitle(fileName);
+	}, [fileName]);
+
 	useEffect(() => {
 		if (subjectModified) {
 			return;
@@ -156,7 +167,7 @@ const TagSection = ({
 		if (messageModified) {
 			return;
 		}
-		setMessage(`${t("Hello")} ${nameInput},\n\n${t("please-sign")}\n\n${t("thank-you")},\n\n${customData?.name}`);
+		setMessage(`Hello <SIGNER.NAME>,\n\n${t("please-sign")}\n\n${t("thank-you")},\n\n${customData?.name}`);
 	}, [nameInput]);
 
 	const getWrapperClass = () => {
@@ -178,16 +189,9 @@ const TagSection = ({
 	}, []);
 
 	const onSend = async () => {
+		console.log("Sending 123")
 		if (!subject) {
 			alert(t("subject-required"));
-			return;
-		}
-		if (!recipientEmail) {
-			alert(t("email-required"));
-			return;
-		}
-		if (!isValidEmail(recipientEmail)) {
-			alert(t("email-invalid"));
 			return;
 		}
 		setLoadingSend(true);
@@ -205,6 +209,8 @@ const TagSection = ({
 			}
 			const { data, error } = await supabase.functions.invoke('create-signing-room', {
 				body: {
+					actionType: "create_room",
+					signers: signers,
 					doc_type: "pdf",
 					status: "pending",
 					organizationId: customData?.organizationId,
@@ -213,10 +219,8 @@ const TagSection = ({
 					message,
 					pdfDocumentPath: `${customData?.organizationId}/${uuid}.pdf`,
 					annotations: annotationsRef.current.filter((e) => !!e.overlayText),
-					emailField: emailInput,
-					nameField: nameInput,
 					senderName: customData?.name,
-					documentName: fileName,
+					documentName: title,
 					subject,
 					userIp: ip,
 					userAgent: navigator.userAgent
@@ -383,6 +387,15 @@ const TagSection = ({
 					type="email"
 					placeholder=""
 				/>
+				<div style={{marginLeft: 4, marginBottom: 8, marginTop: 8}}>
+					<div>You can use the following placeholders in your message:</div>
+					<div style={{
+						display: "inline-flex",
+						background: "#d9d9d9",
+						padding: 2,
+						borderRadius: "4px"
+					}}>&lt;SIGNER.NAME&gt;</div>
+				</div>
 			</div>
 			<div style={{ display: 'flex', justifyContent: 'flex-start', padding: '8px 4px', background: '#f1f3f5' }}>
 				<button css={backBtn} onClick={() => setStage(1)}><Icon src={ChevronLeft} alt={t("Back")} /><div>{t("Back")}</div></button>

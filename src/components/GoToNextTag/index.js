@@ -85,6 +85,7 @@ export const GoToNextTag = ({
 			pdf.scrollPageIntoView({
 				pageNumber: annotation.pageNumber
 			});
+			console.log(pdf, 'pdf222')
 		}
 		else {
 			onSaveAndFinish();

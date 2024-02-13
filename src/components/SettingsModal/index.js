@@ -53,41 +53,6 @@ export const SettingsModal = ({ onClose }) => {
 
   const { t } = useTranslation();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
-  const [showVerifyEmail, setShowVerifyEmail] = useState(false);
-
-  const onSubmit = () => {
-    if (!email) {
-      return alert(t("email-required"));
-    }
-    if (!isValidEmail(email)) {
-      return alert(t("email-invalid"));
-    }
-    if (!password) {
-      return alert(t("password-required"));
-    }
-    if (password.length < 6) {
-      return alert(t("password-6-min"));
-    }
-    if (!confirmPassword) {
-      return alert(t("password-confirmation-required"));
-    }
-    if (password !== confirmPassword) {
-      return alert(t("passwords-dont-match"));
-    }
-    const { data, error } = signInWithEmail({
-      email,
-      password
-    })
-    if (error) {
-      return alert(`${t("Something went wrong")}. ${JSON.stringify(error)}`)
-    }
-    setShowVerifyEmail(true);
-  }
-
   const hasAccount = () => {
     return user?.result?.email;
   }

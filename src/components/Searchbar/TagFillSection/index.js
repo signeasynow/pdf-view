@@ -200,18 +200,9 @@ const TagFillSection = ({
 			alert(t("subject-required"));
 			return;
 		}
-		if (!recipientEmail) {
-			alert(t("email-required"));
-			return;
-		}
-		if (!isValidEmail(recipientEmail)) {
-			alert(t("email-invalid"));
-			return;
-		}
 		setLoadingSend(true);
 		try {
 			const originalBuffer = await pdfProxyObj.getData();
-			console.log(annotationsRef.current, 'annotationsRef.current43')
 			let regularAnnotations = annotationsRef.current.filter((e) => {
 				if (e.isAutoFill) {
 					return true;
@@ -236,7 +227,6 @@ const TagFillSection = ({
 			})
 
 			const buffer = await modifyPdfBuffer(originalBuffer, regularAnnotations);
-			console.log(regularAnnotations, 'regularAnnotations22')
 
 			const uuid = generateUUID();
 			const doc = await uploadPDF(buffer, uuid, customData?.organizationId);
@@ -359,22 +349,6 @@ const TagFillSection = ({
 	const onChangeMessage = (e) => {
 		setMessage(e.target.value);
 		setMessageModified(true);
-	};
-
-	const onSubmitStage1 = () => {
-		if (hasNameTag() && !nameInput) {
-			alert(t("name-required"));
-			return;
-		}
-		if (hasEmailTag() && !emailInput) {
-			alert(t("email-required"));
-			return;
-		}
-		if (hasEmailTag() && !isValidEmail(emailInput)) {
-			alert(t("email-invalid"));
-			return;
-		}
-		setStage(2);
 	};
 
 	const onChangeName = (e) => {
