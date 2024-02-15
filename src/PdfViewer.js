@@ -160,6 +160,7 @@ export const PdfViewer = ({
 				};
 			}
 			if (initialAnnotations && tools?.markers?.includes('clickable')) {
+				console.log(initialAnnotations, 'initialAnnotations2')
 				pdfViewerRef.current.annotationEditorMode = {
 					isFromKeyboard: false,
 					mode: pdfjs.AnnotationEditorType.CLICKTAG,
@@ -273,6 +274,7 @@ export const PdfViewer = ({
 						return annot.userId === activeSignerId;
 					})
 				}
+				console.log(filteredBySignerAnnotations, 'filtered2')
 				pdfViewerRef.current.setDocument(loadedPdfDocument, filteredBySignerAnnotations);
 				pdfLinkServiceRef.current.setDocument(loadedPdfDocument, null);
 				extractTextFromFirstPage(loadedPdfDocument);

@@ -1597,6 +1597,46 @@ const App = () => {
 		updateAnnotation(payload);
 	}
 
+	const completeAddingSignatureFromText = ({details, text}) => {
+		const { fullName } = text;
+
+		const dynamicFontSize = calculateFontSize(details.source.height);
+
+		pdfViewerRef.current.annotationEditorMode = {
+			isFromKeyboard: false,
+			mode: pdfjs.AnnotationEditorType.FREETEXT,
+			source: null
+		};
+		const payload = {
+			id: details.id,
+			pageNumber: details.source.pageIndex + 1,
+			pageIndex: details.source.pageIndex,
+			content: fullName,
+			x: details.x,
+			y: details.y,
+			initialX: details.x,
+			initialY: details.y,
+			color: '#080808',
+			fontSize: dynamicFontSize,
+			fontFamily: 'helvetica',
+			name: 'freeTextEditor',
+			moveDisabled: true
+		};
+		pdfViewerRef.current.annotationEditorParams = {
+			type: AnnotationEditorParamsType.CREATE,
+			value: payload
+		};
+		// maintains the mode.
+		if (editorMode === 'click-tag') {
+			pdfViewerRef.current.annotationEditorMode = {
+				isFromKeyboard: false,
+				mode: pdfjs.AnnotationEditorType.CLICKTAG,
+				source: null
+			};
+		}
+		updateAnnotation(payload, text);
+	}
+
 	const handleSignTagClicked = async (details) => {
 		isManuallyAddingImageRef.current = true;
 		pdfViewerRef.current.annotationEditorMode = {
@@ -1604,20 +1644,18 @@ const App = () => {
 			mode: pdfjs.AnnotationEditorType.STAMP,
 			source: null
 		};
-		const signatureImageUrl = localStorage.getItem('signatureImage');
-		if (!signatureImageUrl) {
-			// TODO: open sig modal
-			showSignatureModal(null, (sigUrl) => {
-				completeAddingSignatureFromTag({
-					signatureImageUrl: sigUrl,
+		showSignatureModal(null, (sigUrl, text) => {
+			if (text) {
+				completeAddingSignatureFromText({
+					text,
 					details
-				});
+				})
+				return;
+			}
+			completeAddingSignatureFromTag({
+				signatureImageUrl: sigUrl,
+				details
 			});
-			return;
-		}
-		completeAddingSignatureFromTag({
-			signatureImageUrl,
-			details
 		});
 	};
 
@@ -1893,7 +1931,7 @@ const App = () => {
 	};
 
 	const forceRefreshView = () => {
-		
+
 	}
 
 	const [fontWeightBold, setFontWeightBold] = useState(false);

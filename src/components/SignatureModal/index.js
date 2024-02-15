@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import {  css } from '@emotion/react';
+import styled, {  css } from '@emotion/react';
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import SignaturePad from 'react-signature-pad-wrapper'; // Updated import
 import { SignaturesContext } from '../../Contexts/SignaturesContext';
@@ -8,8 +8,48 @@ import trimCanvas from 'trim-canvas';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { useTranslation } from 'react-i18next';
 
+const containerStyle = css`
+  padding: 20px;
+  font-family: Arial, sans-serif;
+`;
+
+const inputGroupStyle = css`
+  margin-bottom: 20px;
+`;
+
+const labelStyle = css`
+  display: block;
+  margin-bottom: 5px;
+`;
+
+const inputStyle = css`
+  width: 100%;
+  padding: 4px;
+  margin-bottom: 4px;
+`;
+
+const signaturePreviewStyle = css`
+  border: 1px solid #000;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 20px;
+`;
+
+const buttonStyle = css`
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+	display: inline-flex;
+	border-radius: 4px;
+`;
+
 const overlayStyle = css`
   position: fixed;
+	overflow: auto;
   top: 0;
   left: 0;
   right: 0;
@@ -23,10 +63,9 @@ const overlayStyle = css`
 
 const modalContentStyle = css`
   background-color: white;
-  padding: 20px;
   border-radius: 8px;
   max-width: 100%;
-  text-align: center;
+	margin-top: 100px;
 `;
 
 const confirmBtnStyle = css`
@@ -48,6 +87,38 @@ const closeBtnStyle = css`
   cursor: pointer;
 `;
 
+const tabsContainerStyle = css`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+	max-width: 480px;
+`;
+
+const tabStyle = css`
+  padding: 8px 4px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  &:focus {
+    outline: none;
+  }
+  &.active {
+    border-bottom: 2px solid blue;
+  }
+`;
+
+const contentContainerStyle = css`
+  border: 1px solid #ccc;
+  padding: 20px;
+`;
+
+const SignatureCanvasStyle = css`
+  border: 1px solid #000;
+  margin-top: 20px;
+`;
+
+
 export const SignatureModal = ({
 	onConfirm,
 	onClose,
@@ -60,39 +131,35 @@ export const SignatureModal = ({
 	const initialRef = useRef();
 	const [penColor, setPenColor] = useState('black'); // Default pen color
 
+	const [signatureUpload, setSignatureUpload] = useState(null);
+
 	const { setInitialsSignature, setFullSignature, fullSignature, initialsSignature } = useContext(SignaturesContext);
+	const [fullName, setFullName] = useState('');
+  const [initials, setInitials] = useState('');
+
+	const [activeTab, setActiveTab] = useState('draw');
 
 	const handleSaveSignature = () => {
 		// Convert canvas to data URL (base64 image) only if the canvas is not empty
 		const signatureImage = !signatureRef.current.isEmpty()
 			? trimCanvas(signatureRef.current.canvas?.current).toDataURL('image/png')
 			: fullSignature;
-		let initialsImage;
-		if (initialRef.current) {
-			initialsImage = !initialRef.current.isEmpty()
-				? trimCanvas(initialRef.current.canvas?.current).toDataURL('image/png')
-				: initialsSignature;
-		}
-  
+		
 		// Only update localStorage and context if there's a new signature/initials
 		if (signatureImage) {
 			localStorage.setItem('signatureImage', signatureImage);
 			setFullSignature(signatureImage);
 		}
   
-		if (initialsImage) {
-			localStorage.setItem('initialsImage', initialsImage);
-			setInitialsSignature(initialsImage);
-		}
-  
 		// Call the onConfirm callback if provided
-		onConfirm?.(signatureImage, initialsImage);
+		onConfirm?.(signatureImage, null);
 		onClose?.();
 	};
 
 	useEffect(() => {
 		const loadImageData = (canvasRef, imageDataUrl) => {
 			if (imageDataUrl && canvasRef.current) {
+				return; // todo
 				const image = new Image();
 				image.onload = () => {
 					const canvas = canvasRef.current.getCanvas();
@@ -108,24 +175,12 @@ export const SignatureModal = ({
 		};
 
 		const storedSignatureImage = localStorage.getItem('signatureImage');
-		const storedInitialsImage = localStorage.getItem('initialsImage');
 
 		loadImageData(signatureRef, storedSignatureImage);
-		loadImageData(initialRef, storedInitialsImage);
 	}, []);
-
-	const onClearInitials = () => {
-		initialRef.current?.clear();
-	};
 
 	const onClearFullSignature = () => {
 		signatureRef.current?.clear();
-	};
-
-	const changeColor = (color) => {
-		setPenColor(color);
-		onClearInitials();
-		onClearFullSignature();
 	};
 
 	const isSmallScreen = useMediaQuery('(max-width: 550px)');
@@ -139,20 +194,32 @@ export const SignatureModal = ({
     
 	}, [penColor]);
 
-	const onClickConfirm = () => {
+	const onClickConfirmText = () => {
+		onConfirm?.(null, {fullName, initials});
+		onClose?.();
+	}
+
+	const onClickConfirmUpload = () => {
+		if (!signatureUpload) {
+			return alert("Please upload your signature");
+		}
+		if (signatureUpload) {
+			localStorage.setItem('signatureImage', signatureUpload);
+			setFullSignature(signatureUpload);
+		}
+  
+		// Call the onConfirm callback if provided
+		onConfirm?.(signatureUpload, null);
+		onClose?.();
+	}
+
+	const onClickConfirmDrawing = () => {
 		if (signatureRef.current.isEmpty()) {
 			return alert(t("draw-signature-before"));
 		}
 		// Handle confirm action here
 		handleSaveSignature();
 		onClose?.();
-	};
-
-	const shouldShowCancelBtn = () => {
-		if (!modifiedUiElements?.signatureModal?.buttons) {
-			return true;
-		}
-		return modifiedUiElements?.signatureModal?.buttons.includes('cancel');
 	};
 
 	const shouldShowInitialsPad = () => {
@@ -162,13 +229,6 @@ export const SignatureModal = ({
 		return modifiedUiElements?.signatureModal?.drawingPads.includes('initials');
 	};
 
-	const shouldShowColors = () => {
-		if (typeof modifiedUiElements?.signatureModal?.colorChoice !== 'boolean') {
-			return true;
-		}
-		return modifiedUiElements?.signatureModal?.colorChoice;
-	};
-
 	const signatureMarginRight = () => {
 		if (isSmallScreen || !shouldShowInitialsPad()) {
 			return 0;
@@ -176,46 +236,112 @@ export const SignatureModal = ({
 		return 8;
 	};
 
-	return (
+
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+  };
+
+	const onAdopt = () => {
+		switch (activeTab) {
+			case "draw": {
+				onClickConfirmDrawing();
+				break;
+			}
+			case "upload": {
+				onClickConfirmUpload();
+				break;
+			}
+			case "selectStyle": {
+				onClickConfirmText();
+			}
+		}
+	}
+
+	const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setSignatureUpload(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  return (
 		<div css={overlayStyle}>
 			<div
 				css={modalContentStyle}
-				style={{ width: shouldShowInitialsPad() ? 720 : 400 }}
+				style={{ width: 400 }}
 			>
-				<div style={{ display: 'flex', flexFlow: 'wrap' }}>
-					<div style={{ marginRight: signatureMarginRight(), background: '#efefef', border: '1px solid #d3d3d3', width: 400, borderRadius: '4px' }}>
-						<div style={{ cursor: 'crosshair' }}>
-							<SignaturePad ref={signatureRef} options={{ velocityFilterWeight: 0.4 }}
-								canvasProps={{ width: 800, height: 320, className: 'sigCanvas' }}
+				<div css={containerStyle}>
+					<h1>Adopt your signature</h1>
+					<hr />
+					<p>Confirm your name, initials, and signature</p>
+					<div style={{display: "flex"}}>
+						<div css={inputGroupStyle}>
+							<label css={labelStyle} htmlFor="fullName">Full Name*</label>
+							<input
+								css={inputStyle}
+								id="fullName"
+								value={fullName}
+								onChange={(e) => setFullName(e.target.value)}
+								placeholder="Enter your full name"
+								required
 							/>
-
 						</div>
-						<div style={{
-							marginLeft: 8, marginRight: 8,
-							alignItems: 'center',
-							display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #d3d3d3' }}
-						>
-							<div />
-							<div style={{
-								fontSize: '12px',
-								color: 'grey',
-								paddingTop: 4,
-								paddingBottom: 4
-							}}
-							>{t("Draw signature")}</div>
-							<div style={{
-								cursor: 'pointer',
-								color: '#3083c8', fontSize: '14px' }} onClick={onClearFullSignature}
-							>{t("Clear")}</div>
+						<div css={inputGroupStyle}>
+							<label css={labelStyle} htmlFor="initials">Initials*</label>
+							<input
+								css={inputStyle}
+								id="initials"
+								value={initials}
+								onChange={(e) => setInitials(e.target.value)}
+								placeholder="Enter your initials"
+								required
+							/>
 						</div>
 					</div>
-					{
-						shouldShowInitialsPad() && (
-							<div style={{ background: '#efefef', border: '1px solid #d3d3d3', width: 280, borderRadius: '4px' }}>
-								<div style={{ cursor: 'crosshair' }}>
-									<SignaturePad ref={initialRef} penColor={penColor}
-										canvasProps={{ width: 280, height: 160, className: 'sigCanvas' }}
+					<div css={tabsContainerStyle}>
+        		<button
+							css={tabStyle}
+							className={activeTab === 'selectStyle' ? 'active' : ''}
+							onClick={() => handleTabClick('selectStyle')}
+						>
+							SELECT STYLE
+						</button>
+						<button
+							css={tabStyle}
+							className={activeTab === 'draw' ? 'active' : ''}
+							onClick={() => handleTabClick('draw')}
+						>
+							DRAW
+						</button>
+						<button
+							css={tabStyle}
+							className={activeTab === 'upload' ? 'active' : ''}
+							onClick={() => handleTabClick('upload')}
+						>
+							UPLOAD
+						</button>
+					</div>
+					<div css={contentContainerStyle}>
+						{activeTab === "selectStyle" && (
+							<div css={signaturePreviewStyle}>
+								<p style={{textAlign: "left"}}>Signed by:</p>
+								<div style={{display: "flex", justifyContent: "space-between"}}>
+									<p>{fullName}</p>
+									<p>{initials}</p>
+								</div>
+							</div>
+						)}
+						{activeTab === 'draw' && (
+							<div style={{ marginRight: signatureMarginRight(), background: '#efefef', border: '1px solid #d3d3d3', width: 320, borderRadius: '4px' }}>
+								<div style={{ cursor: 'crosshair', width: 320, height: 120 }}>
+									<SignaturePad ref={signatureRef} options={{ velocityFilterWeight: 0.4 }}
+										canvasProps={{ width: 320, height: 120, className: 'sigCanvas' }}
 									/>
+		
 								</div>
 								<div style={{
 									marginLeft: 8, marginRight: 8,
@@ -229,40 +355,43 @@ export const SignatureModal = ({
 										paddingTop: 4,
 										paddingBottom: 4
 									}}
-									>{t("Draw initials")}</div>
+									>Draw signature</div>
 									<div style={{
 										cursor: 'pointer',
-										color: '#3083c8', fontSize: '14px' }} onClick={onClearInitials}
+										color: '#3083c8', fontSize: '14px' }} onClick={onClearFullSignature}
 									>{t("Clear")}</div>
 								</div>
 							</div>
-						)
-					}
+						)}
+						{activeTab === 'upload' && (
+							<div>
+								<input
+									type="file"
+									accept="image/*"
+									onChange={handleFileChange}
+									style={{ display: 'block', margin: '20px 0' }}
+								/>
+								{signatureUpload && (
+									<img
+										src={signatureUpload}
+										alt="Uploaded Signature"
+										style={{ maxWidth: '100%', maxHeight: '200px', display: 'block' }}
+									/>
+								)}
+							</div>
+						)}
+					</div>
+					<p style={{color: "grey", fontSize: 12}}>By selecting Adopt and Sign, I agree that the signature and initials will be the electronic representation of my signature and initials for all purposes when I (or my agent) use them on documents, including legally binding contracts.</p>
+					<div style={{display: "inline-flex"}}>
+						<button onClick={onAdopt} css={buttonStyle}>
+							Adopt and Sign
+						</button>
+					</div>
 				</div>
-				<div style={{ marginBottom: '8px', marginTop: '8px' }}>
-					{
-						shouldShowColors() && (
-							<>
-								<ColorButton color="black" onChangeColor={changeColor} />
-								<ColorButton color="red" onChangeColor={changeColor} />
-								<ColorButton color="blue" onChangeColor={changeColor} />
-								<ColorButton color="green" onChangeColor={changeColor} />
-							</>
-						)
-					}
-          
-				</div>
-				<button css={confirmBtnStyle} variant="primary" size="sm" onClick={onClickConfirm}>
-          {t("Confirm")}
-				</button>
-				{
-					shouldShowCancelBtn() && (
-						<button css={closeBtnStyle} variant="secondary" size="md" onClick={onClose}>{t("Cancel")}</button>
-					)
-				}
 			</div>
 		</div>
-	);
+  );
+
 };
 
 export default SignatureModal;
