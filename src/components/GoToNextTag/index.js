@@ -78,14 +78,12 @@ export const GoToNextTag = ({
 	};
 
 	const onClick = () => {
-		// console.log(annotations, 'annot33')
 		const annotation = nextAnnotation();
 		if (annotation) {
-			// console.log(annotation, 'nextAnnotation');
 			pdf.scrollPageIntoView({
-				pageNumber: annotation.pageNumber
+				pageNumber: annotation.pageNumber,
+				verticalPercentage: annotation.y - 0.05
 			});
-			console.log(pdf, 'pdf222')
 		}
 		else {
 			onSaveAndFinish();

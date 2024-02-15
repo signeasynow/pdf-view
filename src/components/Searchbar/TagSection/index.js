@@ -133,10 +133,9 @@ const TagSection = ({
 
 	const { t } = useTranslation();
 
-	const [emailInput, setEmailInput] = useState('');
 	const [nameInput, setNameInput] = useState('');
 	const [recipientEmail, setRecipientEmail] = useState('');
-	const [subject, setSubject] = useState(t("doc-ready-signing"));
+	const [subject, setSubject] = useState("Document Ready for Signing: <SIGNER.NAME>");
 	const [replyTo, setReplyTo] = useState(customData?.email);
 	const [subjectModified, setSubjectModified] = useState(false);
 	const [message, setMessage] = useState(`${t("Hello")},\n\n${t("please-sign")}\n\n${t("thank-you")},\n\n${customData?.name}`);
@@ -155,13 +154,6 @@ const TagSection = ({
 		}
 		setTitle(fileName);
 	}, [fileName]);
-
-	useEffect(() => {
-		if (subjectModified) {
-			return;
-		}
-		setSubject(`${t("doc-ready-signing")}: ${nameInput}`);
-	}, [nameInput]);
 
 	useEffect(() => {
 		if (messageModified) {
@@ -189,7 +181,6 @@ const TagSection = ({
 	}, []);
 
 	const onSend = async () => {
-		console.log("Sending 123")
 		if (!subject) {
 			alert(t("subject-required"));
 			return;
@@ -223,14 +214,15 @@ const TagSection = ({
 					documentName: title,
 					subject,
 					userIp: ip,
-					userAgent: navigator.userAgent
+					userAgent: navigator.userAgent,
+					branding: customData?.branding
 				}
 			});
 
 			const formData = {
 				document_name: fileName,
-				receiver_name: nameInput,
-				receiver_email: recipientEmail,
+				receiver_name: "",
+				receiver_email: JSON.stringify(signers),
 				document_id: data.id,
 				entity_id: customData?.organizationId,
 				created_at: new Date().toISOString(),
@@ -293,6 +285,12 @@ const TagSection = ({
 				break;
 			}
 			case 3: {
+				console.log(annotationsRef.current, 'annotationsRef.current22')
+				for (let signer of signers) {
+					if (!annotationsRef.current.some((annot) => annot.userId === signer.id)) {
+						return alert(`${signer.name} needs at least one marker.`);
+					}
+				}
 				setStage(3);
 				break;
 			}
@@ -398,7 +396,7 @@ const TagSection = ({
 				</div>
 			</div>
 			<div style={{ display: 'flex', justifyContent: 'flex-start', padding: '8px 4px', background: '#f1f3f5' }}>
-				<button css={backBtn} onClick={() => setStage(1)}><Icon src={ChevronLeft} alt={t("Back")} /><div>{t("Back")}</div></button>
+				<button css={backBtn} onClick={() => setStage(2)}><Icon src={ChevronLeft} alt={t("Back")} /><div>{t("Back")}</div></button>
 				<button style={{marginLeft: 12}} disabled={loadingSend} css={loadingSend ? loadingSendBtn : sendBtn} onClick={onSend}><div>{t("Send")}</div><Icon src={SendIcon} alt={t("Send")} /></button>
 			</div>
 		</div>
