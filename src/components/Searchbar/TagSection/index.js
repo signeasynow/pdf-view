@@ -1,14 +1,12 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
+import { css, keyframes } from '@emotion/react';
 import ProgressBar from '@ramonak/react-progress-bar';
 import { useContext, useEffect, useState } from 'preact/hooks';
 import { Icon } from 'alien35_pdf_ui_lib_2';
-import ChevronRight from '../../../../assets/chevron-right-svgrepo-com.svg';
 import SendIcon from '../../../../assets/send-alt-1-svgrepo-com.svg';
 import ChevronLeft from '../../../../assets/chevron-left-svgrepo-com.svg';
 import { AnnotationsContext } from '../../../Contexts/AnnotationsContext';
 import { supabase } from '../../../utils/supabase';
-import { isValidEmail } from '../../../utils/isValidEmail';
 import { useTranslation } from 'react-i18next';
 import { generateUUID } from '../../../utils/generateUuid';
 import { modifyPdfBuffer } from '../../../hooks/useDownload';
@@ -76,16 +74,6 @@ const invisibleSearchWrapper = css`
   display: none;
 `;
 
-const nextBtn = css`
-  display: flex;
-  padding: 0 0 0 8px;
-  background: #a5bfd7;
-  border-radius: 4px;
-  border: none;
-  align-items: center;
-  cursor: pointer;
-`;
-
 const sendBtn = css`
   display: flex;
   padding: 0 0 0 8px;
@@ -114,6 +102,24 @@ const backBtn = css`
   border: none;
   align-items: center;
   cursor: pointer;
+`;
+
+const spin = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
+const spinnerStyle = css`
+  border: 4px solid rgba(255, 255, 255, 0.3); /* Light grey */
+  border-top: 4px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: ${spin} 1s linear infinite;
 `;
 
 const TagSection = ({
@@ -251,7 +257,6 @@ const TagSection = ({
 			setLoadingSend(true);
 		} catch (err) {
 			alert(t("something-wrong-email"));
-			console.log(err, 'err333')
 			setLoadingSend(false);
 		}
 	};
@@ -397,7 +402,17 @@ const TagSection = ({
 			</div>
 			<div style={{ display: 'flex', justifyContent: 'flex-start', padding: '8px 4px', background: '#f1f3f5' }}>
 				<button css={backBtn} onClick={() => setStage(2)}><Icon src={ChevronLeft} alt={t("Back")} /><div>{t("Back")}</div></button>
-				<button style={{marginLeft: 12}} disabled={loadingSend} css={loadingSend ? loadingSendBtn : sendBtn} onClick={onSend}><div>{t("Send")}</div><Icon src={SendIcon} alt={t("Send")} /></button>
+				<button style={{marginLeft: 12}} disabled={loadingSend} css={loadingSend ? loadingSendBtn : sendBtn} onClick={onSend}>
+					{
+						!loadingSend && (
+							<>
+								<div>{t("Send")}</div>
+								<Icon src={SendIcon} alt={t("Send")} />
+							</>
+						)
+					}
+					{loadingSend && <div style={{display: "flex", alignItems: "center"}}>Sending&nbsp;<div css={spinnerStyle} />&nbsp;</div>}
+				</button>
 			</div>
 		</div>
 	);
