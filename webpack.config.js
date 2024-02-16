@@ -39,6 +39,17 @@ module.exports = {
 			{
 				test: /\.svg$/,
 				use: ['file-loader']
+			},
+			{
+				test: /\.ttf$/,
+				use: [
+					{
+						loader: 'url-loader',
+						options: {
+							limit: Infinity // All files imported as base64 URLs
+						}
+					}
+				]
 			}
 		]
 	},

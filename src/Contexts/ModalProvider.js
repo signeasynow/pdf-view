@@ -26,8 +26,8 @@ export const ModalProvider = ({ children }) => {
 		setOnConfirmCallback(() => onConfirm); // Storing the callback
 	};
 
-	const showSignatureModal = (msg, onConfirm) => {
-		setMessage(msg);
+	const showSignatureModal = (name, onConfirm) => {
+		setMessage(name);
 		window.parent.postMessage({ type: 'annotation-modal-open-change', message: true }, '*');
 		setIsSignatureVisible(true);
 		setOnConfirmCallback(() => onConfirm); // Storing the callback

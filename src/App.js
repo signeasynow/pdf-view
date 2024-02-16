@@ -1599,6 +1599,7 @@ const App = () => {
 
 	const completeAddingSignatureFromText = ({details, text}) => {
 		const { fullName } = text;
+		console.log(fullName, 'fullName22', text)
 
 		const dynamicFontSize = calculateFontSize(details.source.height);
 
@@ -1618,7 +1619,7 @@ const App = () => {
 			initialY: details.y,
 			color: '#080808',
 			fontSize: dynamicFontSize,
-			fontFamily: 'helvetica',
+			fontFamily: 'Mr Dafoe',
 			name: 'freeTextEditor',
 			moveDisabled: true
 		};
@@ -1634,7 +1635,7 @@ const App = () => {
 				source: null
 			};
 		}
-		updateAnnotation(payload, text);
+		updateAnnotation(payload, text.fullName);
 	}
 
 	const handleSignTagClicked = async (details) => {
@@ -1644,12 +1645,38 @@ const App = () => {
 			mode: pdfjs.AnnotationEditorType.STAMP,
 			source: null
 		};
-		showSignatureModal(null, (sigUrl, text) => {
+		const storedType = sessionStorage.getItem('signatureType');
+		if (storedType) {
+			if (storedType === "selectStyle") {
+				const name = sessionStorage.getItem("signatureName");
+				const initials = sessionStorage.getItem("signatureInitials");
+				if (name) {
+					completeAddingSignatureFromText({
+						text: {
+							fullName: name,
+							initials
+						},
+						details
+					});
+					return;
+				}
+			} else {
+				const image = sessionStorage.getItem("signatureImage");
+				if (image) {
+					completeAddingSignatureFromTag({
+						signatureImageUrl: image,
+						details
+					});
+					return;
+				}
+			}
+		}
+		showSignatureModal(customData?.nameTagValue, (sigUrl, text) => {
 			if (text) {
 				completeAddingSignatureFromText({
 					text,
 					details
-				})
+				});
 				return;
 			}
 			completeAddingSignatureFromTag({

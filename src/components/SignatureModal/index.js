@@ -11,10 +11,19 @@ import { useTranslation } from 'react-i18next';
 const containerStyle = css`
   padding: 20px;
   font-family: Arial, sans-serif;
+
+	@media (max-width: 600px) {
+    flex-direction: column;
+  }
 `;
 
 const inputGroupStyle = css`
   margin-bottom: 20px;
+
+	@media (max-width: 600px) {
+    flex-basis: 100%;
+    max-width: 100%;
+  }
 `;
 
 const labelStyle = css`
@@ -26,6 +35,7 @@ const inputStyle = css`
   width: 100%;
   padding: 4px;
   margin-bottom: 4px;
+	max-width: 80%;
 `;
 
 const signaturePreviewStyle = css`
@@ -43,6 +53,18 @@ const buttonStyle = css`
   border: none;
   cursor: pointer;
   width: 100%;
+	display: inline-flex;
+	border-radius: 4px;
+`;
+
+const buttonCloseStyle = css`
+	background-color: #767676;
+	color: white;
+	padding: 14px 20px;
+	margin: 8px 0;
+	border: none;
+	cursor: pointer;
+	width: 100%;
 	display: inline-flex;
 	border-radius: 4px;
 `;
@@ -66,25 +88,6 @@ const modalContentStyle = css`
   border-radius: 8px;
   max-width: 100%;
 	margin-top: 100px;
-`;
-
-const confirmBtnStyle = css`
-  background: #3183c8;
-  color: white;
-  border: 1px solid transparent;
-  font-size: 16px;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-`;
-
-const closeBtnStyle = css`
-  border: 1px solid lightgrey;
-  font-size: 16px;
-  padding: 8px 16px;
-  border-radius: 4px;
-  margin-left: 8px;
-  cursor: pointer;
 `;
 
 const tabsContainerStyle = css`
@@ -113,16 +116,12 @@ const contentContainerStyle = css`
   padding: 20px;
 `;
 
-const SignatureCanvasStyle = css`
-  border: 1px solid #000;
-  margin-top: 20px;
-`;
-
 
 export const SignatureModal = ({
 	onConfirm,
 	onClose,
-	modifiedUiElements
+	modifiedUiElements,
+	message
 }) => {
 
 	const { t } = useTranslation();
@@ -134,10 +133,27 @@ export const SignatureModal = ({
 	const [signatureUpload, setSignatureUpload] = useState(null);
 
 	const { setInitialsSignature, setFullSignature, fullSignature, initialsSignature } = useContext(SignaturesContext);
-	const [fullName, setFullName] = useState('');
+	const [fullName, setFullName] = useState(message);
   const [initials, setInitials] = useState('');
 
-	const [activeTab, setActiveTab] = useState('draw');
+	useEffect(() => {
+		if (!message) {
+			return;
+		}
+		setFullName(message);
+
+		const calculateInitials = (name) => {
+      const words = name.split(' ').filter(Boolean); // Split name into words and remove any empty strings
+      if (words.length === 0) return '';
+      const initials = words.slice(0, 2).map(word => word[0].toUpperCase()).join(''); // Take first two words, if available
+      return initials;
+    };
+
+    setInitials(calculateInitials(message));
+
+	}, [message]);
+
+	const [activeTab, setActiveTab] = useState('selectStyle');
 
 	const handleSaveSignature = () => {
 		// Convert canvas to data URL (base64 image) only if the canvas is not empty
@@ -147,7 +163,7 @@ export const SignatureModal = ({
 		
 		// Only update localStorage and context if there's a new signature/initials
 		if (signatureImage) {
-			localStorage.setItem('signatureImage', signatureImage);
+			sessionStorage.setItem('signatureImage', signatureImage);
 			setFullSignature(signatureImage);
 		}
   
@@ -195,6 +211,14 @@ export const SignatureModal = ({
 	}, [penColor]);
 
 	const onClickConfirmText = () => {
+		if (!fullName) {
+			return alert("Name is required");
+		}
+		if (!initials) {
+			return alert("Initials are required")
+		}
+		sessionStorage.setItem("signatureName", fullName);
+		sessionStorage.setItem("signatureInitials", initials);
 		onConfirm?.(null, {fullName, initials});
 		onClose?.();
 	}
@@ -204,7 +228,7 @@ export const SignatureModal = ({
 			return alert("Please upload your signature");
 		}
 		if (signatureUpload) {
-			localStorage.setItem('signatureImage', signatureUpload);
+			sessionStorage.setItem('signatureImage', signatureUpload);
 			setFullSignature(signatureUpload);
 		}
   
@@ -217,7 +241,7 @@ export const SignatureModal = ({
 		if (signatureRef.current.isEmpty()) {
 			return alert(t("draw-signature-before"));
 		}
-		// Handle confirm action here
+		
 		handleSaveSignature();
 		onClose?.();
 	};
@@ -242,6 +266,7 @@ export const SignatureModal = ({
   };
 
 	const onAdopt = () => {
+		sessionStorage.setItem('signatureType', activeTab);
 		switch (activeTab) {
 			case "draw": {
 				onClickConfirmDrawing();
@@ -277,7 +302,7 @@ export const SignatureModal = ({
 				<div css={containerStyle}>
 					<h1>Adopt your signature</h1>
 					<hr />
-					<p>Confirm your name, initials, and signature</p>
+					<p style={{color: "grey"}}>Confirm your name, initials, and signature</p>
 					<div style={{display: "flex"}}>
 						<div css={inputGroupStyle}>
 							<label css={labelStyle} htmlFor="fullName">Full Name*</label>
@@ -329,9 +354,9 @@ export const SignatureModal = ({
 						{activeTab === "selectStyle" && (
 							<div css={signaturePreviewStyle}>
 								<p style={{textAlign: "left"}}>Signed by:</p>
-								<div style={{display: "flex", justifyContent: "space-between"}}>
-									<p>{fullName}</p>
-									<p>{initials}</p>
+								<div style={{display: "flex", justifyContent: "space-between", fontFamily: "Mr Dafoe"}}>
+									<p style={{fontFamily: "Mr Dafoe"}}>{fullName}</p>
+									<p style={{fontFamily: "Mr Dafoe"}}>{initials}</p>
 								</div>
 							</div>
 						)}
@@ -382,10 +407,17 @@ export const SignatureModal = ({
 						)}
 					</div>
 					<p style={{color: "grey", fontSize: 12}}>By selecting Adopt and Sign, I agree that the signature and initials will be the electronic representation of my signature and initials for all purposes when I (or my agent) use them on documents, including legally binding contracts.</p>
-					<div style={{display: "inline-flex"}}>
-						<button onClick={onAdopt} css={buttonStyle}>
-							Adopt and Sign
-						</button>
+					<div style={{display: "flex", justifyContent: "space-between"}}>
+						<div style={{display: "inline-flex"}}>
+							<button onClick={onAdopt} css={buttonStyle}>
+								Adopt and Sign
+							</button>
+						</div>
+						<div style={{display: "inline-flex"}}>
+							<button onClick={onClose} css={buttonCloseStyle}>
+								Close
+							</button>
+						</div>
 					</div>
 				</div>
 			</div>

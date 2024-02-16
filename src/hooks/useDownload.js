@@ -6,6 +6,8 @@ import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import { useModal } from '../Contexts/ModalProvider';
 import { useUserData } from './useUserData';
 import { useTranslation } from 'react-i18next';
+import fontkit from '@pdf-lib/fontkit';
+import mrDafoePath from '../../assets/MrDafoe-Regular.ttf';
 
 const MAX_DOWNLOADS_PER_DAY = 3;
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
@@ -41,7 +43,7 @@ const downloadAll = async (pdfBuffers) => {
 	URL.revokeObjectURL(url);
 };
 
-async function getFontForAnnotation(pdfDoc, annotation) {
+async function getFontForAnnotation(pdfDoc, annotation, fonts) {
 	const standardFontMap = {
 		courier: StandardFonts.Courier,
 		helvetica: StandardFonts.Helvetica,
@@ -67,7 +69,9 @@ async function getFontForAnnotation(pdfDoc, annotation) {
 		fontFamily = "helvetica";
 	}
 	let fontName;
-	if (annotation.fontWeight === 600 && annotation.fontStyle === "italic") {
+	if (fontFamily === "mr dafoe") {
+    return fonts.mrDafoe; // Use the custom font if specified
+  } else if (annotation.fontWeight === 600 && annotation.fontStyle === "italic") {
 		fontName = boldItalicFontMap[fontFamily] || StandardFonts.TimesRomanBoldItalic; // Default font
 	} else if (annotation.fontWeight === 600) {
 		fontName = boldFontMap[fontFamily] || StandardFonts.TimesRomanBold; // Default font
@@ -79,9 +83,20 @@ async function getFontForAnnotation(pdfDoc, annotation) {
 	return await pdfDoc.embedFont(fontName);
 }
 
+async function loadFonts(pdfDoc) {
+  // Load standard fonts
+
+  // Fetch and embed custom font
+	pdfDoc.registerFontkit(fontkit)
+
+  const mrDafoe = await pdfDoc.embedFont(mrDafoePath);
+  return { mrDafoe };
+}
+
 export const modifyPdfBuffer = async (buffer, _annotations) => {
 	const annotations = JSON.parse(JSON.stringify(_annotations));
 	const pdfDoc = await PDFDocument.load(buffer);
+	const fonts = await loadFonts(pdfDoc);
 
 	// Apply annotations
 	for (const annotation of annotations) {
@@ -89,10 +104,10 @@ export const modifyPdfBuffer = async (buffer, _annotations) => {
 
 		switch (annotation.name) {
 			case 'freeTextEditor':
-				if (!annotation.content) {
+				if (!annotation.content || typeof annotation.content !== "string") {
 					continue;
 				}
-				const font = await getFontForAnnotation(pdfDoc, annotation);
+				const font = await getFontForAnnotation(pdfDoc, annotation, fonts);
 				const color = parseColor(annotation.color);
 				const textHeight = annotation.fontSize; // Approximate text height
 				page.drawText(annotation.content, {
@@ -107,7 +122,6 @@ export const modifyPdfBuffer = async (buffer, _annotations) => {
 				if (!annotation.urlPath) {
 					continue;
 				}
-				// console.log(annotation, 'annotation432')
 				// Example for stamp annotation
 				const jpgImage = await pdfDoc.embedPng(annotation.urlPath);
 				page.drawImage(jpgImage, {
