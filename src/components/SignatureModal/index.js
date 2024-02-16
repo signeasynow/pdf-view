@@ -40,7 +40,7 @@ const inputStyle = css`
 
 const signaturePreviewStyle = css`
   border: 1px solid #000;
-  padding: 20px;
+  padding: 0 20px;
   text-align: center;
   margin-bottom: 20px;
 `;
