@@ -290,7 +290,6 @@ const TagSection = ({
 				break;
 			}
 			case 3: {
-				console.log(annotationsRef.current, 'annotationsRef.current22')
 				for (let signer of signers) {
 					if (!annotationsRef.current.some((annot) => annot.userId === signer.id)) {
 						return alert(`${signer.name} needs at least one marker.`);
