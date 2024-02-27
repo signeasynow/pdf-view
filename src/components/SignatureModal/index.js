@@ -1,9 +1,8 @@
 /** @jsxImportSource @emotion/react */
-import styled, {  css } from '@emotion/react';
+import {  css } from '@emotion/react';
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import SignaturePad from 'react-signature-pad-wrapper'; // Updated import
 import { SignaturesContext } from '../../Contexts/SignaturesContext';
-import { ColorButton } from './ColorButton';
 import trimCanvas from 'trim-canvas';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { useTranslation } from 'react-i18next';
@@ -132,7 +131,7 @@ export const SignatureModal = ({
 
 	const [signatureUpload, setSignatureUpload] = useState(null);
 
-	const { setInitialsSignature, setFullSignature, fullSignature, initialsSignature } = useContext(SignaturesContext);
+	const { setFullSignature, fullSignature } = useContext(SignaturesContext);
 	const [fullName, setFullName] = useState(message);
   const [initials, setInitials] = useState('');
 
@@ -171,29 +170,6 @@ export const SignatureModal = ({
 		onConfirm?.(signatureImage, null);
 		onClose?.();
 	};
-
-	useEffect(() => {
-		const loadImageData = (canvasRef, imageDataUrl) => {
-			if (imageDataUrl && canvasRef.current) {
-				return; // todo
-				const image = new Image();
-				image.onload = () => {
-					const canvas = canvasRef.current.getCanvas();
-					const ctx = canvas.getContext('2d');
-					const x = (canvas.width - image.width) / 2;
-					const y = (canvas.height - image.height) / 2;
-
-					ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas first
-					ctx.drawImage(image, x, y); // Draw the image centered
-				};
-				image.src = imageDataUrl;
-			}
-		};
-
-		const storedSignatureImage = localStorage.getItem('signatureImage');
-
-		loadImageData(signatureRef, storedSignatureImage);
-	}, []);
 
 	const onClearFullSignature = () => {
 		signatureRef.current?.clear();
