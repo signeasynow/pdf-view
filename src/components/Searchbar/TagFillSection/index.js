@@ -209,7 +209,6 @@ const TagFillSection = ({
 				}
 				return false;
 			}).map((e) => {
-				console.log(e, 'e broo')
 				const dynamicFontSize = calculateFontSize(e.height);
 
 				return {
