@@ -253,9 +253,7 @@ const TagSection = ({
 				return;
 			}
 			alert(t("doc-sent-success"));
-			window.open("https://www.signeasynow.com/account/documents");
-			// leave this to true to avoid abuse.
-			setLoadingSend(true);
+			window.open('https://www.signeasynow.com/account/documents');
 		} catch (err) {
 			alert(t("something-wrong-email"));
 			setLoadingSend(false);

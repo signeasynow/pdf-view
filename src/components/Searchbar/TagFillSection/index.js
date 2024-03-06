@@ -283,6 +283,8 @@ const TagFillSection = ({
 				return;
 			}
 			alert(t("doc-sent-success"));
+			window.open('https://www.signeasynow.com/account/documents');
+
 			// leave this to true to avoid abuse.
 			setLoadingSend(true);
 		} catch (err) {
