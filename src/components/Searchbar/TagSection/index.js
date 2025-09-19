@@ -123,16 +123,21 @@ const spinnerStyle = css`
 `;
 
 const TagSection = ({
-	showFullScreenSearch,
-	onClickField,
-	showSearch,
-	pdfProxyObj,
-	customData,
-	fileName,
-	forceRefreshView
+        showFullScreenSearch,
+        onClickField,
+        showSearch,
+        pdfProxyObj,
+        customData,
+        fileName,
+        forceRefreshView,
+        editorMode,
+        initialSigners = [],
+        onSaveClickableMarkers
 }) => {
 
-	const [stage, setStage] = useState(0);
+        const isClickableMarkersMode = editorMode === 'add-clickable-markers';
+
+        const [stage, setStage] = useState(0);
 
 	const { annotationsRef } = useContext(AnnotationsContext);
 
@@ -147,8 +152,40 @@ const TagSection = ({
 	const [messageModified, setMessageModified] = useState(false);
 	const [loadingSend, setLoadingSend] = useState(false);
 
-	const [signers, setSigners] = useState([{ name: '', email: '', id: generateUUID() }]);
-	const [title, setTitle] = useState(fileName);
+        const [signers, setSigners] = useState([{ name: '', email: '', id: generateUUID() }]);
+        const [title, setTitle] = useState(fileName);
+
+        useEffect(() => {
+                if (!initialSigners?.length) {
+                        return;
+                }
+                setSigners((prevSigners) => {
+                        const nextSigners = initialSigners.map((signer) => {
+                                const existing = prevSigners.find((prev) => {
+                                        if (signer.id && prev.id === signer.id) {
+                                                return true;
+                                        }
+                                        return prev.email === signer.email && prev.name === signer.name;
+                                });
+                                return {
+                                        ...signer,
+                                        name: signer.name || '',
+                                        email: signer.email || '',
+                                        id: signer.id || existing?.id || generateUUID()
+                                };
+                        });
+                        return nextSigners;
+                });
+        }, [initialSigners]);
+
+        useEffect(() => {
+                if (isClickableMarkersMode) {
+                        setStage(2);
+                }
+                else {
+                        setStage(0);
+                }
+        }, [isClickableMarkersMode]);
 
 	useEffect(() => {
 		if (!!title) {
@@ -348,19 +385,38 @@ const TagSection = ({
 		/>
 	}
 
-	if (stage === 2) {
-		return (
-			<ClickableMarkers
-				forceRefreshView={forceRefreshView}
-				signers={signers}
-				showFullScreenSearch={showFullScreenSearch}
-				showSearch={showSearch}
-				onClickField={onClickField}
-				onBack={() => setStage(1)}
-				onNext={() => onProceedToStep(3)}
-			/>
-		);
-	}
+        if (isClickableMarkersMode) {
+                const onSaveMarkers = () => {
+                        const annotations = annotationsRef.current || [];
+                        onSaveClickableMarkers?.(signers, annotations);
+                };
+
+                return (
+                        <ClickableMarkers
+                                forceRefreshView={forceRefreshView}
+                                signers={signers}
+                                showFullScreenSearch={showFullScreenSearch}
+                                showSearch={showSearch}
+                                onClickField={onClickField}
+                                showNavigation={false}
+                                onSave={onSaveMarkers}
+                        />
+                );
+        }
+
+        if (stage === 2) {
+                return (
+                        <ClickableMarkers
+                                forceRefreshView={forceRefreshView}
+                                signers={signers}
+                                showFullScreenSearch={showFullScreenSearch}
+                                showSearch={showSearch}
+                                onClickField={onClickField}
+                                onBack={() => setStage(1)}
+                                onNext={() => onProceedToStep(3)}
+                        />
+                );
+        }
 
 	return (
 		<div>

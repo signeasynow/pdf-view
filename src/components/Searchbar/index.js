@@ -139,7 +139,9 @@ const SearchBar = ({
 	onNoToAiWarning,
 	conversation,
 	setConversation,
-	forceRefreshView
+	forceRefreshView,
+	initialSigners,
+	onSaveClickableMarkers
 }) => {
 
 	const { hasValidSubscription } = useUserData();
@@ -217,7 +219,7 @@ const SearchBar = ({
 		);
 	}
 
-	if (editorMode === 'tag') {
+	if (editorMode === 'tag' || editorMode === 'add-clickable-markers') {
 		return (
 			<TagSection
 				forceRefreshView={forceRefreshView}
@@ -228,6 +230,9 @@ const SearchBar = ({
 				showFullScreenSearch={showFullScreenSearch}
 				onClickField={onClickField}
 				showSearch={showSearch}
+				editorMode={editorMode}
+				initialSigners={initialSigners}
+				onSaveClickableMarkers={onSaveClickableMarkers}
 			/>
 		);
 	}

@@ -407,6 +407,7 @@ const App = () => {
 
 	const [inputtedLicenseKey, setInputtedLicenseKey] = useState(null);
 	const [initialAnnotations, setInitialAnnotations] = useState([]);
+	const [initialSigners, setInitialSigners] = useState([]);
 	const { files, setFiles } = useContext(FilesContext);
 
 	const [fileNames, setFileNames] = useState([]);
@@ -500,6 +501,9 @@ const App = () => {
 			}
 			if (typeof event.data === 'object' && !!event.data.initialAnnotations) {
 				setInitialAnnotations(event.data.initialAnnotations);
+			}
+			if (typeof event.data === 'object' && !!event.data.initialSigners) {
+				setInitialSigners(event.data.initialSigners);
 			}
 			if (typeof event.data === 'object' && !!event.data.modifiedUiElements) {
 				setModifiedUiElements(event.data.modifiedUiElements);
@@ -1916,7 +1920,18 @@ const App = () => {
 				source: null
 			};
 		}
-		
+
+	};
+
+	const onSaveClickableMarkers = (updatedSigners, annotations) => {
+		setInitialSigners(updatedSigners);
+		if (typeof window !== 'undefined' && window.parent) {
+			window.parent.postMessage({
+				type: 'clickable-markers-save',
+				signers: updatedSigners,
+				annotations
+			}, '*');
+		}
 	};
 
 	const onMoveAnnotation = (data) => {
@@ -2214,11 +2229,11 @@ const App = () => {
 						customData={customData}
 						onEnableClickTagMode={onEnableClickTagMode}
 						pdfProxyObj={pdfProxyObj}
-						onClickField={onClickField}
-						editorMode={editorMode}
-						showFullScreenSearch={showFullScreenSearch()}
-						tools={tools}
-						aiLimitReached={aiLimitReached}
+                                          onClickField={onClickField}
+                                          editorMode={editorMode}
+                                          showFullScreenSearch={showFullScreenSearch()}
+                                          tools={tools}
+                                          aiLimitReached={aiLimitReached}
 						onNoToAiWarning={onNoToAiWarning}
 						aiDocHash={aiDocHash}
 						currentAiDocHash={currentAiDocHash}
@@ -2238,11 +2253,13 @@ const App = () => {
 						matchesCount={matchesCount}
 						matchWholeWord={matchWholeWord}
 						onChange={onSearchText}
-						onFindCitation={onSearchText}
-						showSearch={showSearch}
-						caseSensitive={caseSensitive}
-						onToggleCaseSensitive={onToggleCaseSensitive}
-					/>
+                                          onFindCitation={onSearchText}
+                                          showSearch={showSearch}
+                                          caseSensitive={caseSensitive}
+                                          onToggleCaseSensitive={onToggleCaseSensitive}
+                                          initialSigners={initialSigners}
+                                          onSaveClickableMarkers={onSaveClickableMarkers}
+                                  />
 				</div>
 			</div>
 		</>

@@ -62,14 +62,26 @@ const nextBtn = css`
   cursor: pointer;
 `;
 
+const saveBtn = css`
+  display: flex;
+  padding: 0 8px;
+  background: #6ce906;
+  border-radius: 4px;
+  border: none;
+  align-items: center;
+  cursor: pointer;
+`;
+
 const ClickableMarkers = ({
-	showFullScreenSearch,
-	showSearch,
+     showFullScreenSearch,
+     showSearch,
   onClickField,
   onBack,
   onNext,
   signers,
-  forceRefreshView
+  forceRefreshView,
+  showNavigation = true,
+  onSave
 }) => {
 
 	const { t } = useTranslation();
@@ -78,10 +90,10 @@ const ClickableMarkers = ({
   // const [activeSignerId, setActiveSignerId] = useState(signers[0]?.id);
 
   useEffect(() => {
-    if (!activeSignerId) {
+    if (!activeSignerId && signers?.length) {
       setActiveSignerId(signers[0]?.id);
     }
-  }, signers);
+  }, [signers, activeSignerId, setActiveSignerId]);
 
 	const getWrapperClass = () => {
 		if (showFullScreenSearch) {
@@ -127,9 +139,15 @@ const ClickableMarkers = ({
         <button css={tagBtnStyle} onClick={() => onClickField('Email', false, activeSignerId)}>{t("Email")}</button>
         <button css={tagBtnStyle} onClick={() => onClickField('Date', false, activeSignerId)}>{t("Date")}</button>
       </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 4px', background: '#f1f3f5' }}>
-        <button css={backBtn} onClick={onBack}><Icon src={ChevronLeft} alt={t("Back")} /><div>{t("Back")}</div></button>
-        <button css={nextBtn} onClick={onNext}><div>{t("Next")}</div><Icon src={ChevronRight} alt={t("Next")} /></button>
+      <div style={{ display: 'flex', justifyContent: showNavigation ? 'space-between' : 'flex-end', padding: '8px 4px', background: '#f1f3f5' }}>
+        {showNavigation ? (
+          <>
+            <button css={backBtn} onClick={onBack}><Icon src={ChevronLeft} alt={t("Back")} /><div>{t("Back")}</div></button>
+            <button css={nextBtn} onClick={onNext}><div>{t("Next")}</div><Icon src={ChevronRight} alt={t("Next")} /></button>
+          </>
+        ) : (
+          <button css={saveBtn} onClick={onSave}><div>{t("Save")}</div></button>
+        )}
       </div>
     </div>
   );
