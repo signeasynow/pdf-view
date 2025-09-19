@@ -53,8 +53,8 @@ import { generateUUID } from './utils/generateUuid';
 import { removeTextFromPdf } from './utils/removeTextFromPdf';
 import { calculateFontSize } from './utils/calculateFontSize';
 
-const SignatureIconPng = 'https://www.signeasynow.com/yellow-bg-500-150.png';
-const TemplateIconPng = 'https://www.signeasynow.com/lightblue-bg-500-150.png';
+const SignatureIconPng = 'https://www.notarycentral.org/pdf-editor/yellow-bg-500-150.png';
+const TemplateIconPng = 'https://www.notarycentral.org/pdf-editor/lightblue-bg-500-150.png';
 
 function loadImage(url) {
 	return new Promise((resolve, reject) => {
