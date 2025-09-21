@@ -32,7 +32,7 @@ const Signatures = ({
 		<div style={{ display: 'flex', marginLeft: 8 }}>
 			{
 				activeToolbarItem === 'signature' && !fullSignature && !initialsSignature && (
-					<button onClick={() => showSignatureModal('Test', () => {})}>{t("Add signature")}</button>
+					<button onClick={() => showSignatureModal('Test', () => onClickSignature('signatureImage'))}>{t("Add signature")}</button>
 				)
 			}
 			{

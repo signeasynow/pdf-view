@@ -114,7 +114,17 @@ const SignatureSelectionDropdown = ({
 					}
 					child={<div css={childStyle}>
 						<img onClick={onClickOptionDropdown} style={{ height: 24, width: '100%', objectFit: 'contain', cursor: 'pointer' }} src={dropdownSrc()} />
-						<div css={zoomOptionStyle} onClick={() => showSignatureModal('Test', () => {})}>{t("Edit signature")} / {t("initials")}</div>
+						<div
+							css={zoomOptionStyle}
+							onClick={() =>
+								showSignatureModal('Test', () => {
+									// After adopting, immediately apply the edited signature/initials
+									onClickSignature(mainType === 'full' ? 'signatureImage' : 'initialsImage');
+								})
+							}
+						>
+							{t("Edit signature")} / {t("initials")}
+						</div>
 					</div>}
 				/>
 			</div>
