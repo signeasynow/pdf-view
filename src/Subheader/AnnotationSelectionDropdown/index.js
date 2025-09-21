@@ -135,12 +135,12 @@ const AnnotationSelectionDropdown = ({
 		}
 
 		const overlayText = annotation.overlayText?.toLowerCase?.();
-		if (overlayText && overlayText.includes('seal')) {
+		if (overlayText && overlayText.includes('notarycentralseal')) {
 			return true;
 		}
 
 		const urlPath = typeof annotation.urlPath === 'string' ? annotation.urlPath.toLowerCase() : '';
-		if (urlPath.includes('notary') || urlPath.includes('seal')) {
+		if (urlPath.includes('notary') || urlPath.includes('notarycentralseal')) {
 			return true;
 		}
 

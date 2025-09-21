@@ -1151,13 +1151,29 @@ const App = () => {
 		const hasSeal = anns.some((annotation) => {
 			if (!annotation || annotation.name !== 'stampEditor') return false;
 			const overlayText = annotation.overlayText?.toLowerCase?.();
-			if (overlayText && overlayText.includes('seal')) return true;
+			if (overlayText && overlayText.includes('notarycentralseal')) return true;
 			const urlPath = typeof annotation.urlPath === 'string' ? annotation.urlPath.toLowerCase() : '';
-			if (urlPath.includes('notary') || urlPath.includes('seal')) return true;
+			if (urlPath.includes('notary') || urlPath.includes('notarycentralseal')) return true;
 			if (notarySeal && annotation.urlPath === notarySeal) return true;
 			return false;
 		});
 		window.parent.postMessage({ type: 'has-seal-change', message: hasSeal }, '*');
+	}, [annotations, notarySeal]);
+
+	// Broadcast the array of seal annotation IDs on change
+	useEffect(() => {
+		const anns = annotationsRef.current || [];
+		const sealIds = anns.filter((annotation) => {
+			if (!annotation || annotation.name !== 'stampEditor') return false;
+			const overlayText = annotation.overlayText?.toLowerCase?.();
+			if (overlayText && overlayText.includes('notarycentralseal')) return true;
+			const urlPath = typeof annotation.urlPath === 'string' ? annotation.urlPath.toLowerCase() : '';
+			if (urlPath.includes('notary') || urlPath.includes('notarycentralseal')) return true;
+			if (notarySeal && annotation.urlPath === notarySeal) return true;
+			return false;
+		}).map((a) => a.id).filter(Boolean);
+		console.log(sealIds, 'sealIds22')
+		window.parent.postMessage({ type: 'notary-seal-ids-change', message: sealIds }, '*');
 	}, [annotations, notarySeal]);
 
 	useEffect(() => {
