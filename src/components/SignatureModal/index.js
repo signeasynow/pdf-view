@@ -215,21 +215,32 @@ export const SignatureModal = ({
 		const pad = signatureRef.current;
 		const canvas = pad?.canvas?.current;
 		if (!pad || !canvas) return;
-		const w = canvas.width;
-		const h = canvas.height;
-		const margin = Math.floor(Math.min(w, h) * 0.15);
-		const now = Date.now();
-		const line = (x1, y1, x2, y2, t0) => ([
-			{ x: x1, y: y1, time: t0, color: penColor },
-			{ x: (x1 + x2) / 2, y: (y1 + y2) / 2, time: t0 + 10 },
-			{ x: x2, y: y2, time: t0 + 20 }
-		]);
-		const stroke1 = line(margin, margin, w - margin, h - margin, now);
-		const stroke2 = line(w - margin, margin, margin, h - margin, now + 30);
-		pad.fromData([
-			{ points: stroke1, penColor },
-			{ points: stroke2, penColor }
-		]);
+
+		const inst = pad.instance || pad;
+		// Canvas CSS size in pixels (not scaled by DPR)
+		const rect = canvas.getBoundingClientRect();
+		const w = rect.width;
+		const h = rect.height;
+
+		// Target size for the X (60% of shortest side) and centered
+		const size = Math.min(w, h) * 0.6;
+		const xOffset = (w - size) / 2;
+		const yOffset = (h - size) / 2;
+
+		// Build an SVG that draws both diagonals as a single path
+		// Using one path avoids environments that render only the first <line>
+		const strokeWidth = Math.max(2, Math.round(size * 0.08));
+		const svg = `<?xml version="1.0" encoding="UTF-8"?>
+			<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+				<path d="M10 10 L90 90 M90 10 L10 90" stroke="${penColor || 'black'}" stroke-width="${strokeWidth}" stroke-linecap="round" fill="none"/>
+			</svg>`;
+		const dataUrl = `data:image/svg+xml;base64,${btoa(svg)}`;
+
+		// Clear and draw the centered X image onto the canvas
+		if (typeof inst.clear === 'function') inst.clear();
+		if (typeof inst.fromDataURL === 'function') {
+			inst.fromDataURL(dataUrl, { width: size, height: size, xOffset, yOffset });
+		}
 	};
 
 	const handleFileChange = (event) => {
@@ -288,7 +299,7 @@ export const SignatureModal = ({
 										<div style={{
 											cursor: 'pointer',
 											color: '#3083c8', fontSize: '14px' }} onClick={onMarkWithX}
-										>Mark with X</div>
+										>Sign with X</div>
 									</div>
 									<div style={{
 										fontSize: '12px',
