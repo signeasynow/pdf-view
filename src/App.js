@@ -660,6 +660,10 @@ const App = () => {
 		window.parent.postMessage({ type: 'request-buffer-completed', message: modifiedPdfBuffer });
 	};
 
+	const onFinalizeDocument = () => {
+		window.parent.postMessage({ type: 'finalize-document', annotations: annotationsRef.current });
+	};
+
 	const onCombinePdfs = async () => {
 
 		const errors = [];
@@ -2117,32 +2121,33 @@ const App = () => {
 							handleChooseColor={handleChooseColor}
 							setAnnotationColor={setAnnotationColor}
 							onDisableEditorMode={onDisableEditorMode}
-							onEnableFreeTextMode={onEnableFreeTextMode}
-							onEnableClickTagMode={onEnableClickTagMode}
-							onEnableEditTextMode={onEnableTextEditMode}
-							pdfProxyObj={pdfProxyObj}
-							canExtract={canExtract()}
-							onExtract={onExtract}
-							tools={tools}
-							canDelete={canDelete()}
-							undoStackLength={operations[activePageIndex]?.length}
-							redoStackLength={redoStack[activePageIndex]?.length}
-							setExpandedViewThumbnailScale={setExpandedViewThumbnailScale}
-							expandedViewThumbnailScale={expandedViewThumbnailScale}
-							setMultiPageSelections={setMultiPageSelections}
-							multiPageSelections={multiPageSelections}
-							showFullScreenThumbnails={shouldShowFullScreenThumbnails()}
-							onMinimize={onMinimize}
-							undoLastAction={undoLastAction}
-							redoLastAction={redoLastAction}
-							onDownload={onDownload}
-							onDelete={onDelete}
-							onRotate={onRotateFullScreenThumbnails}
-							fontWeightBold={fontWeightBold}
-							onUpdateFontWeight={onUpdateFontWeight}
-							onUpdateFontItalic={onUpdateFontItalic}
-							fontItalic={fontItalic}
-						/>
+                                                onEnableFreeTextMode={onEnableFreeTextMode}
+                                                onEnableClickTagMode={onEnableClickTagMode}
+                                                onEnableEditTextMode={onEnableTextEditMode}
+                                                pdfProxyObj={pdfProxyObj}
+                                                canExtract={canExtract()}
+                                                onExtract={onExtract}
+                                                tools={tools}
+                                                canDelete={canDelete()}
+                                                undoStackLength={operations[activePageIndex]?.length}
+                                                redoStackLength={redoStack[activePageIndex]?.length}
+                                                setExpandedViewThumbnailScale={setExpandedViewThumbnailScale}
+                                                expandedViewThumbnailScale={expandedViewThumbnailScale}
+                                                setMultiPageSelections={setMultiPageSelections}
+                                                multiPageSelections={multiPageSelections}
+                                                showFullScreenThumbnails={shouldShowFullScreenThumbnails()}
+                                                onMinimize={onMinimize}
+                                                undoLastAction={undoLastAction}
+                                                redoLastAction={redoLastAction}
+                                                onDownload={onDownload}
+                                                onDelete={onDelete}
+                                                onRotate={onRotateFullScreenThumbnails}
+                                                fontWeightBold={fontWeightBold}
+                                                onUpdateFontWeight={onUpdateFontWeight}
+                                                onUpdateFontItalic={onUpdateFontItalic}
+                                                fontItalic={fontItalic}
+                                                onFinalizeDocument={onFinalizeDocument}
+                                        />
 					)
 				}
 				<Tabs

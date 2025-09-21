@@ -52,13 +52,36 @@ const zoomOptionStyle = css`
   }
 `;
 
+const finalizeButtonStyle = css`
+  margin-left: 12px;
+  background: linear-gradient(180deg, #a855f7 0%, #7c3aed 100%);
+  border: none;
+  border-radius: 9999px;
+  padding: 6px 18px;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(124, 58, 237, 0.25);
+  transition: background 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    background: linear-gradient(180deg, #7c3aed 0%, #6d28d9 100%);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+`;
+
 const AnnotationSelectionDropdown = ({
 	editorMode,
 	onClickSignature,
 	onChangeActiveToolbarItem,
 	annotationMode,
 	activeToolbarItem,
-	tools
+	tools,
+	onFinalizeDocument
 }) => {
 
 	const { t } = useTranslation();
@@ -129,6 +152,32 @@ const AnnotationSelectionDropdown = ({
 
 	const hasSignature = () => annotations?.some((ann) => ann.name === 'stampEditor');
 
+	const isSealAnnotation = (annotation) => {
+		if (!annotation || annotation.name !== 'stampEditor') {
+			return false;
+		}
+
+		const overlayText = annotation.overlayText?.toLowerCase?.();
+		if (overlayText && overlayText.includes('seal')) {
+			return true;
+		}
+
+		const urlPath = typeof annotation.urlPath === 'string' ? annotation.urlPath.toLowerCase() : '';
+		if (urlPath.includes('notary') || urlPath.includes('seal')) {
+			return true;
+		}
+
+		return false;
+	};
+
+	const hasSealApplied = annotations?.some(isSealAnnotation);
+
+	const handleFinalizeDocument = () => {
+		if (typeof onFinalizeDocument === 'function') {
+			onFinalizeDocument(annotations);
+		}
+	};
+
 	const hasText = () => annotations?.some((ann) => ann.name === 'freeTextEditor');
 
 	if (!tools?.editing?.includes('signature')) {
@@ -193,6 +242,13 @@ const AnnotationSelectionDropdown = ({
 					</div>}
 				/>
 			</div>
+			{
+				hasSealApplied && (
+					<button css={finalizeButtonStyle} type="button" onClick={handleFinalizeDocument}>
+						{t('Finalize document')}
+					</button>
+				)
+			}
 		</div>
 	);
 };

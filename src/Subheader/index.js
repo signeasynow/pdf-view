@@ -84,7 +84,8 @@ const Subheader = ({
 	canExtract,
 	onDelete,
 	tools,
-	onAddImage,
+        onAddImage,
+        onFinalizeDocument,
 	onRotate,
 	undoLastAction,
 	redoLastAction,
@@ -173,14 +174,15 @@ const Subheader = ({
 			}
 			<div css={contentLeftStyle}>
 			  <div style={{ display: 'flex', alignItems: 'center' }}>
-				  <AnnotationSelectionDropdown
-						editorMode={editorMode}
-						tools={tools}
-						activeToolbarItem={activeToolbarItem}
-						annotationMode={annotationMode}
-						onClickSignature={onAddImage}
-						onChangeActiveToolbarItem={onChangeActiveToolbarItem}
-					/>
+                                  <AnnotationSelectionDropdown
+                                                editorMode={editorMode}
+                                                tools={tools}
+                                                activeToolbarItem={activeToolbarItem}
+                                                annotationMode={annotationMode}
+                                                onClickSignature={onAddImage}
+                                                onChangeActiveToolbarItem={onChangeActiveToolbarItem}
+                                                onFinalizeDocument={onFinalizeDocument}
+                                        />
 					<Signatures
 						onClickSignature={onAddImage}
 						onChangeActiveToolbarItem={onChangeActiveToolbarItem}
