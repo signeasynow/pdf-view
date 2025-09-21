@@ -10,6 +10,7 @@
     "build": "webpack --mode production",
     "dev-process": "NODE_ENV=development webpack --mode development && rm -rf pdf-ui && mv dist pdf-ui && cp -rf pdf-ui ../ts-regular/public && cp -rf pdf-ui ../i18n-pdf-website/public && cp -rf pdf-ui ../react_plugin/public && cp -rf pdf-ui ../vue-pdf-plugin/public && cp -rf pdf-ui ../extension3/public && cp -rf pdf-ui ../extension-preact/public && cp -rf pdf-ui ../react-pdf-demo/public",
     "chrome-process": "NODE_ENV=development NODE_CHROME=true webpack --mode development && rm -rf pdf-ui && mv dist pdf-ui && cp -rf pdf-ui ../editor-extension/public",
+    "ron-process": "NODE_ENV=production webpack --mode production && rm -rf pdf-ui && mv dist pdf-ui && cp -rf pdf-ui ../notary-project/ron-notary-app/public",
     "prod-process": "NODE_ENV=production webpack --mode production && rm -rf pdf-ui && mv dist pdf-ui && cp -rf pdf-ui ../ts-regular/public && cp -rf pdf-ui ../i18n-pdf-website/public && cp -rf pdf-ui ../react_plugin/public && cp -rf pdf-ui ../vue-pdf-plugin/public && cp -rf pdf-ui ../extension3/public && cp -rf pdf-ui ../extension-preact/public && cp -rf pdf-ui ../react-pdf-demo/public",
     "send-to-app": "npm run build && cp -rf dist ../htmltest/html2pdf-app/public",
     "postinstall": "patch-package",

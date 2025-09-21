@@ -179,11 +179,12 @@ export const SignatureModal = ({
 
 
 	useEffect(() => {
-		signatureRef.current.penColor = penColor;
+		if (signatureRef.current) {
+			signatureRef.current.penColor = penColor;
+		}
 		if (initialRef.current) {
 			initialRef.current.penColor = penColor;
 		}
-    
 	}, [penColor]);
 
 	const onClickConfirmText = () => {
