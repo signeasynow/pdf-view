@@ -49,6 +49,7 @@ import useListenForStateChange from './hooks/useListenForStateChange';
 import { AuthInfoContext } from './Contexts/AuthInfoContext';
 import useListenForAiQuestionCount from './hooks/useListenForAiQuestionCount';
 import { LocaleContext } from './Contexts/LocaleContext';
+import { SignaturesContext } from './Contexts/SignaturesContext';
 import { generateUUID } from './utils/generateUuid';
 import { removeTextFromPdf } from './utils/removeTextFromPdf';
 import { calculateFontSize } from './utils/calculateFontSize';
@@ -470,7 +471,8 @@ const App = () => {
 	};
 
 	const [inputtedUuid, setInputtedUuid] = useState('');
-	const { setAuthInfo, authInfo } = useContext(AuthInfoContext);
+        const { setAuthInfo, authInfo } = useContext(AuthInfoContext);
+        const { setNotarySeal } = useContext(SignaturesContext);
 
 	const { onChangeLocale } = useContext(LocaleContext);
 	const [defaultAnnotationMode, setDefaultAnnotationMode] = useState(null);
@@ -493,9 +495,19 @@ const App = () => {
 				setIsSplitting(event.data.mode === 'split');
 				setEditorMode(event.data.mode || 'regular');
 			}
-			if (typeof event.data === 'object' && !!event.data.uuid) {
-				setInputtedUuid(event.data.uuid);
-			}
+                        if (typeof event.data === 'object' && !!event.data.uuid) {
+                                setInputtedUuid(event.data.uuid);
+                        }
+                        if (typeof event.data === 'object' && !!event.data.notarySeal) {
+                                try {
+                                        localStorage.setItem('notarySeal', event.data.notarySeal);
+                                        sessionStorage.setItem('notarySeal', event.data.notarySeal);
+                                }
+                                catch (err) {
+                                        console.warn('Failed to persist notary seal', err);
+                                }
+                                setNotarySeal(event.data.notarySeal);
+                        }
 			if (typeof event.data === 'object' && !!event.data.customData) {
 				setCustomData(event.data.customData);
 			}

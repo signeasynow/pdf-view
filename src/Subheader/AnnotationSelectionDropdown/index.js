@@ -65,7 +65,7 @@ const AnnotationSelectionDropdown = ({
   
 	const { showSignatureModal } = useModal();
 
-	const { fullSignature, initialsSignature } = useContext(SignaturesContext);
+        const { fullSignature, initialsSignature, notarySeal } = useContext(SignaturesContext);
 	const { annotations } = useContext(AnnotationsContext);
 
 	const onSelectEditSignature = () => {
@@ -76,38 +76,53 @@ const AnnotationSelectionDropdown = ({
 		onChangeActiveToolbarItem({ tooltype: 'text' });
 	};
 
-	const onSelectSignature = () => {
-		if (!fullSignature && !initialsSignature) {
-			showSignatureModal('Test', () => {
-				onClickSignature('signatureImage');
-				onChangeActiveToolbarItem({ tooltype: 'signature' });	
-			});
-			return;
-		}
-		if (fullSignature) {
-			onClickSignature('signatureImage');
-			onChangeActiveToolbarItem({ tooltype: 'signature' });
-			// go ahead and add
-			return;
-		}
-		onClickSignature('initialsImage');
-		onChangeActiveToolbarItem({ tooltype: 'signature' });
-		// initialsImage
-		// add initials
-    
-	};
+        const onSelectSignature = () => {
+                if (!fullSignature && !initialsSignature) {
+                        showSignatureModal('Test', () => {
+                                onClickSignature('signatureImage');
+                                onChangeActiveToolbarItem({ tooltype: 'signature' });
+                        });
+                        return;
+                }
+                if (fullSignature) {
+                        onClickSignature('signatureImage');
+                        onChangeActiveToolbarItem({ tooltype: 'signature' });
+                        // go ahead and add
+                        return;
+                }
+                onClickSignature('initialsImage');
+                onChangeActiveToolbarItem({ tooltype: 'signature' });
+                // initialsImage
+                // add initials
 
-	const onSelectFreeText = () => {
-		onChangeActiveToolbarItem({ tooltype: 'text' });
-	};
+        };
 
-	const onSelectTextEdit = () => {
-		onChangeActiveToolbarItem({ tooltype: 'edit-text' });
-	}
+        const onSelectSeal = () => {
+                if (!notarySeal) {
+                        return;
+                }
+                onClickSignature('notarySeal');
+                onChangeActiveToolbarItem({ tooltype: 'signature' });
+        };
 
-	const onSelectNone = () => {
-		onChangeActiveToolbarItem({ tooltype: 'none' });
-	};
+        const onSelectFreeText = () => {
+                onChangeActiveToolbarItem({ tooltype: 'text' });
+        };
+
+        const onSelectTextEdit = () => {
+                onChangeActiveToolbarItem({ tooltype: 'edit-text' });
+        }
+
+        const onSelectNone = () => {
+                onChangeActiveToolbarItem({ tooltype: 'none' });
+        };
+
+        const onSelectEditSeal = () => {
+                if (!notarySeal) {
+                        return;
+                }
+                onChangeActiveToolbarItem({ tooltype: 'signature' });
+        };
 
 	const annotationsEnabled = () => annotationMode === pdfjs.AnnotationEditorType.FREETEXT 
 	|| annotationMode === pdfjs.AnnotationEditorType.STAMP;
@@ -147,18 +162,28 @@ const AnnotationSelectionDropdown = ({
 						</div>
 					}
 					child={<div css={childStyle}>
-						<div css={zoomOptionStyle} onClick={onSelectSignature}><img height={24} width={24} src={SignatureIcon} />{t('Add signature')}</div>
-						<div css={zoomOptionStyle} onClick={onSelectFreeText}><img height={24} width={24} src={TextIcon} />{t('Add text')}</div>
-						<div css={zoomOptionStyle} onClick={onSelectTextEdit}><img height={24} width={24} src={TextIcon} />{t('Edit original text')}</div>
-						{
-							hasSignature() && (
-								<div css={zoomOptionStyle} onClick={onSelectEditSignature}><img height={24} width={24} src={SignatureRemoveIcon} />{t('Edit signature')}</div>
-							)
-						}
-						{
-							hasText() && (
-								<div css={zoomOptionStyle} onClick={onSelectEditText}><img height={24} width={24} src={EditTextIcon} />{t('Edit text')}</div>
-							)
+                                                <div css={zoomOptionStyle} onClick={onSelectSignature}><img height={24} width={24} src={SignatureIcon} />{t('Add signature')}</div>
+                                                {
+                                                        notarySeal && (
+                                                                <div css={zoomOptionStyle} onClick={onSelectSeal}><img height={24} width={24} src={SignatureIcon} />{t('Add seal')}</div>
+                                                        )
+                                                }
+                                                <div css={zoomOptionStyle} onClick={onSelectFreeText}><img height={24} width={24} src={TextIcon} />{t('Add text')}</div>
+                                                <div css={zoomOptionStyle} onClick={onSelectTextEdit}><img height={24} width={24} src={TextIcon} />{t('Edit original text')}</div>
+                                                {
+                                                        hasSignature() && (
+                                                                <div css={zoomOptionStyle} onClick={onSelectEditSignature}><img height={24} width={24} src={SignatureRemoveIcon} />{t('Edit signature')}</div>
+                                                        )
+                                                }
+                                                {
+                                                        notarySeal && (
+                                                                <div css={zoomOptionStyle} onClick={onSelectEditSeal}><img height={24} width={24} src={SignatureRemoveIcon} />{t('Edit seal')}</div>
+                                                        )
+                                                }
+                                                {
+                                                        hasText() && (
+                                                                <div css={zoomOptionStyle} onClick={onSelectEditText}><img height={24} width={24} src={EditTextIcon} />{t('Edit text')}</div>
+                                                        )
 						}
 						{
 							annotationsEnabled() && (
