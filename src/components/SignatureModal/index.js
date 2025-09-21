@@ -119,40 +119,19 @@ const contentContainerStyle = css`
 export const SignatureModal = ({
 	onConfirm,
 	onClose,
-	modifiedUiElements,
-	message
+	modifiedUiElements
 }) => {
 
 	const { t } = useTranslation();
 
 	const signatureRef = useRef();
-	const initialRef = useRef();
-	const [penColor, setPenColor] = useState('black'); // Default pen color
+	const [penColor] = useState('black'); // Default pen color
 
 	const [signatureUpload, setSignatureUpload] = useState(null);
 
 	const { setFullSignature, fullSignature } = useContext(SignaturesContext);
-	const [fullName, setFullName] = useState(message);
-  const [initials, setInitials] = useState('');
 
-	useEffect(() => {
-		if (!message) {
-			return;
-		}
-		setFullName(message);
-
-		const calculateInitials = (name) => {
-      const words = name.split(' ').filter(Boolean); // Split name into words and remove any empty strings
-      if (words.length === 0) return '';
-      const initials = words.slice(0, 2).map(word => word[0].toUpperCase()).join(''); // Take first two words, if available
-      return initials;
-    };
-
-    setInitials(calculateInitials(message));
-
-	}, [message]);
-
-	const [activeTab, setActiveTab] = useState('selectStyle');
+	const [activeTab, setActiveTab] = useState('draw');
 
 	const handleSaveSignature = () => {
 		// Convert canvas to data URL (base64 image) only if the canvas is not empty
@@ -163,6 +142,7 @@ export const SignatureModal = ({
 		// Only update localStorage and context if there's a new signature/initials
 		if (signatureImage) {
 			sessionStorage.setItem('signatureImage', signatureImage);
+			try { localStorage.setItem('signatureImage', signatureImage); } catch (_) {}
 			setFullSignature(signatureImage);
 		}
   
@@ -182,23 +162,7 @@ export const SignatureModal = ({
 		if (signatureRef.current) {
 			signatureRef.current.penColor = penColor;
 		}
-		if (initialRef.current) {
-			initialRef.current.penColor = penColor;
-		}
 	}, [penColor]);
-
-	const onClickConfirmText = () => {
-		if (!fullName) {
-			return alert("Name is required");
-		}
-		if (!initials) {
-			return alert("Initials are required")
-		}
-		sessionStorage.setItem("signatureName", fullName);
-		sessionStorage.setItem("signatureInitials", initials);
-		onConfirm?.(null, {fullName, initials});
-		onClose?.();
-	}
 
 	const onClickConfirmUpload = () => {
 		if (!signatureUpload) {
@@ -206,6 +170,7 @@ export const SignatureModal = ({
 		}
 		if (signatureUpload) {
 			sessionStorage.setItem('signatureImage', signatureUpload);
+			try { localStorage.setItem('signatureImage', signatureUpload); } catch (_) {}
 			setFullSignature(signatureUpload);
 		}
   
@@ -223,19 +188,7 @@ export const SignatureModal = ({
 		onClose?.();
 	};
 
-	const shouldShowInitialsPad = () => {
-		if (!modifiedUiElements?.signatureModal?.drawingPads) {
-			return true;
-		}
-		return modifiedUiElements?.signatureModal?.drawingPads.includes('initials');
-	};
-
-	const signatureMarginRight = () => {
-		if (isSmallScreen || !shouldShowInitialsPad()) {
-			return 0;
-		}
-		return 8;
-	};
+	const signatureMarginRight = () => 0;
 
 
   const handleTabClick = (tab) => {
@@ -253,11 +206,31 @@ export const SignatureModal = ({
 				onClickConfirmUpload();
 				break;
 			}
-			case "selectStyle": {
-				onClickConfirmText();
-			}
+			default:
+				break;
 		}
 	}
+
+	const onMarkWithX = () => {
+		const pad = signatureRef.current;
+		const canvas = pad?.canvas?.current;
+		if (!pad || !canvas) return;
+		const w = canvas.width;
+		const h = canvas.height;
+		const margin = Math.floor(Math.min(w, h) * 0.15);
+		const now = Date.now();
+		const line = (x1, y1, x2, y2, t0) => ([
+			{ x: x1, y: y1, time: t0, color: penColor },
+			{ x: (x1 + x2) / 2, y: (y1 + y2) / 2, time: t0 + 10 },
+			{ x: x2, y: y2, time: t0 + 20 }
+		]);
+		const stroke1 = line(margin, margin, w - margin, h - margin, now);
+		const stroke2 = line(w - margin, margin, margin, h - margin, now + 30);
+		pad.fromData([
+			{ points: stroke1, penColor },
+			{ points: stroke2, penColor }
+		]);
+	};
 
 	const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -279,39 +252,8 @@ export const SignatureModal = ({
 				<div css={containerStyle}>
 					<h1>Adopt your signature</h1>
 					<hr />
-					<p style={{color: "grey"}}>Confirm your name, initials, and signature</p>
-					<div style={{display: "flex"}}>
-						<div css={inputGroupStyle}>
-							<label css={labelStyle} htmlFor="fullName">Full Name*</label>
-							<input
-								css={inputStyle}
-								id="fullName"
-								value={fullName}
-								onChange={(e) => setFullName(e.target.value)}
-								placeholder="Enter your full name"
-								required
-							/>
-						</div>
-						<div css={inputGroupStyle}>
-							<label css={labelStyle} htmlFor="initials">Initials*</label>
-							<input
-								css={inputStyle}
-								id="initials"
-								value={initials}
-								onChange={(e) => setInitials(e.target.value)}
-								placeholder="Enter your initials"
-								required
-							/>
-						</div>
-					</div>
+					<p style={{color: "grey"}}>Create your signature by drawing or uploading an image</p>
 					<div css={tabsContainerStyle}>
-        		<button
-							css={tabStyle}
-							className={activeTab === 'selectStyle' ? 'active' : ''}
-							onClick={() => handleTabClick('selectStyle')}
-						>
-							SELECT STYLE
-						</button>
 						<button
 							css={tabStyle}
 							className={activeTab === 'draw' ? 'active' : ''}
@@ -328,15 +270,7 @@ export const SignatureModal = ({
 						</button>
 					</div>
 					<div css={contentContainerStyle}>
-						{activeTab === "selectStyle" && (
-							<div css={signaturePreviewStyle}>
-								<p style={{textAlign: "left"}}>Signed by:</p>
-								<div style={{display: "flex", justifyContent: "space-between", fontFamily: "Mr Dafoe"}}>
-									<p style={{fontFamily: "Mr Dafoe"}}>{fullName}</p>
-									<p style={{fontFamily: "Mr Dafoe"}}>{initials}</p>
-								</div>
-							</div>
-						)}
+
 						{activeTab === 'draw' && (
 							<div style={{ marginRight: signatureMarginRight(), background: '#efefef', border: '1px solid #d3d3d3', width: 320, borderRadius: '4px' }}>
 								<div style={{ cursor: 'crosshair', width: 320, height: 120 }}>
@@ -350,7 +284,12 @@ export const SignatureModal = ({
 									alignItems: 'center',
 									display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #d3d3d3' }}
 								>
-									<div />
+									<div style={{ display: 'flex', gap: 12 }}>
+										<div style={{
+											cursor: 'pointer',
+											color: '#3083c8', fontSize: '14px' }} onClick={onMarkWithX}
+										>Mark with X</div>
+									</div>
 									<div style={{
 										fontSize: '12px',
 										color: 'grey',

@@ -72,7 +72,6 @@ export const ModalProvider = ({ children }) => {
 			{isSignatureVisible && <SignatureModal
 				modifiedUiElements={modifiedUiElements}
 				onConfirm={onConfirmCallback}
-				message={message}
 				onClose={hideSignatureModal}
 			                       />}
 			{children}
