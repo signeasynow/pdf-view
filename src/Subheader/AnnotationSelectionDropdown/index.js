@@ -167,6 +167,11 @@ const AnnotationSelectionDropdown = ({
 			return true;
 		}
 
+		// Fallback: data URL matches the configured notary seal
+		if (notarySeal && annotation.urlPath === notarySeal) {
+			return true;
+		}
+
 		return false;
 	};
 

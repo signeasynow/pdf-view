@@ -1858,6 +1858,7 @@ const App = () => {
 			mode: pdfjs.AnnotationEditorType.STAMP,
 			source: null
 		};
+		const isSeal = localStorageName === 'notarySeal';
 		pdfViewerRef.current.annotationEditorParams = {
 			type: AnnotationEditorParamsType.CREATE,
 			value: {
