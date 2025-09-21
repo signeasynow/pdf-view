@@ -181,7 +181,6 @@ const Subheader = ({
                                                 annotationMode={annotationMode}
                                                 onClickSignature={onAddImage}
                                                 onChangeActiveToolbarItem={onChangeActiveToolbarItem}
-                                                onFinalizeDocument={onFinalizeDocument}
                                         />
 					<Signatures
 						onClickSignature={onAddImage}

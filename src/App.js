@@ -472,7 +472,7 @@ const App = () => {
 
 	const [inputtedUuid, setInputtedUuid] = useState('');
         const { setAuthInfo, authInfo } = useContext(AuthInfoContext);
-        const { setNotarySeal } = useContext(SignaturesContext);
+        const { setNotarySeal, notarySeal } = useContext(SignaturesContext);
 
 	const { onChangeLocale } = useContext(LocaleContext);
 	const [defaultAnnotationMode, setDefaultAnnotationMode] = useState(null);
@@ -1144,6 +1144,21 @@ const App = () => {
 	useEffect(() => {
 		window.parent.postMessage({ type: 'annotations-change', message: annotations }, '*');
 	}, [annotations]);
+
+	// Broadcast has-seal-change whenever annotations change
+	useEffect(() => {
+		const anns = annotationsRef.current || [];
+		const hasSeal = anns.some((annotation) => {
+			if (!annotation || annotation.name !== 'stampEditor') return false;
+			const overlayText = annotation.overlayText?.toLowerCase?.();
+			if (overlayText && overlayText.includes('seal')) return true;
+			const urlPath = typeof annotation.urlPath === 'string' ? annotation.urlPath.toLowerCase() : '';
+			if (urlPath.includes('notary') || urlPath.includes('seal')) return true;
+			if (notarySeal && annotation.urlPath === notarySeal) return true;
+			return false;
+		});
+		window.parent.postMessage({ type: 'has-seal-change', message: hasSeal }, '*');
+	}, [annotations, notarySeal]);
 
 	useEffect(() => {
 		if (!initialAnnotations) {
