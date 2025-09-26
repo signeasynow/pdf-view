@@ -1179,13 +1179,17 @@ const App = () => {
 		window.parent.postMessage({ type: 'notary-seal-ids-change', message: sealIds }, '*');
 	}, [annotations, notarySeal]);
 
-	useEffect(() => {
-		if (!initialAnnotations) {
-			return;
-		}
-		setAnnotations(initialAnnotations);
-		annotationsRef.current = initialAnnotations;
-	}, [initialAnnotations]);
+        useEffect(() => {
+                if (!initialAnnotations) {
+                        return;
+                }
+                console.log('[App] applying initial annotations', {
+                        count: initialAnnotations?.length,
+                        annotations: initialAnnotations
+                });
+                setAnnotations(initialAnnotations);
+                annotationsRef.current = initialAnnotations;
+        }, [initialAnnotations]);
 
 	const onRotate = async (clockwise) => {
 		if (!pdfProxyObj) {

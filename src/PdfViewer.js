@@ -116,9 +116,17 @@ export const PdfViewer = ({
 		});
 	}, [annotationColor]);
 
-	const applyDocument = async (viewerContainer) => {
-		
-		await cleanupDocument();
+        const applyDocument = async (viewerContainer) => {
+
+                console.log('[PdfViewer] applyDocument called', {
+                        hasViewerContainer: !!viewerContainer,
+                        editorMode,
+                        activeSignerId,
+                        annotationCount: annotationsRef.current?.length,
+                        annotationIds: annotationsRef.current?.map((annot) => annot.id)
+                });
+
+                await cleanupDocument();
 
 		const eventBus = new EventBus();
 		eventBusRef.current = eventBus;
@@ -266,21 +274,31 @@ export const PdfViewer = ({
 					*/
 				}
 				// If no modifiedFile, continue to set the loaded PDF document.
-				setPdfProxyObj(loadedPdfDocument);
-				console.log(activeSignerId, 'activeSignerId24', editorMode)
-                let filteredBySignerAnnotations = annotationsRef.current;
-                if (editorMode !== 'add-clickable-markers' && activeSignerId) {
-                        filteredBySignerAnnotations = annotationsRef.current.filter((annot) => {
-                                if (!annot.overlayText) {
-                                        return true;
+                                setPdfProxyObj(loadedPdfDocument);
+                                console.log('[PdfViewer] preparing annotations for viewer', {
+                                        editorMode,
+                                        activeSignerId,
+                                        totalAnnotations: annotationsRef.current?.length,
+                                        annotations: annotationsRef.current
+                                });
+                                let filteredBySignerAnnotations = annotationsRef.current;
+                                if (editorMode !== 'add-clickable-markers' && activeSignerId) {
+                                        filteredBySignerAnnotations = annotationsRef.current.filter((annot) => {
+                                                if (!annot.overlayText) {
+                                                        return true;
+                                                }
+                                                if (!annot.userId) {
+                                                        return true;
+                                                }
+                                                return annot.userId === activeSignerId;
+                                        });
                                 }
-                                if (!annot.userId) {
-							return true;
-						}
-						return annot.userId === activeSignerId;
-					})
-				}
-				console.log(filteredBySignerAnnotations, 'filtered2')
+                                console.log('[PdfViewer] filtered annotations for viewer', {
+                                        editorMode,
+                                        activeSignerId,
+                                        filteredCount: filteredBySignerAnnotations?.length,
+                                        annotations: filteredBySignerAnnotations
+                                });
 				pdfViewerRef.current.setDocument(loadedPdfDocument, filteredBySignerAnnotations);
 				pdfLinkServiceRef.current.setDocument(loadedPdfDocument, null);
 				extractTextFromFirstPage(loadedPdfDocument);

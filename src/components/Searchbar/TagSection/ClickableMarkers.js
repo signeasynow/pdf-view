@@ -85,11 +85,18 @@ const ClickableMarkers = ({
 }) => {
 
 	const { t } = useTranslation();
-  const { activeSignerId, setActiveSignerId } = useContext(AnnotationsContext);
+  const { activeSignerId, setActiveSignerId, annotationsRef } = useContext(AnnotationsContext);
 
   // const [activeSignerId, setActiveSignerId] = useState(signers[0]?.id);
 
   useEffect(() => {
+    console.log('[ClickableMarkers] evaluating signer state', {
+      activeSignerId,
+      signers,
+      annotationCount: annotationsRef?.current?.length,
+      annotationIds: annotationsRef?.current?.map((annotation) => annotation.id),
+    });
+
     if (!signers?.length) {
       return;
     }
@@ -99,7 +106,7 @@ const ClickableMarkers = ({
     if (!hasActiveSigner) {
       setActiveSignerId(signers[0]?.id);
     }
-  }, [signers, activeSignerId, setActiveSignerId]);
+  }, [signers, activeSignerId, setActiveSignerId, annotationsRef]);
 
 	const getWrapperClass = () => {
 		if (showFullScreenSearch) {
@@ -112,14 +119,22 @@ const ClickableMarkers = ({
     setActiveSignerId(e.target.value);
   };
 
-  console.log(activeSignerId, 'activeSignerId2');
+  console.log('[ClickableMarkers] render', {
+    activeSignerId,
+    signers,
+    annotationCount: annotationsRef?.current?.length,
+    annotationIds: annotationsRef?.current?.map((annotation) => annotation.id),
+  });
 
   useEffect(() => {
     if (!activeSignerId) {
       return;
     }
+    console.log('[ClickableMarkers] forcing refresh for active signer change', {
+      activeSignerId,
+    });
     forceRefreshView?.()
-  }, [activeSignerId]);
+  }, [activeSignerId, forceRefreshView]);
 
 	return (
     <div>
