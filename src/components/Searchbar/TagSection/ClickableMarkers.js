@@ -90,7 +90,13 @@ const ClickableMarkers = ({
   // const [activeSignerId, setActiveSignerId] = useState(signers[0]?.id);
 
   useEffect(() => {
-    if (!activeSignerId && signers?.length) {
+    if (!signers?.length) {
+      return;
+    }
+
+    const hasActiveSigner = signers.some((signer) => signer.id === activeSignerId);
+
+    if (!hasActiveSigner) {
       setActiveSignerId(signers[0]?.id);
     }
   }, [signers, activeSignerId, setActiveSignerId]);
