@@ -268,13 +268,13 @@ export const PdfViewer = ({
 				// If no modifiedFile, continue to set the loaded PDF document.
 				setPdfProxyObj(loadedPdfDocument);
 				console.log(activeSignerId, 'activeSignerId24', editorMode)
-				let filteredBySignerAnnotations = annotationsRef.current;
-				if (activeSignerId) {
-					filteredBySignerAnnotations = annotationsRef.current.filter((annot) => {
-						if (!annot.overlayText) {
-							return true;
-						}
-						if (!annot.userId) {
+                let filteredBySignerAnnotations = annotationsRef.current;
+                if (editorMode !== 'add-clickable-markers' && activeSignerId) {
+                        filteredBySignerAnnotations = annotationsRef.current.filter((annot) => {
+                                if (!annot.overlayText) {
+                                        return true;
+                                }
+                                if (!annot.userId) {
 							return true;
 						}
 						return annot.userId === activeSignerId;
