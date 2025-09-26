@@ -383,6 +383,9 @@ const App = () => {
 	}, [tools]);
 
 	const onSearchBtnClick = () => {
+		if (!showSearch) {
+			onEnableTextEditMode();
+		}
 		setShowSearch((prev) => !prev);
 	};
 
@@ -1172,7 +1175,7 @@ const App = () => {
 			if (notarySeal && annotation.urlPath === notarySeal) return true;
 			return false;
 		}).map((a) => a.id).filter(Boolean);
-		console.log(sealIds, 'sealIds22')
+
 		window.parent.postMessage({ type: 'notary-seal-ids-change', message: sealIds }, '*');
 	}, [annotations, notarySeal]);
 
