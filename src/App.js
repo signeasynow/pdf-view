@@ -2229,9 +2229,10 @@ const App = () => {
 							onEditOriginalTextSelected={onEditOriginalTextSelected}
 							storage={storage}
 							initialAnnotations={initialAnnotations}
-							onTagClicked={onTagClicked}
-							activeToolbarItemRef={activeToolbarItemRef}
-							onAnnotationFocus={onAnnotationFocus}
+                                                        onTagClicked={onTagClicked}
+                                                        onEnableTextEditMode={onEnableTextEditMode}
+                                                        activeToolbarItemRef={activeToolbarItemRef}
+                                                        onAnnotationFocus={onAnnotationFocus}
 							annotationColor={annotationColor}
 							moveAnnotation={onMoveAnnotation}
 							removeAnnotation={onRemoveAnnotation}

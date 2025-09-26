@@ -71,8 +71,9 @@ export const PdfViewer = ({
 	setFileLoadFailError,
 	setDocumentLoading,
 	isSandbox,
-	updateCurrentScale,
-	onTagClicked
+        updateCurrentScale,
+        onTagClicked,
+        onEnableTextEditMode
 }) => {
 
 	const panelSpaceUsed = () => {
@@ -88,7 +89,12 @@ export const PdfViewer = ({
 
 	const { activeSignerId } = useContext(AnnotationsContext);
 
-	const hasWatermarkAdded = useRef(false);
+        const hasWatermarkAdded = useRef(false);
+        const enableTextEditModeRef = useRef(onEnableTextEditMode);
+
+        useEffect(() => {
+                enableTextEditModeRef.current = onEnableTextEditMode;
+        }, [onEnableTextEditMode]);
 
 	const cleanupDocument = async () => {
 		pdfViewerRef.current?.setDocument(null);
@@ -302,23 +308,29 @@ export const PdfViewer = ({
 
 
 	useEffect(() => {
-		function handleVisibilityChange() {
-			if (document.hidden) {
-				// Page is now hidden
-			}
-			else {
-				// Page is now visible
+                function handleVisibilityChange() {
+                        if (document.hidden) {
+                                // Page is now hidden
+                        }
+                        else {
+                                // Page is now visible
 
-				// You can put your logic here to re-render the PDF or perform some other actions
-				// For example, you might call a function to reload the PDF:
-				const targetContainer = viewerContainerRef1.current;
-				applyDocument(targetContainer);
-			}
-		}
-	
-		document.addEventListener('visibilitychange', handleVisibilityChange);
-		return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-	}, [modifiedFiles, files, activeSignerId]);
+                                // You can put your logic here to re-render the PDF or perform some other actions
+                                // For example, you might call a function to reload the PDF:
+                                console.log('Hello focus');
+                                const targetContainer = viewerContainerRef1.current;
+                                if (targetContainer) {
+                                        applyDocument(targetContainer);
+                                }
+                                if (rightPanelEnabled && editorMode === 'add-clickable-markers') {
+                                        enableTextEditModeRef.current?.();
+                                }
+                        }
+                }
+
+                document.addEventListener('visibilitychange', handleVisibilityChange);
+                return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+        }, [modifiedFiles, files, activeSignerId, rightPanelEnabled, editorMode]);
 
 	const width = () => {
 		if (!tools?.general?.includes('thumbnails')) {
