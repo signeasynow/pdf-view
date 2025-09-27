@@ -100,7 +100,7 @@ const ClickableMarkers = ({
     if (!signers?.length) {
       return;
     }
-
+    console.log(signers, 'signers22')
     const hasActiveSigner = signers.some((signer) => signer.id === activeSignerId);
 
     if (!hasActiveSigner) {
@@ -157,10 +157,10 @@ const ClickableMarkers = ({
             ))}
           </select>
         </div>
-        <button css={tagBtnStyle} onClick={() => onClickField('Sign', false, activeSignerId)}>{t("Signature")}</button>
-        <button css={tagBtnStyle} onClick={() => onClickField('Name', false, activeSignerId)}>{t("Name")}</button>
-        <button css={tagBtnStyle} onClick={() => onClickField('Email', false, activeSignerId)}>{t("Email")}</button>
-        <button css={tagBtnStyle} onClick={() => onClickField('Date', false, activeSignerId)}>{t("Date")}</button>
+        <button css={tagBtnStyle} onClick={() => onClickField(`Sign\n(${signer.name})`, false, activeSignerId)}>{t("Signature")}</button>
+        <button css={tagBtnStyle} onClick={() => onClickField(`Name\n${signer.name}`, false, activeSignerId)}>{t("Name")}</button>
+        <button css={tagBtnStyle} onClick={() => onClickField(`Email\n${signer.name}`, false, activeSignerId)}>{t("Email")}</button>
+        <button css={tagBtnStyle} onClick={() => onClickField(`Date\n${signer.name}`, false, activeSignerId)}>{t("Date")}</button>
       </div>
       <div style={{ display: 'flex', justifyContent: showNavigation ? 'space-between' : 'flex-end', padding: '8px 4px', background: '#f1f3f5' }}>
         {showNavigation ? (
