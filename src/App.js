@@ -1765,17 +1765,24 @@ const App = () => {
 		});
 	};
 
-	const completeAddingSignatureFromTag = async ({signatureImageUrl, details}) => {
-		const { naturalWidth, naturalHeight } = await loadImage(signatureImageUrl);
-		const targetHeight = details.source.height;
-		const aspectRatio = naturalWidth / naturalHeight;
-    const calculatedWidth = targetHeight * aspectRatio;
+        const completeAddingSignatureFromTag = async ({signatureImageUrl, details}) => {
+                const { naturalWidth, naturalHeight } = await loadImage(signatureImageUrl);
+                const targetHeight = details.source.height;
+                const aspectRatio = naturalWidth / naturalHeight;
+                const calculatedWidth = targetHeight * aspectRatio;
 
-		const payload = {
-			id: details.id,
-			pageNumber: details.source.pageIndex + 1,
-			pageIndex: details.source.pageIndex,
-			bitmapUrl: signatureImageUrl,
+                isManuallyAddingImageRef.current = true;
+                pdfViewerRef.current.annotationEditorMode = {
+                        isFromKeyboard: false,
+                        mode: pdfjs.AnnotationEditorType.STAMP,
+                        source: null
+                };
+
+                const payload = {
+                        id: details.id,
+                        pageNumber: details.source.pageIndex + 1,
+                        pageIndex: details.source.pageIndex,
+                        bitmapUrl: signatureImageUrl,
 			initialWidth: calculatedWidth,
 			initialHeight: targetHeight,
 			initialX: details.x + (details.source.width / 2),
@@ -1841,12 +1848,6 @@ const App = () => {
 	}
 
         const handleSignTagClicked = async (details) => {
-                isManuallyAddingImageRef.current = true;
-                pdfViewerRef.current.annotationEditorMode = {
-                        isFromKeyboard: false,
-                        mode: pdfjs.AnnotationEditorType.STAMP,
-                        source: null
-                };
                 if (fullSignature) {
                         completeAddingSignatureFromTag({
                                 signatureImageUrl: fullSignature,
