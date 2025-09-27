@@ -144,8 +144,7 @@ const ClickableMarkers = ({
 	return (
     <div>
       <div css={getWrapperClass()}>
-        <div style={{ margin: '12px 4px 8px' }}><ProgressBar completed={75} customLabel="&nbsp;" bgColor="#d9b432" /></div>
-        <h3 style={{marginLeft: '4px'}}>Click to add clickable markers for:</h3>
+        <h3 style={{marginLeft: '4px'}}>Click to add clickable tags for:</h3>
         <div style={{marginBottom: 8}}>
           <select
             id="activeSignerSelect"
@@ -168,15 +167,15 @@ const ClickableMarkers = ({
         </button>
         <button
           css={tagBtnStyle}
-          onClick={() => onClickField(`Name (${activeSignerName})`, false, activeSignerId)}
+          onClick={() => onClickField(`Initials (${activeSignerName})`, false, activeSignerId)}
         >
-          {t("Name")}
+          {"Initials"}
         </button>
         <button
           css={tagBtnStyle}
-          onClick={() => onClickField(`Email (${activeSignerName})`, false, activeSignerId)}
+          onClick={() => onClickField(`Name (${activeSignerName})`, false, activeSignerId)}
         >
-          {t("Email")}
+          {t("Name")}
         </button>
         <button
           css={tagBtnStyle}
@@ -184,16 +183,12 @@ const ClickableMarkers = ({
         >
           {t("Date")}
         </button>
-      </div>
-      <div style={{ display: 'flex', justifyContent: showNavigation ? 'space-between' : 'flex-end', padding: '8px 4px', background: '#f1f3f5' }}>
-        {showNavigation ? (
-          <>
-            <button css={backBtn} onClick={onBack}><Icon src={ChevronLeft} alt={t("Back")} /><div>{t("Back")}</div></button>
-            <button css={nextBtn} onClick={onNext}><div>{t("Next")}</div><Icon src={ChevronRight} alt={t("Next")} /></button>
-          </>
-        ) : (
-          <button css={saveBtn} onClick={onSave}><div>{t("Save")}</div></button>
-        )}
+        <button
+          css={tagBtnStyle}
+          onClick={() => onClickField(`Email (${activeSignerName})`, false, activeSignerId)}
+        >
+          {t("Email")}
+        </button>
       </div>
     </div>
   );
