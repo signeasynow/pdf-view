@@ -173,7 +173,6 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, us
 	}, [updateQueue]);
 
 	const throttledUpdateAnnotation = (data, text) => {
-		console.log(data, 'datadogg')
 		if (!data) {
 			return;
 		}
