@@ -299,7 +299,7 @@ export const PdfViewer = ({
                                         filteredCount: filteredBySignerAnnotations?.length,
                                         annotations: filteredBySignerAnnotations
                                 });
-				pdfViewerRef.current.setDocument(loadedPdfDocument, filteredBySignerAnnotations);
+				pdfViewerRef.current.setDocument(loadedPdfDocument, annotationsRef.current);
 				pdfLinkServiceRef.current.setDocument(loadedPdfDocument, null);
 				extractTextFromFirstPage(loadedPdfDocument);
 				if (!modifiedFiles[activePageIndex]) {

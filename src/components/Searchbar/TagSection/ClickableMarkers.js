@@ -136,6 +136,8 @@ const ClickableMarkers = ({
     forceRefreshView?.()
   }, [activeSignerId, forceRefreshView]);
 
+  console.log(activeSignerId, 'activeSignerId555');
+
 	return (
     <div>
       <div css={getWrapperClass()}>
