@@ -91,10 +91,15 @@ export const PdfViewer = ({
 
         const hasWatermarkAdded = useRef(false);
         const enableTextEditModeRef = useRef(onEnableTextEditMode);
+        const onTagClickedRef = useRef(onTagClicked);
 
         useEffect(() => {
                 enableTextEditModeRef.current = onEnableTextEditMode;
         }, [onEnableTextEditMode]);
+
+        useEffect(() => {
+                onTagClickedRef.current = onTagClicked;
+        }, [onTagClicked]);
 
 	const cleanupDocument = async () => {
 		pdfViewerRef.current?.setDocument(null);
@@ -192,7 +197,7 @@ export const PdfViewer = ({
 		});
 
 		eventBus.on('tagclicked', (details) => {
-			onTagClicked(details);
+			onTagClickedRef.current?.(details);
 		});
 
 		eventBus.on('annotationfocused', ({ details }) => {

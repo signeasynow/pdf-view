@@ -76,6 +76,7 @@ const TEXT_TAG_FIELD_MAP = {
         date: 'dateTagValue'
 };
 
+
 const normalizeTextTagValue = (value) => value ?? '';
 
 function isFontBold(font) {
