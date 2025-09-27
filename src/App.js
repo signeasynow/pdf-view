@@ -69,6 +69,15 @@ function loadImage(url) {
 const isChromeExtension = process.env.NODE_CHROME === "true";
 let storage = isChromeExtension ? new ChromeStorage() : new IndexedDBStorage();
 
+const TEXT_TAG_FIELD_MAP = {
+        name: 'nameTagValue',
+        email: 'emailTagValue',
+        initials: 'initialsTagValue',
+        date: 'dateTagValue'
+};
+
+const normalizeTextTagValue = (value) => value ?? '';
+
 function isFontBold(font) {
 	if (!font || !font.name) {
 			return false;
@@ -432,6 +441,12 @@ const App = () => {
 	const [activeToolbarItem, setActiveToolbarItem] = useState('');
 	const activeToolbarItemRef = useRef(null);
         const [customData, setCustomData] = useState({});
+        const [textTagValues, setTextTagValues] = useState({
+                name: '',
+                email: '',
+                initials: '',
+                date: ''
+        });
         const [hasConfirmedTextTags, setHasConfirmedTextTags] = useState({
                 name: false,
                 email: false,
@@ -519,32 +534,37 @@ const App = () => {
                                 setNotarySeal(event.data.notarySeal);
                         }
                         if (typeof event.data === 'object' && !!event.data.customData) {
+                                const incomingCustomData = event.data.customData;
+
                                 setCustomData((prevCustomData) => {
                                         const nextCustomData = {
                                                 ...(prevCustomData || {}),
-                                                ...event.data.customData
+                                                ...incomingCustomData
                                         };
 
-                                        const normalizeValue = (value) => value ?? '';
+                                        const nextTextValues = {};
+                                        Object.entries(TEXT_TAG_FIELD_MAP).forEach(([key, field]) => {
+                                                nextTextValues[key] = normalizeTextTagValue(nextCustomData[field]);
+                                        });
 
-                                        setHasConfirmedTextTags((prevConfirmed) => ({
-                                                name:
-                                                        prevConfirmed.name &&
-                                                        normalizeValue(prevCustomData?.nameTagValue) ===
-                                                                normalizeValue(nextCustomData.nameTagValue),
-                                                email:
-                                                        prevConfirmed.email &&
-                                                        normalizeValue(prevCustomData?.emailTagValue) ===
-                                                                normalizeValue(nextCustomData.emailTagValue),
-                                                initials:
-                                                        prevConfirmed.initials &&
-                                                        normalizeValue(prevCustomData?.initialsTagValue) ===
-                                                                normalizeValue(nextCustomData.initialsTagValue),
-                                                date:
-                                                        prevConfirmed.date &&
-                                                        normalizeValue(prevCustomData?.dateTagValue) ===
-                                                                normalizeValue(nextCustomData.dateTagValue)
+                                        setTextTagValues((prevValues) => ({
+                                                ...prevValues,
+                                                ...nextTextValues
                                         }));
+
+                                        setHasConfirmedTextTags((prevConfirmed) => {
+                                                const updatedFlags = { ...prevConfirmed };
+
+                                                Object.entries(TEXT_TAG_FIELD_MAP).forEach(([key, field]) => {
+                                                        const previousValue = normalizeTextTagValue(prevCustomData?.[field]);
+                                                        const nextValue = nextTextValues[key];
+
+                                                        updatedFlags[key] =
+                                                                prevConfirmed[key] && previousValue === nextValue;
+                                                });
+
+                                                return updatedFlags;
+                                        });
 
                                         return nextCustomData;
                                 });
@@ -1764,7 +1784,7 @@ const App = () => {
 				}
 			}
 		}
-		showSignatureModal(customData?.nameTagValue, (sigUrl, text) => {
+                showSignatureModal(textTagValues.name, (sigUrl, text) => {
 			if (text) {
 				completeAddingSignatureFromText({
 					text,
@@ -1817,8 +1837,29 @@ const App = () => {
                 updateAnnotation(payload, content);
         };
 
+        const persistTextTagValue = (key, field, details, value) => {
+                const valueToUse = normalizeTextTagValue(value);
+
+                setTextTagValues((prevValues) => ({
+                        ...prevValues,
+                        [key]: valueToUse
+                }));
+
+                setCustomData((prev) => ({
+                        ...(prev || {}),
+                        [field]: valueToUse
+                }));
+
+                setHasConfirmedTextTags((prev) => ({
+                        ...prev,
+                        [key]: true
+                }));
+
+                placeFreeTextTag(details, valueToUse);
+        };
+
         const handleNameTagClicked = async (details) => {
-                const currentValue = customData?.nameTagValue ?? '';
+                const currentValue = textTagValues.name ?? '';
 
                 if (hasConfirmedTextTags.name) {
                         placeFreeTextTag(details, currentValue);
@@ -1831,22 +1872,13 @@ const App = () => {
                         label: t('Name'),
                         defaultValue: currentValue,
                         onConfirm: (value) => {
-                                const valueToUse = value ?? '';
-                                setCustomData((prev) => ({
-                                        ...(prev || {}),
-                                        nameTagValue: valueToUse
-                                }));
-                                setHasConfirmedTextTags((prev) => ({
-                                        ...prev,
-                                        name: true
-                                }));
-                                placeFreeTextTag(details, valueToUse);
+                                persistTextTagValue('name', TEXT_TAG_FIELD_MAP.name, details, value);
                         }
                 });
         };
 
         const handleEmailTagClicked = async (details) => {
-                const currentValue = customData?.emailTagValue ?? '';
+                const currentValue = textTagValues.email ?? '';
 
                 if (hasConfirmedTextTags.email) {
                         placeFreeTextTag(details, currentValue);
@@ -1859,22 +1891,13 @@ const App = () => {
                         label: t('Email'),
                         defaultValue: currentValue,
                         onConfirm: (value) => {
-                                const valueToUse = value ?? '';
-                                setCustomData((prev) => ({
-                                        ...(prev || {}),
-                                        emailTagValue: valueToUse
-                                }));
-                                setHasConfirmedTextTags((prev) => ({
-                                        ...prev,
-                                        email: true
-                                }));
-                                placeFreeTextTag(details, valueToUse);
+                                persistTextTagValue('email', TEXT_TAG_FIELD_MAP.email, details, value);
                         }
                 });
         };
 
         const handleInitialsTagClicked = async (details) => {
-                const currentValue = customData?.initialsTagValue ?? '';
+                const currentValue = textTagValues.initials ?? '';
 
                 if (hasConfirmedTextTags.initials) {
                         placeFreeTextTag(details, currentValue);
@@ -1887,22 +1910,13 @@ const App = () => {
                         label: t('Initials'),
                         defaultValue: currentValue,
                         onConfirm: (value) => {
-                                const valueToUse = value ?? '';
-                                setCustomData((prev) => ({
-                                        ...(prev || {}),
-                                        initialsTagValue: valueToUse
-                                }));
-                                setHasConfirmedTextTags((prev) => ({
-                                        ...prev,
-                                        initials: true
-                                }));
-                                placeFreeTextTag(details, valueToUse);
+                                persistTextTagValue('initials', TEXT_TAG_FIELD_MAP.initials, details, value);
                         }
                 });
         };
 
         const handleDateTagClicked = async (details) => {
-                const currentValue = customData?.dateTagValue ?? '';
+                const currentValue = textTagValues.date ?? '';
 
                 if (hasConfirmedTextTags.date) {
                         placeFreeTextTag(details, currentValue);
@@ -1915,16 +1929,7 @@ const App = () => {
                         label: t('Date'),
                         defaultValue: currentValue,
                         onConfirm: (value) => {
-                                const valueToUse = value ?? '';
-                                setCustomData((prev) => ({
-                                        ...(prev || {}),
-                                        dateTagValue: valueToUse
-                                }));
-                                setHasConfirmedTextTags((prev) => ({
-                                        ...prev,
-                                        date: true
-                                }));
-                                placeFreeTextTag(details, valueToUse);
+                                persistTextTagValue('date', TEXT_TAG_FIELD_MAP.date, details, value);
                         }
                 });
         };
