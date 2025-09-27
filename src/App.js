@@ -498,7 +498,12 @@ const App = () => {
 
 	const [inputtedUuid, setInputtedUuid] = useState('');
         const { setAuthInfo, authInfo } = useContext(AuthInfoContext);
-        const { setNotarySeal, notarySeal } = useContext(SignaturesContext);
+        const {
+                setNotarySeal,
+                notarySeal,
+                fullSignature,
+                initialsSignature
+        } = useContext(SignaturesContext);
 
 	const { onChangeLocale } = useContext(LocaleContext);
 	const [defaultAnnotationMode, setDefaultAnnotationMode] = useState(null);
@@ -1792,37 +1797,18 @@ const App = () => {
                 pdfViewerRef.current.annotationEditorMode = {
                         isFromKeyboard: false,
                         mode: pdfjs.AnnotationEditorType.STAMP,
-			source: null
-		};
-		const storedType = sessionStorage.getItem('signatureType');
-		if (storedType) {
-			if (storedType === "selectStyle") {
-				const name = sessionStorage.getItem("signatureName");
-				const initials = sessionStorage.getItem("signatureInitials");
-				if (name) {
-					completeAddingSignatureFromText({
-						text: {
-							fullName: name,
-							initials
-						},
-						details
-					});
-					return;
-				}
-			} else {
-				const image = sessionStorage.getItem("signatureImage");
-				if (image) {
-					completeAddingSignatureFromTag({
-						signatureImageUrl: image,
-						details
-					});
-					return;
-				}
-			}
-		}
+                        source: null
+                };
+                if (fullSignature) {
+                        completeAddingSignatureFromTag({
+                                signatureImageUrl: fullSignature,
+                                details
+                        });
+                        return;
+                }
                 showSignatureModal(textTagValues.name, (sigUrl, text) => {
-			if (text) {
-				completeAddingSignatureFromText({
+                        if (text) {
+                                completeAddingSignatureFromText({
 					text,
 					details
 				});
@@ -2031,24 +2017,41 @@ const App = () => {
 		}
 	};
 
-	const onAddImage = (localStorageName) => {
-		isManuallyAddingImageRef.current = true;
-		pdfViewerRef.current.annotationEditorMode = {
-			isFromKeyboard: false,
-			mode: pdfjs.AnnotationEditorType.STAMP,
-			source: null
-		};
-		const isSeal = localStorageName === 'notarySeal';
-		pdfViewerRef.current.annotationEditorParams = {
-			type: AnnotationEditorParamsType.CREATE,
-			value: {
-				bitmapUrl: localStorage.getItem(localStorageName),
-				// initialWidth: 0.1,
-				initialHeight: 0.04
-			}
-		};
-		setAnnotationMode(pdfjs.AnnotationEditorType.STAMP);
-	};
+        const onAddImage = (localStorageName) => {
+                isManuallyAddingImageRef.current = true;
+                pdfViewerRef.current.annotationEditorMode = {
+                        isFromKeyboard: false,
+                        mode: pdfjs.AnnotationEditorType.STAMP,
+                        source: null
+                };
+                let bitmapUrl = '';
+                switch (localStorageName) {
+                        case 'signatureImage':
+                                bitmapUrl = fullSignature;
+                                break;
+                        case 'initialsImage':
+                                bitmapUrl = initialsSignature;
+                                break;
+                        case 'notarySeal':
+                                bitmapUrl = notarySeal;
+                                break;
+                        default:
+                                break;
+                }
+                if (!bitmapUrl) {
+                        console.warn('[Signature] No cached image available for key', localStorageName);
+                        return;
+                }
+                pdfViewerRef.current.annotationEditorParams = {
+                        type: AnnotationEditorParamsType.CREATE,
+                        value: {
+                                bitmapUrl,
+                                // initialWidth: 0.1,
+                                initialHeight: 0.04
+                        }
+                };
+                setAnnotationMode(pdfjs.AnnotationEditorType.STAMP);
+        };
 	
 	const onEditOriginalTextSelected = async (detail, pageNumber) => {
 		if (!pdfProxyObjRef.current) {

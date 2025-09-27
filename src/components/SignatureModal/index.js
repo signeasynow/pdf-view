@@ -129,7 +129,7 @@ export const SignatureModal = ({
 
 	const [signatureUpload, setSignatureUpload] = useState(null);
 
-	const { setFullSignature, fullSignature } = useContext(SignaturesContext);
+        const { setFullSignature, fullSignature } = useContext(SignaturesContext);
 
 	const [activeTab, setActiveTab] = useState('draw');
 
@@ -139,12 +139,10 @@ export const SignatureModal = ({
 			? trimCanvas(signatureRef.current.canvas?.current).toDataURL('image/png')
 			: fullSignature;
 		
-		// Only update localStorage and context if there's a new signature/initials
-		if (signatureImage) {
-			sessionStorage.setItem('signatureImage', signatureImage);
-			try { localStorage.setItem('signatureImage', signatureImage); } catch (_) {}
-			setFullSignature(signatureImage);
-		}
+                // Only update the context if there's a new signature/initials
+                if (signatureImage) {
+                        setFullSignature(signatureImage);
+                }
   
 		// Call the onConfirm callback if provided
 		onConfirm?.(signatureImage, null);
@@ -168,11 +166,9 @@ export const SignatureModal = ({
 		if (!signatureUpload) {
 			return alert("Please upload your signature");
 		}
-		if (signatureUpload) {
-			sessionStorage.setItem('signatureImage', signatureUpload);
-			try { localStorage.setItem('signatureImage', signatureUpload); } catch (_) {}
-			setFullSignature(signatureUpload);
-		}
+                if (signatureUpload) {
+                        setFullSignature(signatureUpload);
+                }
   
 		// Call the onConfirm callback if provided
 		onConfirm?.(signatureUpload, null);
@@ -196,8 +192,7 @@ export const SignatureModal = ({
   };
 
 	const onAdopt = () => {
-		sessionStorage.setItem('signatureType', activeTab);
-		switch (activeTab) {
+                switch (activeTab) {
 			case "draw": {
 				onClickConfirmDrawing();
 				break;

@@ -10,10 +10,22 @@ export const SignaturesContext = createContext({
         setNotarySeal: () => {}
 });
 
+const getInitialNotarySeal = () => {
+        try {
+                if (typeof window === 'undefined' || !window?.localStorage) {
+                        return '';
+                }
+                return window.localStorage.getItem('notarySeal') || '';
+        }
+        catch (err) {
+                return '';
+        }
+};
+
 export const SignaturesProvider = ({ children }) => {
-        const [fullSignature, setFullSignature] = useState(localStorage.getItem('signatureImage'));
-        const [initialsSignature, setInitialsSignature] = useState(localStorage.getItem('initialsImage'));
-        const [notarySeal, setNotarySeal] = useState(localStorage.getItem('notarySeal'));
+        const [fullSignature, setFullSignature] = useState('');
+        const [initialsSignature, setInitialsSignature] = useState('');
+        const [notarySeal, setNotarySeal] = useState(getInitialNotarySeal);
 
         return (
                 <SignaturesContext.Provider value={{
