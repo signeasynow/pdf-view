@@ -32,12 +32,15 @@ const overlayMap = {
 	Sign: 'signature',
 	Name: 'name',
 	Date: 'date',
-	Email: 'email'
+	Email: 'email',
+	Initials: 'initials'
 };
 
 export const GoToNextTag = ({
 	pdf
 }) => {
+
+	console.log("Go to inside")
 
 	const { annotations } = useAnnotations();
 

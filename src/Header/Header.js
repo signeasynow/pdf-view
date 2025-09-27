@@ -58,6 +58,8 @@ const Header = ({
 		return tools?.general?.includes('account') || tools?.general?.includes('locale')
 	}
 
+	console.log(tools?.markers, 'tools?.markers')
+
 	return (
 		<Wrapper>
 			<div css={contentLeftStyle}>
