@@ -519,12 +519,34 @@ const App = () => {
                                 setNotarySeal(event.data.notarySeal);
                         }
                         if (typeof event.data === 'object' && !!event.data.customData) {
-                                setCustomData(event.data.customData);
-                                setHasConfirmedTextTags({
-                                        name: false,
-                                        email: false,
-                                        initials: false,
-                                        date: false
+                                setCustomData((prevCustomData) => {
+                                        const nextCustomData = {
+                                                ...(prevCustomData || {}),
+                                                ...event.data.customData
+                                        };
+
+                                        const normalizeValue = (value) => value ?? '';
+
+                                        setHasConfirmedTextTags((prevConfirmed) => ({
+                                                name:
+                                                        prevConfirmed.name &&
+                                                        normalizeValue(prevCustomData?.nameTagValue) ===
+                                                                normalizeValue(nextCustomData.nameTagValue),
+                                                email:
+                                                        prevConfirmed.email &&
+                                                        normalizeValue(prevCustomData?.emailTagValue) ===
+                                                                normalizeValue(nextCustomData.emailTagValue),
+                                                initials:
+                                                        prevConfirmed.initials &&
+                                                        normalizeValue(prevCustomData?.initialsTagValue) ===
+                                                                normalizeValue(nextCustomData.initialsTagValue),
+                                                date:
+                                                        prevConfirmed.date &&
+                                                        normalizeValue(prevCustomData?.dateTagValue) ===
+                                                                normalizeValue(nextCustomData.dateTagValue)
+                                        }));
+
+                                        return nextCustomData;
                                 });
                         }
 			if (typeof event.data === 'object' && !!event.data.initialAnnotations) {
