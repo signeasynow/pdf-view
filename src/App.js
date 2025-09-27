@@ -355,10 +355,11 @@ const App = () => {
 
 	const [multiPageSelections, setMultiPageSelections] = useState([]);
 
-	const { setModifiedUiElements: setModifiedUiElementsModal,
-		showSignatureModal,
-		hideSignatureModal
-	} = useModal();
+        const { setModifiedUiElements: setModifiedUiElementsModal,
+                showSignatureModal,
+                showTextTagModal,
+                hideSignatureModal
+        } = useModal();
 	useEffect(() => {
 		if (!modifiedUiElements) {
 			return;
@@ -430,7 +431,13 @@ const App = () => {
 	const { operations, setOperations, redoStack, setRedoStack, addOperation } = useContext(UndoRedoContext);
 	const [activeToolbarItem, setActiveToolbarItem] = useState('');
 	const activeToolbarItemRef = useRef(null);
-	const [customData, setCustomData] = useState({});
+        const [customData, setCustomData] = useState({});
+        const [hasConfirmedTextTags, setHasConfirmedTextTags] = useState({
+                name: false,
+                email: false,
+                initials: false,
+                date: false
+        });
 
 	useEffect(() => {
 		activeToolbarItemRef.current = activeToolbarItem;
@@ -511,9 +518,15 @@ const App = () => {
                                 }
                                 setNotarySeal(event.data.notarySeal);
                         }
-			if (typeof event.data === 'object' && !!event.data.customData) {
-				setCustomData(event.data.customData);
-			}
+                        if (typeof event.data === 'object' && !!event.data.customData) {
+                                setCustomData(event.data.customData);
+                                setHasConfirmedTextTags({
+                                        name: false,
+                                        email: false,
+                                        initials: false,
+                                        date: false
+                                });
+                        }
 			if (typeof event.data === 'object' && !!event.data.initialAnnotations) {
 				setInitialAnnotations(event.data.initialAnnotations);
 			}
@@ -1696,11 +1709,11 @@ const App = () => {
 		updateAnnotation(payload, text.fullName);
 	}
 
-	const handleSignTagClicked = async (details) => {
-		isManuallyAddingImageRef.current = true;
-		pdfViewerRef.current.annotationEditorMode = {
-			isFromKeyboard: false,
-			mode: pdfjs.AnnotationEditorType.STAMP,
+        const handleSignTagClicked = async (details) => {
+                isManuallyAddingImageRef.current = true;
+                pdfViewerRef.current.annotationEditorMode = {
+                        isFromKeyboard: false,
+                        mode: pdfjs.AnnotationEditorType.STAMP,
 			source: null
 		};
 		const storedType = sessionStorage.getItem('signatureType');
@@ -1741,126 +1754,158 @@ const App = () => {
 				signatureImageUrl: sigUrl,
 				details
 			});
-		});
-	};
+                });
+        };
 
-	const handleNameTagClicked = async (details) => {
-		const text = customData?.nameTagValue;
+        const placeFreeTextTag = (details, text) => {
+                const content = text ?? '';
+                const dynamicFontSize = calculateFontSize(details.source.height);
 
-		const dynamicFontSize = calculateFontSize(details.source.height);
+                pdfViewerRef.current.annotationEditorMode = {
+                        isFromKeyboard: false,
+                        mode: pdfjs.AnnotationEditorType.FREETEXT,
+                        source: null
+                };
+                const payload = {
+                        id: details.id,
+                        pageNumber: details.source.pageIndex + 1,
+                        pageIndex: details.source.pageIndex,
+                        content,
+                        x: details.x,
+                        y: details.y,
+                        initialX: details.x,
+                        initialY: details.y,
+                        color: '#080808',
+                        fontSize: dynamicFontSize,
+                        fontFamily: 'helvetica',
+                        name: 'freeTextEditor',
+                        moveDisabled: true
+                };
+                pdfViewerRef.current.annotationEditorParams = {
+                        type: AnnotationEditorParamsType.CREATE,
+                        value: payload
+                };
+                if (editorMode === 'click-tag') {
+                        pdfViewerRef.current.annotationEditorMode = {
+                                isFromKeyboard: false,
+                                mode: pdfjs.AnnotationEditorType.CLICKTAG,
+                                source: null
+                        };
+                }
+                updateAnnotation(payload, content);
+        };
 
-		pdfViewerRef.current.annotationEditorMode = {
-			isFromKeyboard: false,
-			mode: pdfjs.AnnotationEditorType.FREETEXT,
-			source: null
-		};
-		const payload = {
-			id: details.id,
-			pageNumber: details.source.pageIndex + 1,
-			pageIndex: details.source.pageIndex,
-			content: text,
-			x: details.x,
-			y: details.y,
-			initialX: details.x,
-			initialY: details.y,
-			color: '#080808',
-			fontSize: dynamicFontSize,
-			fontFamily: 'helvetica',
-			name: 'freeTextEditor',
-			moveDisabled: true
-		};
-		pdfViewerRef.current.annotationEditorParams = {
-			type: AnnotationEditorParamsType.CREATE,
-			value: payload
-		};
-		// maintains the mode.
-		if (editorMode === 'click-tag') {
-			pdfViewerRef.current.annotationEditorMode = {
-				isFromKeyboard: false,
-				mode: pdfjs.AnnotationEditorType.CLICKTAG,
-				source: null
-			};
-		}
-		updateAnnotation(payload, text);
-	};
+        const handleNameTagClicked = async (details) => {
+                const currentValue = customData?.nameTagValue ?? '';
 
-	const handleEmailTagClicked = async (details) => {
-		const dynamicFontSize = calculateFontSize(details.source.height);
+                if (hasConfirmedTextTags.name) {
+                        placeFreeTextTag(details, currentValue);
+                        return;
+                }
 
-		const text = customData?.emailTagValue;
-		pdfViewerRef.current.annotationEditorMode = {
-			isFromKeyboard: false,
-			mode: pdfjs.AnnotationEditorType.FREETEXT,
-			source: null
-		};
-		const payload = {
-			id: details.id,
-			pageNumber: details.source.pageIndex + 1,
-			pageIndex: details.source.pageIndex,
-			content: text,
-			x: details.x,
-			y: details.y,
-			initialX: details.x,
-			initialY: details.y,
-			color: '#080808',
-			fontSize: dynamicFontSize,
-			fontFamily: 'helvetica',
-			name: 'freeTextEditor',
-			moveDisabled: true
-		};
-		pdfViewerRef.current.annotationEditorParams = {
-			type: AnnotationEditorParamsType.CREATE,
-			value: payload
-		};
-		// maintains the mode.
-		if (editorMode === 'click-tag') {
-			pdfViewerRef.current.annotationEditorMode = {
-				isFromKeyboard: false,
-				mode: pdfjs.AnnotationEditorType.CLICKTAG,
-				source: null
-			};
-		}
-		updateAnnotation(payload, text);
-	};
+                showTextTagModal({
+                        title: t('Confirm your name'),
+                        description: t('Update the name before placing it on the document.'),
+                        label: t('Name'),
+                        defaultValue: currentValue,
+                        onConfirm: (value) => {
+                                const valueToUse = value ?? '';
+                                setCustomData((prev) => ({
+                                        ...(prev || {}),
+                                        nameTagValue: valueToUse
+                                }));
+                                setHasConfirmedTextTags((prev) => ({
+                                        ...prev,
+                                        name: true
+                                }));
+                                placeFreeTextTag(details, valueToUse);
+                        }
+                });
+        };
 
-	const handleDateTagClicked = async (details) => {
-		const dynamicFontSize = calculateFontSize(details.source.height);
+        const handleEmailTagClicked = async (details) => {
+                const currentValue = customData?.emailTagValue ?? '';
 
-		const text = customData?.dateTagValue;
-		pdfViewerRef.current.annotationEditorMode = {
-			isFromKeyboard: false,
-			mode: pdfjs.AnnotationEditorType.FREETEXT,
-			source: null
-		};
-		const payload = {
-			id: details.id,
-			pageNumber: details.source.pageIndex + 1,
-			pageIndex: details.source.pageIndex,
-			content: text,
-			x: details.x,
-			y: details.y,
-			initialX: details.x,
-			initialY: details.y,
-			color: '#080808',
-			fontSize: dynamicFontSize,
-			fontFamily: 'helvetica',
-			name: 'freeTextEditor',
-			moveDisabled: true
-		};
-		pdfViewerRef.current.annotationEditorParams = {
-			type: AnnotationEditorParamsType.CREATE,
-			value: payload
-		};
-		// maintains the mode.
-		if (editorMode === 'click-tag') {
-			pdfViewerRef.current.annotationEditorMode = {
-				isFromKeyboard: false,
-				mode: pdfjs.AnnotationEditorType.CLICKTAG,
-				source: null
-			};
-		}
-		updateAnnotation(payload, text);
-	};
+                if (hasConfirmedTextTags.email) {
+                        placeFreeTextTag(details, currentValue);
+                        return;
+                }
+
+                showTextTagModal({
+                        title: t('Confirm your email'),
+                        description: t('Update the email before placing it on the document.'),
+                        label: t('Email'),
+                        defaultValue: currentValue,
+                        onConfirm: (value) => {
+                                const valueToUse = value ?? '';
+                                setCustomData((prev) => ({
+                                        ...(prev || {}),
+                                        emailTagValue: valueToUse
+                                }));
+                                setHasConfirmedTextTags((prev) => ({
+                                        ...prev,
+                                        email: true
+                                }));
+                                placeFreeTextTag(details, valueToUse);
+                        }
+                });
+        };
+
+        const handleInitialsTagClicked = async (details) => {
+                const currentValue = customData?.initialsTagValue ?? '';
+
+                if (hasConfirmedTextTags.initials) {
+                        placeFreeTextTag(details, currentValue);
+                        return;
+                }
+
+                showTextTagModal({
+                        title: t('Confirm your initials'),
+                        description: t('Update the initials before placing them on the document.'),
+                        label: t('Initials'),
+                        defaultValue: currentValue,
+                        onConfirm: (value) => {
+                                const valueToUse = value ?? '';
+                                setCustomData((prev) => ({
+                                        ...(prev || {}),
+                                        initialsTagValue: valueToUse
+                                }));
+                                setHasConfirmedTextTags((prev) => ({
+                                        ...prev,
+                                        initials: true
+                                }));
+                                placeFreeTextTag(details, valueToUse);
+                        }
+                });
+        };
+
+        const handleDateTagClicked = async (details) => {
+                const currentValue = customData?.dateTagValue ?? '';
+
+                if (hasConfirmedTextTags.date) {
+                        placeFreeTextTag(details, currentValue);
+                        return;
+                }
+
+                showTextTagModal({
+                        title: t('Confirm the date'),
+                        description: t('Update the date before placing it on the document.'),
+                        label: t('Date'),
+                        defaultValue: currentValue,
+                        onConfirm: (value) => {
+                                const valueToUse = value ?? '';
+                                setCustomData((prev) => ({
+                                        ...(prev || {}),
+                                        dateTagValue: valueToUse
+                                }));
+                                setHasConfirmedTextTags((prev) => ({
+                                        ...prev,
+                                        date: true
+                                }));
+                                placeFreeTextTag(details, valueToUse);
+                        }
+                });
+        };
 
 	const onTagClicked = (details) => {
 		const tagPayload = {
@@ -1874,14 +1919,18 @@ const App = () => {
 				handleSignTagClicked(details);
 				break;
 			}
-			case 'Name': {
-				handleNameTagClicked(details);
-				break;
-			}
-			case 'Date': {
-				handleDateTagClicked(details);
-				break;
-			}
+                        case 'Name': {
+                                handleNameTagClicked(details);
+                                break;
+                        }
+                        case 'Initials': {
+                                handleInitialsTagClicked(details);
+                                break;
+                        }
+                        case 'Date': {
+                                handleDateTagClicked(details);
+                                break;
+                        }
 			case 'Email': {
 				handleEmailTagClicked(details);
 				break;
