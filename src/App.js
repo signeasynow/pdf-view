@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import './index.css';
-import { useContext, useEffect, useRef, useState } from 'preact/hooks';
+import { useCallback, useContext, useEffect, useRef, useState } from 'preact/hooks';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import Header from './Header/Header';
 import Subheader from './Subheader';
@@ -442,6 +442,29 @@ const App = () => {
 	const [activeToolbarItem, setActiveToolbarItem] = useState('');
 	const activeToolbarItemRef = useRef(null);
         const [customData, setCustomData] = useState({});
+        const applyTextTagDefaults = useCallback((incomingValues = {}) => {
+                if (!incomingValues || typeof incomingValues !== 'object') {
+                        return;
+                }
+
+                setTextTagValues((prevValues) => {
+                        let hasChanges = false;
+                        const updatedValues = { ...prevValues };
+
+                        Object.entries(TEXT_TAG_FIELD_MAP).forEach(([key, field]) => {
+                                const rawIncomingValue = incomingValues[key] ?? incomingValues[field];
+                                const normalizedIncomingValue = normalizeTextTagValue(rawIncomingValue);
+                                const normalizedCurrentValue = normalizeTextTagValue(prevValues[key]);
+
+                                if (normalizedIncomingValue && !normalizedCurrentValue) {
+                                        updatedValues[key] = normalizedIncomingValue;
+                                        hasChanges = true;
+                                }
+                        });
+
+                        return hasChanges ? updatedValues : prevValues;
+                });
+        }, []);
         const [textTagValues, setTextTagValues] = useState({
                 name: '',
                 email: '',
@@ -508,11 +531,11 @@ const App = () => {
 	const { onChangeLocale } = useContext(LocaleContext);
 	const [defaultAnnotationMode, setDefaultAnnotationMode] = useState(null);
 
-	useEffect(() => {
-		window.addEventListener('message', (event) => {
-			if (typeof event.data === 'object' && event.data.files?.length) {
-				addInitialFiles(event);
-			}
+        useEffect(() => {
+                const handleHostMessage = (event) => {
+                        if (typeof event.data === 'object' && event.data.files?.length) {
+                                addInitialFiles(event);
+                        }
 			if (typeof event.data === 'object' && event.data.tools) {
 				setTools(event.data.tools);
 			}
@@ -615,9 +638,14 @@ const App = () => {
 			if (typeof event.data === 'object' && !!event.data.initialAnnotations) {
 				setInitialAnnotations(event.data.initialAnnotations);
 			}
-			if (typeof event.data === 'object' && !!event.data.initialSigners) {
-				setInitialSigners(event.data.initialSigners);
-			}
+                        if (typeof event.data === 'object' && !!event.data.initialSigners) {
+                                setInitialSigners(event.data.initialSigners);
+                        }
+                        if (typeof event.data === 'object' && (event.data?.type === 'text-tag-defaults' || event.data?.textTagDefaults)) {
+                                const defaultsPayload = event.data.values ?? event.data.defaults ?? event.data.textTagDefaults ?? {};
+                                console.log('[TextTag] Received defaults from host', defaultsPayload);
+                                applyTextTagDefaults(defaultsPayload);
+                        }
 			if (typeof event.data === 'object' && !!event.data.modifiedUiElements) {
 				setModifiedUiElements(event.data.modifiedUiElements);
 			}
@@ -627,17 +655,37 @@ const App = () => {
 			if (typeof event.data === 'object' && !!event.data.defaultAnnotationEditorMode) {
 				setDefaultAnnotationMode(event.data.defaultAnnotationEditorMode);
 			}
-			if (event.data?.type === 'fromCore') {
-				const id = event.data.id;
-				if (pendingRequests[id]) {
-					// Resolve the promise with the result
-					pendingRequests[id].resolve(event.data.result);
-					// Remove the pending request
-					delete pendingRequests[id];
-				}
-			}
-		}, false);
-	}, []);
+                        if (event.data?.type === 'fromCore') {
+                                const id = event.data.id;
+                                if (pendingRequests[id]) {
+                                        // Resolve the promise with the result
+                                        pendingRequests[id].resolve(event.data.result);
+                                        // Remove the pending request
+                                        delete pendingRequests[id];
+                                }
+                        }
+                };
+
+                window.addEventListener('message', handleHostMessage, false);
+
+                return () => {
+                        window.removeEventListener('message', handleHostMessage, false);
+                };
+        }, [applyTextTagDefaults]);
+
+        useEffect(() => {
+                if (typeof window === 'undefined' || !window.parent || window.parent === window) {
+                        return;
+                }
+
+                try {
+                        window.parent.postMessage({ type: 'request-text-tag-defaults' }, '*');
+                        console.log('[TextTag] Requested defaults from host');
+                }
+                catch (error) {
+                        console.warn('[TextTag] Failed to request defaults from host', error);
+                }
+        }, []);
 
 	async function doMerge(pdfList) {
 		const mergedPdf = await PDFDocument.create();
