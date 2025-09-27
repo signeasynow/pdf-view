@@ -126,6 +126,9 @@ const ClickableMarkers = ({
     annotationIds: annotationsRef?.current?.map((annotation) => annotation.id),
   });
 
+  const activeSigner = signers?.find((signer) => signer.id === activeSignerId);
+  const activeSignerName = activeSigner?.name || activeSigner?.email || '';
+
   useEffect(() => {
     if (!activeSignerId) {
       return;
@@ -150,17 +153,37 @@ const ClickableMarkers = ({
             onChange={handleSelectChange}
             style={{ marginLeft: '4px' }}
           >
-            {signers.map((signer) => (
+            {signers?.map((signer) => (
               <option key={signer.id} value={signer.id}>
                 {signer.name || signer.email}
               </option>
             ))}
           </select>
         </div>
-        <button css={tagBtnStyle} onClick={() => onClickField(`Sign\n(${signer.name})`, false, activeSignerId)}>{t("Signature")}</button>
-        <button css={tagBtnStyle} onClick={() => onClickField(`Name\n${signer.name}`, false, activeSignerId)}>{t("Name")}</button>
-        <button css={tagBtnStyle} onClick={() => onClickField(`Email\n${signer.name}`, false, activeSignerId)}>{t("Email")}</button>
-        <button css={tagBtnStyle} onClick={() => onClickField(`Date\n${signer.name}`, false, activeSignerId)}>{t("Date")}</button>
+        <button
+          css={tagBtnStyle}
+          onClick={() => onClickField(`Sign (${activeSignerName})`, false, activeSignerId)}
+        >
+          {t("Signature")}
+        </button>
+        <button
+          css={tagBtnStyle}
+          onClick={() => onClickField(`Name (${activeSignerName})`, false, activeSignerId)}
+        >
+          {t("Name")}
+        </button>
+        <button
+          css={tagBtnStyle}
+          onClick={() => onClickField(`Email (${activeSignerName})`, false, activeSignerId)}
+        >
+          {t("Email")}
+        </button>
+        <button
+          css={tagBtnStyle}
+          onClick={() => onClickField(`Date (${activeSignerName})`, false, activeSignerId)}
+        >
+          {t("Date")}
+        </button>
       </div>
       <div style={{ display: 'flex', justifyContent: showNavigation ? 'space-between' : 'flex-end', padding: '8px 4px', background: '#f1f3f5' }}>
         {showNavigation ? (
