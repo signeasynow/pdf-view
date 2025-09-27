@@ -555,28 +555,52 @@ const App = () => {
 
                                         console.log('[TextTag] Next text values from customData', nextTextValues);
 
-                                        setTextTagValues((prevValues) => ({
-                                                ...prevValues,
-                                                ...nextTextValues
-                                        }));
+                                        setTextTagValues((prevValues) => {
+                                                let hasChanges = false;
+                                                const updatedValues = { ...prevValues };
+
+                                                Object.entries(nextTextValues).forEach(([key, incomingValue]) => {
+                                                        const currentValue = normalizeTextTagValue(prevValues[key]);
+                                                        const shouldApply = incomingValue !== '' || currentValue === '';
+
+                                                        if (shouldApply && incomingValue !== currentValue) {
+                                                                updatedValues[key] = incomingValue;
+                                                                hasChanges = true;
+                                                        }
+                                                });
+
+                                                return hasChanges ? updatedValues : prevValues;
+                                        });
 
                                         setHasConfirmedTextTags((prevConfirmed) => {
+                                                let hasFlagChanges = false;
                                                 const updatedFlags = { ...prevConfirmed };
 
                                                 Object.entries(TEXT_TAG_FIELD_MAP).forEach(([key, field]) => {
                                                         const previousValue = normalizeTextTagValue(prevCustomData?.[field]);
                                                         const nextValue = nextTextValues[key];
 
-                                                        updatedFlags[key] =
-                                                                prevConfirmed[key] && previousValue === nextValue;
+                                                        const nextFlag =
+                                                                nextValue === ''
+                                                                        ? prevConfirmed[key]
+                                                                        : prevConfirmed[key] && previousValue === nextValue;
+
+                                                        if (nextFlag !== prevConfirmed[key]) {
+                                                                updatedFlags[key] = nextFlag;
+                                                                hasFlagChanges = true;
+                                                        }
                                                 });
 
-                                                console.log('[TextTag] Updated confirmation flags after host sync', {
-                                                        previousFlags: prevConfirmed,
-                                                        updatedFlags
-                                                });
+                                                if (hasFlagChanges) {
+                                                        console.log('[TextTag] Updated confirmation flags after host sync', {
+                                                                previousFlags: prevConfirmed,
+                                                                updatedFlags
+                                                        });
 
-                                                return updatedFlags;
+                                                        return updatedFlags;
+                                                }
+
+                                                return prevConfirmed;
                                         });
 
                                         return nextCustomData;
@@ -1531,8 +1555,6 @@ const App = () => {
 
 	const [splitMarkers, setSplitMarkers] = useState([]);
 
-	console.log(annotationsRef?.current, 'annotationsRef.current')
-
 	const onClickSplit = (idx) => {
 		if (splitMarkers.includes(idx)) {
 			setSplitMarkers(splitMarkers.filter((each) => each !== idx));
@@ -2065,10 +2087,7 @@ const App = () => {
 		addOperation(operation);
 	};
 
-	console.log(annotations, 'not333')
-
 	const onClickField = (type, isAutoFill, userId) => {
-		console.log(isAutoFill, 'isAutoFill22')
 		pdfViewerRef.current.annotationEditorMode = {
 			isFromKeyboard: false,
 			mode: pdfjs.AnnotationEditorType.STAMP,

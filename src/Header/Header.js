@@ -50,15 +50,12 @@ const Header = ({
 
 	const { showSettingsModal } = useModal();
 	const onSettings = () => {
-		console.log("showing set")
 		showSettingsModal();
 	}
 
 	const showSettings = () => {
 		return tools?.general?.includes('account') || tools?.general?.includes('locale')
 	}
-
-	console.log(tools?.markers, 'tools?.markers')
 
 	return (
 		<Wrapper>
