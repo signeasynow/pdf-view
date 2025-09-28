@@ -5,7 +5,7 @@ import { Icon } from 'alien35_pdf_ui_lib_2';
 import ChevronRight from '../../../../assets/chevron-right-svgrepo-com.svg';
 import { useTranslation } from 'react-i18next';
 import ChevronLeft from '../../../../assets/chevron-left-svgrepo-com.svg';
-import { useContext, useEffect, useState } from 'preact/hooks';
+import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import { AnnotationsContext } from '../../../Contexts/AnnotationsContext';
 
 const backBtn = css`
@@ -86,6 +86,12 @@ const ClickableMarkers = ({
 
 	const { t } = useTranslation();
   const { activeSignerId, setActiveSignerId, annotationsRef } = useContext(AnnotationsContext);
+  const previousSignerIdRef = useRef();
+  const forceRefreshViewRef = useRef(forceRefreshView);
+
+  useEffect(() => {
+    forceRefreshViewRef.current = forceRefreshView;
+  }, [forceRefreshView]);
 
   // const [activeSignerId, setActiveSignerId] = useState(signers[0]?.id);
 
@@ -131,13 +137,22 @@ const ClickableMarkers = ({
 
   useEffect(() => {
     if (!activeSignerId) {
+      previousSignerIdRef.current = undefined;
       return;
     }
+
+    if (previousSignerIdRef.current === activeSignerId) {
+      return;
+    }
+
+    previousSignerIdRef.current = activeSignerId;
+
     console.log('[ClickableMarkers] forcing refresh for active signer change', {
       activeSignerId,
     });
-    forceRefreshView?.()
-  }, [activeSignerId, forceRefreshView]);
+
+    forceRefreshViewRef.current?.();
+  }, [activeSignerId]);
 
   console.log(activeSignerId, 'activeSignerId555');
 
