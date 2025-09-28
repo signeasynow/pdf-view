@@ -1287,6 +1287,7 @@ const App = () => {
 
 	const isManuallyAddingImageRef = useRef(false);
 	const usingUndoRedoRef = useRef(false);
+	const lastTagDetailsRef = useRef(null);
 	const { updateAnnotation, moveAnnotation, updateAnnotationParam, resizeAnnotation, removeAnnotation } = useAnnotations(activeAnnotationRef, isManuallyAddingImageRef, usingUndoRedoRef);
 	const { annotations, setAnnotations, annotationsRef } = useContext(AnnotationsContext);
 
@@ -1765,10 +1766,34 @@ const App = () => {
 		});
 	};
 
-        const completeAddingSignatureFromTag = async ({signatureImageUrl, details}) => {
-			console.log(details, 'det222', signatureImageUrl, 'sigurl')
+        const completeAddingSignatureFromTag = async ({ signatureImageUrl, details }) => {
+                const persistedDetails = lastTagDetailsRef.current;
+                const tagDetails = details ?? persistedDetails;
+
+                console.log('[Signature] completeAddingSignatureFromTag', {
+                        signatureImageUrl,
+                        incomingDetails: details,
+                        persistedDetails
+                });
+
+                if (!tagDetails) {
+                        console.warn('[Signature] Missing tag details when completing signature placement');
+                        return;
+                }
+
+                if (!signatureImageUrl) {
+                        console.warn('[Signature] Missing signature image URL when completing signature placement');
+                        return;
+                }
+
+                const source = tagDetails.source;
+                if (!source) {
+                        console.warn('[Signature] Tag details missing source metadata', tagDetails);
+                        return;
+                }
+
                 const { naturalWidth, naturalHeight } = await loadImage(signatureImageUrl);
-                const targetHeight = details.source.height;
+                const targetHeight = source.height;
                 const aspectRatio = naturalWidth / naturalHeight;
                 const calculatedWidth = targetHeight * aspectRatio;
 
@@ -1780,15 +1805,15 @@ const App = () => {
                 };
 
                 const payload = {
-                        id: details.id,
-                        pageNumber: details.source.pageIndex + 1,
-                        pageIndex: details.source.pageIndex,
+                        id: tagDetails.id,
+                        pageNumber: source.pageIndex + 1,
+                        pageIndex: source.pageIndex,
                         bitmapUrl: signatureImageUrl,
-						userId: details.source.userId,
+                        userId: source.userId,
 			initialWidth: calculatedWidth,
 			initialHeight: targetHeight,
-			initialX: details.x + (details.source.width / 2),
-			initialY: details.y + (targetHeight / 2),
+			initialX: tagDetails.x + (source.width / 2),
+			initialY: tagDetails.y + (targetHeight / 2),
 			name: 'stampEditor',
 			moveDisabled: true
 		};
@@ -1797,6 +1822,8 @@ const App = () => {
 			type: "AnnotationEditorParamsType.UPDATE",
 			value: payload
 		};
+		details.source?.remove();
+
 		// maintains the mode.
 		if (editorMode === 'click-tag') {
 			pdfViewerRef.current.annotationEditorMode = {
@@ -2038,13 +2065,35 @@ const App = () => {
         };
 
 	const onTagClicked = (details) => {
+		if (!details) {
+			lastTagDetailsRef.current = null;
+			console.warn('[TagDetails] Received empty details from tag click');
+			return;
+		}
+
+		try {
+			lastTagDetailsRef.current = typeof structuredClone === 'function'
+				? structuredClone(details)
+				: JSON.parse(JSON.stringify(details));
+		}
+		catch (error) {
+			console.warn('[TagDetails] Failed to clone tag details; falling back to shallow copy', error);
+			lastTagDetailsRef.current = {
+				...details,
+				source: {
+					...details?.source
+				}
+			};
+		}
+
+		const markerType = details.source?.overlayText;
 		const tagPayload = {
-			markerType: details.source?.overlayText,
+			markerType,
 			pageNumber: details.source?.pageIndex + 1,
 			coordinates: [details.source?.x, details.source?.y]
 		};
 		window.parent.postMessage({ type: 'click-tag', ...tagPayload }, '*');
-		switch (details.source.overlayText) {
+		switch (markerType) {
 			case 'Sign': {
 				handleSignTagClicked(details);
 				break;
