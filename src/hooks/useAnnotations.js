@@ -103,12 +103,15 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, us
 
 	const updateSignatureAnnotation = (data) => {
 		let updatedAnnotations = JSON.parse(JSON.stringify(annotationsRef.current));
+		console.log(updatedAnnotations, 'updatedAnnotations223')
+		console.log(data, 'abc123- data223')
 		const existingAnnotation = updatedAnnotations.find((e) => e.id === data.id);
 		activeAnnotationRef.current = data.id;
 		if (!existingAnnotation) {
 			// TOTALLY FINE FOR THERE TO BE NONE.
 		}
 		const pastAnnotations = updatedAnnotations.filter((e) => e.id !== data.id);
+		console.log(pastAnnotations, 'abc123- pastAnnotations223')
 		const dataPayload = {
 			height: typeof data.height === "number" ? data.height : existingAnnotation?.height,
 			width: typeof data.width === "number" ? data.width : existingAnnotation?.width,
@@ -127,11 +130,13 @@ export const useAnnotations = (activeAnnotationRef, isManuallyAddingImageRef, us
 			...pastAnnotations,
 			dataPayload
 		];
+		console.log(updatedAnnotations, 'abc123- updatedAnnotations3322')
 		// updatedAnnotations = updatedAnnotations.filter((e) => !!e.urlPath && e.name === "stampEditor");
 		const operationPayload = {
 			pageIndex: data.pageIndex,
 			...dataPayload
 		};
+		console.log(operationPayload, 'abc123- operationPayload22')
 		const operation = { action: 'update-annotation', data: operationPayload };
 		if (isManuallyAddingImageRef.current) {
 			addOperation(operation);

@@ -1766,6 +1766,7 @@ const App = () => {
 	};
 
         const completeAddingSignatureFromTag = async ({signatureImageUrl, details}) => {
+			console.log(details, 'det222', signatureImageUrl, 'sigurl')
                 const { naturalWidth, naturalHeight } = await loadImage(signatureImageUrl);
                 const targetHeight = details.source.height;
                 const aspectRatio = naturalWidth / naturalHeight;
@@ -1808,7 +1809,7 @@ const App = () => {
 
 	const completeAddingSignatureFromText = ({details, text}) => {
 		const { fullName } = text;
-		console.log(fullName, 'fullName22', text)
+		console.log(fullName, 'fullName22', text, 'det', details)
 
 		const dynamicFontSize = calculateFontSize(details.source.height);
 
