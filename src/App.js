@@ -1932,6 +1932,7 @@ const App = () => {
                         type: AnnotationEditorParamsType.CREATE,
                         value: payload
                 };
+                details.source?.remove();
                 if (editorMode === 'click-tag') {
                         pdfViewerRef.current.annotationEditorMode = {
                                 isFromKeyboard: false,
