@@ -1784,6 +1784,7 @@ const App = () => {
                         pageNumber: details.source.pageIndex + 1,
                         pageIndex: details.source.pageIndex,
                         bitmapUrl: signatureImageUrl,
+						userId: details.source.userId,
 			initialWidth: calculatedWidth,
 			initialHeight: targetHeight,
 			initialX: details.x + (details.source.width / 2),
@@ -1791,9 +1792,9 @@ const App = () => {
 			name: 'stampEditor',
 			moveDisabled: true
 		};
-
+		// actually applies it
 		pdfViewerRef.current.annotationEditorParams = {
-			type: AnnotationEditorParamsType.CREATE,
+			type: "AnnotationEditorParamsType.UPDATE",
 			value: payload
 		};
 		// maintains the mode.
