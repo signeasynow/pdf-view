@@ -52,18 +52,42 @@ const gradientLeft = css`
 `;
 
 const gradientRight = css`
-	position: fixed;
-	z-index: 99999;
-	height: 48px;
-	right: -1px;
-	width: 24px;
-	background: linear-gradient(to right, rgba(255, 255, 255, 0) 20%, rgba(255, 255, 255, 1) 70%);
+        position: fixed;
+        z-index: 99999;
+        height: 48px;
+        right: -1px;
+        width: 24px;
+        background: linear-gradient(to right, rgba(255, 255, 255, 0) 20%, rgba(255, 255, 255, 1) 70%);
+`;
+
+const applyChangesButtonStyle = css`
+        margin-left: 8px;
+        background-color: #2563eb;
+        border: none;
+        color: white;
+        border-radius: 4px;
+        padding: 6px 12px;
+        font-weight: 600;
+        cursor: pointer;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover:enabled {
+                background-color: #1d4ed8;
+        }
+
+        &:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+        }
 `;
 
 const Subheader = ({
-	editorMode,
-	fontFamilyValue,
-	annotationColor,
+        editorMode,
+        fontFamilyValue,
+        annotationColor,
 	setAnnotationColor,
 	setFontFamilyValue,
 	annotationMode,
@@ -94,16 +118,19 @@ const Subheader = ({
 	setMultiPageSelections,
 	multiPageSelections,
 	expandedViewThumbnailScale,
-	setExpandedViewThumbnailScale,
-	onExtract,
-	pdfViewerRef,
-	fontWeightBold,
-	onUpdateFontWeight,
-	onUpdateFontItalic,
-	fontItalic
+        setExpandedViewThumbnailScale,
+        onExtract,
+        pdfViewerRef,
+        fontWeightBold,
+        onUpdateFontWeight,
+        onUpdateFontItalic,
+        fontItalic,
+        showApplyDocumentChanges,
+        onApplyDocumentChanges,
+        isApplyingDocumentChanges
 }) => {
-	
-	const { t } = useTranslation();
+
+        const { t } = useTranslation();
 
 	const handleInputChange = (e) => {
 		const num = parseInt(e.target.value, 10);
@@ -160,20 +187,23 @@ const Subheader = ({
 		}
 	};
 
-	const isSmallScreen = useMediaQuery('(max-width: 550px)');
+        const isSmallScreen = useMediaQuery('(max-width: 550px)');
 
-	return (
-		<Wrapper isSmallScreen={isSmallScreen}>
-			{
-				isSmallScreen && (
+        const shouldRenderApplyChangesButton = showApplyDocumentChanges && typeof onApplyDocumentChanges === 'function';
+        const applyChangesLabel = isApplyingDocumentChanges ? t('Applying...') : t('Apply changes');
+
+        return (
+                <Wrapper isSmallScreen={isSmallScreen}>
+                        {
+                                isSmallScreen && (
 					<>
 						<div css={gradientLeft} />
 						<div css={gradientRight} />
 					</>
 				)
 			}
-			<div css={contentLeftStyle}>
-			  <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <div css={contentLeftStyle}>
+                          <div style={{ display: 'flex', alignItems: 'center' }}>
                                   <AnnotationSelectionDropdown
                                                 editorMode={editorMode}
                                                 tools={tools}
@@ -182,11 +212,21 @@ const Subheader = ({
                                                 onClickSignature={onAddImage}
                                                 onChangeActiveToolbarItem={onChangeActiveToolbarItem}
                                         />
-					<Signatures
-						onClickSignature={onAddImage}
-						onChangeActiveToolbarItem={onChangeActiveToolbarItem}
-						tools={tools}
-						activeToolbarItem={activeToolbarItem}
+                                        {shouldRenderApplyChangesButton && (
+                                                <button
+                                                        type="button"
+                                                        css={applyChangesButtonStyle}
+                                                        onClick={onApplyDocumentChanges}
+                                                        disabled={isApplyingDocumentChanges}
+                                                >
+                                                        {applyChangesLabel}
+                                                </button>
+                                        )}
+                                        <Signatures
+                                                onClickSignature={onAddImage}
+                                                onChangeActiveToolbarItem={onChangeActiveToolbarItem}
+                                                tools={tools}
+                                                activeToolbarItem={activeToolbarItem}
 					/>
 					<AnnotationTextSettings
 						annotationMode={annotationMode}

@@ -419,6 +419,8 @@ const App = () => {
 
 	const [modifiedFile, setModifiedFile] = useState(null);
 	const [modifiedFiles, setModifiedFiles] = useState([]);
+	const [appliedPageOperationSignatures, setAppliedPageOperationSignatures] = useState({});
+	const [isApplyingPageChanges, setIsApplyingPageChanges] = useState(false);
 
 	const [inputtedLicenseKey, setInputtedLicenseKey] = useState(null);
 	const [initialAnnotations, setInitialAnnotations] = useState([]);
@@ -439,6 +441,12 @@ const App = () => {
 	const [documentLoading, setDocumentLoading] = useState(true);
 
 	const { operations, setOperations, redoStack, setRedoStack, addOperation } = useContext(UndoRedoContext);
+	const relevantPageOperations = (operations?.[activePageIndex] || []).filter(
+		(operation) => operation?.action === 'delete' || operation?.action === 'drag'
+	);
+	const currentPageOperationsSignature = JSON.stringify(relevantPageOperations);
+	const lastAppliedPageOperationsSignature = appliedPageOperationSignatures?.[activePageIndex] ?? '[]';
+	const hasPendingPageChanges = currentPageOperationsSignature !== lastAppliedPageOperationsSignature;
 	const [activeToolbarItem, setActiveToolbarItem] = useState('');
 	const activeToolbarItemRef = useRef(null);
         const [customData, setCustomData] = useState({});
@@ -488,6 +496,10 @@ const App = () => {
 			setRedoStack(initialRedoUndoObject());
 		}
 		catch (err) {}
+	}, [files]);
+
+	useEffect(() => {
+		setAppliedPageOperationSignatures({});
 	}, [files]);
 
 	const addInitialFiles = async (event) => {
@@ -811,6 +823,36 @@ const App = () => {
 
 	const onFinalizeDocument = () => {
 		window.parent.postMessage({ type: 'finalize-document', annotations: annotationsRef.current });
+	};
+
+	const onApplyPageChanges = async () => {
+		if (!pdfProxyObj) {
+			console.log('No PDF loaded to apply page changes');
+			return;
+		}
+
+		if (typeof window === 'undefined') {
+			return;
+		}
+
+		setIsApplyingPageChanges(true);
+
+		try {
+			const pdfData = await pdfProxyObj.getData();
+			const pdfArray = pdfData instanceof Uint8Array ? pdfData.slice(0) : new Uint8Array(pdfData);
+
+			window.parent.postMessage({ type: 'document-updated', message: pdfArray }, '*');
+			setAppliedPageOperationSignatures((prev) => ({
+				...prev,
+				[activePageIndex]: currentPageOperationsSignature
+			}));
+		}
+		catch (error) {
+			console.error('Failed to apply page changes:', error);
+		}
+		finally {
+			setIsApplyingPageChanges(false);
+		}
 	};
 
 	const onCombinePdfs = async () => {
@@ -2429,6 +2471,9 @@ const App = () => {
                                                 onUpdateFontItalic={onUpdateFontItalic}
                                                 fontItalic={fontItalic}
                                                 onFinalizeDocument={onFinalizeDocument}
+                                                showApplyDocumentChanges={hasPendingPageChanges}
+                                                onApplyDocumentChanges={onApplyPageChanges}
+                                                isApplyingDocumentChanges={isApplyingPageChanges}
                                         />
 					)
 				}
