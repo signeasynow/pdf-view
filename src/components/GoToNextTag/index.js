@@ -40,8 +40,6 @@ export const GoToNextTag = ({
 	pdf
 }) => {
 
-	console.log("Go to inside")
-
 	const { annotations } = useAnnotations();
 
 	const { t } = useTranslation();
