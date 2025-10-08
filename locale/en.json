@@ -78,7 +78,7 @@
   "something-wrong-email": "Something went wrong sending the email",
   "doc-sent-success": "Your document has been sent successfully! Track & edit your document under Account > Documents.",
   "name-required": "Name is required",
-  "add-markers-doc": "Add markers to the document for your client to click and auto-fill their signature, name, date, and other details.",
+  "add-markers-doc": "Add clickable tags to the document for your client to click and auto-fill their signature, name, date, and other details.",
   "Signature": "Signature",
   "Name": "Name",
   "Date": "Date",
