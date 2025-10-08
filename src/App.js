@@ -383,7 +383,8 @@ const App = () => {
 
 	const [activePage, setActivePage] = useState(1);
 
-	const [tools, setTools] = useState([]);
+        const [tools, setTools] = useState([]);
+        const [hideUndoRedoButtons, setHideUndoRedoButtons] = useState(false);
 
 
 	useEffect(() => {
@@ -548,9 +549,12 @@ const App = () => {
                         if (typeof event.data === 'object' && event.data.files?.length) {
                                 addInitialFiles(event);
                         }
-			if (typeof event.data === 'object' && event.data.tools) {
-				setTools(event.data.tools);
-			}
+                        if (typeof event.data === 'object' && event.data.tools) {
+                                setTools(event.data.tools);
+                        }
+                        if (typeof event.data === 'object' && typeof event.data.hideUndoRedoButtons !== 'undefined') {
+                                setHideUndoRedoButtons(Boolean(event.data.hideUndoRedoButtons));
+                        }
 			if (typeof event.data === 'object' && event.data.locale) {
 				onChangeLocale(event.data.locale);
 			}
@@ -2459,6 +2463,7 @@ const App = () => {
                                                 expandedViewThumbnailScale={expandedViewThumbnailScale}
                                                 setMultiPageSelections={setMultiPageSelections}
                                                 multiPageSelections={multiPageSelections}
+                                                hideUndoRedoButtons={hideUndoRedoButtons}
                                                 showFullScreenThumbnails={shouldShowFullScreenThumbnails()}
                                                 onMinimize={onMinimize}
                                                 undoLastAction={undoLastAction}

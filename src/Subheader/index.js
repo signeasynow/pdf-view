@@ -127,7 +127,8 @@ const Subheader = ({
         fontItalic,
         showApplyDocumentChanges,
         onApplyDocumentChanges,
-        isApplyingDocumentChanges
+        isApplyingDocumentChanges,
+        hideUndoRedoButtons = false
 }) => {
 
         const { t } = useTranslation();
@@ -145,7 +146,7 @@ const Subheader = ({
 		return length;
 	};
 
-	const showUndoRedo = () => !!tools?.editing?.length;
+        const showUndoRedo = () => !hideUndoRedoButtons && !!tools?.editing?.length;
 
 	const showExtract = () => {
 		if (annotationMode === pdfjs.AnnotationEditorType.FREETEXT
